@@ -18,7 +18,8 @@ services:
       - "32400:32400/tcp"
     volumes:
       - "${CONFIG_DIR}/plex:/config"
-      - "${DOWNLOADS_DIR}:/downloads"
+      - "${STORAGE_DIR}/tv:/tv"
+      - "${STORAGE_DIR}/movies:/movies"
       - "/tmp:/transcode"
     labels:
       traefik.enable: true
@@ -26,7 +27,7 @@ services:
       traefik.backend: plex
       traefik.protocol: http
       traefik.port: 32400
-      traefik.frontend.rule: Host:plex.${DOMAINNAME},${DOMAINNAME}
+      traefik.frontend.rule: Host:plex.${DOMAINNAME}
       traefik.frontend.entryPoint: http
       traefik.frontend.redirect.entryPoint: https
       traefik.frontend.priority: 1
