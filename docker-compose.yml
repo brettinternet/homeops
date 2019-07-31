@@ -14,7 +14,7 @@ services:
       - ${SOTRAGE_DIR}/music:/data/Music
       - ${SOTRAGE_DIR}/movies:/data/Movies
       - ${SOTRAGE_DIR}/tv:/data/TV
-      - ${SOTRAGE_DIR}/temp/transcode:/transcode
+      - ${SOTRAGE_DIR}/tmp/transcode:/transcode
     ports:
       # Plex ports - source: https://www.techjunkie.com/what-port-does-plex-media-server-use-to-stream/
       - "32400:32400" # Plex Media Server
