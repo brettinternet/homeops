@@ -53,7 +53,7 @@ services:
       - ${APPDATA_DIR}/nzbget:/config
       - ${STORAGE_DIR}/downloads:/downloads
     ports:
-      - 6789:6789
+      - 6788:6789
 
   # https://github.com/linuxserver/docker-sonarr
   sonarr:
