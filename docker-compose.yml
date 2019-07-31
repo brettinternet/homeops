@@ -102,9 +102,9 @@ services:
       - PASSWORD=${CODE_SERVER_PASSWORD} # optional
       - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
     volumes:
-      - ${APPDATA_DIR}/code_server:/config
+      - ${APPDATA_DIR}/codeserver:/config
     ports:
-      - 8443:8443
+      - 8444:8443
 
   portainer:
     image: portainer/portainer
