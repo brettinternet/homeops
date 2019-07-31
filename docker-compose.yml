@@ -1,108 +1,149 @@
-version: "3.7"
+---
+version: "3"
+
 services:
-  #
-  # https://hub.docker.com/r/linuxserver/plex/
-  #
   plex:
+    image: plexinc/pms-docker
     container_name: plex
-    image: linuxserver/plex
     restart: unless-stopped
     environment:
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-      TZ: "${TZ}"
-      VERSION: "latest"
-    networks:
-      - traefik
-    ports:
-      - "32400:32400/tcp"
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM_CODE}
     volumes:
-      - "${CONFIG_DIR}/plex:/config"
-      - "${STORAGE_DIR}/tv:/tv"
-      - "${STORAGE_DIR}/movies:/movies"
-      - "/tmp:/transcode"
-    labels:
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.backend: plex
-      traefik.protocol: http
-      traefik.port: 32400
-      traefik.frontend.rule: Host:plex.${DOMAINNAME}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      - ${APPDATA_DIR}/plex:/config
+      - ${SOTRAGE_DIR}/music:/data/Music
+      - ${SOTRAGE_DIR}/movies:/data/Movies
+      - ${SOTRAGE_DIR}/tv:/data/TV
+      - ${SOTRAGE_DIR}/temp/transcode:/transcode
+    ports:
+      # Plex ports - source: https://www.techjunkie.com/what-port-does-plex-media-server-use-to-stream/
+      - "32400:32400" # Plex Media Server
+      - "3005:3005" # Plex Companion
+      - "8324:8324" # Roku via Plex Companion
+      - "32469:32649" # Plex DLNA Server
+      - "1900:1900/udp" # Plex DLNA Server
+      - "32410:32410/udp" # network discovery
+      - "32412:32412/udp" # network discovery
+      - "32413:32413/udp" # network discovery
 
-  #
-  # https://hub.docker.com/_/traefik/
-  #
-  traefik:
-    container_name: traefik
-    image: traefik
+  # https://github.com/linuxserver/docker-ombi
+  ombi:
+    # https://hub.docker.com/r/linuxserver/ombi
+    image: linuxserver/ombi
+    container_name: ombi
     restart: unless-stopped
     environment:
-      TZ: "${TZ}"
-      CLOUDFLARE_EMAIL: "${CLOUDFLARE_EMAIL}"
-      CLOUDFLARE_API_KEY: "${CLOUDFLARE_API_KEY}"
-    networks:
-      - traefik
-    ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "${CONFIG_DIR}/traefik:/etc/traefik:rw"
-    command:
-      - "--logLevel=INFO"
-      - "--api"
-      - "--defaultentrypoints=http,https"
-      - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
-      - "--entrypoints=Name:https Address::443 TLS TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
-      - "--acme"
-      - "--acme.storage=/etc/traefik/acme.json"
-      - "--acme.entryPoint=https"
-      - "--acme.dnsChallenge=true"
-      - "--acme.dnsChallenge.provider=cloudflare"
-      - "--acme.dnsChallenge.delayBeforeCheck=60"
-      - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
-      - "--acme.onHostRule=true"
-      - "--acme.email=${CLOUDFLARE_EMAIL}"
-      - "--acme.acmeLogging=true"
-      - "--acme.domains=${DOMAINNAME},*.${DOMAINNAME},"
-      - "--acme.KeyType=RSA4096"
-      # - "--acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory" # staging server
-      - "--docker"
-      - "--docker.domain=${DOMAINNAME}"
-      - "--docker.watch"
-      - "--docker.exposedbydefault=false"
-      - "--retry"
-    labels:
-      traefik.enable: true
-      traefik.docker.network: traefik
-      traefik.backend: traefik
-      traefik.protocol: http
-      traefik.port: 8080
-      traefik.frontend.rule: Host:traefik.${DOMAINNAME}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
-      traefik.frontend.headers.SSLForceHost: true
-      traefik.frontend.headers.SSLHost: traefik.${DOMAINNAME}
-      traefik.frontend.headers.SSLRedirect: true
-      traefik.frontend.headers.browserXSSFilter: true
-      traefik.frontend.headers.contentTypeNosniff: true
-      traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.STSSeconds: 315360000
-      traefik.frontend.headers.STSIncludeSubdomains: true
-      traefik.frontend.headers.STSPreload: true
-      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
-      traefik.frontend.headers.frameDeny: true
-      traefik.frontend.headers.customFrameOptionsValue: "allow-from https:${DOMAINNAME}"
-      # traefik.frontend.auth.forward.address: http://oauth:4181
-      traefik.frontend.auth.basic.users: ${HTPASSWD}
+      - ${APPDATA_DIR}/ombi/config:/config
+    ports:
+      - 3579:3579
 
-networks:
-  traefik:
-    name: traefik
-    attachable: true
+  # https://github.com/linuxserver/docker-nzbget
+  nzbget:
+    # https://hub.docker.com/r/linuxserver/nzbget
+    image: linuxserver/nzbget
+    container_name: nzbget
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/nzbget:/config
+      - ${STORAGE_DIR}/downloads:/downloads
+    ports:
+      - 6789:6789
+
+  # https://github.com/linuxserver/docker-sonarr
+  sonarr:
+    # https://hub.docker.com/r/linuxserver/sonarr
+    image: linuxserver/sonarr
+    container_name: sonarr
+    restart: unless-stopped
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${APPDATA_DIR}/sonarr:/config
+      - ${STORAGE_DIR}/tv:/tv
+      - ${STORAGE_DIR}/downloads/complete/tv:/downloads
+    ports:
+      - 8989:8989
+
+  # https://github.com/linuxserver/docker-radarr
+  radarr:
+    # https://hub.docker.com/r/linuxserver/radarr
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: unless-stopped
+    environment:
+      - PGID=1000
+      - PUID=1000
+      - TZ=${TZ}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${APPDATA_DIR}/radarr:/config
+      - ${STORAGE_DIR}/movies:/movies
+      - ${STORAGE_DIR}/downloads/complete/movies:/downloads
+    ports:
+      - 7878:7878
+
+  code-server:
+    image: linuxserver/code-server
+    container_name: code-server
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - PASSWORD=${CODE_SERVER_PASSWORD} # optional
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
+    volumes:
+      - ${APPDATA_DIR}/code_server:/config
+    ports:
+      - 8443:8443
+
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_DIR}/portainer:/data
+
+  # https://github.com/containrrr/watchtower
+  watchtower:
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
+    container_name: watchtower
+    # TODO: add notifications - https://containrrr.github.io/watchtower/notifications/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_DIR}/watchtower/config.json:/config.json
+    command: --interval 900 #15 minutes
+
+  # https://github.com/linuxserver/docker-unifi-controller
+  unifi:
+    # https://hub.docker.com/r/linuxserver/unifi-controller
+    image: linuxserver/unifi-controller
+    container_name: unifi-controller
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      # - MEM_LIMIT=1024M #optional
+    volumes:
+      - ${APPDATA_DIR}/unifi:/config
+    ports:
+      - 3478:3478/udp # Unifi communication port
+      - 10001:10001/udp # AP discovery
+      - 8080:8080 # Unifi communication port
+      - 8081:8081 # Unifi communication port
+      - 8443:8443 # UI
+      - 8843:8843 # Unifi communication port
+      - 8880:8880 # Unifi communication port
+      - 6789:6789 # For throughput test
