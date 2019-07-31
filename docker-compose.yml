@@ -37,7 +37,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - ${APPDATA_DIR}/ombi/config:/config
+      - ${APPDATA_DIR}/ombi:/config
     ports:
       - 3579:3579
 
