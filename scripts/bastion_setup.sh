@@ -27,14 +27,17 @@ Endpoint = $CLIENT_PUBLIC_IP:$CLIENT_PORT
 EOT
 
 # Start/enable service
-systemctl start wg-quick@wg0
-systemctl enable wg-quick@wg0
+chown -v root:root /etc/wireguard/wg0.conf
+chmod -v 600 /etc/wireguard/wg0.conf
+systemctl start wg-quick@wg0 # or `wg-quick up wg0`
+systemctl enable wg-quick@wg0.service
 
 #### OUTPUT ####
 # Provide configuration appendage for client
 cat <<EOT >> /tmp/wg0.conf.client
 ListenPort = $CLIENT_PORT
 Address = 10.0.0.2/24
+DNS = 10.0.0.1
 
 [Peer]
 PublicKey = $SERVER_PUBLIC_KEY

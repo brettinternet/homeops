@@ -8,7 +8,7 @@ variable "pvt_key" {
   default = "~/.ssh/id_rsa"
 }
 variable "wireguard_port" {
-  default = "5555"
+  default = "51820"
 }
 variable "wireguard_client_pub_key" {
   default = ""
