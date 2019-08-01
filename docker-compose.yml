@@ -1,11 +1,84 @@
 ---
 version: "3"
 
+networks:
+  traefik:
+    name: traefik
+    attachable: true
+
 services:
+    traefik:
+    image: traefik
+    restart: unless-stopped
+    networks:
+      - traefik
+    environment:
+      TZ: ${TZ}
+      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
+      CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APPDATA_DIR}/traefik:/etc/traefik:rw
+    ports:
+      - "8181:8080"
+      - "80:80"
+      - "443:443"
+    command: 
+      - "--logLevel=INFO"
+      - "--api"
+      - "--defaultentrypoints=http,https"
+      - "--entrypoints=Name:http Address::80 Compress:true Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS Compress:true TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
+      - "--acme"
+      - "--acme.storage=/etc/traefik/acme.json"
+      - "--acme.entryPoint=https"
+      - "--acme.dnsChallenge=true"
+      - "--acme.dnsChallenge.provider=cloudflare"
+      - "--acme.dnsChallenge.delayBeforeCheck=60"
+      - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
+      - "--acme.onHostRule=true"
+      - "--acme.email=${CLOUDFLARE_EMAIL}"
+      - "--acme.acmeLogging=true"
+      # - "--acme.domains=${DOMAIN_NAME},*.${DOMAIN_NAME},"
+      - "--acme.domains=*.${DOMAIN_NAME},"
+      - "--acme.KeyType=RSA4096"
+      - "--docker"
+      - "--docker.domain=${DOMAIN_NAME}"
+      - "--docker.watch"
+      - "--docker.exposedbydefault=false"
+      - "--retry"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: traefik
+      traefik.protocol: http
+      traefik.port: 8181
+      traefik.frontend.rule: Host:traefik.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.SSLHost: traefik.${DOMAIN_NAME}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.headers.customFrameOptionsValue: 'allow-from https:${DOMAIN_NAME}'
+      traefik.frontend.auth.basic.users: ${HTPASSWD}
+
+  
   plex:
     image: plexinc/pms-docker
     container_name: plex
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
@@ -14,7 +87,8 @@ services:
       - ${SOTRAGE_DIR}/music:/data/Music
       - ${SOTRAGE_DIR}/movies:/data/Movies
       - ${SOTRAGE_DIR}/tv:/data/TV
-      - ${SOTRAGE_DIR}/tmp/transcode:/transcode
+      # - ${SOTRAGE_DIR}/tmp/transcode:/transcode
+      - /tmp:/transcode
     ports:
       # Plex ports - source: https://www.techjunkie.com/what-port-does-plex-media-server-use-to-stream/
       - "32400:32400" # Plex Media Server
@@ -25,6 +99,17 @@ services:
       - "32410:32410/udp" # network discovery
       - "32412:32412/udp" # network discovery
       - "32413:32413/udp" # network discovery
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: plex
+      traefik.protocol: http
+      traefik.port: 32400
+      traefik.frontend.rule: Host:plex.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   # https://github.com/linuxserver/docker-ombi
   ombi:
@@ -32,14 +117,27 @@ services:
     image: linuxserver/ombi
     container_name: ombi
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
     volumes:
       - ${APPDATA_DIR}/ombi:/config
     ports:
       - 3579:3579
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: ombi
+      traefik.protocol: http
+      traefik.port: 3579
+      traefik.frontend.rule: Host:ombi.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   # https://github.com/linuxserver/docker-nzbget
   nzbget:
@@ -48,12 +146,25 @@ services:
     container_name: nzbget
     restart: unless-stopped
     environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
     volumes:
       - ${APPDATA_DIR}/nzbget:/config
       - ${STORAGE_DIR}/downloads:/downloads
     ports:
       - 6788:6789
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: nzbget
+      traefik.protocol: http
+      traefik.port: 6788
+      traefik.frontend.rule: Host:nzbget.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   # https://github.com/linuxserver/docker-sonarr
   sonarr:
@@ -62,8 +173,8 @@ services:
     container_name: sonarr
     restart: unless-stopped
     environment:
-      - PGID=1000
-      - PUID=1000
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -72,6 +183,17 @@ services:
       - ${STORAGE_DIR}/downloads/complete/tv:/downloads
     ports:
       - 8989:8989
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: sonarr
+      traefik.protocol: http
+      traefik.port: 8989
+      traefik.frontend.rule: Host:sonarr.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   # https://github.com/linuxserver/docker-radarr
   radarr:
@@ -80,8 +202,8 @@ services:
     container_name: radarr
     restart: unless-stopped
     environment:
-      - PGID=1000
-      - PUID=1000
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -90,14 +212,25 @@ services:
       - ${STORAGE_DIR}/downloads/complete/movies:/downloads
     ports:
       - 7878:7878
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: radarr
+      traefik.protocol: http
+      traefik.port: 7878
+      traefik.frontend.rule: Host:radarr.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   code-server:
     image: linuxserver/code-server
     container_name: code-server
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
       - PASSWORD=${CODE_SERVER_PASSWORD} # optional
       - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
@@ -106,13 +239,28 @@ services:
     ports:
       - 8444:8443
 
+  # https://github.com/portainer/portainer
   portainer:
+    # https://hub.docker.com/r/portainer/portainer/
     image: portainer/portainer
     container_name: portainer
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/portainer:/data
+    ports:
+      - 9000:9000
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: portainer
+      traefik.protocol: http
+      traefik.port: 9000
+      traefik.frontend.rule: Host:portainer.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
 
   # https://github.com/containrrr/watchtower
   watchtower:
@@ -129,21 +277,32 @@ services:
   unifi:
     # https://hub.docker.com/r/linuxserver/unifi-controller
     image: linuxserver/unifi-controller
-    container_name: unifi-controller
+    container_name: unifi
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
       # - MEM_LIMIT=1024M #optional
     volumes:
       - ${APPDATA_DIR}/unifi:/config
     ports:
       - 3478:3478/udp # Unifi communication port
-      - 10001:10001/udp # AP discovery
+      - ${PGID}1:${PGID}1/udp # AP discovery
       - 8080:8080 # Unifi communication port
       - 8081:8081 # Unifi communication port
       - 8443:8443 # UI
       - 8843:8843 # Unifi communication port
       - 8880:8880 # Unifi communication port
       - 6789:6789 # For throughput test
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: unifi
+      traefik.protocol: http
+      traefik.port: 9000
+      traefik.frontend.rule: Host:unifi.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
