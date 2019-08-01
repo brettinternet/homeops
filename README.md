@@ -31,7 +31,7 @@ Setup bastion server, install WireGuard, copy VPN server configuration to client
 do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wireguard_client_pub_key=$(sudo wg show wg0 public-key) terraform apply -var-file=".env" -auto-approve
 ```
 
-Append client configuration with fields in `wg0.conf.client` from Terraform `scp` operation
+Append client configuration with fields in `wg0-client.conf` from Terraform `scp` operation
 
 ```sh
 sudo bash -c "cat wg0.conf.client >> /etc/wireguard/wg0.conf"
@@ -43,6 +43,8 @@ Restart client's WireGuard and enable the service
 systemctl restart wg-quick@wg0
 systemctl enable wg-quick@wg0
 ```
+
+Run the QR script `scripts/get_client_qr.sh` to generate a QR code for a client configuration within the WireGuard app
 
 #### Resources
 

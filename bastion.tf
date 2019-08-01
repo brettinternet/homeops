@@ -45,8 +45,8 @@ resource "digitalocean_droplet" "bastion" {
   }
 
   provisioner "file" {
-    source      = "scripts/bastion_setup.sh"
-    destination = "/tmp/bastion_setup.sh"
+    source      = "scripts/vpn_setup.sh"
+    destination = "/tmp/vpn_setup.sh"
   }
 
   provisioner "file" {
@@ -56,8 +56,8 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/bastion_setup.sh",
-      "/tmp/bastion_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
+      "chmod +x /tmp/vpn_setup.sh",
+      "/tmp/vpn_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
     ]
   }
 
