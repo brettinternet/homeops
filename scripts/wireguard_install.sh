@@ -22,7 +22,7 @@ else
 fi
 
 # Firewall
-ufw allow $SERVER_PORT
+ufw allow $SERVER_PORT || true
 
 # Configure private/public key
 (umask 077 && printf "[Interface]\nPrivateKey = " | sudo tee /etc/wireguard/wg0.conf > /dev/null)
