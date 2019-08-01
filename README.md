@@ -34,7 +34,7 @@ do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wir
 Append client configuration with fields in `wg0-client.conf` from Terraform `scp` operation
 
 ```sh
-sudo bash -c "cat wg0.conf.client >> /etc/wireguard/wg0.conf"
+sudo bash -c "cat wg0-client.conf >> /etc/wireguard/wg0.conf"
 ```
 
 Restart client's WireGuard and enable the service
