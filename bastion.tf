@@ -67,7 +67,7 @@ resource "digitalocean_droplet" "bastion" {
         -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null \
         -i ${var.pvt_key} \
-        root@${digitalocean_droplet.bastion.ipv4_address}:/tmp/wg0.conf.client .
+        root@${digitalocean_droplet.bastion.ipv4_address}:/tmp/wg0-client.conf .
     CMD
   }
 }
