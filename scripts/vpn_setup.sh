@@ -79,7 +79,7 @@ iptables -t nat -A POSTROUTING -s $NETWORK_ADDRESS/24 -o eth0 -j MASQUERADE
 # Persist iptable routing across reboots
 apt-get update
 
-# for no input installs
+# for no input installs - source: https://gist.github.com/alonisser/a2c19f5362c2091ac1e7
 echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
 echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 

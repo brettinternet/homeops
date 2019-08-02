@@ -1,3 +1,4 @@
 .env
 .terraform
 terraform.tfstate*
+wg0*
