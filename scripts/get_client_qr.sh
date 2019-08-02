@@ -17,4 +17,4 @@ else
 fi
 
 # source: https://wiki.debian.org/Wireguard#A3._Import_by_reading_a_QR_code_.28most_secure_method.29
-qrencode -t ansiutf8 < ./wg0-client.conf
+qrencode -t ansiutf8 < /tmp/wg0-client2.conf

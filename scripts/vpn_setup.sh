@@ -8,6 +8,18 @@ CLIENT_PUBLIC_KEY=$2
 # Configuration
 SERVER_PORT=$PORT
 CLIENT_PORT=$PORT
+CLIENT2_PORT=$PORT
+
+PORTS_TO_FORWARD=(
+  [80]:80
+  [443]: 443
+  [53]: 53
+  # [25]: 25
+  # [143]: 143
+  # [587]: 587
+  # [998]: 998
+  # [4190]: 4190
+)
 
 get_address () {
   echo "10.0.0.$1"
@@ -16,6 +28,7 @@ get_address () {
 NETWORK_ADDRESS=$(get_address 0)
 SERVER_ADDRESS=$(get_address 1)
 CLIENT_ADDRESS=$(get_address 2)
+CLIENT2_ADDRESS=$(get_address 3)
 
 #### INSTALLATION ####
 source /tmp/wireguard_install.sh
@@ -24,18 +37,23 @@ SERVER_PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 CLIENT_PUBLIC_IP=$(printf $SSH_CLIENT | awk '{ print $1}')
 
 SERVER_PUBLIC_KEY=$(</etc/wireguard/publickey)
+CLIENT2_PRIVATE_KEY=$(wg genkey)
+CLIENT2_PUBLIC_KEY=$(wg pubkey < $CLIENT2_PRIVATE_KEY)
 
 # Append additional configuration on server
 cat <<EOT >> /etc/wireguard/wg0.conf
 ListenPort = $SERVER_PORT
 Address = $SERVER_ADDRESS/24
-PostUp = iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-PostDown = iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+PostUp = for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -A POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -D POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 [Peer]
 PublicKey = $CLIENT_PUBLIC_KEY
 AllowedIPs = $CLIENT_ADDRESS/32
-Endpoint = $CLIENT_PUBLIC_IP:$CLIENT_PORT
+
+[Peer]
+PublicKey = $CLIENT2_PUBLIC_KEY
+AllowedIPs = $CLIENT2_ADDRESS/32
 EOT
 
 # Enable IP forwarding
@@ -49,6 +67,8 @@ systemctl enable wg-quick@wg0.service
 
 #### OUTPUT ####
 # Provide configuration appendage for client
+# Note: keep the connection alive since hosted content is behind NAT
+# source: https://www.wireguard.com/quickstart/#nat-and-firewall-traversal-persistence
 cat <<EOT >> /tmp/wg0-client.conf
 ListenPort = $CLIENT_PORT
 Address = $CLIENT_ADDRESS/24
@@ -57,6 +77,21 @@ DNS = $SERVER_ADDRESS
 [Peer]
 PublicKey = $SERVER_PUBLIC_KEY
 AllowedIPs = $SERVER_ADDRESS/32
+Endpoint = $SERVER_PUBLIC_IP:$SERVER_PORT
+PersistentKeepalive = 25
+EOT
+
+# Provide configuration appendage for client2
+cat <<EOT > /tmp/wg0-client2.conf
+[Interface]
+PrivateKey = $CLIENT2_PRIVATE_KEY
+ListenPort = $CLIENT2_PORT
+Address = $CLIENT2_ADDRESS/24
+DNS = $SERVER_ADDRESS
+
+[Peer]
+PublicKey = $SERVER_PUBLIC_KEY
+AllowedIPs = 0.0.0.0/0
 Endpoint = $SERVER_PUBLIC_IP:$SERVER_PORT
 EOT
 

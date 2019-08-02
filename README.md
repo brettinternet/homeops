@@ -57,3 +57,4 @@ Run the QR script `scripts/get_client_qr.sh` to generate a QR code for a client 
 - [DigitalOcean: Tinc setup](https://www.digitalocean.com/community/tutorials/how-to-install-tinc-and-set-up-a-basic-vpn-on-ubuntu-14-04)
 - [Parse .env in Bash](https://gist.github.com/judy2k/7656bfe3b322d669ef75364a46327836)
 - Other setup guides - [0](https://wiki.debian.org/Wireguard#Installation), [1](https://git.zx2c4.com/WireGuard/plain/contrib/examples/ncat-client-server/client.sh), [2](https://www.ckn.io/blog/2017/11/14/wireguard-vpn-typical-setup/), [3](https://blog.jessfraz.com/post/installing-and-using-wireguard/)
+- [Unofficial WireGuard docs](https://github.com/pirate/wireguard-docs)

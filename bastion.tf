@@ -54,10 +54,16 @@ resource "digitalocean_droplet" "bastion" {
     destination = "/tmp/wireguard_install.sh"
   }
 
+  provisioner "file" {
+    source      = "scripts/get_client_qr.sh"
+    destination = "/tmp/get_client_qr.sh"
+  }
+
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/vpn_setup.sh",
+      "chmod +x /tmp/vpn_setup.sh && chmod +x /tmp/get_client_qr.sh",
       "/tmp/vpn_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
+      "/tmp/get_client_qr.sh",
     ]
   }
 
