@@ -20,7 +20,7 @@ Next, install [WireGuard](https://www.wireguard.com/) on the VPN client (the hom
 
 ```sh
 chmod +x scripts/wireguard_install.sh
-./scripts/wireguard_install.sh
+sudo bash -c ./scripts/wireguard_install.sh
 
 systemctl start wg-quick@wg0
 ```
