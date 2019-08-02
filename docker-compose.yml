@@ -17,8 +17,8 @@ services:
       CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
       CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${APPDATA_DIR}/traefik:/etc/traefik:rw
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "${APPDATA_DIR}/traefik:/etc/traefik:rw"
     ports:
       - "10.0.0.2:8181:8080"
       - "10.0.0.2:80:80"
