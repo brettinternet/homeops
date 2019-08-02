@@ -39,6 +39,8 @@ Append client configuration with fields in `wg0-client.conf` from Terraform `scp
 sudo bash -c "cat wg0-client.conf >> /etc/wireguard/wg0.conf"
 ```
 
+Use `sed -i.bak -e '3,10d' /etc/wireguard/wg0.conf` to delete the fields added to `/wg0-client.conf` to reset `wg0.conf` and backup your previous config to `wg0.conf.bak`, or use `sed -e '3,$d' file` to remove line 3 through the last line ([source](https://stackoverflow.com/a/2112496/6817437))
+
 Restart client's WireGuard and enable the service
 
 ```sh
@@ -50,6 +52,7 @@ Run the QR script `scripts/get_client_qr.sh` to generate a QR code for a client 
 
 #### Resources
 
+- [ArchWiki: WireGuard](https://wiki.archlinux.org/index.php/WireGuard)
 - [DigitalOcean: WireGuard setup](https://www.digitalocean.com/community/tutorials/how-to-create-a-point-to-point-vpn-with-wireguard-on-ubuntu-16-04)
 - [DigitalOcean: Tinc setup](https://www.digitalocean.com/community/tutorials/how-to-install-tinc-and-set-up-a-basic-vpn-on-ubuntu-14-04)
 - [Parse .env in Bash](https://gist.github.com/judy2k/7656bfe3b322d669ef75364a46327836)

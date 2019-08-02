@@ -8,69 +8,69 @@ networks:
 
 services:
   traefik:
-  image: traefik
-  restart: unless-stopped
-  networks:
-    - traefik
-  environment:
-    TZ: ${TZ}
-    CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
-    CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - ${APPDATA_DIR}/traefik:/etc/traefik:rw
-  ports:
-    - "8181:8080"
-    - "80:80"
-    - "443:443"
-  command:
-    - "--logLevel=INFO"
-    - "--api"
-    - "--defaultentrypoints=http,https"
-    - "--entrypoints=Name:http Address::80 Compress:true Redirect.EntryPoint:https"
-    - "--entrypoints=Name:https Address::443 TLS Compress:true TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
-    - "--acme"
-    - "--acme.storage=/etc/traefik/acme.json"
-    - "--acme.entryPoint=https"
-    - "--acme.dnsChallenge=true"
-    - "--acme.dnsChallenge.provider=cloudflare"
-    - "--acme.dnsChallenge.delayBeforeCheck=60"
-    - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
-    - "--acme.onHostRule=true"
-    - "--acme.email=${CLOUDFLARE_EMAIL}"
-    - "--acme.acmeLogging=true"
-    # - "--acme.domains=${DOMAIN_NAME},*.${DOMAIN_NAME},"
-    - "--acme.domains=*.${DOMAIN_NAME},"
-    - "--acme.KeyType=RSA4096"
-    - "--docker"
-    - "--docker.domain=${DOMAIN_NAME}"
-    - "--docker.watch"
-    - "--docker.exposedbydefault=false"
-    - "--retry"
-  labels:
-    traefik.enable: true
-    traefik.docker.network: traefik
-    traefik.backend: traefik
-    traefik.protocol: http
-    traefik.port: 8181
-    traefik.frontend.rule: Host:traefik.${DOMAIN_NAME}
-    traefik.frontend.entryPoint: http
-    traefik.frontend.redirect.entryPoint: https
-    traefik.frontend.priority: 1
-    traefik.frontend.passHostHeader: true
-    traefik.frontend.headers.SSLForceHost: true
-    traefik.frontend.headers.SSLHost: traefik.${DOMAIN_NAME}
-    traefik.frontend.headers.SSLRedirect: true
-    traefik.frontend.headers.browserXSSFilter: true
-    traefik.frontend.headers.contentTypeNosniff: true
-    traefik.frontend.headers.forceSTSHeader: true
-    traefik.frontend.headers.STSSeconds: 315360000
-    traefik.frontend.headers.STSIncludeSubdomains: true
-    traefik.frontend.headers.STSPreload: true
-    traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
-    traefik.frontend.headers.frameDeny: true
-    traefik.frontend.headers.customFrameOptionsValue: "allow-from https:${DOMAIN_NAME}"
-    traefik.frontend.auth.basic.users: ${HTPASSWD}
+    image: traefik
+    restart: unless-stopped
+    networks:
+      - traefik
+    environment:
+      TZ: ${TZ}
+      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
+      CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APPDATA_DIR}/traefik:/etc/traefik:rw
+    ports:
+      - "10.0.0.2:8181:8080"
+      - "10.0.0.2:80:80"
+      - "10.0.0.2:443:443"
+    command:
+      - "--logLevel=INFO"
+      - "--api"
+      - "--defaultentrypoints=http,https"
+      - "--entrypoints=Name:http Address::80 Compress:true Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS Compress:true TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
+      - "--acme"
+      - "--acme.storage=/etc/traefik/acme.json"
+      - "--acme.entryPoint=https"
+      - "--acme.dnsChallenge=true"
+      - "--acme.dnsChallenge.provider=cloudflare"
+      - "--acme.dnsChallenge.delayBeforeCheck=60"
+      - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
+      - "--acme.onHostRule=true"
+      - "--acme.email=${CLOUDFLARE_EMAIL}"
+      - "--acme.acmeLogging=true"
+      # - "--acme.domains=${DOMAIN_NAME},*.${DOMAIN_NAME},"
+      - "--acme.domains=*.${DOMAIN_NAME},"
+      - "--acme.KeyType=RSA4096"
+      - "--docker"
+      - "--docker.domain=${DOMAIN_NAME}"
+      - "--docker.watch"
+      - "--docker.exposedbydefault=false"
+      - "--retry"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.backend: traefik
+      traefik.protocol: http
+      traefik.port: 8181
+      traefik.frontend.rule: Host:traefik.${DOMAIN_NAME}
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.SSLHost: traefik.${DOMAIN_NAME}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.headers.customFrameOptionsValue: "allow-from https:${DOMAIN_NAME}"
+      traefik.frontend.auth.basic.users: ${HTPASSWD}
   # plex:
   #   image: plexinc/pms-docker
   #   container_name: plex
