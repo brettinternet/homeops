@@ -45,13 +45,13 @@ resource "digitalocean_droplet" "bastion" {
   }
 
   provisioner "file" {
-    source      = "scripts/vpn_setup.sh"
-    destination = "/tmp/vpn_setup.sh"
+    source      = "scripts/wireguard_install.sh"
+    destination = "/tmp/wireguard_install.sh"
   }
 
   provisioner "file" {
-    source      = "scripts/wireguard_install.sh"
-    destination = "/tmp/wireguard_install.sh"
+    source      = "scripts/vpn_setup.sh"
+    destination = "/tmp/vpn_setup.sh"
   }
 
   provisioner "remote-exec" {
