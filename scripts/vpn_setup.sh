@@ -4,7 +4,6 @@
 # Args
 PORT=$1
 CLIENT_PUBLIC_KEY=$2
-SERVER_PUBLIC_KEY=$(cat /etc/wireguard/publickey)
 
 # Configuration
 SERVER_PORT=$PORT
@@ -23,6 +22,8 @@ source ./wireguard_install.sh
 
 SERVER_PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 CLIENT_PUBLIC_IP=$(printf $SSH_CLIENT | awk '{ print $1}')
+
+SERVER_PUBLIC_KEY=$(cat /etc/wireguard/publickey)
 
 # Append additional configuration
 cat <<EOT >> /etc/wireguard/wg0.conf
