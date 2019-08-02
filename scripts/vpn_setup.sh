@@ -76,6 +76,8 @@ iptables -A FORWARD -i wg0 -o wg0 -m conntrack --ctstate NEW -j ACCEPT
 iptables -t nat -A POSTROUTING -s $NETWORK_ADDRESS/24 -o eth0 -j MASQUERADE
 
 # Persist iptable routing across reboots
-apt-get install iptables-persistent
+apt-get update
+# won't work without an apt-get update on a droplet!
+apt-get install -y iptables-persistent
 systemctl enable netfilter-persistent
 netfilter-persistent save
