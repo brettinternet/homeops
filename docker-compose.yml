@@ -39,11 +39,11 @@ services:
       - "--acme.onHostRule=true"
       - "--acme.email=${CLOUDFLARE_EMAIL}"
       - "--acme.acmeLogging=true"
-      # - "--acme.domains=${DOMAIN_NAME},*.${DOMAIN_NAME},"
-      - "--acme.domains=*.${DOMAIN_NAME},"
+      # - "--acme.domains=${ROOT_DOMAIN},*.${ROOT_DOMAIN},"
+      - "--acme.domains=*.${ROOT_DOMAIN},"
       - "--acme.KeyType=RSA4096"
       - "--docker"
-      - "--docker.domain=${DOMAIN_NAME}"
+      - "--docker.domain=${ROOT_DOMAIN}"
       - "--docker.watch"
       - "--docker.exposedbydefault=false"
       - "--retry"
@@ -53,13 +53,13 @@ services:
       traefik.backend: traefik
       traefik.protocol: http
       traefik.port: 8181
-      traefik.frontend.rule: Host:traefik.${DOMAIN_NAME}
+      traefik.frontend.rule: Host:traefik.${ROOT_DOMAIN},${ROOT_DOMAIN}
       traefik.frontend.entryPoint: http
       traefik.frontend.redirect.entryPoint: https
       traefik.frontend.priority: 1
       traefik.frontend.passHostHeader: true
       traefik.frontend.headers.SSLForceHost: true
-      traefik.frontend.headers.SSLHost: traefik.${DOMAIN_NAME}
+      traefik.frontend.headers.SSLHost: traefik.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
@@ -69,7 +69,7 @@ services:
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
       traefik.frontend.headers.frameDeny: true
-      traefik.frontend.headers.customFrameOptionsValue: "allow-from https:${DOMAIN_NAME}"
+      traefik.frontend.headers.customFrameOptionsValue: "allow-from https:${ROOT_DOMAIN}"
       traefik.frontend.auth.basic.users: ${HTPASSWD}
   # plex:
   #   image: plexinc/pms-docker
@@ -103,7 +103,7 @@ services:
   #     traefik.backend: plex
   #     traefik.protocol: http
   #     traefik.port: 32400
-  #     traefik.frontend.rule: Host:plex.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -130,7 +130,7 @@ services:
   #     traefik.backend: ombi
   #     traefik.protocol: http
   #     traefik.port: 3579
-  #     traefik.frontend.rule: Host:ombi.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:ombi.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -156,7 +156,7 @@ services:
   #     traefik.backend: nzbget
   #     traefik.protocol: http
   #     traefik.port: 6788
-  #     traefik.frontend.rule: Host:nzbget.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -184,7 +184,7 @@ services:
   #     traefik.backend: sonarr
   #     traefik.protocol: http
   #     traefik.port: 8989
-  #     traefik.frontend.rule: Host:sonarr.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:sonarr.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -212,7 +212,7 @@ services:
   #     traefik.backend: radarr
   #     traefik.protocol: http
   #     traefik.port: 7878
-  #     traefik.frontend.rule: Host:radarr.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:radarr.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -248,7 +248,7 @@ services:
   #     traefik.backend: portainer
   #     traefik.protocol: http
   #     traefik.port: 9000
-  #     traefik.frontend.rule: Host:portainer.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:portainer.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
@@ -291,7 +291,7 @@ services:
   #     traefik.backend: unifi
   #     traefik.protocol: http
   #     traefik.port: 9000
-  #     traefik.frontend.rule: Host:unifi.${DOMAIN_NAME}
+  #     traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
   #     traefik.frontend.entryPoint: http
   #     traefik.frontend.redirect.entryPoint: https
   #     traefik.frontend.priority: 1
