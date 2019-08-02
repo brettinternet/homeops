@@ -26,6 +26,8 @@ sudo bash -c ./scripts/wireguard_install.sh
 Setup bastion server, install WireGuard, copy VPN server configuration to client, run `terraform plan` before `apply` to view changes
 
 ```sh
+ssh-keygen # if you haven't already
+
 terraform init
 
 do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wireguard_client_pub_key=$(sudo cat /etc/wireguard/publickey) terraform apply -auto-approve
