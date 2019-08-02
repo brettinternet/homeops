@@ -28,7 +28,9 @@ systemctl start wg-quick@wg0
 Setup bastion server, install WireGuard, copy VPN server configuration to client, run `terraform plan` before `apply` to view changes
 
 ```sh
-do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wireguard_client_pub_key=$(sudo wg show wg0 public-key) terraform apply -var-file=".env" -auto-approve
+terraform init
+
+do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wireguard_client_pub_key=$(sudo cat /etc/wireguard/publickey) terraform apply -auto-approve
 ```
 
 Append client configuration with fields in `wg0-client.conf` from Terraform `scp` operation

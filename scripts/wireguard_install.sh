@@ -24,7 +24,8 @@ fi
 # Firewall
 ufw allow $SERVER_PORT || :
 
-# Configure private/public key
+# Create config file
 (umask 077 && printf "[Interface]\nPrivateKey = " | sudo tee /etc/wireguard/wg0.conf > /dev/null)
 
-SERVER_PUBLIC_KEY=$(wg genkey | sudo tee -a /etc/wireguard/wg0.conf | wg pubkey | sudo tee /etc/wireguard/publickey)
+# Configure private/public key
+wg genkey | sudo tee -a /etc/wireguard/wg0.conf | wg pubkey | sudo tee /etc/wireguard/publickey

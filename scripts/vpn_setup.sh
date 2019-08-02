@@ -4,6 +4,7 @@
 # Args
 PORT=$1
 CLIENT_PUBLIC_KEY=$2
+SERVER_PUBLIC_KEY=$(cat /etc/wireguard/publickey)
 
 # Configuration
 SERVER_PORT=$PORT
