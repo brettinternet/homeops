@@ -18,12 +18,12 @@ SERVER_ADDRESS=$(get_address 1)
 CLIENT_ADDRESS=$(get_address 2)
 
 #### INSTALLATION ####
-source ./wireguard_install.sh
+source wireguard_install.sh
 
 SERVER_PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 CLIENT_PUBLIC_IP=$(printf $SSH_CLIENT | awk '{ print $1}')
 
-SERVER_PUBLIC_KEY=$(cat /etc/wireguard/publickey)
+SERVER_PUBLIC_KEY=$(</etc/wireguard/publickey)
 
 # Append additional configuration
 cat <<EOT >> /etc/wireguard/wg0.conf
