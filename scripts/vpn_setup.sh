@@ -77,6 +77,11 @@ iptables -t nat -A POSTROUTING -s $NETWORK_ADDRESS/24 -o eth0 -j MASQUERADE
 
 # Persist iptable routing across reboots
 apt-get update
+
+# for no input installs
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+
 # won't work without an apt-get update on a droplet!
 apt-get install -y iptables-persistent
 systemctl enable netfilter-persistent
