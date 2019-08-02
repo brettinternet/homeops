@@ -61,7 +61,7 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "remote-exec" {
     inline = [
-      "chown 644 /tmp/vpn_setup.sh /tmp/get_client_qr.sh",
+      "chmod +x /tmp/vpn_setup.sh && chmod +x /tmp/get_client_qr.sh",
       "/tmp/vpn_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
       "/tmp/get_client_qr.sh",
     ]
