@@ -16,13 +16,11 @@ terraform --version
 
 ### VPN Server
 
-Next, install [WireGuard](https://www.wireguard.com/) on the VPN client (the homelab server) and start the WireGuard service to confirm it runs, and to query the public-key for the next step
+Next, install [WireGuard](https://www.wireguard.com/) on the VPN client (the homelab server)
 
 ```sh
 chmod +x scripts/wireguard_install.sh
 sudo bash -c ./scripts/wireguard_install.sh
-
-systemctl start wg-quick@wg0
 ```
 
 Setup bastion server, install WireGuard, copy VPN server configuration to client, run `terraform plan` before `apply` to view changes
@@ -42,7 +40,7 @@ sudo bash -c "cat wg0-client.conf >> /etc/wireguard/wg0.conf"
 Restart client's WireGuard and enable the service
 
 ```sh
-systemctl restart wg-quick@wg0
+systemctl start wg-quick@wg0
 systemctl enable wg-quick@wg0
 ```
 
