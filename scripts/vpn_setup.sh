@@ -18,7 +18,7 @@ SERVER_ADDRESS=$(get_address 1)
 CLIENT_ADDRESS=$(get_address 2)
 
 #### INSTALLATION ####
-source wireguard_install.sh
+source /tmp/wireguard_install.sh
 
 SERVER_PUBLIC_IP=$(dig +short myip.opendns.com @resolver1.opendns.com)
 CLIENT_PUBLIC_IP=$(printf $SSH_CLIENT | awk '{ print $1}')

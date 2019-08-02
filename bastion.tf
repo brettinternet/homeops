@@ -56,13 +56,6 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo \"=========================\"",
-      "ls -a /tmp",
-    ]
-  }
-
-  provisioner "remote-exec" {
-    inline = [
       "chmod +x /tmp/vpn_setup.sh",
       "/tmp/vpn_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
     ]
