@@ -10,9 +10,6 @@ variable "pvt_key" {
 variable "wireguard_port" {
   default = "51820"
 }
-variable "wireguard_client_pub_key" {
-  default = ""
-}
 
 #### Digital Ocean ####
 
@@ -45,25 +42,14 @@ resource "digitalocean_droplet" "bastion" {
   }
 
   provisioner "file" {
-    source      = "scripts/vpn_setup.sh"
-    destination = "/tmp/vpn_setup.sh"
-  }
-
-  provisioner "file" {
-    source      = "scripts/wireguard_install.sh"
-    destination = "/tmp/wireguard_install.sh"
-  }
-
-  provisioner "file" {
-    source      = "scripts/get_client_qr.sh"
-    destination = "/tmp/get_client_qr.sh"
+    source      = "scripts/wireguard"
+    destination = "/root"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod +x /tmp/vpn_setup.sh && chmod +x /tmp/get_client_qr.sh",
-      "/tmp/vpn_setup.sh ${var.wireguard_port} ${var.wireguard_client_pub_key}",
-      "/tmp/get_client_qr.sh",
+      "find $HOME/wireguard/ -type f -iname "*.sh" -exec chmod +x {} \;",
+      "PORT=${var.wireguard_port} $HOME/wireguard/install.sh",
     ]
   }
 
@@ -73,7 +59,14 @@ resource "digitalocean_droplet" "bastion" {
         -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null \
         -i ${var.pvt_key} \
-        root@${digitalocean_droplet.bastion.ipv4_address}:/tmp/wg0-client.conf .
+        root@${digitalocean_droplet.bastion.ipv4_address}:/root/wg0-client.conf \
+        /etc/wireguard/wg0.conf
     CMD
+  }
+
+  provisioner "local-exec" {
+    inline = [
+      "systemctl is-active --quiet wg-quick@wg0 || systemctl start wg-quick@wg0",
+    ]
   }
 }
