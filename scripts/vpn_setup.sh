@@ -11,14 +11,14 @@ CLIENT_PORT=$PORT
 CLIENT2_PORT=$PORT
 
 PORTS_TO_FORWARD=(
-  [80]:80
-  [443]: 443
-  # [53]: 53
-  # [25]: 25
-  # [143]: 143
-  # [587]: 587
-  # [998]: 998
-  # [4190]: 4190
+  [80]=80
+  [443]=443
+  # [53]=53
+  # [25]=25
+  # [143]=143
+  # [587]=587
+  # [998]=998
+  # [4190]=4190
 )
 
 get_address () {
@@ -99,22 +99,13 @@ sysctl net.ipv4.ip_forward=1
 # for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -A POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 # for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -D POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
-
-for KEY in "${!PORTS_TO_FORWARD[@]}"
+for KEY in ${!PORTS_TO_FORWARD[@]}
 do
-  iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"
+  iptables -t nat -A PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_ADDRESS:${PORTS_TO_FORWARD[$KEY]}
   iptables -t nat -A POSTROUTING -p tcp -o wg0 -j SNAT --to-source $SERVER_ADDRESS
 done
 
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-
-for KEY in "${!PORTS_TO_FORWARD[@]}"
-do
-  iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"
-  iptables -t nat -D POSTROUTING -p tcp -o wg0 -j SNAT --to-source $SERVER_ADDRESS
-done
-
-iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 # # Configure firewall rules on the server
 # # Track VPN connection
