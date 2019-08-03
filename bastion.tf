@@ -65,8 +65,6 @@ resource "digitalocean_droplet" "bastion" {
   }
 
   provisioner "local-exec" {
-    inline = [
-      "systemctl is-active --quiet wg-quick@wg0 || systemctl start wg-quick@wg0",
-    ]
+    command = "systemctl is-active --quiet wg-quick@wg0 || systemctl start wg-quick@wg0"
   }
 }
