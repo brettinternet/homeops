@@ -36,7 +36,7 @@ fi
 
 # Install WireGuard tools and module
 if [[ "$OS" = 'ubuntu' ]]; then
-    add-apt-repository ppa:wireguard/wireguard
+    add-apt-repository -y ppa:wireguard/wireguard
     apt-get update
     apt-get install -y wireguard
 elif [[ "$OS" = 'debian' ]]; then
