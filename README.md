@@ -39,7 +39,7 @@ Append client configuration with fields in `wg0-client.conf` from Terraform `scp
 sudo bash -c "cat wg0-client.conf >> /etc/wireguard/wg0.conf"
 ```
 
-Use `sed -i.bak -e '3,10d' /etc/wireguard/wg0.conf` to delete the fields added to `/wg0-client.conf` to reset `wg0.conf` and backup your previous config to `wg0.conf.bak`, or use `sed -e '3,$d' file` to remove line 3 through the last line ([source](https://stackoverflow.com/a/2112496/6817437))
+Use `sed -i.bak -e '3,11d' /etc/wireguard/wg0.conf` to delete the fields added to `/wg0-client.conf` to reset `wg0.conf` and backup your previous config to `wg0.conf.bak`, or use `sed -e '3,$d' file` to remove line 3 through the last line ([source](https://stackoverflow.com/a/2112496/6817437))
 
 Restart client's WireGuard and enable the service
 
@@ -48,7 +48,13 @@ systemctl start wg-quick@wg0
 systemctl enable wg-quick@wg0
 ```
 
-Run the QR script `scripts/get_client_qr.sh` to generate a QR code for a client configuration within the WireGuard app
+#### Other commands
+
+Destroy the bastion server
+
+```sh
+do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform destroy -auto-approve
+```
 
 #### Resources
 

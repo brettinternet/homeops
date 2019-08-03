@@ -38,14 +38,12 @@ CLIENT_PUBLIC_IP=$(printf $SSH_CLIENT | awk '{ print $1}')
 
 SERVER_PUBLIC_KEY=$(</etc/wireguard/publickey)
 CLIENT2_PRIVATE_KEY=$(wg genkey)
-CLIENT2_PUBLIC_KEY=$(wg pubkey < $CLIENT2_PRIVATE_KEY)
+CLIENT2_PUBLIC_KEY=$(echo $CLIENT2_PRIVATE_KEY | wg pubkey)
 
 # Append additional configuration on server
 cat <<EOT >> /etc/wireguard/wg0.conf
 ListenPort = $SERVER_PORT
 Address = $SERVER_ADDRESS/24
-PostUp = for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -A POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-PostDown = for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -D POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 [Peer]
 PublicKey = $CLIENT_PUBLIC_KEY
@@ -56,8 +54,8 @@ PublicKey = $CLIENT2_PUBLIC_KEY
 AllowedIPs = $CLIENT2_ADDRESS/32
 EOT
 
-# Enable IP forwarding
-sysctl net.ipv4.ip_forward=1
+# # Enable IP forwarding
+# sysctl net.ipv4.ip_forward=1
 
 # Start/enable service
 chown -v root:root /etc/wireguard/wg0.conf
@@ -69,7 +67,7 @@ systemctl enable wg-quick@wg0.service
 # Provide configuration appendage for client
 # Note: keep the connection alive since hosted content is behind NAT
 # source: https://www.wireguard.com/quickstart/#nat-and-firewall-traversal-persistence
-cat <<EOT >> /tmp/wg0-client.conf
+cat <<EOT > /tmp/wg0-client.conf
 ListenPort = $CLIENT_PORT
 Address = $CLIENT_ADDRESS/24
 DNS = $SERVER_ADDRESS
@@ -95,8 +93,28 @@ AllowedIPs = 0.0.0.0/0
 Endpoint = $SERVER_PUBLIC_IP:$SERVER_PORT
 EOT
 
-# # Enable IP forwarding
-# sysctl net.ipv4.ip_forward=1
+# Enable IP forwarding
+sysctl net.ipv4.ip_forward=1
+
+# for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -A POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+# for KEY in "${!PORTS_TO_FORWARD[@]}"; do iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"; iptables -t nat -D POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS; done; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+
+for KEY in "${!PORTS_TO_FORWARD[@]}"
+do
+  iptables -t nat -A PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"
+  iptables -t nat -A POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS
+done
+
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+for KEY in "${!PORTS_TO_FORWARD[@]}"
+do
+  iptables -t nat -D PREROUTING -p tcp --dport "$KEY" -j DNAT --to-destination $CLIENT_ADDRESS:"${PORTS_TO_FORWARD[$KEY]}"
+  iptables -t nat -D POSTROUTING -p tcp -o wg0 -j DNAT --to-destination $SERVER_ADDRESS
+done
+
+iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 # # Configure firewall rules on the server
 # # Track VPN connection
@@ -116,14 +134,14 @@ EOT
 # # Set up nat 
 # iptables -t nat -A POSTROUTING -s $NETWORK_ADDRESS/24 -o eth0 -j MASQUERADE
 
-# # Persist iptable routing across reboots
-# apt-get update
+# next installs won't work without an apt-get update on a droplet!
+apt-get update
 
-# # for no input installs - source: https://gist.github.com/alonisser/a2c19f5362c2091ac1e7
-# echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-# echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+# for no input installs - source: https://gist.github.com/alonisser/a2c19f5362c2091ac1e7
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 
-# # won't work without an apt-get update on a droplet!
-# apt-get install -y iptables-persistent
-# systemctl enable netfilter-persistent
-# netfilter-persistent save
+# Persist iptable routing across reboots
+apt-get install -y iptables-persistent
+systemctl enable netfilter-persistent
+netfilter-persistent save
