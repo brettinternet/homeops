@@ -20,7 +20,7 @@ docker-compose down
 
 - [ ] Handle the server configuration with Ansible instead of scripts
 
-### Terraform
+### Install Terraform
 
 First, install Terraform by pulling the [latest download here](https://www.terraform.io/downloads.html) with `wget`
 
@@ -34,13 +34,13 @@ mv terraform /usr/local/bin
 terraform --version
 ```
 
-### VPN Server
+### Set Up VPN Server
 
 Next, install [WireGuard](https://www.wireguard.com/) on the VPN client (the homelab server)
 
 ```sh
-chmod +x scripts/wireguard_install.sh
-sudo bash -c ./scripts/wireguard_install.sh
+sudo chmod +x scripts/wireguard/install.sh
+sudo bash -c ./scripts/wireguard/install.sh
 ```
 
 Setup bastion server, install WireGuard, copy VPN server configuration to client, run `terraform plan` before `apply` to view changes
@@ -50,22 +50,12 @@ ssh-keygen # if you haven't already
 
 terraform init
 
-do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} TF_VAR_wireguard_client_pub_key=$(sudo cat /etc/wireguard/publickey) terraform apply -auto-approve
+do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform apply -auto-approve
 ```
 
-Append client configuration with fields in `wg0-client.conf` from Terraform `scp` operation
+`wg-quick@wg0` service should have started, now just enable the service
 
 ```sh
-sudo bash -c "cat wg0-client.conf >> /etc/wireguard/wg0.conf"
-```
-
-Use `sed -i.bak -e '3,11d' /etc/wireguard/wg0.conf` to delete the fields added to `/wg0-client.conf` to reset `wg0.conf` and backup your previous config to `wg0.conf.bak`, or use `sed -e '3,$d' file` to remove line 3 through the last line ([source](https://stackoverflow.com/a/2112496/6817437))
-
-Restart client's WireGuard and enable the service
-wdw
-
-```sh
-systemctl start wg-quick@wg0
 systemctl enable wg-quick@wg0
 ```
 
