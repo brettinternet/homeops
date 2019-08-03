@@ -48,7 +48,7 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "remote-exec" {
     inline = [
-      "find $HOME/wireguard/ -type f -iname "*.sh" -exec chmod +x {} \;",
+      "find $HOME/wireguard/ -type f -iname \"*.sh\" -exec chmod +x {} \;",
       "PORT=${var.wireguard_port} $HOME/wireguard/install.sh",
     ]
   }
