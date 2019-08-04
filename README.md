@@ -18,8 +18,6 @@ docker-compose down
 
 ## Bastion Server
 
-- [ ] Handle the server configuration with Ansible instead of scripts
-
 ### Install Terraform
 
 First, install Terraform by pulling the [latest download here](https://www.terraform.io/downloads.html) with `wget`
@@ -79,4 +77,6 @@ do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform 
 
 ## Todo
 
+- [ ] Handle the server configuration with Ansible instead of scripts via Terraform
+- [ ] Automatically configure DNS records for subdomains ([Cloudflare API](https://api.cloudflare.com/#dns-records-for-a-zone-update-dns-record))
 - [ ] Install and setup [unbound](https://wiki.archlinux.org/index.php/unbound) ([docker](https://github.com/klutchell/unbound/blob/master/Dockerfile) [discussion](https://www.reddit.com/r/pihole/comments/ah0rx4/awesome_unbound_docker_image_for_an_upstream_dns/))
