@@ -270,6 +270,7 @@ services:
       - ${APPDATA_DIR}/codeserver:/config
     ports:
       - ${NETWORK_BIND_ADDR:-127.0.0.1}:8444:8443
+    labels:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: codeserver
