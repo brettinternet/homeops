@@ -3,6 +3,7 @@ version: "3.7"
 
 networks:
   traefik:
+    # external:
     name: traefik
     attachable: true
 
@@ -54,12 +55,21 @@ services:
       traefik.protocol: http
       traefik.port: 8080
       traefik.frontend.rule: Host:traefik.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
-      # traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: traefik.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      traefik.frontend.headers.frameDeny: true
       traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # traefik.frontend.auth.forward.address: http://oauth:4181
+      # traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      # traefik.frontend.auth.forward.trustForwardHeader: true
 
   plex:
     image: plexinc/pms-docker
@@ -70,6 +80,8 @@ services:
     environment:
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      - HOSTNAME=${PLEX_HOSTNAME}
+      - ADVERTISE_IP=http://127.0.0.1:32400,https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${SOTRAGE_DIR}/music:/data/Music
@@ -94,10 +106,16 @@ services:
       traefik.protocol: http
       traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: plex.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-ombi
   ombi:
@@ -122,10 +140,16 @@ services:
       traefik.protocol: http
       traefik.port: 3579
       traefik.frontend.rule: Host:ombi.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: ombi.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-nzbget
   nzbget:
@@ -149,10 +173,16 @@ services:
       traefik.protocol: http
       traefik.port: 6788
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-sonarr
   sonarr:
@@ -178,10 +208,16 @@ services:
       traefik.protocol: http
       traefik.port: 8989
       traefik.frontend.rule: Host:sonarr.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: sonarr.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-radarr
   radarr:
@@ -207,14 +243,20 @@ services:
       traefik.protocol: http
       traefik.port: 7878
       traefik.frontend.rule: Host:radarr.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: radarr.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
-  #
+  # https://github.com/linuxserver/docker-code-server
   code-server:
-    #
+    # https://hub.docker.com/r/linuxserver/code-server/
     image: linuxserver/code-server
     container_name: codeserver
     restart: unless-stopped
@@ -234,10 +276,16 @@ services:
       traefik.protocol: http
       traefik.port: 8444
       traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: code.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
 
   # https://github.com/portainer/portainer
   portainer:
@@ -245,6 +293,9 @@ services:
     image: portainer/portainer
     container_name: portainer
     restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    environment:
+      - TZ=${TZ}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/portainer:/data
@@ -257,21 +308,33 @@ services:
       traefik.protocol: http
       traefik.port: 9000
       traefik.frontend.rule: Host:portainer.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: portainer.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # traefik.frontend.auth.forward.address: http://oauth:4181
 
   # https://github.com/containrrr/watchtower
   watchtower:
     # https://hub.docker.com/r/containrrr/watchtower
     image: containrrr/watchtower
     container_name: watchtower
+    restart: unless-stopped
     # TODO: add notifications - https://containrrr.github.io/watchtower/notifications/
+    environment:
+      - TZ=${TZ}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/watchtower/config.json:/config.json
-    command: --interval 900 #15 minutes
+    command: --schedule "0 0 4 * * *" --cleanup
+    # command: --interval 900 #15 minutes
 
   # https://github.com/linuxserver/docker-unifi-controller
   unifi:
@@ -302,7 +365,15 @@ services:
       traefik.protocol: http
       traefik.port: 8443
       traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: unifi.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # traefik.frontend.auth.forward.address: http://oauth:4181
