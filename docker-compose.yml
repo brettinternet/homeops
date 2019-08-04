@@ -48,6 +48,8 @@ services:
       - "--docker.watch"
       - "--docker.exposedbydefault=false"
       - "--retry"
+      - "--retry.attempts=2"
+      - "--forwardingTimeouts.dialTimeout=1s"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
