@@ -65,6 +65,6 @@ resource "digitalocean_droplet" "bastion" {
   }
 
   provisioner "local-exec" {
-    command = "systemctl is-active --quiet wg-quick@wg0 || systemctl start wg-quick@wg0"
+    command = "sudo bash -c 'systemctl is-active --quiet wg-quick@wg0 || systemctl start wg-quick@wg0'"
   }
 }

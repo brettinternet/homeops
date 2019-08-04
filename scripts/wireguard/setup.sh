@@ -110,11 +110,11 @@ PostDown = iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6t
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY
-AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
+AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128
 
 [Peer]
 PublicKey = $MOBILE_PUB_KEY
-AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
+AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128
 EOT
 
 # Add client configuration
