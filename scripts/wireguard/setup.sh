@@ -1,13 +1,15 @@
 #!/bin/bash
 
 if [ "$EUID" -ne 0 ]; then
-    echo "You need to run this script as root"
+    echo "Error: You need to run this script as root"
     exit 1
 fi
 
 HOME="/root"
+CURRENT_DIR="$HOME/wireguard"
+
 : ${PORT:=1194}
-: ${INSTALL_SCRIPT_PATH:="$HOME/wireguard/install.sh"}
+: ${INSTALL_SCRIPT_PATH:="$CURRENT_DIR/install.sh"}
 
 ##### INSTALL #####
 
@@ -30,8 +32,6 @@ SERVER_PUB_IPV4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1
 # SERVER_PUB_IPV6=$(ip -6 addr)
 SERVER_PUB_IP=$SERVER_PUB_IPV4
 
-# Detect public interface and pre-fill for the user
-SERVER_PUB_NIC="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 SERVER_WG_NIC="wg0"
 
 #### ADDRESSES ####
@@ -81,8 +81,8 @@ else
   SERVER_ENDPOINT="$SERVER_PUB_IP:$SERVER_PORT"
 fi
 
-CLIENT_CONFIG_PATH="$HOME/wireguard/$SERVER_WG_NIC-client.conf"
-MOBILE_CONFIG_PATH="$HOME/wireguard/$SERVER_WG_NIC-mobile.conf"
+CLIENT_CONFIG_PATH="$CURRENT_DIR/$SERVER_WG_NIC-client.conf"
+MOBILE_CONFIG_PATH="$CURRENT_DIR/$SERVER_WG_NIC-mobile.conf"
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
 mkdir /etc/wireguard > /dev/null 2>&1
@@ -102,11 +102,19 @@ MOBILE_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
 # Add server configuration
 cat <<EOT > /etc/wireguard/$SERVER_WG_NIC.conf
 [Interface]
+PrivateKey = $SERVER_PRIV_KEY
 Address = $SERVER_WG_IPV4/24,$SERVER_WG_IPV6/64
 ListenPort = $SERVER_PORT
-PrivateKey = $SERVER_PRIV_KEY
-PostUp = iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-PostDown = iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+PostUp = bash CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
+  CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
+  SERVER_WG_IPV4=$SERVER_WG_IPV4 \
+  SERVER_WG_IPV6=$SERVER_WG_IPV6 \
+  $CURRENT_DIR/postup.sh
+PostDown = bash CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
+  CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
+  SERVER_WG_IPV4=$SERVER_WG_IPV4 \
+  SERVER_WG_IPV6=$SERVER_WG_IPV6 \
+  $CURRENT_DIR/postdown.sh
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY
@@ -161,7 +169,7 @@ systemctl enable "wg-quick@$SERVER_WG_NIC"
 
 ##### GENERATE QR CODE FOR MOBILE CONFIGURATIONM #####
 
-MOBILE_QR_SCRIPT_PATH=${3:-$HOME/wireguard/mobile_qr.sh}
+MOBILE_QR_SCRIPT_PATH=${3:-"$CURRENT_DIR/mobile_qr.sh"}
 
 if [ -f $MOBILE_QR_SCRIPT_PATH ]; then
   MOBILE_CONFIG_PATH=$MOBILE_CONFIG_PATH source $MOBILE_QR_SCRIPT_PATH

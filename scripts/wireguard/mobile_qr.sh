@@ -1,12 +1,12 @@
 #!/bin/bash
 
-SERVER_WG_NIC="wg0"
-: ${MOBILE_CONFIG_PATH:=$HOME/$SERVER_WG_NIC-mobile.conf}
-
 if [ "$EUID" -ne 0 ]; then
-    echo "You need to run this script as root"
+    echo "Error: You need to run this script as root"
     exit 1
 fi
+
+SERVER_WG_NIC="wg0"
+: ${MOBILE_CONFIG_PATH:=$HOME/$SERVER_WG_NIC-mobile.conf}
 
 # Check OS version
 if [[ -e /etc/debian_version ]]; then
@@ -19,7 +19,7 @@ elif [[ -e /etc/centos-release ]]; then
 elif [[ -e /etc/arch-release ]]; then
     OS=arch
 else
-    echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS or Arch Linux system"
+    echo "Error: Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS or Arch Linux system"
     exit 1
 fi
 
