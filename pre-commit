@@ -3,6 +3,7 @@
 # install with:
 #   ln -s ../../pre-commit .git/hooks/pre-commit
 
-# update env.sample by stripping values from .env
+# Ensures .env.example is always accurate
+# updates env.sample by stripping values from .env
 sed -r "/^[[:space:]]*#/!s|([^=]+=).*|\1|g" ".env" > "env.sample"
 git add "env.sample"
