@@ -6,6 +6,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 HOME="/root"
+# We only move the `wireguard` subdirectory to the VPS via Terraform
 CURRENT_DIR="$HOME/wireguard"
 
 : ${PORT:=1194}
@@ -99,22 +100,28 @@ CLIENT_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
 MOBILE_PRIV_KEY=$(wg genkey)
 MOBILE_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
 
+# One method to persist iptable configuration
+# is to script them with PostUp (and reset with PostDown)
+# another way is establish in `scripts/wireguard/routing.sh`
+# where we can setup iptable rules to persist
+# independently of WireGuard
+
 # Add server configuration
 cat <<EOT > /etc/wireguard/$SERVER_WG_NIC.conf
 [Interface]
 PrivateKey = $SERVER_PRIV_KEY
 Address = $SERVER_WG_IPV4/24,$SERVER_WG_IPV6/64
 ListenPort = $SERVER_PORT
-PostUp = bash CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
-  CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
-  SERVER_WG_IPV4=$SERVER_WG_IPV4 \
-  SERVER_WG_IPV6=$SERVER_WG_IPV6 \
-  $CURRENT_DIR/postup.sh
-PostDown = bash CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
-  CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
-  SERVER_WG_IPV4=$SERVER_WG_IPV4 \
-  SERVER_WG_IPV6=$SERVER_WG_IPV6 \
-  $CURRENT_DIR/postdown.sh
+PostUp = CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
+CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
+SERVER_WG_IPV4=$SERVER_WG_IPV4 \
+SERVER_WG_IPV6=$SERVER_WG_IPV6 \
+bash $CURRENT_DIR/postup.sh
+PostDown = CLIENT_WG_IPV4=$CLIENT_WG_IPV4 \
+CLIENT_WG_IPV6=$CLIENT_WG_IPV6 \
+SERVER_WG_IPV4=$SERVER_WG_IPV4 \
+SERVER_WG_IPV6=$SERVER_WG_IPV6 \
+bash $CURRENT_DIR/postdown.sh
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY
