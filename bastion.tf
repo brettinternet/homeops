@@ -55,7 +55,7 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "local-exec" {
     command = <<CMD
-      scp \
+      sudo scp \
         -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null \
         -i ${var.pvt_key} \
