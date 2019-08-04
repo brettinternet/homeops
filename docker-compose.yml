@@ -5,7 +5,6 @@ networks:
   traefik:
     # external:
     name: traefik
-    attachable: true
 
 services:
   traefik:
@@ -89,7 +88,7 @@ services:
       # - ${STORAGE_DIR}/tmp/transcode:/transcode
       - /tmp:/transcode
     ports:
-      # Plex ports - source: https://www.techjunkie.com/what-port-does-plex-media-server-use-to-stream/
+      # Plex ports - source: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
       - "${NETWORK_BIND_ADDR:-127.0.0.1}:32400:32400" # Plex Media Server
       - "3005:3005" # Plex Companion
       - "8324:8324" # Roku via Plex Companion
@@ -98,6 +97,7 @@ services:
       - "32410:32410/udp" # network discovery
       - "32412:32412/udp" # network discovery
       - "32413:32413/udp" # network discovery
+      - "32414:32414/udp" # network discovery
     labels:
       traefik.enable: true
       traefik.docker.network: traefik
@@ -154,6 +154,8 @@ services:
     image: linuxserver/nzbget
     container_name: nzbget
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
@@ -186,6 +188,8 @@ services:
     image: linuxserver/sonarr
     container_name: sonarr
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
@@ -220,6 +224,8 @@ services:
     image: linuxserver/radarr
     container_name: radarr
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
@@ -254,6 +260,8 @@ services:
     image: linuxserver/code-server
     container_name: codeserver
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
@@ -287,6 +295,8 @@ services:
     image: portainer/portainer
     container_name: portainer
     restart: unless-stopped
+    networks:
+      - traefik
     command: -H unix:///var/run/docker.sock
     environment:
       - TZ=${TZ}
@@ -335,6 +345,8 @@ services:
     image: linuxserver/unifi-controller
     container_name: unifi
     restart: unless-stopped
+    networks:
+      - traefik
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
