@@ -48,8 +48,8 @@ resource "digitalocean_droplet" "bastion" {
 
   provisioner "remote-exec" {
     inline = [
-      "find $HOME/wireguard/ -type f -iname \"*.sh\" -exec chmod +x {} \\;",
-      "PORT=${var.wireguard_port} $HOME/wireguard/install.sh",
+      "find /root/wireguard/ -type f -iname \"*.sh\" -exec chmod +x {} \\;",
+      "PORT=${var.wireguard_port} /root/wireguard/install.sh",
     ]
   }
 
@@ -59,7 +59,7 @@ resource "digitalocean_droplet" "bastion" {
         -o StrictHostKeyChecking=no \
         -o UserKnownHostsFile=/dev/null \
         -i ${var.pvt_key} \
-        root@${digitalocean_droplet.bastion.ipv4_address}:/root/wg0-client.conf \
+        root@${digitalocean_droplet.bastion.ipv4_address}:/root/wireguard/wg0-client.conf \
         /etc/wireguard/wg0.conf
     CMD
   }
