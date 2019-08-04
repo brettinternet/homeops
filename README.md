@@ -65,6 +65,12 @@ Destroy the bastion server
 do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform destroy -auto-approve
 ```
 
+You may consider debugging your homelab and VPN traffic forwarding with [this simple container](https://github.com/containous/whoami)
+
+```sh
+docker run --rm -it -p 10.0.0.2:80:80 --name iamfoo containous/whoami
+```
+
 #### Resources
 
 - [Interactive WireGuard install script](https://github.com/angristan/wireguard-install)
