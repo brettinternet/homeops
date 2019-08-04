@@ -296,7 +296,7 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-code-server
-  code-server:
+  codeserver:
     # https://hub.docker.com/r/linuxserver/code-server/
     image: linuxserver/code-server
     container_name: codeserver
