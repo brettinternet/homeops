@@ -84,10 +84,10 @@ services:
       - ADVERTISE_IP=http://127.0.0.1:32400,https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
-      - ${SOTRAGE_DIR}/music:/data/Music
-      - ${SOTRAGE_DIR}/movies:/data/Movies
-      - ${SOTRAGE_DIR}/tv:/data/TV
-      # - ${SOTRAGE_DIR}/tmp/transcode:/transcode
+      - ${STORAGE_DIR}/music:/data/Music
+      - ${STORAGE_DIR}/movies:/data/Movies
+      - ${STORAGE_DIR}/tv:/data/TV
+      # - ${STORAGE_DIR}/tmp/transcode:/transcode
       - /tmp:/transcode
     ports:
       # Plex ports - source: https://www.techjunkie.com/what-port-does-plex-media-server-use-to-stream/
