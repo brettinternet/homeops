@@ -52,7 +52,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: traefik
-      traefik.protocol: http
       traefik.port: 8080
       traefik.frontend.rule: Host:traefik.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -103,7 +102,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: plex
-      traefik.protocol: http
       traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -137,15 +135,14 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: ombi
-      traefik.protocol: http
       traefik.port: 3579
-      traefik.frontend.rule: Host:ombi.${ROOT_DOMAIN}
+      traefik.frontend.rule: Host:request.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: ombi.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLHost: request.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
@@ -170,7 +167,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: nzbget
-      traefik.protocol: http
       traefik.port: 6788
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -205,7 +201,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: sonarr
-      traefik.protocol: http
       traefik.port: 8989
       traefik.frontend.rule: Host:sonarr.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -240,7 +235,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: radarr
-      traefik.protocol: http
       traefik.port: 7878
       traefik.frontend.rule: Host:radarr.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -274,7 +268,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: codeserver
-      traefik.protocol: http
       traefik.port: 8444
       traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -306,7 +299,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: portainer
-      traefik.protocol: http
       traefik.port: 9000
       traefik.frontend.rule: Host:portainer.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -363,7 +355,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik
       traefik.backend: unifi
-      traefik.protocol: http
       traefik.port: 8443
       traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
