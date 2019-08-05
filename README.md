@@ -1,5 +1,12 @@
 ## Container Orchestration
 
+### Setup
+
+```sh
+docker network create -d bridge -o \
+  com.docker.network.bridge.host_binding_ipv4=10.0.0.2 traefik_proxy
+```
+
 ### Run
 
 ```sh
