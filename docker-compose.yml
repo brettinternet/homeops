@@ -108,16 +108,18 @@ services:
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
 
+  # https://github.com/plexinc/pms-docker
   plex:
+    # https://hub.docker.com/r/plexinc/pms-docker
     image: plexinc/pms-docker
     container_name: plex
+    hostname: ${PLEX_HOSTNAME}
     restart: unless-stopped
     networks:
       - traefik_proxy
     environment:
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
-      - HOSTNAME=${PLEX_HOSTNAME}
       - ADVERTISE_IP=http://0.0.0.0:32400,https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
