@@ -122,7 +122,7 @@ services:
       - PLEX_GID=${PGID}
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
-      - ADVERTISE_IP=http://0.0.0.0:32400,https://plex.${ROOT_DOMAIN}:443
+      - ADVERTISE_IP="https://plex.${ROOT_DOMAIN}:443"
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
