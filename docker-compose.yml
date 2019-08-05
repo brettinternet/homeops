@@ -130,7 +130,7 @@ services:
       - /tmp:/transcode
     ports:
       # Plex ports - source: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
-      - "32400:32400" # Plex Media Server
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:32400:32400" # Plex Media Server
       - "3005:3005" # Plex Companion
       - "8324:8324" # Roku via Plex Companion
       - "32469:32649" # Plex DLNA Server
@@ -143,7 +143,8 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: plex
-      traefik.port: 32400
+      traefik.docker.usebindportip: true
+      # traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
