@@ -20,7 +20,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APPDATA_DIR}/traefik:/etc/traefik:rw
     ports:
-      # - "8181:8080" # local access
       - "${NETWORK_BIND_ADDR:-0.0.0.0}:80:80"
       - "${NETWORK_BIND_ADDR:-0.0.0.0}:443:443"
     command:
@@ -221,6 +220,9 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
 
   # https://github.com/linuxserver/docker-nzbget
   nzbget:
@@ -242,7 +244,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
-      traefik.docker.usebindportip: true
+      traefik.docker.usebindportip: true # because we mapped specific port
       traefik.backend: nzbget
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -421,8 +423,10 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
-      # traefik.frontend.auth.forward.address: http://oauth:4181
-  #
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
+
   # https://github.com/linuxserver/docker-code-server
   codeserver:
     # https://hub.docker.com/r/linuxserver/code-server/
@@ -439,7 +443,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/codeserver:/config
     ports:
-      - "8442:8443"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:8442:8443"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -457,7 +461,6 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
-      # Use Oauth instead of container's password env var for better security
-      # traefik.frontend.auth.forward.address: http://oauth:4181
-      # traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
-      # traefik.frontend.auth.forward.trustForwardHeader: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
