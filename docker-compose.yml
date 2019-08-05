@@ -13,16 +13,16 @@ services:
     networks:
       - traefik_proxy
     environment:
-      TZ: ${TZ}
-      CLOUDFLARE_EMAIL: ${CLOUDFLARE_EMAIL}
-      CLOUDFLARE_API_KEY: ${CLOUDFLARE_API_KEY}
+      - TZ=${TZ}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APPDATA_DIR}/traefik:/etc/traefik:rw
     ports:
       # - "8181:8080" # local access
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:80:80"
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:443:443"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:80:80"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:443:443"
     command:
       - "--logLevel=INFO"
       - "--api"
@@ -119,7 +119,7 @@ services:
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
       - HOSTNAME=${PLEX_HOSTNAME}
-      - ADVERTISE_IP=http://127.0.0.1:32400,https://plex.${ROOT_DOMAIN}:443
+      - ADVERTISE_IP=http://0.0.0.0:32400,https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
@@ -129,7 +129,7 @@ services:
       - /tmp:/transcode
     ports:
       # Plex ports - source: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:32400:32400" # Plex Media Server
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:32400:32400" # Plex Media Server
       - "3005:3005" # Plex Companion
       - "8324:8324" # Roku via Plex Companion
       - "32469:32649" # Plex DLNA Server
@@ -170,7 +170,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/ombi:/config
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:3579:3579"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:3579:3579"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -204,7 +204,7 @@ services:
       - ${APPDATA_DIR}/tautulli:/config
       - ${APPDATA_DIR}/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8181:8181"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:8181:8181"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -238,33 +238,24 @@ services:
       - ${APPDATA_DIR}/nzbget:/config
       - ${STORAGE_DIR}/downloads:/downloads
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:6788:6789"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:6788:6789"
     labels:
       traefik.enable: true
-      traefik.docker.network: traefik
+      traefik.docker.network: traefik_proxy
+      traefik.docker.usebindportip: true
       traefik.backend: nzbget
-      traefik.protocol: http
-      traefik.port: 6788
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
-      traefik.frontend.entryPoint: http
-      traefik.frontend.redirect.entryPoint: https
-      traefik.frontend.priority: 1
-      traefik.frontend.passHostHeader: true
-      # traefik.enable: true
-      # traefik.docker.network: traefik_proxy
-      # traefik.backend: nzbget
-      # traefik.port: 6788
-      # traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
-      # traefik.frontend.headers.SSLRedirect: true
-      # traefik.frontend.headers.STSSeconds: 315360000
-      # traefik.frontend.headers.browserXSSFilter: true
-      # traefik.frontend.headers.contentTypeNosniff: true
-      # traefik.frontend.headers.forceSTSHeader: true
-      # traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
-      # traefik.frontend.headers.SSLForceHost: true
-      # traefik.frontend.headers.STSIncludeSubdomains: true
-      # traefik.frontend.headers.STSPreload: true
-      # traefik.frontend.headers.frameDeny: true
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
 
   # https://github.com/linuxserver/docker-sonarr
   sonarr:
@@ -284,7 +275,7 @@ services:
       - ${STORAGE_DIR}/tv:/tv
       - ${STORAGE_DIR}/downloads/complete/tv:/downloads
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8989:8989"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:8989:8989"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -320,7 +311,7 @@ services:
       - ${STORAGE_DIR}/movies:/movies
       - ${STORAGE_DIR}/downloads/complete/movies:/downloads
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:7878:7878"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:7878:7878"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -353,7 +344,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/portainer:/data
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:9000:9000"
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:9000:9000"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -409,7 +400,7 @@ services:
       - "10001:10001/udp" # AP discovery
       - "8080:8080" # Unifi communication port
       - "8081:8081" # Unifi communication port
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8443:8443" # UI
+      - "${NETWORK_BIND_ADDR:-0.0.0.0}:8443:8443" # UI
       - "8843:8843" # Unifi communication port
       - "8880:8880" # Unifi communication port
       - "6789:6789" # For throughput test
@@ -418,6 +409,7 @@ services:
       traefik.docker.network: traefik_proxy
       traefik.backend: unifi
       traefik.port: 8443
+      traefik.protocol: https
       traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
@@ -431,7 +423,6 @@ services:
       traefik.frontend.headers.frameDeny: true
       # traefik.frontend.auth.forward.address: http://oauth:4181
   #
-  #### BAD GATEWAY ISSUE (via Traefik only) ####
   # https://github.com/linuxserver/docker-code-server
   codeserver:
     # https://hub.docker.com/r/linuxserver/code-server/
@@ -448,12 +439,13 @@ services:
     volumes:
       - ${APPDATA_DIR}/codeserver:/config
     ports:
-      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8442:8443"
+      - "8442:8443"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
+      # https://docs.traefik.io/configuration/backends/docker/#usebindportip
+      traefik.docker.usebindportip: true
       traefik.backend: codeserver
-      traefik.port: 8442
       traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
