@@ -241,20 +241,30 @@ services:
       - "${NETWORK_BIND_ADDR:-127.0.0.1}:6788:6789"
     labels:
       traefik.enable: true
-      traefik.docker.network: traefik_proxy
+      traefik.docker.network: traefik
       traefik.backend: nzbget
+      traefik.protocol: http
       traefik.port: 6788
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLRedirect: true
-      traefik.frontend.headers.STSSeconds: 315360000
-      traefik.frontend.headers.browserXSSFilter: true
-      traefik.frontend.headers.contentTypeNosniff: true
-      traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
-      traefik.frontend.headers.STSIncludeSubdomains: true
-      traefik.frontend.headers.STSPreload: true
-      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.entryPoint: http
+      traefik.frontend.redirect.entryPoint: https
+      traefik.frontend.priority: 1
+      traefik.frontend.passHostHeader: true
+      # traefik.enable: true
+      # traefik.docker.network: traefik_proxy
+      # traefik.backend: nzbget
+      # traefik.port: 6788
+      # traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
+      # traefik.frontend.headers.SSLRedirect: true
+      # traefik.frontend.headers.STSSeconds: 315360000
+      # traefik.frontend.headers.browserXSSFilter: true
+      # traefik.frontend.headers.contentTypeNosniff: true
+      # traefik.frontend.headers.forceSTSHeader: true
+      # traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
+      # traefik.frontend.headers.SSLForceHost: true
+      # traefik.frontend.headers.STSIncludeSubdomains: true
+      # traefik.frontend.headers.STSPreload: true
+      # traefik.frontend.headers.frameDeny: true
 
   # https://github.com/linuxserver/docker-sonarr
   sonarr:
