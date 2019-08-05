@@ -111,16 +111,20 @@ services:
   # https://github.com/plexinc/pms-docker
   plex:
     # https://hub.docker.com/r/plexinc/pms-docker
-    image: plexinc/pms-docker
+    image: linuxserver/plex
     container_name: plex
     hostname: ${PLEX_HOSTNAME}
     restart: unless-stopped
     networks:
       - traefik_proxy
     environment:
+      # - PLEX_UID=${PUID}
+      # - PLEX_GID=${PGID}
+      - PGID=${PGID}
+      - PUID=${PUID}
       - TZ=${TZ}
-      - PLEX_CLAIM=${PLEX_CLAIM_CODE}
-      - ADVERTISE_IP=http://0.0.0.0:32400,https://plex.${ROOT_DOMAIN}:443
+      # - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      # - ADVERTISE_IP=http://:32400
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
@@ -143,8 +147,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: plex
-      traefik.docker.usebindportip: true
-      # traefik.port: 32400
+      traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
