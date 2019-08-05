@@ -21,8 +21,8 @@ services:
       - ${APPDATA_DIR}/traefik:/etc/traefik:rw
     ports:
       # - "8181:8080" # local access
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:80:80
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:443:443
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:80:80"
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:443:443"
     command:
       - "--logLevel=INFO"
       - "--api"
@@ -47,8 +47,6 @@ services:
       - "--docker.watch"
       - "--docker.exposedbydefault=false"
       - "--retry"
-      - "--retry.attempts=2"
-      - "--forwardingTimeouts.dialTimeout=1s"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -172,7 +170,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/ombi:/config
     ports:
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:3579:3579
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:3579:3579"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -206,7 +204,7 @@ services:
       - ${APPDATA_DIR}/tautulli:/config
       - ${APPDATA_DIR}/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro
     ports:
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:8181:8181
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8181:8181"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -240,7 +238,7 @@ services:
       - ${APPDATA_DIR}/nzbget:/config
       - ${STORAGE_DIR}/downloads:/downloads
     ports:
-      - 6788:6789
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:6788:6789"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -276,7 +274,7 @@ services:
       - ${STORAGE_DIR}/tv:/tv
       - ${STORAGE_DIR}/downloads/complete/tv:/downloads
     ports:
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:8989:8989
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8989:8989"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -312,7 +310,7 @@ services:
       - ${STORAGE_DIR}/movies:/movies
       - ${STORAGE_DIR}/downloads/complete/movies:/downloads
     ports:
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:7878:7878
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:7878:7878"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -345,7 +343,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/portainer:/data
     ports:
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:9000:9000
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:9000:9000"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -397,14 +395,14 @@ services:
     volumes:
       - ${APPDATA_DIR}/unifi:/config
     ports:
-      - 3478:3478/udp # Unifi communication port
-      - 10001:10001/udp # AP discovery
-      - 8080:8080 # Unifi communication port
-      - 8081:8081 # Unifi communication port
-      - ${NETWORK_BIND_ADDR:-127.0.0.1}:8443:8443 # UI
-      - 8843:8843 # Unifi communication port
-      - 8880:8880 # Unifi communication port
-      - 6789:6789 # For throughput test
+      - "3478:3478/udp" # Unifi communication port
+      - "10001:10001/udp" # AP discovery
+      - "8080:8080" # Unifi communication port
+      - "8081:8081" # Unifi communication port
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8443:8443" # UI
+      - "8843:8843" # Unifi communication port
+      - "8880:8880" # Unifi communication port
+      - "6789:6789" # For throughput test
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -424,40 +422,40 @@ services:
       # traefik.frontend.auth.forward.address: http://oauth:4181
   #
   #### BAD GATEWAY ISSUE (via Traefik only) ####
-  # # https://github.com/linuxserver/docker-code-server
-  # codeserver:
-  #   # https://hub.docker.com/r/linuxserver/code-server/
-  #   image: linuxserver/code-server
-  #   container_name: codeserver
-  #   restart: unless-stopped
-  #   networks:
-  #     - traefik_proxy
-  #   environment:
-  #     - PGID=${PGID}
-  #     - PUID=${PUID}
-  #     - TZ=${TZ}
-  #     - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
-  #   volumes:
-  #     - ${APPDATA_DIR}/codeserver:/config
-  #   ports:
-  #     - ${NETWORK_BIND_ADDR:-127.0.0.1}:8442:8443
-  #   labels:
-  #     traefik.enable: true
-  #     traefik.docker.network: traefik_proxy
-  #     traefik.backend: codeserver
-  #     traefik.port: 8442
-  #     traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
-  #     traefik.frontend.headers.SSLRedirect: true
-  #     traefik.frontend.headers.STSSeconds: 315360000
-  #     traefik.frontend.headers.browserXSSFilter: true
-  #     traefik.frontend.headers.contentTypeNosniff: true
-  #     traefik.frontend.headers.forceSTSHeader: true
-  #     traefik.frontend.headers.SSLHost: code.${ROOT_DOMAIN}
-  #     traefik.frontend.headers.SSLForceHost: true
-  #     traefik.frontend.headers.STSIncludeSubdomains: true
-  #     traefik.frontend.headers.STSPreload: true
-  #     traefik.frontend.headers.frameDeny: true
-  #     # Use Oauth instead of container's password env var for better security
-  #     # traefik.frontend.auth.forward.address: http://oauth:4181
-  #     # traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
-  #     # traefik.frontend.auth.forward.trustForwardHeader: true
+  # https://github.com/linuxserver/docker-code-server
+  codeserver:
+    # https://hub.docker.com/r/linuxserver/code-server/
+    image: linuxserver/code-server
+    container_name: codeserver
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
+    volumes:
+      - ${APPDATA_DIR}/codeserver:/config
+    ports:
+      - "${NETWORK_BIND_ADDR:-127.0.0.1}:8442:8443"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: codeserver
+      traefik.port: 8442
+      traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: code.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLForceHost: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      # Use Oauth instead of container's password env var for better security
+      # traefik.frontend.auth.forward.address: http://oauth:4181
+      # traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      # traefik.frontend.auth.forward.trustForwardHeader: true
