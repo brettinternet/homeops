@@ -123,7 +123,7 @@ services:
       - PLEX_GID=${PGID}
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
-      - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
+      - ADVERTISE_IP=http://${NETWORK_BIND_ADDR},https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
@@ -148,6 +148,9 @@ services:
       traefik.backend: plex
       traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
+      #
+      traefik.frontend.passHostHeader: true
+      #
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
