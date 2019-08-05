@@ -98,7 +98,7 @@ CLIENT_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
 
 # Generate key pair for the server
 MOBILE_PRIV_KEY=$(wg genkey)
-MOBILE_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
+MOBILE_PUB_KEY=$(echo "$MOBILE_PRIV_KEY" | wg pubkey)
 
 # One method to persist iptable configuration
 # is to script them with PostUp (and reset with PostDown)
@@ -129,7 +129,7 @@ AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128
 
 [Peer]
 PublicKey = $MOBILE_PUB_KEY
-AllowedIPs = $CLIENT_WG_IPV4/32,$CLIENT_WG_IPV6/128
+AllowedIPs = $MOBILE_WG_IPV4/32,$MOBILE_WG_IPV6/128
 EOT
 
 # Add client configuration

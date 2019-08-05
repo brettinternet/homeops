@@ -13,6 +13,9 @@ fi
 SERVER_PUB_NIC="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 SERVER_WG_NIC="wg0"
 
+iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+
 # Port mapping to forward ([external/source]: internal/destination)
 PORTS_TO_FORWARD=(
   [80]=80
@@ -60,7 +63,7 @@ do
   [[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
 done
 
-################
+# ###############
 # # Configure firewall rules on the server
 # # Track VPN connection
 # iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
@@ -78,7 +81,7 @@ done
 
 # # Set up nat 
 # iptables -t nat -A POSTROUTING -s $NETWORK_ADDRESS/24 -o eth0 -j MASQUERADE
-################
+# ###############
 
 ##### MAKE IPTABLE CHANGES PERSISTENT #####
 
