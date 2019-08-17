@@ -5,6 +5,7 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
+    external: true
 
 services:
   traefik:
