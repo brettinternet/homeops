@@ -5,7 +5,7 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
-    external: true
+    # external: true
 
 services:
   traefik:
@@ -124,7 +124,7 @@ services:
       - PLEX_GID=${PGID}
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
-      - ADVERTISE_IP=http://${NETWORK_BIND_ADDR},https://plex.${ROOT_DOMAIN}:443
+      - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
