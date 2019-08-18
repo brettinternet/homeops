@@ -32,10 +32,11 @@ PORTS_TO_FORWARD=(
 for KEY in ${!PORTS_TO_FORWARD[@]}
 do
   # DNAT
-  iptables -t nat -A PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV4:${PORTS_TO_FORWARD[$KEY]}
-  [[ -n "$CLIENT_WG_IPV6" ]] && ip6tables -t nat -A PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV6:${PORTS_TO_FORWARD[$KEY]}
+  iptables -t nat -A PREROUTING -p tcp -i $SERVER_PUB_NIC --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV4:${PORTS_TO_FORWARD[$KEY]}
+  [[ -n "$CLIENT_WG_IPV6" ]] && ip6tables -t nat -A PREROUTING -p tcp -i $SERVER_PUB_NIC --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV6:${PORTS_TO_FORWARD[$KEY]}
 
-  # SNAT
-  iptables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
-  [[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
 done
+
+# SNAT
+iptables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
+[[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
