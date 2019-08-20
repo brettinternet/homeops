@@ -124,6 +124,8 @@ services:
       - PLEX_GID=${PGID}
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
+      # the dashboard will say "Not available outside your network" even though it is... >:(
       - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
@@ -147,6 +149,7 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: plex
+      traefik.protocol: https
       traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
