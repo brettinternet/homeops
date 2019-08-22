@@ -5,7 +5,7 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
-    # external: true
+    external: true
 
 services:
   traefik:
@@ -22,8 +22,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APPDATA_DIR}/traefik:/etc/traefik:rw
     ports:
-      - "80:80"
-      - "443:443"
+      - "${NETWORK_BIND_ADDR}:80:80"
+      - "${NETWORK_BIND_ADDR}:443:443"
     command:
       - "--logLevel=INFO"
       - "--api"
@@ -66,6 +66,7 @@ services:
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
       traefik.frontend.headers.frameDeny: true
       # traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
@@ -105,7 +106,6 @@ services:
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
       traefik.frontend.headers.frameDeny: true
-      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
@@ -149,7 +149,6 @@ services:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: plex
-      traefik.protocol: https
       traefik.port: 32400
       traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
@@ -158,7 +157,6 @@ services:
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
       traefik.frontend.headers.SSLHost: plex.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -420,7 +418,6 @@ services:
       traefik.docker.network: traefik_proxy
       traefik.backend: unifi
       traefik.port: 8443
-      traefik.protocol: https
       traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
