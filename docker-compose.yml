@@ -5,7 +5,7 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
-    # external: true
+    external: true
 
 services:
   traefik:
@@ -22,8 +22,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${APPDATA_DIR}/traefik:/etc/traefik:rw
     ports:
-      - "80:80"
-      - "443:443"
+      - "${NETWORK_BIND_ADDR}:80:80"
+      - "${NETWORK_BIND_ADDR}:443:443"
     command:
       - "--logLevel=INFO"
       - "--api"
@@ -59,13 +59,12 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: traefik.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
       traefik.frontend.headers.frameDeny: true
       # traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
@@ -88,6 +87,8 @@ services:
       - WHITELIST=${OAUTH_WHITELIST}
       - LOG_LEVEL=warn
       - LOG_FORMAT=text
+    ports:
+      - "4181:4181"
     labels:
       traefik.enable: true
       traefik.backend: oauth
@@ -99,13 +100,10 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: oauth.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
       traefik.frontend.headers.frameDeny: true
-      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
@@ -124,6 +122,8 @@ services:
       - PLEX_GID=${PGID}
       - TZ=${TZ}
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
+      # the dashboard will say "Not available outside your network" even though it is... >:(
       - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
@@ -155,7 +155,6 @@ services:
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
       traefik.frontend.headers.SSLHost: plex.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -187,8 +186,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: request.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -221,8 +218,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: plexpy.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -253,13 +248,12 @@ services:
       traefik.docker.usebindportip: true # because we mapped specific port
       traefik.backend: nzbget
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
+      traefik.http.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -295,8 +289,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: sonarr.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -331,8 +323,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: radarr.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -364,8 +354,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: portainer.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -417,15 +405,12 @@ services:
       traefik.docker.network: traefik_proxy
       traefik.backend: unifi
       traefik.port: 8443
-      traefik.protocol: https
       traefik.frontend.rule: Host:unifi.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: unifi.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -462,8 +447,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: code.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
