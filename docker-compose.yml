@@ -248,7 +248,7 @@ services:
       traefik.docker.usebindportip: true # because we mapped specific port
       traefik.backend: nzbget
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
-      traefik.http.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
+      traefik.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
