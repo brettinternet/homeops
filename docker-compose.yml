@@ -291,6 +291,7 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
 
   # https://github.com/linuxserver/docker-radarr
   radarr:
@@ -325,6 +326,7 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
 
   # https://github.com/portainer/portainer
   portainer:
