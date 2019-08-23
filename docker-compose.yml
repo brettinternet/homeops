@@ -59,8 +59,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: traefik.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
@@ -89,6 +87,8 @@ services:
       - WHITELIST=${OAUTH_WHITELIST}
       - LOG_LEVEL=warn
       - LOG_FORMAT=text
+    ports:
+      - "4181:4181"
     labels:
       traefik.enable: true
       traefik.backend: oauth
@@ -100,8 +100,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: oauth.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
@@ -188,8 +186,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: request.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -222,8 +218,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: plexpy.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -254,13 +248,12 @@ services:
       traefik.docker.usebindportip: true # because we mapped specific port
       traefik.backend: nzbget
       traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
+      traefik.http.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: nzbget.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -296,8 +289,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: sonarr.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -332,8 +323,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: radarr.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -365,8 +354,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: portainer.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -424,8 +411,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: unifi.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
@@ -462,8 +447,6 @@ services:
       traefik.frontend.headers.browserXSSFilter: true
       traefik.frontend.headers.contentTypeNosniff: true
       traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.SSLHost: code.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLForceHost: true
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
