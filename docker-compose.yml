@@ -274,7 +274,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPDATA_DIR}/sonarr:/config
       - ${STORAGE_DIR}/tv:/tv
-      - ${STORAGE_DIR}/downloads/complete/tv:/downloads
+      - ${STORAGE_DIR}/downloads:/downloads
     ports:
       - "8989:8989"
     labels:
@@ -309,7 +309,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ${APPDATA_DIR}/radarr:/config
       - ${STORAGE_DIR}/movies:/movies
-      - ${STORAGE_DIR}/downloads/complete/movies:/downloads
+      - ${STORAGE_DIR}/downloads:/downloads
     ports:
       - "7878:7878"
     labels:
