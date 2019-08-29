@@ -490,12 +490,13 @@ services:
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DB=tinyrss
+      - POSTGRES_USER=${TINYRSS_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${TINYRSS_POSTGRES_PASS}
     volumes:
       - ${STORAGE_DIR}/db/tinyrss:/var/lib/postgresql/data
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
 
   # https://github.com/linuxserver/docker-code-server
   codeserver:
