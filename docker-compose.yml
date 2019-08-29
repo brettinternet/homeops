@@ -460,7 +460,7 @@ services:
       - traefik_proxy
     environment:
       - TZ=${TZ}
-      - DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASSWORD}@db/miniflux?sslmode=disable
+      - DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASSWORD}@miniflux_db/miniflux?sslmode=disable
       - RUN_MIGRATIONS=1
       - CREATE_ADMIN=1
       - ADMIN_USERNAME=admin
