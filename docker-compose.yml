@@ -472,7 +472,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
-      traefik.backend: tinyrss
+      traefik.backend: miniflux
       # traefik.port: 8082
       traefik.docker.usebindportip: true
       traefik.frontend.rule: Host:rss.${ROOT_DOMAIN}
