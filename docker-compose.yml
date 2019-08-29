@@ -481,6 +481,22 @@ services:
       traefik.frontend.headers.frameDeny: true
       traefik.frontend.auth.forward.address: http://oauth:4181
 
+  tinyrss_db:
+    image: postgres:10.1
+    container_name: tinyrss_db
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+    volumes:
+      - ${STORAGE_DIR}/db/tinyrss:/var/lib/postgresql/data
+    # ports:
+    #   - "5432:5432"
+
   # https://github.com/linuxserver/docker-code-server
   codeserver:
     # https://hub.docker.com/r/linuxserver/code-server/
