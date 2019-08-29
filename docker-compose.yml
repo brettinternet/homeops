@@ -463,12 +463,13 @@ services:
     volumes:
       - ${APPDATA_DIR}/tinyrss:/config
     ports:
-      - "80:80"
+      - "8082:80"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: tinyrss
-      traefik.port: 80
+      # traefik.port: 8082
+      traefik.docker.usebindportip: true
       traefik.frontend.rule: Host:rss.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
