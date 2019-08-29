@@ -462,9 +462,7 @@ services:
       - PGID=${PGID}
       - PUID=${PUID}
       - TZ=${TZ}
-      - "DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASS}@db/miniflux?sslmode=disable"
-    volumes:
-      - ${APPDATA_DIR}/tinyrss:/config
+      - DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASS}@db/miniflux?sslmode=disable
     ports:
       - "8082:8080"
     labels:
@@ -493,6 +491,7 @@ services:
     environment:
       - "PGID=${PGID}"
       - "PUID=${PUID}"
+      - "TZ=${TZ}"
       - "POSTGRES_DB=miniflux"
       - "POSTGRES_USER=miniflux"
       - "POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASS}"
