@@ -448,22 +448,25 @@ services:
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
 
-  # https://github.com/linuxserver/docker-tt-rss
-  tinyrss:
-    # https://hub.docker.com/r/linuxserver/tt-rss/
-    image: linuxserver/tt-rss
-    container_name: tinyrss
+  # https://github.com/miniflux/miniflux
+  miniflux:
+    # https://hub.docker.com/r/miniflux/miniflux
+    image: miniflux/miniflux
+    container_name: miniflux
     restart: unless-stopped
+    depends_on:
+      - miniflux_db
     networks:
       - traefik_proxy
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
       - TZ=${TZ}
+      - "DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASS}@db/miniflux?sslmode=disable"
     volumes:
       - ${APPDATA_DIR}/tinyrss:/config
     ports:
-      - "8082:80"
+      - "8082:8080"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -481,20 +484,20 @@ services:
       traefik.frontend.headers.frameDeny: true
       traefik.frontend.auth.forward.address: http://oauth:4181
 
-  tinyrss_db:
-    image: postgres:10.1
-    container_name: tinyrss_db
+  miniflux_db:
+    image: postgres:10.10
+    container_name: miniflux_db
     restart: unless-stopped
     networks:
       - traefik_proxy
     environment:
-      - PGID=${PGID}
-      - PUID=${PUID}
-      - POSTGRES_DB=tinyrss
-      - POSTGRES_USER=${TINYRSS_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${TINYRSS_POSTGRES_PASS}
+      - "PGID=${PGID}"
+      - "PUID=${PUID}"
+      - "POSTGRES_DB=miniflux"
+      - "POSTGRES_USER=miniflux"
+      - "POSTGRES_PASSWORD=${TINYRSS_POSTGRES_PASS}"
     volumes:
-      - ${STORAGE_DIR}/db/tinyrss:/var/lib/postgresql/data
+      - ${STORAGE_DIR}/db/miniflux:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
