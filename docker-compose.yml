@@ -495,7 +495,7 @@ services:
       - "PUID=${PUID}"
       - "POSTGRES_DB=miniflux"
       - "POSTGRES_USER=miniflux"
-      - "POSTGRES_PASSWORD=${TINYRSS_POSTGRES_PASS}"
+      - "POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASS}"
     volumes:
       - ${STORAGE_DIR}/db/miniflux:/var/lib/postgresql/data
     ports:
