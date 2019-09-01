@@ -5,7 +5,11 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
-    external: true
+    # external: true
+    driver_opts:
+      # Derived from `ip addr list` for `wg0` interface
+      # Otherwise random TLS handshake errors
+      com.docker.network.driver.mtu: 1420
 
 services:
   traefik:
@@ -537,3 +541,24 @@ services:
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
+
+  influxdb:
+    # https://hub.docker.com/_/influxdb
+    container_name: influxdb
+    image: influxdb
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - INFLUXDB_DB=influx
+      - INFLUXDB_ADMIN_USER=influx
+      - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_PASSWORD}
+      - INFLUXDB_USER=telegraf
+      - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
+    volumes:
+      - ${STORAGE_DIR}/db/influxdb:/var/lib/influxdb
+      # docker run --rm influxdb influxd config > ${APPDATA_DIR}/influxdb/influxdb.conf
+      - ${APPDATA_DIR}/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    ports:
+      - "8086:8086" # HTTP API
+      # - "2003:2003" # graphite support
