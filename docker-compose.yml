@@ -544,7 +544,7 @@ services:
 
   # https://github.com/netdata/netdata/tree/master/packaging/docker#install-netdata-with-docker
   netdata:
-    # https://hub.docker.com/_/influxdb
+    # https://hub.docker.com/r/netdata/netdata/
     image: netdata/netdata
     container_name: netdata
     restart: unless-stopped
@@ -555,6 +555,8 @@ services:
       - SYS_PTRACE
     security_opt:
       - apparmor:unconfined
+    environment:
+      - PGID=${DOCKER_PGID}
     volumes:
       - /etc/passwd:/host/etc/passwd:ro
       - /etc/group:/host/etc/group:ro
