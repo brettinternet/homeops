@@ -544,8 +544,8 @@ services:
 
   influxdb:
     # https://hub.docker.com/_/influxdb
-    container_name: influxdb
     image: influxdb
+    container_name: influxdb
     restart: unless-stopped
     networks:
       - traefik_proxy
@@ -556,9 +556,86 @@ services:
       - INFLUXDB_USER=telegraf
       - INFLUXDB_USER_PASSWORD=${INFLUXDB_USER_PASSWORD}
     volumes:
+      # docker run --rm influxdb influxd config > influxdb.conf
+      - ${APPDATA_DIR}/influx/influxdb.conf:/etc/influxdb/influxdb.conf:ro
       - ${STORAGE_DIR}/db/influxdb:/var/lib/influxdb
-      # docker run --rm influxdb influxd config > ${APPDATA_DIR}/influxdb/influxdb.conf
-      - ${APPDATA_DIR}/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
     ports:
       - "8086:8086" # HTTP API
       # - "2003:2003" # graphite support
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: influxdb
+      traefik.port: 8086
+      traefik.frontend.rule: Host:influxdb.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+
+  telegraf:
+    # https://hub.docker.com/_/telegraf
+    image: telegraf
+    container_name: telegraf
+    restart: unless-stopped
+    depends_on:
+      - influxdb
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - HOST_PROC=/host/proc
+    volumes:
+      # docker run --rm telegraf -sample-config > telegraf.conf
+      - ${APPDATA_DIR}/influx/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+      - /proc:/host/proc:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    # ports:
+    #   - "8125:8125" # StatsD
+    #   - "8092:8092" # UDP
+    #   - "8094:8094" # TCP
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - GF_SERVER_ROOT_URL=https://grafana.${ROOT_DOMAIN}
+      - GF_AUTH_BASIC_ENABLED=false
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,petrslavotinek-carpetplot-panel,vonage-status-panel,raintank-worldping-app
+    volumes:
+      - ${APPDATA_DIR}/grafana/data:/var/lib/grafana
+      - ${APPDATA_DIR}/grafana/provisioning:/etc/grafana/provisioning
+      # docker run --rm --entrypoint cat grafana/grafana /etc/grafana/grafana.ini > grafana.ini
+      - ${APPDATA_DIR}/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ${STORAGE_DIR}/logs/grafana:/var/log/grafana
+    ports:
+      - "3000:3000"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: grafana
+      traefik.port: 3000
+      traefik.frontend.rule: Host:grafana.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
