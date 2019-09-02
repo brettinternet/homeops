@@ -549,6 +549,7 @@ services:
     restart: unless-stopped
     networks:
       - traefik_proxy
+    user: "${PUID}"
     environment:
       - INFLUXDB_DB=telegraf
       - INFLUXDB_ADMIN_USER=admin
@@ -587,6 +588,7 @@ services:
       - influxdb
     networks:
       - traefik_proxy
+    user: "${PUID}"
     environment:
       - PGID=${PGID}
       - PUID=${PUID}
