@@ -543,13 +543,14 @@ services:
       traefik.frontend.auth.forward.trustForwardHeader: true
 
   nextcloud:
-    image: hoellen/nextcloud:16.0
+    image: nextcloud
     container_name: nextcloud
     restart: unless-stopped
     networks:
       - traefik_proxy
     depends_on:
       - nextcloud_db
+      - nextcloud_redis
     user: "${PUID}:${PGID}"
     sysctls:
       # Allow an unprivileged user to listen on any port (https://github.com/nextcloud/docker/issues/359)
