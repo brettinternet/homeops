@@ -547,7 +547,7 @@ services:
     container_name: nextcloud
     restart: unless-stopped
     networks:
-      - traefik_network
+      - traefik_proxy
     depends_on:
       - nextcloud_db
     user: "${PUID}:${PGID}"
