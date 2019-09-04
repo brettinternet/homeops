@@ -542,6 +542,72 @@ services:
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
 
+  nextcloud:
+    image: hoellen/nextcloud:16.0
+    container_name: nextcloud
+    restart: unless-stopped
+    networks:
+      - traefik_network
+    depends_on:
+      - nextcloud_db
+    user: "${PUID}:${PGID}"
+    sysctls:
+      # Allow an unprivileged user to listen on any port (https://github.com/nextcloud/docker/issues/359)
+      - net.ipv4.ip_unprivileged_port_start=0
+    environment:
+      - TZ=${TZ}
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
+      - MYSQL_HOST=nextcloud_db
+      - REDIS_HOST=nextcloud_redis
+    volumes:
+      - ${APPDATA_DIR}/nextcloud:/var/www/html
+    ports:
+      - "8888:80"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.docker.usebindportip: true
+      traefik.backend: nextcloud
+      traefik.frontend.rule: Host:cloud.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+
+  # If using MySQL
+  nextcloud_db:
+    # https://hub.docker.com/_/mariadb
+    image: mariadb:10.4
+    container_name: nextcloud_db
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      - MYSQL_ROOT_PASSWORD=${NEXTCLOUD_MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
+    volumes:
+      - ${STORAGE_DIR}/db/nextcloud:/var/lib/mysql
+
+  nextcloud_redis:
+    image: redis
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    ports:
+      - "6379:6379"
+
   # https://github.com/netdata/netdata/tree/master/packaging/docker#install-netdata-with-docker
   netdata:
     # https://hub.docker.com/r/netdata/netdata/
