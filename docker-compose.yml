@@ -564,6 +564,7 @@ services:
       - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
       - MYSQL_HOST=nextcloud_db
       - REDIS_HOST=nextcloud_redis
+      - NEXTCLOUD_TRUSTED_DOMAINS=cloud.${ROOT_DOMAIN}
     volumes:
       - ${APPDATA_DIR}/nextcloud:/var/www/html
     ports:
