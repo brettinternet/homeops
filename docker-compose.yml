@@ -5,7 +5,6 @@ networks:
   traefik_proxy:
     name: traefik_proxy
     driver: bridge
-    # external: true
     driver_opts:
       # Derived from `ip addr list` for `wg0` interface
       # Otherwise random TLS handshake errors
@@ -600,6 +599,8 @@ services:
       - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
     volumes:
       - ${STORAGE_DIR}/db/nextcloud:/var/lib/mysql
+    # ports:
+    #   - "3306:3306"
 
   nextcloud_redis:
     image: redis
@@ -652,6 +653,75 @@ services:
       traefik.frontend.auth.forward.address: http://oauth:4181
       traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
       traefik.frontend.auth.forward.trustForwardHeader: true
+
+  diskover:
+    # https://hub.docker.com/r/linuxserver/diskover
+    image: linuxserver/diskover
+    container_name: diskover
+    restart: unless-stopped
+    depends_on:
+      - diskover_elasticsearch
+      - diskover_redis
+    mem_limit: 4096m
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - REDIS_HOST=diskover_redis
+      - REDIS_PORT=6379
+      - ES_HOST=diskover_elasticsearch
+      - ES_PORT=9200
+      - ES_USER=elastic
+      - ES_PASS=${DISKOVER_ES_PASSWORD}
+      - RUN_ON_START=true
+      - USE_CRON=true
+    volumes:
+      - ${APPDATA_DIR}/config:/config
+      - ${STORAGE_DIR}/data/diskover:/data
+    ports:
+      - 9081:80 # diskover Web UI
+      - 9181:9181 # rq-dashboard web UI
+      - 9999:9999 # diskover socket server
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: netdata
+      traefik.port: 9081
+      traefik.frontend.rule: Host:diskover.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      # traefik.http.frontend.headers.customFrameOptionsValue: ALLOW-FROM http://${ROOT_DOMAIN}
+      # traefik.http.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
+
+  diskover_elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    volumes:
+      - ${STORAGE_DIR}/data/diskover_elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - node.name=diskover_elasticsearch
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  diskover_redis:
+    container_name: diskover_redis
+    image: redis:alpine
+    volumes:
+      - ${STORAGE_DIR}/data/diskover_redis:/data
+  #
   # influxdb:
   #   # https://hub.docker.com/_/influxdb
   #   image: influxdb
