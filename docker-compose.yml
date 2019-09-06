@@ -706,7 +706,7 @@ services:
       traefik.frontend.auth.forward.trustForwardHeader: true
 
   diskover_elasticsearch:
-    container_name: elasticsearch
+    container_name: diskover_elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     volumes:
       - ${STORAGE_DIR}/data/diskover_elasticsearch:/usr/share/elasticsearch/data
