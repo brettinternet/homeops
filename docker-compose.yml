@@ -114,7 +114,7 @@ services:
   # https://github.com/plexinc/pms-docker
   plex:
     # https://hub.docker.com/r/plexinc/pms-docker
-    image: plexinc/pms-docker
+    image: plexinc/pms-docker:plexpass
     container_name: plex
     hostname: ${PLEX_HOSTNAME}
     restart: unless-stopped
