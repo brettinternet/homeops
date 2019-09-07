@@ -1,22 +1,27 @@
 ## Container Orchestration
 
-### Setup
-
 ### Run
 
 ```sh
-docker-compose up -d
+up.sh <compose/file_name> ...
 ```
 
 ### Stop
 
 ```sh
-docker-compose down
+down.sh <compose/file_name> ...
+```
+
+### Logs
+
+```sh
+docker logs -tf --tail="50" <service_name>
 ```
 
 ### Traefik Reverse Proxy
 
-- [ ] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
+- [x] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
+- [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html)
 
 ## Bastion Server
 
