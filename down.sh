@@ -4,10 +4,13 @@ CONTAINERS="$@"
 
 # if no arguments, start all services
 if [ -z "$CONTAINERS" ]; then
-  CONTAINERS=$(ls compose -1 | sed -e 's/\..*$//')
+  CONTAINERS=$(ls compose -I "traefik*" -I "auth*" -1 | sed -e 's/\..*$//')
+  CONTAINERS=('traefik' 'auth' "${CONTAINERS[@]}")
 fi
 
-for c in $CONTAINERS; do
+# start each service from yml file in docker-compose detached mode
+for c in ${CONTAINERS[@]}; do
   printf "\n### $c down ###\n"
-  docker-compose -f "compose/$c.yml" -p $c down
+  docker-compose -f "compose/$c.yml" -p $c down -d
+  printf "\n"
 done
