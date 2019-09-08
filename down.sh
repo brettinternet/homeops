@@ -3,8 +3,6 @@
 CONTAINERS="$@"
 for c in $CONTAINERS
 do
-  echo""
-  echo "...$c down..."
-  echo""
+  printf "\n### $c down ###\n"
   docker-compose -f "compose/$c.yml" -p $c down
 done
