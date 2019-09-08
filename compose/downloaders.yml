@@ -22,7 +22,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/nzbget:/config
       - ${STORAGE_DIR}/downloads:/downloads
-      - ${STORAGE_DIR}/movies:/movies # for VideoSort post-processing script
+      # - ${STORAGE_DIR}/movies:/movies # for VideoSort post-processing script
     ports:
       - "6788:6789"
     labels:
