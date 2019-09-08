@@ -39,7 +39,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
-      traefik.backend: netdata
+      traefik.backend: diskover
       traefik.port: 9081
       traefik.frontend.rule: Host:diskover.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
