@@ -1,9 +1,17 @@
 ## Container Orchestration
 
+### Setup
+
+Add or remove container orchestrations in `compose` directory. Traefik and Auth containers must be started before any others. Network setup originates in the Traefik reverse proxy `traefik.yml` and all other containers attach to that network.
+
 ### Run
 
 ```sh
-up.sh traefik auth <compose/file_name> ...
+# start all services
+bash up.sh
+
+# start specific file orchestration within compose directory
+bash up.sh traefik auth <compose/file_name> ...
 ```
 
 Note: `traefik` and `auth` must be run first. `traefik.yml` also defines the network that the others attach to.
@@ -11,7 +19,11 @@ Note: `traefik` and `auth` must be run first. `traefik.yml` also defines the net
 ### Stop
 
 ```sh
-down.sh <compose/file_name> ...
+# stop all services
+bash down.sh
+
+# stop specific bundle
+bash down.sh <compose/file_name> ...
 ```
 
 ### Logs
