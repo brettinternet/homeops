@@ -1,0 +1,23 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/containrrr/watchtower
+  watchtower:
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    # TODO: add notifications - https://containrrr.github.io/watchtower/notifications/
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_DIR}/watchtower/config.json:/config.json
+    command: --schedule "0 0 4 * * *" --cleanup
+    # command: --interval 900 #15 minutes

@@ -2,3 +2,4 @@
 .terraform
 terraform.tfstate*
 wg0*
+*.log

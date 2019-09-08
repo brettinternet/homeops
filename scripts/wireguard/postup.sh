@@ -25,6 +25,7 @@ fi
 PORTS_TO_FORWARD=(
   [80]=80
   [443]=443
+  [2222]=22
 )
 
 # Forward each port to VPN client via DNAT

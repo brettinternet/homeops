@@ -20,7 +20,7 @@ ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 PORTS_TO_FORWARD=(
   [80]=80
   [443]=443
-  # [2222]=22
+  [2222]=22
   # [53]=53
   # [25]=25
   # [143]=143

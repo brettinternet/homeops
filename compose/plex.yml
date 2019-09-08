@@ -1,0 +1,125 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/plexinc/pms-docker
+  plex:
+    # https://hub.docker.com/r/plexinc/pms-docker
+    image: plexinc/pms-docker:plexpass
+    container_name: plex
+    hostname: ${PLEX_HOSTNAME}
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PLEX_UID=${PUID}
+      - PLEX_GID=${PGID}
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
+      # the dashboard will say "Not available outside your network" even though it is... >:(
+      - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
+    volumes:
+      - ${APPDATA_DIR}/plex:/config
+      - ${STORAGE_DIR}/music:/data/Music
+      - ${STORAGE_DIR}/movies:/data/Movies
+      - ${STORAGE_DIR}/tv:/data/TV
+      # - ${STORAGE_DIR}/tmp/transcode:/transcode
+      - /tmp:/transcode
+    ports:
+      # Plex ports - source: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
+      - "32400:32400" # Plex Media Server
+      - "3005:3005" # Plex Companion
+      - "8324:8324" # Roku via Plex Companion
+      - "32469:32649" # Plex DLNA Server
+      - "1900:1900/udp" # Plex DLNA Server
+      - "32410:32410/udp" # network discovery
+      - "32412:32412/udp" # network discovery
+      - "32413:32413/udp" # network discovery
+      - "32414:32414/udp" # network discovery
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: plex
+      traefik.port: 32400
+      traefik.frontend.rule: Host:plex.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.SSLHost: plex.${ROOT_DOMAIN}
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+
+  # https://github.com/linuxserver/docker-ombi
+  ombi:
+    # https://hub.docker.com/r/linuxserver/ombi
+    image: linuxserver/ombi
+    container_name: ombi
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/ombi:/config
+    ports:
+      - "3579:3579"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: ombi
+      traefik.port: 3579
+      traefik.frontend.rule: Host:request.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+
+  # https://github.com/Tautulli/Tautulli-Docker
+  tautulli:
+    # https://hub.docker.com/r/tautulli/tautulli
+    image: tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - TZ=${TZ}
+      - PGID=${PGID}
+      - PUID=${PUID}
+    volumes:
+      - ${APPDATA_DIR}/tautulli:/config
+      - ${APPDATA_DIR}/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro
+    ports:
+      - "8181:8181"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: plexpy
+      traefik.port: 8181
+      traefik.frontend.rule: Host:plexpy.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true

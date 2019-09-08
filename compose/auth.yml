@@ -1,0 +1,47 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/thomseddon/traefik-forward-auth
+  oauth:
+    # https://hub.docker.com/r/thomseddon/traefik-forward-auth
+    image: thomseddon/traefik-forward-auth
+    container_name: oauth
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - CLIENT_ID=${OAUTH_CLIENT_ID}
+      - CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - SECRET=${OAUTH_SECRET}
+      - INSECURE_COOKIE=false
+      - COOKIE_DOMAIN=${ROOT_DOMAIN}
+      - AUTH_HOST=oauth.${ROOT_DOMAIN}
+      - WHITELIST=${OAUTH_WHITELIST}
+      - LOG_LEVEL=warn
+      - LOG_FORMAT=text
+    ports:
+      - "4181:4181"
+    labels:
+      traefik.enable: true
+      traefik.backend: oauth
+      traefik.frontend.rule: Host:oauth.${ROOT_DOMAIN}
+      traefik.port: 4181
+      traefik.docker.network: traefik_proxy
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
