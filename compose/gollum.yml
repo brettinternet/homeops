@@ -7,8 +7,9 @@ networks:
     external: true
 
 services:
-  # https://github.com/schnatterer/gollum-galore
+  # https://github.com/suttang/docker-gollum
   gollum:
+    # https://hub.docker.com/r/adtac/gollum-alpine/
     image: adtac/gollum-alpine
     container_name: gollum
     restart: unless-stopped
