@@ -3,8 +3,10 @@
 ### Run
 
 ```sh
-up.sh <compose/file_name> ...
+up.sh traefik auth <compose/file_name> ...
 ```
+
+Note: `traefik` and `auth` must be run first. `traefik.yml` also defines the network that the others attach to.
 
 ### Stop
 
