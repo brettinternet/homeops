@@ -7,27 +7,23 @@ networks:
     external: true
 
 services:
-  hydra:
-    image: linuxserver/hydra2
-    container_name: hydra
+  # https://github.com/schnatterer/gollum-galore
+  gollum:
+    image: adtac/gollum-alpine
+    container_name: gollum
     restart: unless-stopped
     networks:
       - traefik_proxy
-    environment:
-      - PGID=${PGID}
-      - PUID=${PUID}
-      - TZ=${TZ}
     volumes:
-      - ${APPDATA_DIR}/hydra:/config
-      - ${STORAGE_DIR}/downloads:/downloads
+      - ${APPDATA_DIR}/gollum:/wiki
     ports:
-      - "5076:5076"
+      - "8080:8080"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
-      traefik.backend: hydra
-      traefik.port: 5076
-      traefik.frontend.rule: Host:hydra.${ROOT_DOMAIN}
+      traefik.backend: gollum
+      traefik.port: 8080
+      traefik.frontend.rule: Host:wiki.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000
       traefik.frontend.headers.browserXSSFilter: true
@@ -37,3 +33,5 @@ services:
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
       traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true

@@ -30,7 +30,7 @@ services:
       - RUN_ON_START=true
       - USE_CRON=true
     volumes:
-      - ${APPDATA_DIR}/config:/config
+      - ${APPDATA_DIR}/diskover:/config
       - ${STORAGE_DIR}/data/diskover:/data
     ports:
       - 9081:80 # diskover Web UI
