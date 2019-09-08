@@ -11,6 +11,6 @@ fi
 # start each service from yml file in docker-compose detached mode
 for c in ${CONTAINERS[@]}; do
   printf "\n### $c down ###\n"
-  docker-compose -f "compose/$c.yml" -p $c down -d
+  docker-compose -f "compose/$c.yml" -p $c down
   printf "\n"
 done
