@@ -2,26 +2,40 @@
 
 ### Setup
 
-```sh
-docker network create -d bridge -o \
-  com.docker.network.bridge.host_binding_ipv4=10.0.0.2 traefik_proxy
-```
+Add or remove container orchestrations in `compose` directory. Traefik and Auth containers must be started before any others. Network setup originates in the Traefik reverse proxy `traefik.yml` and all other containers attach to that network.
 
 ### Run
 
 ```sh
-docker-compose up -d
+# start all services
+bash up.sh
+
+# start specific file orchestration within compose directory
+bash up.sh traefik auth <compose/file_name> ...
 ```
+
+Note: `traefik` and `auth` must be run first. `traefik.yml` also defines the network that the others attach to.
 
 ### Stop
 
 ```sh
-docker-compose down
+# stop all services
+bash down.sh
+
+# stop specific bundle
+bash down.sh <compose/file_name> ...
+```
+
+### Logs
+
+```sh
+docker logs -tf --tail="50" <service_name>
 ```
 
 ### Traefik Reverse Proxy
 
-- [ ] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
+- [x] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
+- [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html)
 
 ## Bastion Server
 

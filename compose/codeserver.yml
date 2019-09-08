@@ -1,0 +1,44 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/linuxserver/docker-code-server
+  codeserver:
+    # https://hub.docker.com/r/linuxserver/code-server/
+    image: linuxserver/code-server
+    container_name: codeserver
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+      - SUDO_PASSWORD=${CODE_SERVER_SUDO_PASSWORD} # optional
+    volumes:
+      - ${APPDATA_DIR}/codeserver:/config
+    ports:
+      - "8442:8443"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      # https://docs.traefik.io/configuration/backends/docker/#usebindportip
+      traefik.docker.usebindportip: true
+      traefik.backend: codeserver
+      traefik.frontend.rule: Host:code.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true

@@ -23,6 +23,7 @@ fi
 PORTS_TO_FORWARD=(
   [80]=80
   [443]=443
+  [2222]=22
 )
 
 # Forward each port to VPN client via DNAT
@@ -33,7 +34,8 @@ do
   iptables -t nat -D PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV4:${PORTS_TO_FORWARD[$KEY]}
   [[ -n "$CLIENT_WG_IPV6" ]] && ip6tables -t nat -D PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV6:${PORTS_TO_FORWARD[$KEY]}
 
-  # SNAT
-  iptables -t nat -D POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
-  [[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -D POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
 done
+
+# SNAT
+iptables -t nat -D POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
+[[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -D POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6

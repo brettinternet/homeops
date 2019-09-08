@@ -1,0 +1,41 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/linuxserver/docker-nzbget
+  nzbget:
+    # https://hub.docker.com/r/linuxserver/nzbget
+    image: linuxserver/nzbget
+    container_name: nzbget
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/nzbget:/config
+      - ${STORAGE_DIR}/downloads:/downloads
+    ports:
+      - "6788:6789"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.docker.usebindportip: true # because we mapped specific port
+      traefik.backend: nzbget
+      traefik.frontend.rule: Host:nzbget.${ROOT_DOMAIN}
+      traefik.frontend.headers.customFrameOptionsValue: ALLOW-FROM https://${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true

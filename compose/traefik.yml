@@ -1,0 +1,72 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    driver_opts:
+      # Derived from `ip addr list` for `wg0` interface
+      # Otherwise random TLS handshake errors
+      com.docker.network.driver.mtu: 1420
+
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - TZ=${TZ}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+      - CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${APPDATA_DIR}/traefik:/etc/traefik:rw
+    ports:
+      - "${NETWORK_BIND_ADDR}:80:80"
+      - "${NETWORK_BIND_ADDR}:443:443"
+    command:
+      - "--logLevel=INFO"
+      - "--api"
+      - "--defaultentrypoints=http,https"
+      - "--entrypoints=Name:http Address::80 Compress:true ForwardedHeaders.TrustedIPs:10.0.0.2 Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS Compress:true ForwardedHeaders.TrustedIPs:10.0.0.2 TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
+      - "--acme"
+      - "--acme.storage=/etc/traefik/acme.json"
+      - "--acme.entryPoint=https"
+      - "--acme.dnsChallenge=true"
+      - "--acme.dnsChallenge.provider=cloudflare"
+      - "--acme.dnsChallenge.delayBeforeCheck=60"
+      - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
+      - "--acme.onHostRule=true"
+      - "--acme.email=${CLOUDFLARE_EMAIL}"
+      - "--acme.acmeLogging=true"
+      # - "--acme.domains=${ROOT_DOMAIN},*.${ROOT_DOMAIN},"
+      - "--acme.domains=*.${ROOT_DOMAIN},"
+      - "--acme.KeyType=RSA4096"
+      - "--docker"
+      - "--docker.domain=${ROOT_DOMAIN}"
+      - "--docker.watch"
+      - "--docker.exposedbydefault=false"
+      - "--retry"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: traefik
+      traefik.port: 8080
+      traefik.frontend.rule: Host:traefik.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
+      traefik.frontend.headers.frameDeny: true
+      # traefik.frontend.auth.basic.users: ${HTPASSWD}
+      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
