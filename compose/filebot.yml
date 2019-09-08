@@ -1,0 +1,42 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  # https://github.com/jlesage/docker-filebot
+  filebot:
+    image: jlesage/filebot
+    container_name: filebot
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - USER_ID=${PGID}
+      - GROUP_ID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/filebot:/config
+      - ${STORAGE_DIR}/downloads/completed:/storage
+    ports:
+      - "5800:5800"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.port: 5076
+      traefik.backend: filebot
+      traefik.frontend.rule: Host:filebot.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
