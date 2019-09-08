@@ -23,7 +23,7 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM_CODE}
       # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
       # the dashboard will say "Not available outside your network" even though it is... >:(
-      - ADVERTISE_IP=https://plex.${ROOT_DOMAIN}:443
+      - ADVERTISE_IP=http://${HOMELAB_LOCAL_IP}:32400,https://plex.${ROOT_DOMAIN}:443
     volumes:
       - ${APPDATA_DIR}/plex:/config
       - ${STORAGE_DIR}/music:/data/Music
