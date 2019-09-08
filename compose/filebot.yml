@@ -9,6 +9,7 @@ networks:
 services:
   # https://github.com/jlesage/docker-filebot
   filebot:
+    # https://hub.docker.com/r/jlesage/filebot/
     image: jlesage/filebot
     container_name: filebot
     restart: unless-stopped
@@ -26,7 +27,7 @@ services:
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
-      traefik.port: 5076
+      traefik.port: 5800
       traefik.backend: filebot
       traefik.frontend.rule: Host:filebot.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
