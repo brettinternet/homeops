@@ -17,10 +17,6 @@ services:
     depends_on:
       - diskover_elasticsearch
       - diskover_redis
-    deploy:
-      resources:
-        limits:
-          memory: 4096m
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
