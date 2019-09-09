@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HELP="$(basename "$0") [-h] [-u] [-d] [args]... -- program to start docker-compose yml files in compose directory
+HELP="$(basename "$0") [-h] [-u] [-d] [args] -- program to start docker-compose yml files in compose directory
 
 where:
     -h    show this help text
