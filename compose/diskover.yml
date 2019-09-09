@@ -3,7 +3,6 @@ version: "2"
 
 networks:
   traefik_proxy:
-    name: traefik_proxy
     external: true
 
 services:
