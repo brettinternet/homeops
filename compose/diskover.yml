@@ -55,13 +55,11 @@ services:
 
   diskover_elasticsearch:
     container_name: diskover_elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.9
     networks:
       - traefik_proxy
     mem_limit: 4096m
     environment:
-      - node.name=diskover_elasticsearch
-      - cluster.initial_master_nodes=diskover_elasticsearch
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
     volumes:
