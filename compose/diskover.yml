@@ -62,6 +62,7 @@ services:
     mem_limit: 4096m
     environment:
       - node.name=diskover_elasticsearch
+      - cluster.initial_master_nodes=diskover_elasticsearch
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
     volumes:
