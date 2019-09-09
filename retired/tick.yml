@@ -25,7 +25,7 @@ services:
     volumes:
       # docker run --rm influxdb influxd config > influxdb.conf
       - ${APPDATA_DIR}/influx/influxdb.conf:/etc/influxdb/influxdb.conf:ro
-      - ${STORAGE_DIR}/db/influxdb:/var/lib/influxdb
+      - ${STORAGE_DIR}/data/influxdb:/var/lib/influxdb
     ports:
       - "8086:8086" # HTTP API
       - "8089:8089" # UDP
