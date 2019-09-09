@@ -57,6 +57,6 @@ services:
       - "POSTGRES_USER=miniflux"
       - "POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASSWORD}"
     volumes:
-      - ${STORAGE_DIR}/db/miniflux:/var/lib/postgresql/data
+      - ${STORAGE_DIR}/data/miniflux_db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
