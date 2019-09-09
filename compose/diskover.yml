@@ -1,5 +1,5 @@
 ---
-version: "3.7"
+version: "2"
 
 networks:
   traefik_proxy:
@@ -59,6 +59,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     networks:
       - traefik_proxy
+    mem_limit: 4096m
     environment:
       - node.name=diskover_elasticsearch
       - bootstrap.memory_lock=true
