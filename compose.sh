@@ -39,7 +39,14 @@ AUTH="auth"
 # if no arguments, start all services
 if [ -z "$CONTAINERS" ]; then
   CONTAINERS=$(ls compose -I "$REVERSE_PROXY*" -I "$AUTH*" -1 | sed -e 's/\..*$//')
-  CONTAINERS=("$REVERSE_PROXY" "$AUTH" "${CONTAINERS[@]}")
+
+  if [ "$COMPOSE_ARGS" = "down" ]; then
+    # start proxy & proxy network first
+    CONTAINERS=("$REVERSE_PROXY" "$AUTH" "${CONTAINERS[@]}")
+  else
+    # reverse
+    CONTAINERS=("${CONTAINERS[@]}" "$AUTH" "$REVERSE_PROXY")
+  fi
 fi
 
 # start each service from yml file in docker-compose detached mode
