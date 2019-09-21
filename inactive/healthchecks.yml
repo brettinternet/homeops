@@ -1,0 +1,49 @@
+---
+version: "3.7"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy
+    external: true
+
+services:
+  healthchecks:
+    # https://hub.docker.com/r/linuxserver/healthchecks
+    image: linuxserver/healthchecks
+    container_name: healthchecks
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - SITE_ROOT=healthchecks.${ROOT_DOMAIN}
+      - SITE_NAME=Healthchecks
+      - DEFAULT_FROM_EMAIL=${EMAIL_FROM}
+      - EMAIL_HOST=${SMTP_HOST}
+      - EMAIL_PORT=${SMTP_PORT}
+      - EMAIL_HOST_USER=${SMTP_USER}
+      - EMAIL_HOST_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_USE_TLS=true
+      - ALLOWED_HOSTS=${ROOT_DOMAIN}
+    volumes:
+      - ${APPDATA_DIR}/healthchecks:/config
+    ports:
+      - 8000:8000
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik_proxy
+      traefik.backend: healthchecks
+      traefik.port: 8000
+      traefik.frontend.rule: Host:healthchecks.${ROOT_DOMAIN}
+      traefik.frontend.headers.SSLRedirect: true
+      traefik.frontend.headers.STSSeconds: 315360000
+      traefik.frontend.headers.browserXSSFilter: true
+      traefik.frontend.headers.contentTypeNosniff: true
+      traefik.frontend.headers.forceSTSHeader: true
+      traefik.frontend.headers.STSIncludeSubdomains: true
+      traefik.frontend.headers.STSPreload: true
+      traefik.frontend.headers.frameDeny: true
+      traefik.frontend.auth.forward.address: http://oauth:4181
+      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
+      traefik.frontend.auth.forward.trustForwardHeader: true
