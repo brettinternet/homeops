@@ -18,15 +18,23 @@ ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 
 # Port mapping to forward ([external/source]: internal/destination)
 PORTS_TO_FORWARD=(
+    # HTTP/S
   [80]=80
   [443]=443
+  # SSH
   [2222]=22
+  # MAILCOW
+  # https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-system/#default-ports
+  [25]=25
+  [465]=465
+  [587]=587
+  [143]=143
+  [993]=993
+  [110]=110
+  [995]=995
+  [4190]=4190
+  # DNS
   # [53]=53
-  # [25]=25
-  # [143]=143
-  # [587]=587
-  # [998]=998
-  # [4190]=4190
 )
 
 # ufw allow $SERVER_PORT || :
