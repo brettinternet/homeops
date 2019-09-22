@@ -9,7 +9,7 @@ networks:
 services:
   # https://github.com/hardware/mailserver
   mailserver:
-    image: hardware/mailserver
+    image: hardware/mailserver:1.1-stable
     container_name: mailserver
     restart: unless-stopped
     domainname: ${ROOT_DOMAIN} # Mail server A/MX/FQDN & reverse PTR = mail.domain.tld.
