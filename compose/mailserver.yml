@@ -25,6 +25,7 @@ services:
       - RSPAMD_PASSWORD=${RSPAMD_PASSWORD}
     volumes:
       - ${STORAGE_DIR}/mailserver/mail:/var/mail
+      - ${APPDATA_DIR}/traefik/acme.json:/etc/letsencrypt/acme/acme.json
     ports:
       - "25:25" # SMTP                - Required
       # - "110:110"     # POP3       STARTTLS - Optional - For webmails/desktop clients
@@ -39,8 +40,8 @@ services:
       traefik.docker.network: traefik_proxy
       # traefik.docker.usebindportip: true
       traefik.port: 11334
-      traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
       traefik.frontend.rule: Host:spam.${ROOT_DOMAIN}
+      traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
 
   # Administration interface
   # https://github.com/hardware/postfixadmin
@@ -123,6 +124,7 @@ services:
   # https://redis.io/
   mailserver_redis:
     image: redis:4.0-alpine
+    container_name: mailserver_redis
     restart: unless-stopped
     networks:
       - traefik_proxy
