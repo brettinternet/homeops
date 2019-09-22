@@ -34,16 +34,5 @@ services:
       traefik.backend: pihole
       traefik.port: 80
       traefik.frontend.rule: Host:pihole.${ROOT_DOMAIN}
-      traefik.frontend.headers.SSLRedirect: true
-      traefik.frontend.headers.STSSeconds: 315360000
-      traefik.frontend.headers.browserXSSFilter: true
-      traefik.frontend.headers.contentTypeNosniff: true
-      traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.STSIncludeSubdomains: true
-      traefik.frontend.headers.STSPreload: true
-      traefik.frontend.headers.frameDeny: true
-      # traefik.frontend.auth.forward.address: http://oauth:4181
-      # traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
-      # traefik.frontend.auth.forward.trustForwardHeader: true
     extra_hosts:
       - pihole.${ROOT_DOMAIN}:${HOMELAB_LOCAL_IP}

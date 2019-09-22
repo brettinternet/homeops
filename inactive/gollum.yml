@@ -18,12 +18,12 @@ services:
     volumes:
       - ${APPDATA_DIR}/gollum:/wiki
     ports:
-      - "8080:8080"
+      - "8180:8080"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.backend: gollum
-      traefik.port: 8080
+      traefik.docker.usebindportip: true
       traefik.frontend.rule: Host:wiki.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
       traefik.frontend.headers.STSSeconds: 315360000

@@ -33,7 +33,7 @@ services:
     volumes:
       - ${APPDATA_DIR}/nextcloud:/var/www/html
     ports:
-      - "8888:80"
+      - "8887:80"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
