@@ -108,7 +108,7 @@ services:
   # https://github.com/docker-library/mariadb
   # https://mariadb.org/
   mailserver_mariadb:
-    image: mariadb:10.2
+    image: mariadb
     container_name: mailserver_mariadb
     restart: unless-stopped
     networks:
