@@ -16,27 +16,6 @@ SERVER_WG_NIC="wg0"
 iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 
-# Port mapping to forward ([external/source]: internal/destination)
-PORTS_TO_FORWARD=(
-    # HTTP/S
-  [80]=80
-  [443]=443
-  # SSH
-  [2222]=22
-  # DNS
-  [53]=53
-  # MAILCOW
-  # https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-system/#default-ports
-  [25]=25
-  [465]=465
-  [587]=587
-  [143]=143
-  [993]=993
-  [110]=110
-  [995]=995
-  [4190]=4190
-)
-
 # ufw allow $SERVER_PORT || :
 
 # Enable IP forwarding
@@ -58,18 +37,105 @@ if [[ -z "$CLIENT_WG_IPV4" || -z "$SERVER_WG_IPV4" ]]; then
   exit 1
 fi
 
+# Port mapping to forward ([external/source]: internal/destination)
+### TCP
+TCP_PORTS_TO_FORWARD=(
+  # HTTP/S
+  [80]=80
+  [443]=443
+  # SSH
+  [2222]=22
+  # DNS
+  [53]=53
+  # MAILCOW
+  # https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-system/#default-ports
+  [25]=25
+  [465]=465
+  [587]=587
+  [143]=143
+  [993]=993
+  [110]=110
+  [995]=995
+  [4190]=4190
+)
+
 # Forward each port to VPN client via DNAT
 # configure response to bastion via SNAT
-for KEY in ${!PORTS_TO_FORWARD[@]}
+for KEY in ${!TCP_PORTS_TO_FORWARD[@]}
 do
   # DNAT
-  iptables -t nat -A PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV4:${PORTS_TO_FORWARD[$KEY]}
-  [[ -n "$CLIENT_WG_IPV6" ]] && ip6tables -t nat -A PREROUTING -p tcp --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV6:${PORTS_TO_FORWARD[$KEY]}
+  iptables -t nat $IPTABLES_ARG PREROUTING \
+    -p tcp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV4:${TCP_PORTS_TO_FORWARD[$KEY]}
+  
+  [[ -n "$CLIENT_WG_IPV6" ]] && \
+    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    -p tcp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV6:${TCP_PORTS_TO_FORWARD[$KEY]}
 
-  # SNAT
-  iptables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
-  [[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat -A POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
 done
+
+# SNAT
+iptables -t nat $IPTABLES_ARG POSTROUTING \
+  -p tcp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV4
+
+[[ -n "$SERVER_WG_IPV6" ]] && \
+  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  -p tcp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV6
+
+### UDP
+UDP_PORTS_TO_FORWAR=(
+  # DNS
+  [53]=53
+)
+
+# Forward each port to VPN client via DNAT
+# configure response to bastion via SNAT
+for KEY in ${!UDP_PORTS_TO_FORWAR[@]}
+do
+  # DNAT
+  iptables -t nat $IPTABLES_ARG PREROUTING \
+    -p udp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV4:${UDP_PORTS_TO_FORWAR[$KEY]}
+  
+  [[ -n "$CLIENT_WG_IPV6" ]] && \
+    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    -p udp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV6:${UDP_PORTS_TO_FORWAR[$KEY]}
+
+done
+
+# SNAT
+iptables -t nat $IPTABLES_ARG POSTROUTING \
+  -p udp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV4
+
+[[ -n "$SERVER_WG_IPV6" ]] && \
+  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  -p udp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV6
 
 # ###############
 # # Configure firewall rules on the server

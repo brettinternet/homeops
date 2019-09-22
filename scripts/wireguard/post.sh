@@ -30,7 +30,8 @@ if [[ -z "$CLIENT_WG_IPV4" || -z "$SERVER_WG_IPV4" ]]; then
 fi
 
 # Port mapping to forward ([external/source]: internal/destination)
-PORTS_TO_FORWARD=(
+### TCP
+TCP_PORTS_TO_FORWARD=(
   # HTTP/S
   [80]=80
   [443]=443
@@ -52,14 +53,78 @@ PORTS_TO_FORWARD=(
 
 # Forward each port to VPN client via DNAT
 # configure response to bastion via SNAT
-for KEY in ${!PORTS_TO_FORWARD[@]}
+for KEY in ${!TCP_PORTS_TO_FORWARD[@]}
 do
   # DNAT
-  iptables -t nat $IPTABLES_ARG PREROUTING -p tcp -i $SERVER_PUB_NIC --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV4:${PORTS_TO_FORWARD[$KEY]}
-  [[ -n "$CLIENT_WG_IPV6" ]] && ip6tables -t nat $IPTABLES_ARG PREROUTING -p tcp -i $SERVER_PUB_NIC --dport $KEY -j DNAT --to-destination $CLIENT_WG_IPV6:${PORTS_TO_FORWARD[$KEY]}
+  iptables -t nat $IPTABLES_ARG PREROUTING \
+    -p tcp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV4:${TCP_PORTS_TO_FORWARD[$KEY]}
+  
+  [[ -n "$CLIENT_WG_IPV6" ]] && \
+    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    -p tcp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV6:${TCP_PORTS_TO_FORWARD[$KEY]}
 
 done
 
 # SNAT
-iptables -t nat $IPTABLES_ARG POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV4
-[[ -n "$SERVER_WG_IPV6" ]] && ip6tables -t nat $IPTABLES_ARG POSTROUTING -p tcp -o $SERVER_WG_NIC -j SNAT --to-source $SERVER_WG_IPV6
+iptables -t nat $IPTABLES_ARG POSTROUTING \
+  -p tcp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV4
+
+[[ -n "$SERVER_WG_IPV6" ]] && \
+  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  -p tcp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV6
+
+### UDP
+UDP_PORTS_TO_FORWAR=(
+  # DNS
+  [53]=53
+)
+
+# Forward each port to VPN client via DNAT
+# configure response to bastion via SNAT
+for KEY in ${!UDP_PORTS_TO_FORWAR[@]}
+do
+  # DNAT
+  iptables -t nat $IPTABLES_ARG PREROUTING \
+    -p udp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV4:${UDP_PORTS_TO_FORWAR[$KEY]}
+  
+  [[ -n "$CLIENT_WG_IPV6" ]] && \
+    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    -p udp \
+    -i $SERVER_PUB_NIC \
+    --dport $KEY \
+    -j DNAT \
+    --to-destination $CLIENT_WG_IPV6:${UDP_PORTS_TO_FORWAR[$KEY]}
+
+done
+
+# SNAT
+iptables -t nat $IPTABLES_ARG POSTROUTING \
+  -p udp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV4
+
+[[ -n "$SERVER_WG_IPV6" ]] && \
+  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  -p udp \
+  -o $SERVER_WG_NIC \
+  -j SNAT \
+  --to-source $SERVER_WG_IPV6
