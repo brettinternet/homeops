@@ -4,20 +4,20 @@
 # server that routes public traffic to a Traefik
 # reverse proxy
 
-$IPTABLES_ARG=""
+IPTABLES_ARG=""
 
 if [ "$1" = "up" ]; then
-  $IPTABLES_ARG="-A"
+  IPTABLES_ARG="A"
 elif [ "$1" = "down" ]; then
-  $IPTABLES_ARG="-D"
+  IPTABLES_ARG="D"
 fi
 
 # Detect public interface
 SERVER_PUB_NIC="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 SERVER_WG_NIC="wg0"
 
-iptables -t nat $IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-ip6tables -t nat $IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+iptables -t nat -$IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+ip6tables -t nat -$IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 
 : ${CLIENT_WG_IPV4:=""} # required variables
 : ${CLIENT_WG_IPV6:=""}
@@ -56,7 +56,7 @@ TCP_PORTS_TO_FORWARD=(
 for KEY in ${!TCP_PORTS_TO_FORWARD[@]}
 do
   # DNAT
-  iptables -t nat $IPTABLES_ARG PREROUTING \
+  iptables -t nat -$IPTABLES_ARG PREROUTING \
     -p tcp \
     -i $SERVER_PUB_NIC \
     --dport $KEY \
@@ -64,7 +64,7 @@ do
     --to-destination $CLIENT_WG_IPV4:${TCP_PORTS_TO_FORWARD[$KEY]}
   
   [[ -n "$CLIENT_WG_IPV6" ]] && \
-    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    ip6tables -t nat -$IPTABLES_ARG PREROUTING \
     -p tcp \
     -i $SERVER_PUB_NIC \
     --dport $KEY \
@@ -74,14 +74,14 @@ do
 done
 
 # SNAT
-iptables -t nat $IPTABLES_ARG POSTROUTING \
+iptables -t nat -$IPTABLES_ARG POSTROUTING \
   -p tcp \
   -o $SERVER_WG_NIC \
   -j SNAT \
   --to-source $SERVER_WG_IPV4
 
 [[ -n "$SERVER_WG_IPV6" ]] && \
-  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  ip6tables -t nat -$IPTABLES_ARG POSTROUTING \
   -p tcp \
   -o $SERVER_WG_NIC \
   -j SNAT \
@@ -98,7 +98,7 @@ UDP_PORTS_TO_FORWAR=(
 for KEY in ${!UDP_PORTS_TO_FORWAR[@]}
 do
   # DNAT
-  iptables -t nat $IPTABLES_ARG PREROUTING \
+  iptables -t nat -$IPTABLES_ARG PREROUTING \
     -p udp \
     -i $SERVER_PUB_NIC \
     --dport $KEY \
@@ -106,7 +106,7 @@ do
     --to-destination $CLIENT_WG_IPV4:${UDP_PORTS_TO_FORWAR[$KEY]}
   
   [[ -n "$CLIENT_WG_IPV6" ]] && \
-    ip6tables -t nat $IPTABLES_ARG PREROUTING \
+    ip6tables -t nat -$IPTABLES_ARG PREROUTING \
     -p udp \
     -i $SERVER_PUB_NIC \
     --dport $KEY \
@@ -116,14 +116,14 @@ do
 done
 
 # SNAT
-iptables -t nat $IPTABLES_ARG POSTROUTING \
+iptables -t nat -$IPTABLES_ARG POSTROUTING \
   -p udp \
   -o $SERVER_WG_NIC \
   -j SNAT \
   --to-source $SERVER_WG_IPV4
 
 [[ -n "$SERVER_WG_IPV6" ]] && \
-  ip6tables -t nat $IPTABLES_ARG POSTROUTING \
+  ip6tables -t nat -$IPTABLES_ARG POSTROUTING \
   -p udp \
   -o $SERVER_WG_NIC \
   -j SNAT \
