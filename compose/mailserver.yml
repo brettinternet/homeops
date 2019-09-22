@@ -58,7 +58,7 @@ services:
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
     depends_on:
       - mailserver
-      - mariadb
+      - mailserver_mariadb
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
