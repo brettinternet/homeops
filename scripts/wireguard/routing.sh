@@ -47,15 +47,11 @@ TCP_PORTS_TO_FORWARD=(
   [2222]=22
   # DNS
   [53]=53
-  # MAILCOW
-  # https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-system/#default-ports
+  # Mailserver
   [25]=25
-  [465]=465
-  [587]=587
   [143]=143
+  [587]=587
   [993]=993
-  [110]=110
-  [995]=995
   [4190]=4190
 )
 
