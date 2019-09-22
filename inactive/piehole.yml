@@ -22,7 +22,7 @@ services:
       - ${APPDATA_DIR}/pihole/config/:/etc/pihole/
       - ${APPDATA_DIR}/pihole/dnsmasq.d/:/etc/dnsmasq.d/
     environment:
-      - WEBPASSWORD=${PIEHOLE_PASSWORD}
+      - WEBPASSWORD=${PIHOLE_PASSWORD}
       - VIRTUAL_HOST=pihole.${ROOT_DOMAIN}
       - ServerIP=${HOMELAB_LOCAL_IP}
     ports:
