@@ -41,11 +41,11 @@ if [ -z "$CONTAINERS" ]; then
   CONTAINERS=$(ls compose -I "$REVERSE_PROXY*" -I "$AUTH*" -1 | sed -e 's/\..*$//')
 
   if [ "$COMPOSE_ARGS" = "down" ]; then
-    # start proxy & proxy network first
-    CONTAINERS=("$REVERSE_PROXY" "$AUTH" "${CONTAINERS[@]}")
-  else
     # reverse
     CONTAINERS=("${CONTAINERS[@]}" "$AUTH" "$REVERSE_PROXY")
+  else
+    # start proxy & proxy network first
+    CONTAINERS=("$REVERSE_PROXY" "$AUTH" "${CONTAINERS[@]}")
   fi
 fi
 
