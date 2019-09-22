@@ -23,6 +23,8 @@ PORTS_TO_FORWARD=(
   [443]=443
   # SSH
   [2222]=22
+  # DNS
+  [53]=53
   # MAILCOW
   # https://mailcow.github.io/mailcow-dockerized-docs/prerequisite-system/#default-ports
   [25]=25
@@ -33,8 +35,6 @@ PORTS_TO_FORWARD=(
   [110]=110
   [995]=995
   [4190]=4190
-  # DNS
-  # [53]=53
 )
 
 # ufw allow $SERVER_PORT || :
