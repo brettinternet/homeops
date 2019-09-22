@@ -78,7 +78,7 @@ services:
     volumes:
       - ${STORAGE_DIR}/mailserver/rainloop:/rainloop/data
     depends_on:
-      - mailserver_mailserver
+      - mailserver
       - mailserver_mariadb
     labels:
       traefik.enable: true
