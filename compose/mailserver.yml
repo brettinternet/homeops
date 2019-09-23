@@ -49,18 +49,21 @@ services:
   # https://github.com/hardware/postfixadmin
   # http://postfixadmin.sourceforge.net/
   # Configuration : https://github.com/hardware/mailserver/wiki/Postfixadmin-initial-configuration
+  # View local configuration: `docker exec -it postfix cat /postfixadmin/config.local.php`
   postfix:
     image: hardware/postfixadmin
     container_name: postfix
     restart: unless-stopped
     domainname: ${ROOT_DOMAIN}
-    hostname: postfix
+    hostname: mail
     networks:
       - traefik_proxy
     depends_on:
       - mailserver
       - mailserver_mariadb
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
       - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
       - DBPORT=3307
@@ -119,6 +122,8 @@ services:
     networks:
       - traefik_proxy
     environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=postfix
       - MYSQL_USER=postfix
