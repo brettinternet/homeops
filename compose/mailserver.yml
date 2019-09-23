@@ -21,6 +21,7 @@ services:
       - traefik_proxy
     environment:
       # https://github.com/hardware/mailserver#environment-variables
+      - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
       - DBPORT=3307
       - RSPAMD_PASSWORD=${RSPAMD_PASSWORD}
@@ -53,10 +54,11 @@ services:
     container_name: postfix
     restart: unless-stopped
     domainname: ${ROOT_DOMAIN}
-    hostname: mail
+    hostname: postfix
     networks:
       - traefik_proxy
     environment:
+      - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
       - DBPORT=3307
     depends_on:
