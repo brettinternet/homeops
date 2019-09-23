@@ -57,13 +57,16 @@ services:
     hostname: postfix
     networks:
       - traefik_proxy
+    depends_on:
+      - mailserver
+      - mailserver_mariadb
     environment:
       - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
       - DBPORT=3307
-    depends_on:
-      - mailserver
-      - mailserver_mariadb
+    volumes:
+      - ${STORAGE_DIR}/mailserver/mail/postfix/config.inc.php:/postfixadmin/config.inc.php
+      - ${STORAGE_DIR}/mailserver/mail/postfix/config.local.php:/postfixadmin/config.local.php
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
