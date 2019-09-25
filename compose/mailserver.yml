@@ -116,8 +116,8 @@ services:
   # https://github.com/docker-library/mariadb
   # https://mariadb.org/
   mailserver_mariadb:
-    image: mariadb
-    container_name: mailserver_mariadb:10.2
+    image: mariadb:10.2
+    container_name: mailserver_mariadb
     restart: unless-stopped
     networks:
       - traefik_proxy
