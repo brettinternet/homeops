@@ -118,10 +118,11 @@ services:
   mailserver_mariadb:
     image: mariadb:10.2
     container_name: mailserver_mariadb
+    hostname: mailserver_mariadb
     restart: unless-stopped
     networks:
       - traefik_proxy
-    command: --log-bin
+    command: --log-bin --log-basename=mailserver_mariadb
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
