@@ -62,8 +62,6 @@ services:
       - mailserver
       - mailserver_mariadb
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
       - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
       - DBPORT=3307
@@ -113,7 +111,7 @@ services:
   # https://github.com/docker-library/mariadb
   # https://mariadb.org/
   mailserver_mariadb:
-    image: mariadb:10.2
+    image: mariadb:10.4.8
     container_name: mailserver_mariadb
     hostname: mailserver_mariadb
     restart: unless-stopped
@@ -121,8 +119,6 @@ services:
       - traefik_proxy
     command: --log-bin --log-basename=mailserver_mariadb
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=postfix
       - MYSQL_USER=postfix
