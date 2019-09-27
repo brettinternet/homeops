@@ -116,7 +116,6 @@ services:
     restart: unless-stopped
     networks:
       - traefik_proxy
-    command: --log-bin --log-basename=mailserver_mariadb
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=postfix
