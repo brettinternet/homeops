@@ -64,7 +64,6 @@ services:
     environment:
       - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
-      - DBPORT=3307
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
