@@ -121,8 +121,6 @@ services:
       - MYSQL_PASSWORD=${MAILSERVER_MYSQL_PASSWORD}
     volumes:
       - ${STORAGE_DIR}/mailserver/mysql:/var/lib/mysql
-    ports:
-      - "3306:3306"
 
   # Database
   # https://github.com/docker-library/redis
