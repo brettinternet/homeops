@@ -23,7 +23,6 @@ services:
       # https://github.com/hardware/mailserver#environment-variables
       - DBHOST=mailserver_mariadb
       - DBPASS=${MAILSERVER_MYSQL_PASSWORD}
-      - DBPORT=3307
       - RSPAMD_PASSWORD=${RSPAMD_PASSWORD}
     volumes:
       - ${STORAGE_DIR}/mailserver/mail:/var/mail
@@ -123,7 +122,7 @@ services:
     volumes:
       - ${STORAGE_DIR}/mailserver/mysql:/var/lib/mysql
     ports:
-      - "3307:3306"
+      - "3306:3306"
 
   # Database
   # https://github.com/docker-library/redis
