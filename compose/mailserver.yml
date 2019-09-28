@@ -42,7 +42,7 @@ services:
       traefik.docker.network: traefik_proxy
       # traefik.docker.usebindportip: true
       traefik.port: 11334
-      traefik.frontend.rule: Host:spam.${ROOT_DOMAIN},mail.${ROOT_DOMAIN}
+      traefik.frontend.rule: Host:spam.${ROOT_DOMAIN}
       # traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
 
   # Administration interface
