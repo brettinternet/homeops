@@ -32,7 +32,7 @@ services:
       - "25:25" # SMTP                - Required
       # - "110:110"     # POP3       STARTTLS - Optional - For webmails/desktop clients
       - "143:143" # IMAP       STARTTLS - Optional - For webmails/desktop clients
-      # - "465:465"     # SMTPS      SSL/TLS  - Optional - Enabled for compatibility reason, otherwise disabled
+      # - "465:465"     # SMTPS      SSL/TLS  - Optional - Enabled for compatibility reason, otherwise disabled (legacy support)
       - "587:587" # Submission STARTTLS - Optional - For webmails/desktop clients
       - "993:993" # IMAPS      SSL/TLS  - Optional - For webmails/desktop clients
       # - "995:995"     # POP3S      SSL/TLS  - Optional - For webmails/desktop clients
@@ -42,7 +42,7 @@ services:
       traefik.docker.network: traefik_proxy
       # traefik.docker.usebindportip: true
       traefik.port: 11334
-      traefik.frontend.rule: Host:spam.${ROOT_DOMAIN}
+      traefik.frontend.rule: Host:spam.${ROOT_DOMAIN},mail.${ROOT_DOMAIN}
       # traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
 
   # Administration interface
