@@ -142,7 +142,8 @@ DNS = $CLIENT_DNS_1,$CLIENT_DNS_2
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $SERVER_ENDPOINT
-AllowedIPs = $SERVER_WG_IPV4/32,$SERVER_WG_IPV6/128
+# AllowedIPs = $SERVER_WG_IPV4/32,$SERVER_WG_IPV6/128
+AllowedIPs = 0.0.0.0/0, ::/128 # allow all traffic, until docker -> bastion traffic is configured
 PersistentKeepalive = $CLIENT_PERSISTENT_KEEPALIVE
 EOT
 
