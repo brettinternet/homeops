@@ -84,14 +84,14 @@ iptables -t nat -$IPTABLES_ARG POSTROUTING \
   --to-source $SERVER_WG_IPV6
 
 ### UDP
-UDP_PORTS_TO_FORWAR=(
+UDP_PORTS_TO_FORWARD=(
   # DNS
   [53]=53
 )
 
 # Forward each port to VPN client via DNAT
 # configure response to bastion via SNAT
-for KEY in ${!UDP_PORTS_TO_FORWAR[@]}
+for KEY in ${!UDP_PORTS_TO_FORWARD[@]}
 do
   # DNAT
   iptables -t nat -$IPTABLES_ARG PREROUTING \
@@ -99,7 +99,7 @@ do
     -i $SERVER_PUB_NIC \
     --dport $KEY \
     -j DNAT \
-    --to-destination $CLIENT_WG_IPV4:${UDP_PORTS_TO_FORWAR[$KEY]}
+    --to-destination $CLIENT_WG_IPV4:${UDP_PORTS_TO_FORWARD[$KEY]}
   
   [[ -n "$CLIENT_WG_IPV6" ]] && \
     ip6tables -t nat -$IPTABLES_ARG PREROUTING \
@@ -107,7 +107,7 @@ do
     -i $SERVER_PUB_NIC \
     --dport $KEY \
     -j DNAT \
-    --to-destination $CLIENT_WG_IPV6:${UDP_PORTS_TO_FORWAR[$KEY]}
+    --to-destination $CLIENT_WG_IPV6:${UDP_PORTS_TO_FORWARD[$KEY]}
 
 done
 
