@@ -19,7 +19,7 @@ services:
       - PUID=${PUID}
       - SITE_ROOT=healthchecks.${ROOT_DOMAIN}
       - SITE_NAME=Healthchecks
-      - DEFAULT_FROM_EMAIL=${EMAIL_FROM}
+      - DEFAULT_FROM_EMAIL=${SMTP_EMAIL_FROM}
       - EMAIL_HOST=${SMTP_HOST}
       - EMAIL_PORT=${SMTP_PORT}
       - EMAIL_HOST_USER=${SMTP_USER}
