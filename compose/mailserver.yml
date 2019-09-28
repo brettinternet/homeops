@@ -43,7 +43,7 @@ services:
       # traefik.docker.usebindportip: true
       traefik.port: 11334
       traefik.frontend.rule: Host:spam.${ROOT_DOMAIN}
-      traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
+      # traefik.mail.frontend.rule: Host:mail.${ROOT_DOMAIN}
 
   # Administration interface
   # https://github.com/hardware/postfixadmin
