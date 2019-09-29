@@ -7,9 +7,9 @@ networks:
     external: true
 
 services:
-  # https://github.com/miniflux/miniflux
+  # https://github.com/jonschoning/espial
   espial:
-    # https://hub.docker.com/r/jonschoning/espial
+    # https://github.com/jonschoning/espial-docker
     image: jonschoning/espial:espial
     container_name: espial
     restart: unless-stopped
@@ -18,16 +18,18 @@ services:
     environment:
       - TZ=${TZ}
       - IP_FROM_HEADER=true
+      - SQLITE_DATABASE=/app/data/espial.sqlite3
+      - ekg_datadir=ekg
     volumes:
-      - ${APPDATA_DIR}/espial:/app/data
+      - ${STORAGE_DIR}/data/espial:/app/data
     ports:
-      - "3001:3000"
-      - "8000:8000"
+      - "3006:3000"
+      # - "8000:8000"
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
       traefik.docker.usebindportip: true
-      traefik.port: 3001
+      # traefik.port: 3006
       traefik.backend: espial
       traefik.frontend.rule: Host:bookmarks.${ROOT_DOMAIN}
       traefik.frontend.headers.SSLRedirect: true
