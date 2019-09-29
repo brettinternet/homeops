@@ -20,6 +20,7 @@ services:
     networks:
       - traefik_proxy
     environment:
+      - TZ=${TZ}
       # https://github.com/hardware/mailserver#environment-variables
       - DBHOST=mailserver_mariadb
       - REDIS_HOST=mailserver_redis
