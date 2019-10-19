@@ -9,6 +9,8 @@ networks:
 services:
   healthchecks:
     # https://hub.docker.com/r/linuxserver/healthchecks
+    # Healthchecks expects you to add your own logo images, but you may consider using theirs
+    # wget https://healthchecks.io/static/img/logo.png ...
     image: linuxserver/healthchecks
     container_name: healthchecks
     restart: unless-stopped
