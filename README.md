@@ -35,7 +35,7 @@ docker logs -tf --tail="50" <service_name>
 ### Traefik Reverse Proxy
 
 - [x] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
-- [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html)
+- [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html) or [Authelia](https://github.com/clems4ever/authelia)
 
 ## Bastion Server
 
