@@ -8,6 +8,10 @@ networks:
 
 services:
   # https://github.com/jonschoning/espial
+  # First run requires user creation
+  # docker-compose exec espial ./migration createuser \
+  #   --conn /app/data/espial.sqlite3 -\
+  #   -userName myusername --userPassword myuserpassword
   espial:
     # https://github.com/jonschoning/espial-docker
     image: jonschoning/espial:espial
