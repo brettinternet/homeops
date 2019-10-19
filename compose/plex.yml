@@ -29,6 +29,7 @@ services:
       - ${STORAGE_DIR}/music:/data/Music
       - ${STORAGE_DIR}/movies:/data/Movies
       - ${STORAGE_DIR}/tv:/data/TV
+      - ${STORAGE_DIR}/photos:/data/Photos
       # - ${STORAGE_DIR}/tmp/transcode:/transcode
       - /tmp:/transcode
     ports:
