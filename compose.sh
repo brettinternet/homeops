@@ -29,7 +29,13 @@ while getopts "h?ud" opt; do
     esac
 done
 
-shift $((OPTIND-1))
+# Change working directory to the directory of the script
+# source: https://stackoverflow.com/a/3355423/6817437
+cd "$(dirname "$0")"
+
+# reset positional parameters
+# source: https://unix.stackexchange.com/a/214151/224048
+shift "$((OPTIND-1))"
 
 CONTAINERS="$@"
 
