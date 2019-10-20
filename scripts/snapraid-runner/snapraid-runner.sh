@@ -14,7 +14,7 @@ bash $HOMELAB_REPO_PATH/compose.sh -d "${APPS_TO_SHUTDOWN[@]}"
 {
   python3 /opt/snapraid-runner/snapraid-runner.py -c /opt/snapraid-runner/snapraid-runner.conf # && curl -fsS --retry 3 https://healthchecks.io...
 } || {
-  echo "ERROR: Unable to sync"
+  echo "ERROR: Unable to run snapraid-runner.py"
 }
 
 bash $HOMELAB_REPO_PATH/compose.sh -u "${APPS_TO_SHUTDOWN[@]}"
