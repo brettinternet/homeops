@@ -9,8 +9,8 @@ fi
 
 APPS_TO_SHUTDOWN=("automators" "espial" "mailserver" "miniflux" "nzbget" "watchtower")
 
-bash $HOMELAB_REPO_PATH/compose.sh -d $APPS_TO_SHUTDOWN
+bash $HOMELAB_REPO_PATH/compose.sh -d "${APPS_TO_SHUTDOWN[@]}"
 
 python3 /opt/snapraid-runner/snapraid-runner.py -c /opt/snapraid-runner/snapraid-runner.conf
 
-bash $HOMELAB_REPO_PATH/compose.sh -u $APPS_TO_SHUTDOWN
+bash $HOMELAB_REPO_PATH/compose.sh -u "${APPS_TO_SHUTDOWN[@]}"
