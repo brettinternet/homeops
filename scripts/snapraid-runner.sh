@@ -11,6 +11,10 @@ APPS_TO_SHUTDOWN=("automators" "espial" "mailserver" "miniflux" "nzbget" "watcht
 
 bash $HOMELAB_REPO_PATH/compose.sh -d "${APPS_TO_SHUTDOWN[@]}"
 
-python3 /opt/snapraid-runner/snapraid-runner.py -c /opt/snapraid-runner/snapraid-runner.conf
+{
+  python3 /opt/snapraid-runner/snapraid-runner.py -c /opt/snapraid-runner/snapraid-runner.conf # && curl -fsS --retry 3 https://healthchecks.io...
+} || {
+  echo "ERROR: Unable to sync"
+}
 
 bash $HOMELAB_REPO_PATH/compose.sh -u "${APPS_TO_SHUTDOWN[@]}"
