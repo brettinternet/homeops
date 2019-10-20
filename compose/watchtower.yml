@@ -14,5 +14,5 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${APPDATA_DIR}/watchtower/config.json:/config.json
-    command: --schedule "0 0 4 * * *" --cleanup
-    # command: --interval 900 # 15 minutes
+    # cron (with seconds) format https://containrrr.github.io/watchtower/arguments/#scheduling
+    command: --schedule "0 0 5 * * *" --cleanup
