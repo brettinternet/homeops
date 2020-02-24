@@ -20,11 +20,15 @@ while getopts "h?ud" opt; do
         echo "$HELP"
         exit 0
         ;;
-    u)  COMPOSE_ARGS="up -d"
+    u)
+        COMPOSE_ARGS="up -d"
         ;;
-    d)  COMPOSE_ARGS="down"
+    d)
+        COMPOSE_ARGS="down"
         ;;
-    *)  COMPOSE_ARGS="up -d"
+    *)
+        echo "$HELP"
+        exit 0
         ;;
     esac
 done
@@ -55,9 +59,11 @@ if [ -z "$CONTAINERS" ]; then
   fi
 fi
 
+COMMAND="/usr/local/bin/docker-compose"
+
 # start each service from yml file in docker-compose detached mode
 for c in ${CONTAINERS[@]}; do
   printf "\n### $c $COMPOSE_ARGS ###\n"
-  docker-compose -f "compose/$c.yml" -p $c $COMPOSE_ARGS
+  $COMMAND -f "compose/$c.yml" -p $c $COMPOSE_ARGS
   printf "\n"
 done
