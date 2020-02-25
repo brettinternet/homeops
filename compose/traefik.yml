@@ -11,7 +11,7 @@ networks:
 
 services:
   traefik:
-    image: traefik
+    image: traefik:v1.7
     container_name: traefik
     restart: unless-stopped
     networks:
