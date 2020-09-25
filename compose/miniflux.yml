@@ -41,7 +41,6 @@ services:
       traefik.frontend.headers.STSIncludeSubdomains: true
       traefik.frontend.headers.STSPreload: true
       traefik.frontend.headers.frameDeny: true
-      traefik.frontend.auth.forward.address: http://oauth:4181
 
   miniflux_db:
     image: postgres:10.10
