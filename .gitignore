@@ -3,3 +3,5 @@
 terraform.tfstate*
 wg0*
 *.log
+ansible/vars/secret.yml
+ansible/inventory
