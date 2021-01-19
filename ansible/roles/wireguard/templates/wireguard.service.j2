@@ -1,0 +1,10 @@
+[Unit]
+Description=wireguard vpn
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/etc/wireguard/serviceup.sh
+
+[Install]
+WantedBy=multi-user.target
