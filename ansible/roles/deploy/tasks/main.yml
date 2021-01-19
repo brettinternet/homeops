@@ -1,0 +1,262 @@
+---
+- name: Make HomelabOS data directories.
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "1777"
+  loop:
+    - "{{ volumes_root }}/traefik"
+    - "{{ volumes_root }}/traefik/conf.d"
+    - /etc/docker
+  ignore_errors: "yes"
+
+- name: Configure docker log settings
+  copy:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+# Needs passlib
+- name: Write user to basic auth file
+  htpasswd:
+    path: "{{ volumes_root }}/traefik/basicAuth"
+    name: "{{ default_username }}"
+    password: "{{ default_password }}"
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Configure SSL
+  file:
+    path: "{{ volumes_root }}/traefik/acme.json"
+    mode: 0600
+    state: touch
+
+- name: Get UID
+  command: id -u {{ homelab_ssh_user }}
+  register: uid_output
+  become: false
+
+- name: Get GID
+  command: id -g {{ homelab_ssh_user }}
+  register: gid_output
+  become: false
+
+- name: Create Media Folders / NAS Mount Points
+  when:
+    - nas_enable
+  file:
+    path: "{{ storage_dir }}/{{ item }}"
+    state: directory
+  with_items:
+    - "Backups"
+    - "Books"
+    - "Documents"
+    - "Downloads"
+    - "Music"
+    - "Pictures"
+    - "temp"
+    - "Video"
+
+- name: Configure NAS - Public NFS Shares
+  when:
+    - nas_enable
+    - nas_mount_type == "nfs"
+  lineinfile:
+    path: /etc/fstab
+    line: "{{ nas_host }}:{{ nas_share_path }}/{{ item }} \
+      {{ storage_dir }}/{{ item }} nfs \
+      auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0"
+  with_items:
+    - "Backups"
+    - "Books"
+    - "Documents"
+    - "Downloads"
+    - "Music"
+    - "Pictures"
+    - "temp"
+    - "Video"
+
+- name: Configure NAS - Samba Shares
+  when:
+    - nas_enable
+    - nas_mount_type == "smb" or nas_mount_type == "cifs"
+  lineinfile:
+    path: /etc/fstab
+    line: "//{{ nas_host }}/{{ nas_share_path }}/{{ item }} \
+      {{ storage_dir }}/{{ item }} cifs \
+      nobrl,username={{ nas_user }},vers=2.0,\
+      dom={{ nas_workgroup }},password={{ nas_pass }},\
+      uid={{ uid_output.stdout }},gid={{ gid_output.stdout }},\
+      iocharset=utf8,file_mode=0777,dir_mode=0770  0  0"
+  with_items:
+    - "Backups"
+    - "Books"
+    - "Documents"
+    - "Downloads"
+    - "Music"
+    - "Pictures"
+    - "temp"
+    - "Video"
+
+- name: Mount NAS Drives
+  when: nas_enable
+  command: mount -a
+  args:
+    warn: "no"
+  ignore_errors: "yes"
+
+- name: Configure HomelabOS systemd service.
+  template:
+    src: homelabos.service
+    dest: /etc/systemd/system/homelabos.service
+
+# Hacky ansible workaround. Would love to remove these 4 tasks.
+# Long story short it ensures the `tor_domain: "{{ tor_http_domain_file.stdout | default('') }}"` bit can work.
+- name: Ensure tor host folder exists
+  file:
+    path: /var/lib/tor/ssh-onion/
+    state: directory
+
+- name: Ensure tor host folder exists
+  file:
+    path: /var/lib/tor/http-onion/
+    state: directory
+
+- name: Ensure blank tor host files exist
+  file:
+    path: /var/lib/tor/ssh-onion/hostname
+    state: touch
+
+- name: Ensure blank tor host files exist
+  file:
+    path: /var/lib/tor/http-onion/hostname
+    state: touch
+# / Hack
+
+- name: Read Tor connection info
+  shell: cat /var/lib/tor/http-onion/hostname
+  register: tor_http_domain_file
+
+- name: Configure Traefik .yaml
+  template:
+    src: traefik.yaml
+    dest: "{{ volumes_root }}/traefik/traefik.yaml"
+
+- name: Configure Traefik conf.d
+  template:
+    src: conf.d/middlewares.yaml
+    dest: "{{ volumes_root }}/traefik/conf.d/middlewares.yaml"
+  vars:
+    tor_domain: "{{ tor_http_domain_file.stdout | default('') }}"
+
+- name: Copy HomelabOS docker-compose.yml file into place.
+  template:
+    src: docker-compose.traefik.yml.j2
+    dest: "{{ volumes_root }}/traefik/docker-compose.yml"
+  vars:
+    service_domain: "{% if traefik.domain %}{{ traefik.domain }}{% else %}{{ traefik.subdomain }}.{{ domain }}{% endif %}"
+    tor_domain: "{{ tor_http_domain_file.stdout | default('') }}"
+
+- name: Create HomelabOS hosts file.
+  file:
+    path: "{{ volumes_root }}/homelab_hosts"
+    state: touch
+
+- name: Configure HomelabOS hosts file. You can find it at {{ volumes_root }}/homelab_hosts on your server.
+  lineinfile:
+    path: "{{ volumes_root }}/homelab_hosts"
+    line: "{{ ansible_host }} {{ service_item }}.{{ domain }} {{ service_item }}"
+  when: query
+  loop: "{{ services | flatten(1) }}"
+  loop_control:
+    loop_var: service_item
+  vars:
+    query: "{{ service_item + '.enable' }}"
+    tor_domain: "{{ tor_http_domain_file.stdout | default('') }}"
+    tor_ssh_domain: "{{ tor_ssh_domain_file.stdout | default('') }}"
+
+- name: Makefile helper to guide users
+  template:
+    src: helper.Makefile.j2
+    dest: "{{ volumes_root }}/Makefile"
+
+- name: Start HomelabOS
+  systemd:
+    name: homelabos
+    enabled: "yes"
+    daemon-reload: "yes"
+    state: started
+  ignore_errors: "yes"
+
+- name: Read Tor SSH connection info
+  shell: cat /var/lib/tor/ssh-onion/hostname
+  register: tor_ssh_domain_file
+  when: "lookup('vars', 'enable_tor')"
+
+- name: Read Tor connection info
+  shell: cat /var/lib/tor/http-onion/hostname
+  register: tor_http_domain_file
+  when: "lookup('vars', 'enable_tor')"
+
+- name: Get UID
+  command: id -u {{ homelab_ssh_user }}
+  register: uid_output
+  become: false
+
+- name: Get GID
+  command: id -g {{ homelab_ssh_user }}
+  register: gid_output
+  become: false
+
+- name: Deploy enabled Services
+  include_role:
+    name: "{{ service_item }}"
+  when: query
+  loop: "{{ services | flatten(1) }}"
+  loop_control:
+    loop_var: service_item
+  vars:
+    https_only: "{{ lookup('vars', service_item).https_only }}"
+    auth: "{{ lookup('vars', service_item).auth }}"
+    custom_domain: "{{ lookup('vars', service_item).domain }}"
+    service_domain: "{% if lookup('vars', service_item).domain %}{{ lookup('vars', service_item).domain }}{% else %}{{ lookup('vars', service_item).subdomain }}.{{ domain }}{% endif %}"
+    query: "{{ service_item + '.enable' }}"
+    tor_domain: "{{ tor_http_domain_file.stdout | default('') }}"
+    tor_ssh_domain: "{{ tor_ssh_domain_file.stdout | default('') }}"
+
+- name: Ensure disabled services are not running
+  systemd:
+    name: "{{ service_item }}"
+    state: stopped
+    enabled: false
+  when: query
+  loop: "{{ services | flatten(1) }}"
+  loop_control:
+    loop_var: service_item
+  ignore_errors: "yes"
+  vars:
+    query: "not {{ service_item + '.enable' }}"
+
+# Migration v0.7
+- name: remove docker-compose.SERVICENAME.yml
+  file:
+    state: absent
+    path: "{{ volumes_root }}/{{ service_item }}/docker-compose.{{ service_item }}.yml"
+  when: "query"
+  loop: "{{ services|flatten(levels=1) }}"
+  loop_control:
+    loop_var: service_item
+  ignore_errors: "yes"
+  vars:
+    query: "{{ service_item + '.enable' }}"
+# End Migration v0.7
+
+- debug:
+    msg: "HomelabOS Installed successfully! Go to https://organizr.{{ domain }}/ or http://{{ homelab_ip }}:8181 to get started."
+
+- debug:
+    msg: "You can also access your services via Tor at http://{{ tor_http_domain_file.stdout }}"
+  when: enable_tor
+
+- debug:
+    msg: "Problems? File an issue at https://gitlab.com/NickBusey/HomelabOS/issues"

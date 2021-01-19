@@ -1,0 +1,13 @@
+---
+- name: Deploy Bastion Host with Wireguard
+  hosts: server
+  become: yes
+  tasks:
+    - include_role:
+        name: wireguard
+
+- name: Install and configure server services
+  hosts: server
+  become: true
+  roles:
+    - deploy

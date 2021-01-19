@@ -1,0 +1,25 @@
+---
+- name: DO token is required
+  fail:
+    msg: DO token is required. Set value in ansible/vars/sercret.yml
+  when: not DO_TOKEN
+
+- name: Generate an OpenSSH keypair (4096 bits, rsa)
+  community.crypto.openssh_keypair:
+    path: "{{ OPENSSH_KEYPAIR_PATH | default('~/.ssh/id_rsa') }}"
+
+- name: Provision DO droplet
+  community.general.terraform:
+    # https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
+    project_path: "{{ TERRAFORM_DIR | default(role_path + '/files') }}"
+    state: "{{ STATE }}"
+    plan_file: "{{ TERRAFORM_PLAN | default(omit) }}"
+    variables:
+      do_token: "{{ DO_TOKEN }}"
+      openssh_keypair_path: "{{ OPENSSH_KEYPAIR_PATH | default('~/.ssh/id_rsa') }}"
+  register: terraform
+
+- name: Print new provision IP address
+  debug:
+    msg:
+      - "Add host to inventory: {{ terraform.outputs.ipv4_address.value }}"
