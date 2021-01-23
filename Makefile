@@ -11,27 +11,6 @@ ansible/vars/secret.yml:
 setup: ansible/inventory ansible/vars/secret.yml
 	@printf "\x1B[01;93m✔ Setup complete\n\x1B[0m"
 
-deploy:
-	@printf "\x1B[01;93m✔ Deploy complete\n\x1B[0m"
-
-.env:
-	@cp example.env .env
-	@printf "\x1B[01;93m✔ .env created\n\x1B[0m"
-
-ansible_bastion_connection:
-	@cd ansible; \
-		ansible-playbook bastion_connection.yml
-
 ansible_facts:
 	@cd ansible; \
 		ansible-playbook facts.yml
-
-terraform_bastion_apply: .env
-	@do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform apply -auto-approve terraform
-
-terraform_bastion_destroy: .env
-	@do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform destroy -auto-approve terraform
-
-echo:
-	@cd ansible; \
-		ansible-playbook --version
