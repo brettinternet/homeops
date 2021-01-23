@@ -1,0 +1,8 @@
+---
+- name: Update hosts
+  hosts: all
+  roles:
+    - name: upgrade
+      # Toggle when you're ready...
+      allow_reboot: no
+      allow_dist_upgrade: no
