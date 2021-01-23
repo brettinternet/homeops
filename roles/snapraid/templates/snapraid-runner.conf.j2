@@ -1,0 +1,38 @@
+; {{ ansible_managed }}
+; Source: https://github.com/Chronial/snapraid-runner/blob/master/snapraid-runner.conf.example
+
+[snapraid]
+executable = {{ snapraid_executable }}
+config = {{ snapraid_config }}
+deletethreshold = 250
+touch = {{ snapraid_touch }}
+
+[logging]
+file = {{ snapraid_runner_dir }}/snapraid.log
+maxsize = 5000
+{% if snapraid_email_address is defined %}
+
+[email]
+; when to send an email, comma-separated list of [success, error]
+sendon = {{ snapraid_email_sendon }}
+; set to false to get full program output via email
+short = true
+subject = [SnapRAID] Status Report:
+from = {{ snapraid_email_address_from }}
+to = {{ snapraid_email_address_to }}
+
+[smtp]
+host = {{ snapraid_smtp_host }}
+; leave empty for default port
+port = {{ snapraid_smtp_port }}
+; set to "true" to activate
+ssl = {{ snapraid_use_ssl }}
+user = {{ snapraid_email_address }}
+password = {{ snapraid_email_password }}
+{% endif %}}}
+
+[scrub]
+; set to true to run scrub after sync
+enabled = {{ snapraid_run_scrub }}
+percentage = {{ snapraid_run_scrub_percent }}
+older-than = {{ snapraid_run_scrub_age }}

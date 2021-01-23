@@ -1,0 +1,16 @@
+---
+- name: Install SnapRAID from AUR (Archlinux)
+  # ansible-galaxy install kewlfft.aur
+  # https://github.com/kewlfft/ansible-aur
+  include_role: kewlfft.aur
+  tasks:
+    - aur:
+        use: yay
+        name:
+          - snapraid
+
+# Cron is required to run snapraid-runner script periodically
+- name: Install cronie package (Archlinux)
+  pacman:
+    name: cronie
+    state: present
