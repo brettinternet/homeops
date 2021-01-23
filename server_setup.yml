@@ -1,0 +1,68 @@
+---
+- name: Setup docker compose services
+  hosts: server
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  vars:
+    runtime_dir: "{{ ansible_facts['user_dir'] }}"
+
+  tasks:
+    - name: Create runtime directory
+      file:
+        dest: "{{ runtime_dir }}"
+        state: directory
+        mode: 0744
+
+    - name: Copy orchestration files
+      copy:
+        src: "{{ playbook_dir }}/files/{{ item }}"
+        dest: "{{ runtime_dir }}/"
+        mode: 0744
+      with_items:
+        - docker-compose.yml
+        - docker-compose.override.yml
+
+    - name: Create docker-compose environment file
+      template:
+        # TODO: can simplify directory? relative?
+        src: "{{ playbook_dir }}/templates/env.j2"
+        dest: "{{ runtime_dir }}/"
+        mode: 0700
+
+- name: Setup SnapRAID
+  hosts: server
+  become: true
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  roles:
+    - name: snapraid
+      vars:
+        parity_disks:
+          - path: /mnt/parity1
+        data_disks:
+          - path: /mnt/disk1
+            content: true
+          - path: /mnt/disk2
+            content: true
+          - path: /mnt/disk3
+          - path: /mnt/disk4
+          - path: /mnt/disk5
+        snapraid_config_excludes:
+          - "*.unrecoverable"
+          - /tmp/
+          - /lost+found/
+          - downloads/
+          - appdata/
+          - snapshots/
+          - "*.!sync"
+          - .AppleDouble
+          - ._AppleDouble
+          - .DS_Store
+          - ._.DS_Store
+          - .Thumbs.db
+          - .fseventsd
+          - .Spotlight-V100
+          - .TemporaryItems
+          - .Trashes
+          - .AppleDB
+        # TODO: add email values for snapraid-runner.conf.j2
