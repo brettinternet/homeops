@@ -1,7 +1,6 @@
 .env
 .terraform
 terraform.tfstate*
-wg0*
 *.log
-ansible/vars/secret.yml
-ansible/inventory
+secret.yml
+inventory
