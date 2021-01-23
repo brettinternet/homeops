@@ -47,7 +47,7 @@
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
   roles:
-    - name: snapraid
+    - role: snapraid
       vars:
         # TODO: add email values for snapraid-runner.conf.j2
         parity_disks:
