@@ -1,0 +1,5 @@
+---
+supported_distributions:
+  - archlinux
+  - ubuntu
+  - debian
