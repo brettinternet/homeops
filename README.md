@@ -14,13 +14,6 @@ make setup
 
 Then, edit `inventory` with the server target and `vars/secret.yml` with secrets.
 
-For localhost, use:
-
-```
-[server]
-myserver  ansible_connection=local
-```
-
 ## Playbooks
 
 See [Working with playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html) and [ansible-playbook](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
