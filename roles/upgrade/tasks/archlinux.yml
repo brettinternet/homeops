@@ -14,7 +14,7 @@
         upgrade: yes
 
 - block:
-    - name: Check if kernel needs update (Archlinux)
+    - name: Check if kernel needs upgrade (Archlinux)
       # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
       # Need to modify to accommodate linux-lts and linux-hardened
       # Determines if installed kernel version is higher than runtime
