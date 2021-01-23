@@ -1,4 +1,8 @@
 ---
+# TODO: configure rootless docker https://wiki.archlinux.org/index.php/Docker#Docker_rootless
+
+# TODO: update Traefik to v2 https://github.com/klutchell/mediaserver
+
 - name: Setup docker compose services
   hosts: server
   vars_files:
@@ -29,6 +33,14 @@
         dest: "{{ runtime_dir }}/"
         mode: 0700
 
+# TODO: zfs mounted
+# https://www.reddit.com/r/zfs/comments/a6x5xv/mounting_zfs_pool_on_another_computer/
+# https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
+
+# TODO: add mergerfs setup? https://github.com/trapexit/mergerfs
+# https://perfectmediaserver.com/installation/manual-install/#mergerfs
+# fstab setup? https://docs.ansible.com/ansible/latest/collections/ansible/posix/mount_module.html
+
 - name: Setup SnapRAID
   hosts: server
   become: true
@@ -37,6 +49,7 @@
   roles:
     - name: snapraid
       vars:
+        # TODO: add email values for snapraid-runner.conf.j2
         parity_disks:
           - path: /mnt/parity1
         data_disks:
@@ -65,4 +78,12 @@
           - .TemporaryItems
           - .Trashes
           - .AppleDB
-        # TODO: add email values for snapraid-runner.conf.j2
+#
+# TODO: check smart output for disk errors
+# https://wiki.archlinux.org/index.php/S.M.A.R.T.
+# https://github.com/grimmjow8/ansible-smartmontools
+# https://github.com/LibreIT/ansible-smartd
+# https://github.com/stuvusIT/smartd
+
+# TODO: add telegraf support, and others
+# https://github.com/davestephens/ansible-nas
