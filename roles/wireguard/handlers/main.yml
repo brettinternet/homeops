@@ -1,3 +1,4 @@
+---
 - name: Reload WireGuard interface
   service:
     name: "wg-quick@{{ wireguard_interface }}"
