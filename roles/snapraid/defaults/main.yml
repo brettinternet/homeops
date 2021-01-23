@@ -1,0 +1,34 @@
+---
+supported_distributions:
+  - archlinux
+  - debian
+
+# snapraid.conf.j2 template defaults
+
+snapraid_config_excludes: []
+snapraid_config_exclude_hidden: false
+
+snapraid_runner_dir: /opt/snapraid-runner
+
+# snapraid-runner.conf.j2 template defaults
+
+snapraid_config: /etc/snapraid.conf
+snapraid_executable: /usr/local/bin/snapraid
+
+## email
+snapraid_email_address:
+snapraid_email_password:
+snapraid_email_address_from: "{{ snapraid_email_address }}"
+snapraid_email_address_to: "{{ snapraid_email_address }}"
+snapraid_email_sendon: "error"
+
+## smtp
+snapraid_smtp_host: smtp.gmail.com
+snapraid_smtp_port: 465
+snapraid_use_ssl: true
+
+## scrub
+snapraid_run_scrub: true
+snapraid_run_scrub_percent: 22
+snapraid_run_scrub_age: 12
+snapraid_touch: true
