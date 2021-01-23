@@ -1,0 +1,269 @@
+---
+version: "3.7"
+
+services:
+  # https://github.com/linuxserver/docker-sonarr
+  sonarr:
+    # https://hub.docker.com/r/linuxserver/sonarr
+    image: linuxserver/sonarr
+    container_name: sonarr
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/sonarr:/config
+      - ${STORAGE_DIR}/tv:/tv
+      - ${STORAGE_DIR}/downloads:/downloads
+    ports:
+      - "8989:8989"
+
+  # https://github.com/linuxserver/docker-radarr
+  radarr:
+    # https://hub.docker.com/r/linuxserver/radarr
+    image: linuxserver/radarr
+    container_name: radarr
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/radarr:/config
+      - ${STORAGE_DIR}/movies:/movies
+      - ${STORAGE_DIR}/downloads:/downloads
+    ports:
+      - "7878:7878"
+
+  # hydra:
+  #   image: linuxserver/hydra2
+  #   container_name: hydra
+  #   restart: unless-stopped
+  #   networks:
+  #     - traefik_proxy
+  #   environment:
+  #     - PGID=${PGID}
+  #     - PUID=${PUID}
+  #     - TZ=${TZ}
+  #   volumes:
+  #     - ${APPDATA_DIR}/hydra:/config
+  #     - ${STORAGE_DIR}/downloads:/downloads
+  #   ports:
+  #     - "5076:5076"
+
+  # https://github.com/jonschoning/espial
+  # First run requires user creation
+  # docker-compose exec espial ./migration createuser \
+  #   --conn /app/data/espial.sqlite3 -\
+  #   -userName myusername --userPassword myuserpassword
+  espial:
+    # https://github.com/jonschoning/espial-docker
+    image: jonschoning/espial:espial
+    container_name: espial
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - TZ=${TZ}
+      - IP_FROM_HEADER=true
+      - SQLITE_DATABASE=/app/data/espial.sqlite3
+      - ekg_datadir=ekg
+    volumes:
+      - ${STORAGE_DIR}/data/espial:/app/data
+    ports:
+      - "3006:3000"
+      # - "8000:8000"
+
+  # healthchecks:
+  #   # https://hub.docker.com/r/linuxserver/healthchecks
+  #   # Healthchecks expects you to add your own logo images, but you may consider using theirs
+  #   # wget https://healthchecks.io/static/img/logo.png ...
+  #   image: linuxserver/healthchecks
+  #   container_name: healthchecks
+  #   restart: unless-stopped
+  #   networks:
+  #     - traefik_proxy
+  #   environment:
+  #     - PGID=${PGID}
+  #     - PUID=${PUID}
+  #     - TZ=${TZ}
+  #     - SITE_ROOT=healthchecks.${ROOT_DOMAIN}
+  #     - SITE_NAME=Healthchecks
+  #     - DEFAULT_FROM_EMAIL=${SMTP_EMAIL_FROM}
+  #     - EMAIL_HOST=${SMTP_HOST}
+  #     - EMAIL_PORT=${SMTP_PORT}
+  #     - EMAIL_HOST_USER=${SMTP_USER}
+  #     - EMAIL_HOST_PASSWORD=${SMTP_PASSWORD}
+  #     - EMAIL_USE_TLS=True
+  #     - ALLOWED_HOSTS=healthchecks.${ROOT_DOMAIN}
+  #     - REGISTRATION_OPEN=False # change to `True` for initial setup
+  #   volumes:
+  #     - ${APPDATA_DIR}/healthchecks:/config
+  #   ports:
+  #     - 8001:8000
+
+  # https://github.com/miniflux/miniflux
+  miniflux:
+    # https://hub.docker.com/r/miniflux/miniflux
+    image: miniflux/miniflux
+    container_name: miniflux
+    restart: unless-stopped
+    depends_on:
+      - miniflux_db
+    networks:
+      - traefik_proxy
+    environment:
+      - TZ=${TZ}
+      - DATABASE_URL=postgres://miniflux:${MINIFLUX_POSTGRES_PASSWORD}@miniflux_db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=${MINIFLUX_PASSWORD}
+    ports:
+      - "8082:8080"
+
+  miniflux_db:
+    image: postgres:10.10
+    container_name: miniflux_db
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - "PGID=${PGID}"
+      - "PUID=${PUID}"
+      - "TZ=${TZ}"
+      - "POSTGRES_DB=miniflux"
+      - "POSTGRES_USER=miniflux"
+      - "POSTGRES_PASSWORD=${MINIFLUX_POSTGRES_PASSWORD}"
+    volumes:
+      - ${STORAGE_DIR}/data/miniflux_db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # https://github.com/linuxserver/docker-nzbget
+  nzbget:
+    # https://hub.docker.com/r/linuxserver/nzbget
+    image: linuxserver/nzbget
+    container_name: nzbget
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/nzbget:/config
+      - ${STORAGE_DIR}/downloads:/downloads
+      # - ${STORAGE_DIR}/movies:/movies # for VideoSort post-processing script
+    ports:
+      - "6788:6789"
+
+  # https://github.com/plexinc/pms-docker
+  plex:
+    # https://hub.docker.com/r/plexinc/pms-docker
+    image: plexinc/pms-docker:plexpass
+    container_name: plex
+    hostname: ${PLEX_HOSTNAME}
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PLEX_UID=${PUID}
+      - PLEX_GID=${PGID}
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM_CODE}
+      # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
+      # the dashboard will say "Not available outside your network" even though it is... >:(
+      - ADVERTISE_IP=http://${HOMELAB_LOCAL_IP}:32400,https://plex.${ROOT_DOMAIN}:443
+    volumes:
+      - ${APPDATA_DIR}/plex:/config
+      - ${STORAGE_DIR}/music:/data/Music
+      - ${STORAGE_DIR}/movies:/data/Movies
+      - ${STORAGE_DIR}/tv:/data/TV
+      - ${STORAGE_DIR}/photos:/data/Photos
+      # - ${STORAGE_DIR}/tmp/transcode:/transcode
+      - /tmp:/transcode
+    ports:
+      # Plex ports - source: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
+      - "32400:32400" # Plex Media Server
+      - "3005:3005" # Plex Companion
+      - "8324:8324" # Roku via Plex Companion
+      - "32469:32649" # Plex DLNA Server
+      - "1900:1900/udp" # Plex DLNA Server
+      - "32410:32410/udp" # network discovery
+      - "32412:32412/udp" # network discovery
+      - "32413:32413/udp" # network discovery
+      - "32414:32414/udp" # network discovery
+
+  # https://github.com/linuxserver/docker-ombi
+  ombi:
+    # https://hub.docker.com/r/linuxserver/ombi
+    image: linuxserver/ombi
+    container_name: ombi
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - PGID=${PGID}
+      - PUID=${PUID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_DIR}/ombi:/config
+    ports:
+      - "3579:3579"
+
+  # https://github.com/Tautulli/Tautulli-Docker
+  tautulli:
+    # https://hub.docker.com/r/tautulli/tautulli
+    image: tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    environment:
+      - TZ=${TZ}
+      - PGID=${PGID}
+      - PUID=${PUID}
+    volumes:
+      - ${APPDATA_DIR}/tautulli:/config
+      - ${APPDATA_DIR}/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro
+    ports:
+      - "8181:8181"
+
+  # https://github.com/portainer/portainer
+  portainer:
+    # https://hub.docker.com/r/portainer/portainer/
+    image: portainer/portainer
+    container_name: portainer
+    restart: unless-stopped
+    networks:
+      - traefik_proxy
+    command: -H unix:///var/run/docker.sock
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_DIR}/portainer:/data
+    ports:
+      - "9000:9000"
+
+  # https://github.com/containrrr/watchtower
+  watchtower:
+    # https://hub.docker.com/r/containrrr/watchtower
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    # TODO: add notifications - https://containrrr.github.io/watchtower/notifications/
+    environment:
+      - TZ=${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${APPDATA_DIR}/watchtower/config.json:/config.json
+    # cron (with seconds) format https://containrrr.github.io/watchtower/arguments/#scheduling
+    command: --schedule "0 0 5 * * *" --cleanup
