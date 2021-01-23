@@ -1,0 +1,55 @@
+---
+- name: Install ipTables-persistent
+  apt:
+    name: iptables-persistent
+
+- name: Set basic IPTables Rules
+  iptables:
+    chain: INPUT
+    policy: ACCEPT
+
+- name: Set basic IPTables Rules
+  iptables:
+    chain: FORWARD
+    policy: ACCEPT
+
+- name: Set basic IPTables Rules
+  iptables:
+    chain: OUTPUT
+    policy: ACCEPT
+
+- name: Establish DNAT rules
+  iptables:
+    table: nat
+    chain: PREROUTING
+    in_interface: "{{ bastion.interface }}"
+    protocol: tcp
+    destination_port: "{{ item.key }}"
+    to_destination: "{{ bastion.wireguard.homelab_vpn_address }}:{{ item.value }}"
+    jump: DNAT
+  loop: "{{ bastion.ports_to_forward | dict2items }}"
+  become: true
+
+- name: Establish SNAT rules
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    out_interface: wg0
+    protocol: tcp
+    to_source: "{{ bastion.wireguard.bastion_vpn_address }}"
+    jump: SNAT
+  loop: "{{ bastion.ports_to_forward | dict2items }}"
+  become: true
+
+- name: Set ipTables post-routing masquerade
+  iptables:
+    table: nat
+    chain: POSTROUTING
+    jump: MASQUERADE
+  become: true
+
+- name: Persist iptable routing across reboots
+  shell: iptables-save > /etc/iptables/rules.v4
+
+- name: Enable IP Forwarding
+  shell: sysctl net.ipv4.ip_forward=1

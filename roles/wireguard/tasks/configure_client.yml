@@ -1,0 +1,127 @@
+---
+- name: Create WireGuard configurations directory
+  file:
+    dest: /etc/wireguard
+    state: directory
+
+- name: Check to see if private key already exists
+  stat:
+    path: /etc/wireguard/privatekey
+  register: private_key
+
+- name: Generate WireGuard private and public keys
+  shell: umask 077 && wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
+  when: private_key.stat.exists == False
+
+- name: Register BastionServer WireGuard private key as a variable
+  slurp:
+    src: /etc/wireguard/privatekey
+  register: wg_bastion_server_private_key
+  when: "'bastion' in group_names"
+
+- name: Register HomeServer WireGuard private key as a variable
+  slurp:
+    src: /etc/wireguard/privatekey
+  register: wg_home_server_private_key
+  when: "'homelabos' in group_names"
+
+- name: Fetch BastionServer Public Key
+  fetch:
+    src: /etc/wireguard/publickey
+    dest: fetch/server_public_key
+    flat: true
+  become: true
+  when: "'bastion' in group_names"
+
+- name: Fetch HomeServer Public Key
+  fetch:
+    src: /etc/wireguard/publickey
+    dest: fetch/client_public_key
+    flat: true
+  become: true
+  when: "'homelabos' in group_names"
+
+- name: Copy BastionServer public key to HomeServer
+  copy:
+    src: fetch/server_public_key
+    dest: /etc/wireguard/serverpublickey
+  become: true
+  when: "'homelabos' in group_names"
+
+- name: Copy HomeServer public key to BastionServer
+  copy:
+    src: fetch/client_public_key
+    dest: /etc/wireguard/homeserverpublickey
+  become: true
+  when: "'bastion' in group_names"
+
+- name: Register BastionServer public key as a variable
+  slurp:
+    src: /etc/wireguard/serverpublickey
+  register: wg_bastion_server_public_key
+  when: "'homelabos' in group_names"
+
+- name: Register HomeServer public key as a variable
+  slurp:
+    src: /etc/wireguard/homeserverpublickey
+  register: wg_home_server_public_key
+  when: "'bastion' in group_names"
+
+- name: Generate WireGuard server configuration file
+  template:
+    src: wg0.conf.server.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: 0600
+    force: true
+  when: "'bastion' in group_names"
+
+- name: Generate WireGuard client configuration file
+  template:
+    src: wg0.conf.client.j2
+    dest: /etc/wireguard/wg0.conf
+    owner: root
+    group: root
+    mode: 0600
+    force: true
+  when: "'homelabos' in group_names"
+
+- name: Enable WireGuard system service
+  shell: systemctl enable wg-quick@wg0
+  become: true
+  when: "'bastion' in group_names"
+
+- name: copy wireguard service-up script file to home server
+  template:
+    src: serviceup.sh.j2
+    dest: /etc/wireguard/serviceup.sh
+    mode: 0755
+  when: "'homelabos' in group_names"
+
+- name: create wireguard service file
+  template:
+    src: wireguard.service.j2
+    dest: /etc/systemd/system/wireguard-homelabos.service
+    mode: 0755
+  when: "'homelabos' in group_names"
+
+- name: Start the Bastion Host WireGuard service
+  systemd:
+    name: wg-quick@wg0
+    enabled: "yes"
+    daemon-reload: "yes"
+    state: restarted
+  when: "'bastion' in group_names"
+
+- name: Setup ipTables rules for Wireguard
+  include_tasks: wireguard_iptables_rules.yml
+  when: "'bastion' in group_names"
+
+- name: Start the HomeServer WireGuard service
+  systemd:
+    name: wireguard-homelabos
+    enabled: "yes"
+    daemon-reload: "yes"
+    state: restarted
+  when: "'homelabos' in group_names"
