@@ -1,0 +1,26 @@
+- name: Establish DNAT rules
+  iptables:
+      table: nat
+      chain: PREROUTING
+      in_interface: "{{ bastion.interface }}"
+      protocol: tcp
+      destination_port: "{{ item.key }}"
+      to_destination: "{{ bastion.wireguard.homelab_vpn_address }}:{{ item.value }}"
+      jump: DNAT
+  loop: "{{ports}}"
+  when: "'bastion' in group_names"
+
+- name: Establish SNAT rules
+  iptables:
+      table: nat
+      chain: POSTROUTING
+      out_interface: wg0
+      protocol: tcp
+      to_source: "{{ bastion.wireguard.bastion_vpn_address }}"
+      jump: SNAT
+  loop: "{{ports}}"
+  become: true
+  when:
+      "'bastion' in group_names"
+
+      #   '{{ lookup("env", "SUDO_PASSWORD") }}'
