@@ -36,7 +36,7 @@ Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk backup and configure cr
 
 ### Traefik Reverse Proxy
 
--   [x] Use OAuth [configuration](https://github.com/CVJoint/docker-compose/blob/master/ymlfiles/traefik.yml)
+-   [x] Use [Traefik OAuth](https://github.com/thomseddon/traefik-forward-auth)
 -   [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html) or [Authelia](https://github.com/clems4ever/authelia)
 -   [ ] Update to Traefik v2
 
