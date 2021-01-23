@@ -6,8 +6,7 @@
   tasks:
     - aur:
         use: yay
-        name:
-          - snapraid
+        name: snapraid
 
 # Cron is required to run snapraid-runner script periodically
 - name: Install cronie package (Archlinux)
