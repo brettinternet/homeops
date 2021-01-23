@@ -18,9 +18,13 @@ deploy:
 	@cp example.env .env
 	@printf "\x1B[01;93m✔ .env created\n\x1B[0m"
 
-ansible_bastion:
+ansible_bastion_connection:
 	@cd ansible; \
-		ansible-playbook bastion.yml
+		ansible-playbook bastion_connection.yml
+
+ansible_facts:
+	@cd ansible; \
+		ansible-playbook facts.yml
 
 terraform_bastion_apply: .env
 	@do_token=$(grep DO_TOKEN .env | xargs) TF_VAR_do_token=${do_token#*=} terraform apply -auto-approve terraform
