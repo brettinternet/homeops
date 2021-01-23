@@ -1,0 +1,5 @@
+[server]
+# local homelab server IP here
+
+[bastion]
+# bastion IP here
