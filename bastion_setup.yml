@@ -1,0 +1,67 @@
+---
+# - name: Provision bastion server
+#   hosts: server
+#   vars:
+#     state: present
+#   vars_files:
+#     - "{{ playbook_dir }}/vars/secret.yml"
+#   roles:
+#     - terraform
+
+- name: Copy WireGuard post script
+  hosts: bastion
+  tasks:
+    - name: Create configuration directory
+      file:
+        path: /etc/wireguard/
+        state: directory
+        mode: 0700
+
+    - name: Copy script
+      copy:
+        src: "{{ playbook_dir }}/files/post.sh"
+        dest: /etc/wireguard/post.sh
+        owner: root
+        group: wheel
+        mode: 0700
+
+- name: Setup WireGuard remote server
+  hosts: bastion
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  roles:
+    - role: wireguard
+      vars:
+        host_ip: 10.0.0.1
+        peer_ip: 10.0.0.2
+        # The bastion host is a WireGuard server for our homelab
+        wireguard_address: "{{ host_ip }}/24"
+        # wireguard_allowed_ips: 10.0.0.1/32 # fix snat for this to work?
+        wireguard_allowed_ips: "{{ host_ip }}/0"
+        wireguard_persistent_keepalive: 25
+        wireguard_postup:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh up"
+        wireguard_postdown:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh down"
+
+- name: Setup WireGuard local client
+  hosts: server
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  roles:
+    - role: wireguard
+      vars:
+        # The homelab server is a client to the bastion's WireGuard server
+        wireguard_endpoint: "{{ terraform_public_ip }}"
+        wireguard_address: 10.0.0.2/24
+#
+# - name: Print mobile client QR code
+#   hosts: bastion
+#   roles:
+#     - role: qrencode
+#       vars:
+#         encode_file_path: /etc/wireguard/wg0.conf

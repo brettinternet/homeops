@@ -1,0 +1,5 @@
+# iptables firewall configuration https://wiki.archlinux.org/index.php/Simple_stateful_firewall
+# iptables tables and chains: https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html#TRAVERSINGOFTABLES
+
+# Configure iptables: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/iptables_module.html
+# Save iptables: https://docs.ansible.com/ansible/latest/collections/community/general/iptables_state_module.html
