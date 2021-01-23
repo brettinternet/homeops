@@ -1,5 +1,6 @@
 [server]
 # local homelab server IP here
+# use `localhost  ansible_connection=local` for a local server
 
 [bastion]
 # bastion IP here
