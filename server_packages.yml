@@ -51,6 +51,7 @@
           # Server
           - cockpit
           - cockpit-machines
+          # Consider also adding https://github.com/optimans/cockpit-zfs-manager
           - libvirt # Also includes qemu-headless
           - docker
           - docker-compose
