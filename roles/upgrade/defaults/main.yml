@@ -2,6 +2,7 @@
 supported_distributions:
   - archlinux
   - ubuntu
+  - debian
 
 allow_reboot: no
 allow_dist_upgrade: no
