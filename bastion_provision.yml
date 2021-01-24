@@ -1,9 +1,9 @@
 ---
 - name: Provision bastion server
   hosts: server
-  vars:
-    state: present
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
   roles:
-    - terraform
+    - role: terraform
+      vars:
+        state: present

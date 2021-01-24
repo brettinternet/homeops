@@ -5,8 +5,9 @@
   when: not do_token
 
 - name: Generate an OpenSSH keypair (4096 bits, rsa)
-  community.crypto.openssh_keypair:
+  openssh_keypair:
     path: "{{ openssh_keypair_path }}"
+    regenerate: never
 
 - name: Provision DO droplet
   community.general.terraform:
