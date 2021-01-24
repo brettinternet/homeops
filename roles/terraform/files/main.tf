@@ -22,9 +22,9 @@ resource "digitalocean_ssh_key" "default" {
 #### Provision ####
 
 resource "digitalocean_droplet" "bastion2" {
-  image = "ubuntu-18-04-x64"
+  image = var.droplet_image
   name = "bastion2"
-  region = "sfo2"
+  region = var.droplet_region"
   size = "s-1vcpu-1gb"
   ssh_keys = [
     digitalocean_ssh_key.default.fingerprint
