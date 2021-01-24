@@ -1,6 +1,6 @@
 # Homelab
 
-Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks):
+Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks).
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./screenshots/badblocks.png)
 
@@ -20,17 +20,17 @@ See [Working with playbooks](https://docs.ansible.com/ansible/latest/user_guide/
 
 ### Bastion provision
 
-Provision and setup a bastion server with a Digital Ocean Droplet. The setup creates a WireGuard server on the bastion host and creates a client configuration on the home server. DNAT and SNAT traffic to and from the home server is routed through the bastion host with iptables.
+Provision and setup a bastion server with a Digital Ocean Droplet. The setup creates a WireGuard server on the remote host and creates a client configuration on the home server. DNAT and SNAT traffic to and from the home server is routed through the bastion node with iptables.
 
 ### Upgrade
 
-Upgrade Arch Linux and Ubuntu cache, packages and distribution.
+Upgrade pacman and apt cache, packages and the apt distribution.
 
 ### Server setup
 
-Deploy docker compose configuration files and run the rootless container orchestration.
+Deploy docker compose and run the rootless container orchestration.
 
-Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk backup and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to run a parity sync and periodically check the data and parity for errors.
+Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
 
 ## Docker orchestration
 
