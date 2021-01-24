@@ -1,0 +1,89 @@
+---
+- name: Install qrencode package (Archlinux)
+  pacman:
+    name:
+      # Setup
+      - base
+      - dhcpcd
+      - dosfstools
+      - efibootmgr
+      - git
+      - grub
+      - gvim
+      - linux
+      - linux-firmware
+      - mtools
+      - nano
+      - os-prober
+      # Base
+      - broot
+      - clamav
+      - etckeeper
+      - fd
+      - firejail
+      - fzy
+      - htop
+      - hwinfo
+      - intel-ucode
+      - man-db
+      - mesa
+      - neofetch
+      - networkmanager
+      - openssh
+      - pacmatic
+      - reflector
+      - rsync
+      - smartmontools
+      - speedtest-cli
+      - the_silver_searcher
+      - tmux
+      - trash-cli
+      - ttf-liberation
+      - unzip
+      - usbguard
+      - usbutils
+      - vifm
+      - zsh
+      - w3m
+      # Server
+      - cockpit
+      - cockpit-machines
+      - libvirt # Also includes qemu-headless
+      - docker
+      - docker-compose
+      - terraform
+      - transmission-cli
+      - needrestart
+    state: present
+
+- name: Install SnapRAID from AUR (Archlinux)
+  # ansible-galaxy install kewlfft.aur
+  # https://github.com/kewlfft/ansible-aur
+  include_role: kewlfft.aur
+  tasks:
+    - aur:
+        use: yay
+        name:
+          # Base
+          - downgrade
+          - makedep
+          - powerpill
+          - python-fangfrisch
+          - tzupdate
+          - vim-plug
+          # Server
+          - mergerfs
+          - snapraid
+        state: present
+
+- name: Update packages (pacman)
+  community.general.pacman:
+    update_cache: yes
+    upgrade: yes
+
+- name: Update AUR packages (yay)
+  include_role: kewlfft.aur
+  tasks:
+    - aur:
+        use: yay
+        upgrade: yes
