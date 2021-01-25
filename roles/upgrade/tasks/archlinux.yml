@@ -1,31 +1,33 @@
 ---
-- name: Update packages "-Syu" (pacman)
+- name: Update packages (pacman)
+  become: yes
   community.general.pacman:
     update_cache: yes
     upgrade: yes
 
 - name: Update AUR packages (yay)
-  # ansible-galaxy install kewlfft.aur
-  # https://github.com/kewlfft/ansible-aur
-  include_role: kewlfft.aur
-  tasks:
-    - aur:
-        use: yay
-        upgrade: yes
+  become_user: aur_builder
+  aur:
+    use: yay
+    aur_only: yes
+    upgrade: yes
 
-- block:
-    - name: Check if kernel needs upgrade (Archlinux)
-      # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
-      # Need to modify to accommodate linux-lts and linux-hardened
-      # Determines if installed kernel version is higher than runtime
-      shell: '[[ $(pacman -Q linux | cut -d " " -f 2) > $(uname -r) ]]'
-      args:
-        executable: /bin/bash
-      register: upgrade__should_restart_result
-      failed_when: upgrade__should_restart_result.stderr != ""
+- name: Check if kernel needs upgrade (Archlinux)
+  # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
+  # Need to modify to accommodate linux-lts and linux-hardened
+  # Determines if installed kernel version is higher than runtime
+  # Still searching for a more comprehensive way: https://unix.stackexchange.com/q/630626/224048
+  ansible.builtin.shell: '[[ $(pacman -Q linux | cut -d " " -f 2) > $(uname -r) ]]'
+  args:
+    executable: /bin/bash
+  register: upgrade__should_restart_result
+  failed_when: upgrade__should_restart_result.stderr != ""
 
-    # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
-    - name: Reboot
-      reboot:
-      when: upgrade__should_restart_result.rc == 0
-  when: allow_reboot is true
+- name: Print reboot status
+  debug:
+    msg: "Reboot {{ (upgrade__should_restart_result.rc != 0) | ternary('is', 'is not') }} required to complete the upgrade"
+
+# See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
+- name: Reboot
+  ansible.builtin.reboot:
+  when: upgrade__should_restart_result.rc != 0 and allow_reboot is true
