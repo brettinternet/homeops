@@ -4,6 +4,7 @@
   roles:
     - kewlfft.aur
   tasks:
+    ### Official ###
     - block:
         - name: Install packages (pacman)
           become: yes
@@ -71,6 +72,7 @@
             update_cache: yes
             upgrade: yes
 
+    ### AUR ###
     - block:
         # https://github.com/kewlfft/ansible-aur
         - name: Create aur_builder
@@ -113,3 +115,13 @@
             use: yay
             aur_only: yes
             upgrade: yes
+
+    ### Unofficial repositories ###
+
+    # Add archzfs repositories: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#archzfs
+    # Then, you may need downgrade the kernel to this package's version
+    - name: Install zfs (pacman)
+          become: yes
+          pacman:
+            name: zfs-linux
+            state: present
