@@ -1,93 +1,115 @@
 ---
 - name: Server packages
   hosts: server
+  roles:
+    - kewlfft.aur
   tasks:
-    - name: Install qrencode package (Archlinux)
-      pacman:
-        name:
-          # Setup
-          - base
-          - dhcpcd
-          - dosfstools
-          - efibootmgr
-          - git
-          - grub
-          - gvim
-          - linux
-          - linux-firmware
-          - mtools
-          - nano
-          - os-prober
-          # Base
-          - broot
-          - clamav
-          - etckeeper
-          - fd
-          - firejail
-          - fzy
-          - htop
-          - hwinfo
-          - intel-ucode
-          - man-db
-          - mesa
-          - neofetch
-          - networkmanager
-          - openssh
-          - pacmatic
-          - reflector
-          - rsync
-          - smartmontools
-          - speedtest-cli
-          - the_silver_searcher
-          - tmux
-          - trash-cli
-          - ttf-liberation
-          - unzip
-          - usbguard
-          - usbutils
-          - vifm
-          - zsh
-          - w3m
-          # Server
-          - cockpit
-          - cockpit-machines
-          # Consider also adding https://github.com/optimans/cockpit-zfs-manager
-          - libvirt # Also includes qemu-headless
-          - docker
-          - docker-compose
-          - terraform
-          - transmission-cli
-          - needrestart
-        state: present
+    - block:
+        - name: Install packages (pacman)
+          become: yes
+          pacman:
+            name:
+              # Setup
+              - base
+              - dhcpcd
+              - dosfstools
+              - efibootmgr
+              - git
+              - grub
+              - gvim
+              - linux
+              - linux-firmware
+              - mtools
+              - nano
+              - os-prober
+              # Base
+              - broot
+              - clamav
+              - curl
+              - etckeeper
+              - fd
+              - firejail
+              - fzy
+              - htop
+              - hwinfo
+              - intel-ucode
+              - man-db
+              - mesa
+              - neofetch
+              - networkmanager
+              - openssh
+              - pacmatic
+              - reflector
+              - rsync
+              - smartmontools
+              - speedtest-cli
+              - the_silver_searcher
+              - tmux
+              - trash-cli
+              - ttf-liberation
+              - unzip
+              - usbguard
+              - usbutils
+              - vifm
+              - zsh
+              - wget
+              - w3m
+              # Server
+              - cockpit
+              - cockpit-machines
+              # Consider also adding https://github.com/optimans/cockpit-zfs-manager
+              - libvirt # Also includes qemu-headless
+              - docker
+              - docker-compose
+              - terraform
+              - transmission-cli
+            state: present
 
-    - name: Install SnapRAID from AUR (Archlinux)
-      # ansible-galaxy install kewlfft.aur
-      # https://github.com/kewlfft/ansible-aur
-      include_role: kewlfft.aur
-      tasks:
-        - aur:
+        - name: Update packages (pacman)
+          become: yes
+          pacman:
+            update_cache: yes
+            upgrade: yes
+
+    - block:
+        # https://github.com/kewlfft/ansible-aur
+        - name: Create aur_builder
+          become: yes
+          user:
+            name: aur_builder
+            group: sudo
+
+        - name: Add aur_builder to sudoers
+          become: yes
+          lineinfile:
+            path: /etc/sudoers.d/11-install-aur_builder
+            line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+            create: yes
+            validate: "visudo -cf %s"
+
+        - name: Install AUR packages (yay)
+          become: yes
+          become_user: aur_builder
+          aur:
             use: yay
+            aur_only: yes
             name:
               # Base
               - downgrade
-              - makedep
               - powerpill
               - python-fangfrisch
               - tzupdate
               - vim-plug
               # Server
               - mergerfs
+              - needrestart
               - snapraid
             state: present
 
-    - name: Update packages (pacman)
-      community.general.pacman:
-        update_cache: yes
-        upgrade: yes
-
-    - name: Update AUR packages (yay)
-      include_role: kewlfft.aur
-      tasks:
-        - aur:
+        - name: Update AUR packages (yay)
+          become: yes
+          become_user: aur_builder
+          aur:
             use: yay
+            aur_only: yes
             upgrade: yes
