@@ -43,6 +43,24 @@
           - .TemporaryItems
           - .Trashes
           - .AppleDB
+
+  tasks:
+    # TODO: remove extra keys from github, or is it possible to filter in this task?
+    # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+    # - name: Add authorized key
+    #   authorized_key:
+    #     user: "{{ ansible_user }}"
+    #     state: present
+    #     key: https://github.com/brettinternet.keys
+    # TODO: secure `authorized_keys` https://wiki.archlinux.org/index.php/OpenSSH#Securing_the_authorized_keys_file
+    - name: Disable password tunneling
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: PasswordAuthentication no
+    - name: Only allow currernt user
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowUsers {{ ansible_user }}"
 #
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
@@ -54,5 +72,8 @@
 # https://github.com/stuvusIT/smartd
 
 # TODO: add telegraf support, and others
-# https://github.com/davestephens/ansible-nas
 # https://github.com/dj-wasabi/ansible-telegraf
+
+# Additional setup:
+# https://github.com/ironicbadger/infra
+# https://github.com/davestephens/ansible-nas
