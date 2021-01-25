@@ -1,14 +1,14 @@
 .PHONY: setup deploy
 
-ansible/inventory:
-	@cp ansible/example.inventory ansible/inventory
-	@printf "\x1B[01;93m✔ ansible/inventory file created\n\x1B[0m"
+inventory:
+	@cp example.inventory inventory
+	@printf "\x1B[01;93m✔ inventory file created\n\x1B[0m"
 
-ansible/vars/secret.yml:
-	@cp ansible/vars/example.secret.yml ansible/vars/secret.yml
-	@printf "\x1B[01;93m✔ ansible/vars/secret.yml created\n\x1B[0m"
+vars/secret.yml:
+	@cp vars/example.secret.yml vars/secret.yml
+	@printf "\x1B[01;93m✔ vars/secret.yml created\n\x1B[0m"
 
-setup: ansible/inventory ansible/vars/secret.yml
+setup: inventory vars/secret.yml
 	@printf "\x1B[01;93m✔ Setup complete\n\x1B[0m"
 
 ansible_facts:
