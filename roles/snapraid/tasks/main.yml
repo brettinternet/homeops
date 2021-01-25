@@ -61,17 +61,11 @@
 - name: Setup snapraid-runner cron
   become: yes
   cron:
-    user: "root"
-    name: "{{ item.name }}"
-    state: "{{ item.state | default('present') }}"
-    job: "{{ item.job }}"
-    minute: "{{ item.minute | default ('00')}}"
-    hour: "{{ item.hour | default ('00') }}"
-    day: "{{ item.dom|default('*') }}"
-    weekday: "{{ item.weekday | default ('*') }}"
-  with_items:
-    # HOMELAB_REPO_PATH="/home/esqxl/homelab"
-    - job: "/bin/bash {{ snapraid_runner_dir }}/snapraid-runner.sh"
-      name: "snapraid_runner"
-      hour: "03"
-      state: present
+    user: root
+    name: snapraid_runner
+    state: present
+    job: "/bin/bash {{ snapraid_runner_dir }}/snapraid-runner.sh"
+    minute: "00"
+    hour: "03"
+    day: "*"
+    weekday: "*"
