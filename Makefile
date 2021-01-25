@@ -12,7 +12,7 @@ setup: inventory.yml vars/secret.yml
 	@printf "\x1B[01;93m✔ Setup complete\n\x1B[0m"
 
 galaxy:
-	@ansible-galaxy install kewlfft.aur
+	@ansible-galaxy install -r requirements.yml
 
 ansible_facts:
 	@cd ansible; \
