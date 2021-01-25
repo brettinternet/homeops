@@ -1,0 +1,7 @@
+---
+- name: Copy sudoers defaults
+  become: yes
+  copy:
+    src: defaults
+    dest: /etc/sudoers.d/
+    validate: "visudo -cf %s"
