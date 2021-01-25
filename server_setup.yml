@@ -1,67 +1,30 @@
 ---
-# TODO: configure rootless docker https://wiki.archlinux.org/index.php/Docker#Docker_rootless
-
-# TODO: update Traefik to v2 https://github.com/klutchell/mediaserver
-
-- name: Setup docker compose services
-  hosts: server
-  vars_files:
-    - "{{ playbook_dir }}/vars/secret.yml"
-  vars:
-    runtime_dir: "{{ ansible_facts['user_dir'] }}"
-
-  tasks:
-    - name: Create runtime directory
-      file:
-        dest: "{{ runtime_dir }}"
-        state: directory
-        mode: 0744
-
-    - name: Copy orchestration files
-      copy:
-        src: "{{ playbook_dir }}/files/{{ item }}"
-        dest: "{{ runtime_dir }}/"
-        mode: 0744
-      with_items:
-        - docker-compose.yml
-        - docker-compose.override.yml
-
-    - name: Create docker-compose environment file
-      template:
-        # TODO: can simplify directory? relative?
-        src: "{{ playbook_dir }}/templates/env.j2"
-        dest: "{{ runtime_dir }}/"
-        mode: 0700
-
-# TODO: zfs mounted
-# https://www.reddit.com/r/zfs/comments/a6x5xv/mounting_zfs_pool_on_another_computer/
-# https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
-
-# TODO: Setup ZFS https://wiki.archlinux.org/index.php/ZFS
-
-# TODO: add mergerfs setup? https://github.com/trapexit/mergerfs
-# https://perfectmediaserver.com/installation/manual-install/#mergerfs
-# fstab setup? https://docs.ansible.com/ansible/latest/collections/ansible/posix/mount_module.html
+# First, setup mergerfs and correct fstab mounts
 
 - name: Setup SnapRAID
   hosts: server
-  become: true
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
   roles:
+    - role: sudoers
     - role: snapraid
       vars:
+        docker_compose_dir: "{{ ansible_facts['user_dir'] }}/apps"
         # TODO: add email values for snapraid-runner.conf.j2
         parity_disks:
           - path: /mnt/parity1
+            content: false
         data_disks:
           - path: /mnt/disk1
             content: true
           - path: /mnt/disk2
             content: true
           - path: /mnt/disk3
+            content: false
           - path: /mnt/disk4
+            content: false
           - path: /mnt/disk5
+            content: false
         snapraid_config_excludes:
           - "*.unrecoverable"
           - /tmp/
@@ -81,6 +44,9 @@
           - .Trashes
           - .AppleDB
 #
+# TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
+# https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
+
 # TODO: check smart output for disk errors
 # https://wiki.archlinux.org/index.php/S.M.A.R.T.
 # https://github.com/grimmjow8/ansible-smartmontools
@@ -89,3 +55,4 @@
 
 # TODO: add telegraf support, and others
 # https://github.com/davestephens/ansible-nas
+# https://github.com/dj-wasabi/ansible-telegraf
