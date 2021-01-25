@@ -11,7 +11,9 @@
 - name: Install SnapRAID
   include_tasks: "install_{{ ansible_facts['distribution'] | lower }}.yml"
 
-- name: Create SnapRAID configuration file
+# https://www.snapraid.it/manual
+- name: Create snapraid.conf
+  become: yes
   template:
     src: snapraid.conf.j2
     dest: "{{ snapraid_config }}"
@@ -21,6 +23,7 @@
 
 # Using local copy for now, but may want to use upstream master soon
 - name: Copy snapraid-runner.py
+  become: true
   copy:
     src: "{{ role_path }}/files/snapraid-runner.py"
     dest: "{{ snapraid_runner_dir }}/"
@@ -36,22 +39,27 @@
 #         remote_src: /tmp/snapraid-runner/snapraid-runner.py
 #         dest: "{{ snapraid_runner_dir }}"
 
-- name: Create snapraid-runner configuration file
+- name: Create snapraid-runner.conf
+  become: yes
   template:
     src: snapraid-runner.conf.j2
     dest: "{{ snapraid_runner_dir }}/snapraid-runner.conf"
-    owner: root
-    group: root
-    mode: 0775
+    # owner: root
+    # group: root
+    # mode: 0775
 
-- name: Copy snapraid-runner.sh
-  copy:
-    src: "{{ role_path }}/files/snapraid-runner.sh"
-    dest: "{{ snapraid_runner_dir }}/"
+- name: Create snapraid-runner.sh
+  become: yes
+  template:
+    src: "snapraid-runner.sh.j2"
+    dest: "{{ snapraid_runner_dir }}/snapraid-runner.sh"
+    # owner: root
+    # group: root
+    # mode: 0775
 
 # https://wiki.archlinux.org/index.php/Cron
-# https://www.snapraid.it/manual
 - name: Setup snapraid-runner cron
+  become: yes
   cron:
     user: "root"
     name: "{{ item.name }}"
@@ -63,7 +71,7 @@
     weekday: "{{ item.weekday | default ('*') }}"
   with_items:
     # HOMELAB_REPO_PATH="/home/esqxl/homelab"
-    - job: /bin/bash /opt/snapraid-runner/snapraid-runner.sh
+    - job: "/bin/bash {{ snapraid_runner_dir }}/snapraid-runner.sh"
       name: "snapraid_runner"
       hour: "03"
       state: present

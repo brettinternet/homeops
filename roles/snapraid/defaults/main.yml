@@ -3,17 +3,25 @@ supported_distributions:
   - archlinux
   - debian
 
-# snapraid.conf.j2 template defaults
+docker_compose_dir: "{{ ansible_facts['user_dir'] }}/apps"
+
+## snapraid.conf.j2 template defaults
 
 snapraid_config_excludes: []
 snapraid_config_exclude_hidden: false
 
 snapraid_runner_dir: /opt/snapraid-runner
 
-# snapraid-runner.conf.j2 template defaults
+## snapraid-runner.conf.j2 template defaults
 
+## options
 snapraid_config: /etc/snapraid.conf
-snapraid_executable: /usr/local/bin/snapraid
+## Use `/usr/local/bin/snapraid` if built locally
+snapraid_executable: /usr/bin/snapraid
+## abort operation if there are more deletes than this, set to -1 to disable
+snapraid_delete_threshold: 250
+## if you want touch to be ran each time
+snapraid_touch: true
 
 ## email
 snapraid_email_address:
@@ -31,4 +39,3 @@ snapraid_use_ssl: true
 snapraid_run_scrub: true
 snapraid_run_scrub_percent: 22
 snapraid_run_scrub_age: 12
-snapraid_touch: true
