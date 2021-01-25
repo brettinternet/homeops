@@ -1,0 +1,34 @@
+---
+# TODO: configure rootless docker https://wiki.archlinux.org/index.php/Docker#Docker_rootless
+
+# TODO: update Traefik to v2 https://github.com/klutchell/mediaserver
+
+- name: Setup docker compose services
+  hosts: server
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  vars:
+    runtime_dir: "{{ ansible_facts['user_dir'] }}/apps"
+
+  tasks:
+    - name: Create runtime directory
+      file:
+        dest: "{{ runtime_dir }}"
+        state: directory
+        mode: 0744
+
+    - name: Copy orchestration files
+      copy:
+        src: "{{ playbook_dir }}/files/{{ item }}"
+        dest: "{{ runtime_dir }}/"
+        mode: 0744
+      with_items:
+        - docker-compose.yml
+        - docker-compose.override.yml
+
+    - name: Create docker-compose environment file
+      template:
+        # TODO: can simplify directory? relative?
+        src: "{{ playbook_dir }}/templates/env.j2"
+        dest: "{{ runtime_dir }}/.env"
+        mode: 0700
