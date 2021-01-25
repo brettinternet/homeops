@@ -32,6 +32,8 @@ Deploy docker compose and run the rootless container orchestration.
 
 Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
 
+![book cover: Mommy, Why is There a Server is the House?](./screenshots/stay_at_home_server.jpg)
+
 ## Docker orchestration
 
 ### Traefik Reverse Proxy
@@ -42,8 +44,14 @@ Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cr
 
 ### Debug
 
-You may consider debugging your homelab and VPN traffic forwarding with [this simple container](https://github.com/containous/whoami).
+[HTTP request output](https://github.com/traefik/whoami)
 
 ```sh
 docker run --rm -it -p 10.0.0.2:80:80 --name iamfoo containous/whoami
+```
+
+Print the IP, network and listening ports for each container
+
+```sh
+docker inspect -f '{{.Name}}-{{range  $k, $v := .NetworkSettings.Networks}}{{$k}}-{{.IPAddress}} {{end}}-{{range $k, $v := .NetworkSettings.Ports}}{{ if not $v }}{{$k}} {{end}}{{end}} -{{range $k, $v := .NetworkSettings.Ports}}{{ if $v }}{{$k}} => {{range . }}{{ .HostIp}}:{{.HostPort}}{{end}}{{end}} {{end}}' $(docker ps -aq) | column -t -s-
 ```
