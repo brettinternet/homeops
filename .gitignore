@@ -3,4 +3,4 @@
 terraform.tfstate*
 *.log
 secret.yml
-inventory
+inventory.yml
