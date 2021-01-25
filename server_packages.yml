@@ -1,6 +1,6 @@
 ---
 - name: Server packages
-  host: server
+  hosts: server
   tasks:
     - name: Install qrencode package (Archlinux)
       pacman:
