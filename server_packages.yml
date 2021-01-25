@@ -2,76 +2,69 @@
 - name: Server packages
   hosts: server
   roles:
-    - kewlfft.aur
-  tasks:
+    - upgrade
+  pre_tasks:
     ### Official ###
-    - block:
-        - name: Install packages (pacman)
-          become: yes
-          pacman:
-            name:
-              # Setup
-              - base
-              - dhcpcd
-              - dosfstools
-              - efibootmgr
-              - git
-              - grub
-              - gvim
-              - linux
-              - linux-firmware
-              - mtools
-              - nano
-              - os-prober
-              # Base
-              - broot
-              - clamav
-              - curl
-              - etckeeper
-              - fd
-              - firejail
-              - fzy
-              - htop
-              - hwinfo
-              - intel-ucode
-              - man-db
-              - mesa
-              - neofetch
-              - networkmanager
-              - openssh
-              - pacmatic
-              - reflector
-              - rsync
-              - smartmontools
-              - speedtest-cli
-              - the_silver_searcher
-              - tmux
-              - trash-cli
-              - ttf-liberation
-              - unzip
-              - usbguard
-              - usbutils
-              - vifm
-              - zsh
-              - wget
-              - w3m
-              # Server
-              - cockpit
-              - cockpit-machines
-              - cronie
-              # Consider also adding https://github.com/optimans/cockpit-zfs-manager
-              - libvirt # Also includes qemu-headless
-              - docker
-              - docker-compose
-              - terraform
-              - transmission-cli
-            state: present
-
-        - name: Update packages (pacman)
-          become: yes
-          pacman:
-            update_cache: yes
-            upgrade: yes
+    - name: Install packages (pacman)
+      become: yes
+      pacman:
+        name:
+          # Setup
+          - base
+          - dhcpcd
+          - dosfstools
+          - efibootmgr
+          - git
+          - grub
+          - gvim
+          - linux
+          - linux-firmware
+          - mtools
+          - nano
+          - os-prober
+          # Base
+          - broot
+          - clamav
+          - curl
+          - etckeeper
+          - fd
+          - firejail
+          - fzy
+          - htop
+          - hwinfo
+          - intel-ucode
+          - man-db
+          - mesa
+          - neofetch
+          - networkmanager
+          - openssh
+          - pacmatic
+          - reflector
+          - rsync
+          - smartmontools
+          - speedtest-cli
+          - the_silver_searcher
+          - tmux
+          - trash-cli
+          - ttf-liberation
+          - unzip
+          - usbguard
+          - usbutils
+          - vifm
+          - zsh
+          - wget
+          - w3m
+          # Server
+          - cockpit
+          - cockpit-machines
+          - cronie
+          # Consider also adding https://github.com/optimans/cockpit-zfs-manager
+          - libvirt # Also includes qemu-headless
+          - docker
+          - docker-compose
+          - terraform
+          - transmission-cli
+        state: present
 
     ### AUR ###
     - block:
@@ -107,13 +100,6 @@
               - needrestart
               - snapraid
             state: present
-
-        - name: Update AUR packages (yay)
-          become_user: aur_builder
-          aur:
-            use: yay
-            aur_only: yes
-            upgrade: yes
 
     ### Unofficial repositories ###
 
