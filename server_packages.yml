@@ -58,6 +58,7 @@
               # Server
               - cockpit
               - cockpit-machines
+              - cronie
               # Consider also adding https://github.com/optimans/cockpit-zfs-manager
               - libvirt # Also includes qemu-headless
               - docker
@@ -90,7 +91,6 @@
             validate: "visudo -cf %s"
 
         - name: Install AUR packages (yay)
-          become: yes
           become_user: aur_builder
           aur:
             use: yay
@@ -109,7 +109,6 @@
             state: present
 
         - name: Update AUR packages (yay)
-          become: yes
           become_user: aur_builder
           aur:
             use: yay
@@ -121,7 +120,7 @@
     # Add archzfs repositories: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#archzfs
     # Then, you may need downgrade the kernel to this package's version
     - name: Install zfs (pacman)
-          become: yes
-          pacman:
-            name: zfs-linux
-            state: present
+      become: yes
+      pacman:
+        name: zfs-linux
+        state: present
