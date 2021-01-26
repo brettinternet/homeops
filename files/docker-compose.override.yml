@@ -4,7 +4,6 @@ version: "3.7"
 networks:
   traefik_proxy:
     name: traefik_proxy
-    external: true
     driver_opts:
       # Derived from `ip addr list` for `wg0` interface
       # Otherwise random TLS handshake errors
