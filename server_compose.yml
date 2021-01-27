@@ -9,8 +9,12 @@
     - "{{ playbook_dir }}/vars/secret.yml"
   vars:
     runtime_dir: "{{ ansible_facts['user_dir'] }}/apps"
+    # `present` is "up" and `absent` is "down"
+    compose_state: present
 
   tasks:
+    ### Configure compose files ###
+
     - name: Create runtime directory
       file:
         dest: "{{ runtime_dir }}"
@@ -32,3 +36,36 @@
         src: "{{ playbook_dir }}/templates/env.j2"
         dest: "{{ runtime_dir }}/.env"
         mode: 0700
+
+    ### Rootless Docker configuration ###
+    # https://wiki.archlinux.org/index.php/Docker#Docker_rootless
+    # https://docs.docker.com/engine/security/rootless/
+
+    - name: Configure /etc/subuid
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/subuid
+        line: "{{ ansible_user }}:231072:65536"
+        create: yes
+
+    - name: Configure /etc/subgid
+      become: yes
+      ansible.builtin.lineinfile:
+        path: /etc/subgid
+        line: "{{ ansible_user }}:231072:65536"
+        create: yes
+
+    - name: Enable the docker socket
+      # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+      ansible.builtin.systemd:
+        name: docker.socket
+        scope: user
+        enabled: yes
+        state: started
+
+    # - name: Set orchestration state
+    #   # https://docs.ansible.com/ansible/latest/collections/community/general/docker_compose_module.html
+    #   community.general.docker_compose:
+    #     project_src: "{{ runtime_dir }}"
+    #     state: " {{ compose_state }}"
+    #     docker_host: unix://$XDG_RUNTIME_DIR/docker.sock
