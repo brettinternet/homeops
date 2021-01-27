@@ -57,6 +57,9 @@
           # Server
           - cockpit
           - cockpit-machines
+          - cockpit-pcp
+          - udisks2
+          - packagekit
           - cronie
           # Consider also adding https://github.com/optimans/cockpit-zfs-manager
           - libvirt # Also includes qemu-headless
@@ -83,8 +86,9 @@
             create: yes
             validate: "visudo -cf %s"
 
+        # TODO: not working... https://github.com/kewlfft/ansible-aur
         - name: Install AUR packages (yay)
-          become_user: aur_builder
+          # become_user: aur_builder
           aur:
             use: yay
             aur_only: yes
@@ -99,6 +103,8 @@
               - mergerfs
               - needrestart
               - snapraid
+              - cockpit-zfs-manager
+              - docker-rootless-extras-bin
             state: present
 
     ### Unofficial repositories ###
