@@ -47,7 +47,7 @@ Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cr
 [HTTP request output](https://github.com/traefik/whoami)
 
 ```sh
-docker run --rm -it -p 10.0.0.2:80:80 --name iamfoo containous/whoami
+docker run --rm -it -p 80:8080 --name iamfoo traefik/whoami
 ```
 
 Print the IP, network and listening ports for each container
