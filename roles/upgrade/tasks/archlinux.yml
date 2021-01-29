@@ -1,12 +1,11 @@
 ---
-- name: Update packages (pacman)
+- name: Upgrade packages (pacman)
   become: yes
   community.general.pacman:
     update_cache: yes
     upgrade: yes
 
-- name: Update AUR packages (yay)
-  become_user: aur_builder
+- name: Upgrade AUR packages (yay)
   aur:
     use: yay
     aur_only: yes
