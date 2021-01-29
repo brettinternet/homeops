@@ -2,7 +2,9 @@
 - name: Server packages
   hosts: server
   roles:
-    - upgrade
+    - role: upgrade
+      vars:
+        allow_reboot: no
   pre_tasks:
     ### Official ###
     - name: Install packages (pacman)
@@ -86,9 +88,7 @@
             create: yes
             validate: "visudo -cf %s"
 
-        # TODO: not working... https://github.com/kewlfft/ansible-aur
         - name: Install AUR packages (yay)
-          # become_user: aur_builder
           aur:
             use: yay
             aur_only: yes
