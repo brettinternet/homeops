@@ -1,0 +1,28 @@
+# Healthchecks expects you to add your own logo images, but you may consider using theirs
+# wget https://healthchecks.io/static/img/logo.png ...
+
+- name: healthchecks
+  containers.podman.podman_container:
+    name: healthchecks
+    # https://hub.docker.com/r/linuxserver/healthchecks
+    image: docker.io/linuxserver/healthchecks
+    state: "{{ state }}"
+    restart: yes
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+      SITE_ROOT: "healthchecks.{{ root_domain }}"
+      SITE_NAME: Healthchecks
+      DEFAULT_FROM_EMAIL: "{{ smtp_email_from }}"
+      EMAIL_HOST: "{{ smtp_host }}"
+      EMAIL_PORT: " {{ smtp_port }}"
+      EMAIL_HOST_USER: "{{ smtp_user }}"
+      EMAIL_HOST_PASSWORD: "{{ smtp_password }}"
+      EMAIL_USE_TLS: yes
+      ALLOWED_HOSTS: "healthchecks.{{ root_domain }}" # change to allow from server?
+      REGISTRATION_OPEN: no # make false for initial setup
+    volumes:
+      - "{{ appdata_dir }}/healthchecks:/config"
+    ports:
+      - 8001:8000

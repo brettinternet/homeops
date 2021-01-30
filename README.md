@@ -28,13 +28,15 @@ Upgrade pacman and apt cache, packages and the apt distribution.
 
 ### Server setup
 
-Deploy docker compose and run the rootless container orchestration.
+Deploy rootless containers in an orchestration behind Traefik's reverse proxy.
 
 Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
 
 ![book cover: Mommy, Why is There a Server is the House?](./screenshots/stay_at_home_server.jpg)
 
-## Docker orchestration
+## Container orchestration
+
+Rootless podman support for container images.
 
 ### Traefik Reverse Proxy
 
@@ -47,11 +49,11 @@ Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cr
 [HTTP request output](https://github.com/traefik/whoami)
 
 ```sh
-docker run --rm -it -p 80:8080 --name iamfoo traefik/whoami
+podman run --rm -it -p 80:8080 --name iamfoo traefik/whoami
 ```
 
 Print the IP, network and listening ports for each container
 
 ```sh
-docker inspect -f '{{.Name}}-{{range  $k, $v := .NetworkSettings.Networks}}{{$k}}-{{.IPAddress}} {{end}}-{{range $k, $v := .NetworkSettings.Ports}}{{ if not $v }}{{$k}} {{end}}{{end}} -{{range $k, $v := .NetworkSettings.Ports}}{{ if $v }}{{$k}} => {{range . }}{{ .HostIp}}:{{.HostPort}}{{end}}{{end}} {{end}}' $(docker ps -aq) | column -t -s-
+podman inspect -f '{{.Name}}-{{range  $k, $v := .NetworkSettings.Networks}}{{$k}}-{{.IPAddress}} {{end}}-{{range $k, $v := .NetworkSettings.Ports}}{{ if not $v }}{{$k}} {{end}}{{end}} -{{range $k, $v := .NetworkSettings.Ports}}{{ if $v }}{{$k}} => {{range . }}{{ .HostIp}}:{{.HostPort}}{{end}}{{end}} {{end}}' $(podman ps -aq) | column -t -s-
 ```
