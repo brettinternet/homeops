@@ -58,16 +58,25 @@
       lineinfile:
         path: /etc/ssh/sshd_config
         line: PasswordAuthentication no
+
     - name: Only allow currernt user
       become: yes
       lineinfile:
         path: /etc/ssh/sshd_config
         line: "AllowUsers {{ ansible_user }}"
+
     - name: Enable cockpit.socket
       become: yes
       ansible.builtin.systemd:
         name: cockpit.socket
         enabled: yes
+
+    - name: Remove Cockpit motd
+      become: yes
+      ansible.builtin.file:
+        path: /etc/motd.d/cockpit
+        state: absent
+
     - name: Enable pmlogger (cockpit metrics)
       become: yes
       ansible.builtin.systemd:
