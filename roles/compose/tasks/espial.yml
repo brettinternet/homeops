@@ -1,6 +1,7 @@
 # https://github.com/jonschoning/espial
+
 # First run requires user creation
-# docker-compose exec espial ./migration createuser \
+# podman exec espial ./migration createuser \
 #   --conn /app/data/espial.sqlite3 -\
 #   -userName myusername --userPassword myuserpassword
 
@@ -15,9 +16,8 @@
       TZ: "{{ tz }}"
       IP_FROM_HEADER: yes
       SQLITE_DATABASE: /app/data/espial.sqlite3
-      # SHOULD_LOG_ALL: true
-    # userns: keep-id
+      SHOULD_LOG_ALL: false
     volumes:
-      - "{{ storage_dir }}/data/espial:/app/data"
+      - "{{ appdata_dir }}/espial:/app/data"
     ports:
       - 3006:3000
