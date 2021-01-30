@@ -30,11 +30,13 @@
 - name: Orchestration
   include_tasks: "{{ item }}.yml"
   with_items:
+    # - auth
+    # - traefik
     # - plex
     # - nzbget
     # - sonarr
     # - radarr
-    - espial
+    # - espial
     # - miniflux
     # - ombi
     # - tautulli
