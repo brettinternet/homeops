@@ -6,6 +6,7 @@
     upgrade: yes
 
 - name: Upgrade AUR packages (yay)
+  become: no
   aur:
     use: yay
     aur_only: yes
