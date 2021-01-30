@@ -1,42 +1,13 @@
 ---
-# TODO: configure rootless docker https://wiki.archlinux.org/index.php/Docker#Docker_rootless
-
-# TODO: update Traefik to v2 https://github.com/klutchell/mediaserver
-
 - name: Setup docker compose services
   hosts: server
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
-  vars:
-    runtime_dir: "{{ ansible_facts['user_dir'] }}/apps"
-    # `present` is "up" and `absent` is "down"
-    compose_state: present
-
-  tasks:
-    ### Configure compose files ###
-
-    - name: Create runtime directory
-      file:
-        dest: "{{ runtime_dir }}"
-        state: directory
-        mode: 0744
-
-    - name: Copy orchestration files
-      copy:
-        src: "{{ playbook_dir }}/files/{{ item }}"
-        dest: "{{ runtime_dir }}/"
-        mode: 0744
-      with_items:
-        - docker-compose.yml
-        - docker-compose.override.yml
-
-    - name: Create docker-compose environment file
-      template:
-        # TODO: can simplify directory? relative?
-        src: "{{ playbook_dir }}/templates/env.j2"
-        dest: "{{ runtime_dir }}/.env"
-        mode: 0700
-
-    ### Rootless Podman orchestration ###
-    # https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
-    # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
+  roles:
+    - name: compose
+      vars:
+        # absent - A container matching the specified name will be stopped and removed.
+        # present - Asserts the existence of a container matching the name and any provided configuration parameters. If no container matches the name, a container will be created. If a container matches the name but the provided configuration does not match, the container will be updated, if it can be. If it cannot be updated, it will be removed and re-created with the requested config. Image version will be taken into account when comparing configuration. Use the recreate option to force the re-creation of the matching container.
+        # started - Asserts there is a running container matching the name and any provided configuration. If no container matches the name, a container will be created and started. Use recreate to always re-create a matching container, even if it is running. Use force_restart to force a matching container to be stopped and restarted.
+        # stopped - Asserts that the container is first present, and then if the container is running moves it to a stopped state.
+        state: started
