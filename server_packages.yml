@@ -60,24 +60,26 @@
           - cockpit
           - cockpit-machines
           - cockpit-pcp
+          - cockpit-podman
           - udisks2
           - packagekit
           - cronie
-          # Consider also adding https://github.com/optimans/cockpit-zfs-manager
           - libvirt # Also includes qemu-headless
-          - docker
-          - docker-compose
+          # - docker
+          # - docker-compose
+          - podman
+          - crun # https://github.com/containers/podman/issues/8687
           - terraform
           - transmission-cli
         state: present
 
     ### AUR ###
     - block:
-        # https://github.com/kewlfft/ansible-aur
         - name: Create aur_builder
           become: yes
           user:
             name: aur_builder
+            create_home: no
             group: sudo
 
         - name: Add aur_builder to sudoers
@@ -104,7 +106,6 @@
               - needrestart
               - snapraid
               - cockpit-zfs-manager
-              - docker-rootless-extras-bin
             state: present
 
     ### Unofficial repositories ###
