@@ -1,0 +1,19 @@
+# https://github.com/linuxserver/docker-sonarr
+
+- name: sonarr
+  containers.podman.podman_container:
+    name: sonarr
+    # https://hub.docker.com/r/linuxserver/sonarr
+    image: docker.io/linuxserver/sonarr
+    state: "{{ state }}"
+    restart: yes
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/sonarr:/config"
+      - "{{ storage_dir }}/tv:/tv"
+      - "{{ storage_dir }}/downloads:/downloads"
+    ports:
+      - 8989:8989
