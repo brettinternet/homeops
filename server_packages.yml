@@ -2,6 +2,8 @@
 - name: Server packages
   hosts: server
   roles:
+    # If upgrades fail, it's likely the server requires manual intervention to
+    # upgrade `linux` kernel with `zfs-linux`
     - role: upgrade
       vars:
         allow_reboot: no
