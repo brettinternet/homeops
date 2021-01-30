@@ -25,9 +25,9 @@
 
 - name: Print reboot status
   debug:
-    msg: "Reboot {{ (upgrade__should_restart_result.rc != 0) | ternary('is', 'is not') }} required to complete the upgrade"
+    msg: "Reboot {{ (upgrade__should_restart_result.rc == 0) | ternary('is', 'is not') }} required to complete the upgrade"
 
 # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 - name: Reboot
   ansible.builtin.reboot:
-  when: upgrade__should_restart_result.rc != 0 and allow_reboot is true
+  when: upgrade__should_restart_result.rc == 0 and allow_reboot is true
