@@ -1,6 +1,8 @@
 ---
 version: "3.7"
 
+# TODO: update Traefik to v2 https://github.com/klutchell/mediaserver
+
 networks:
   traefik_proxy:
     name: traefik_proxy
@@ -11,6 +13,8 @@ networks:
 
 services:
   sonarr:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -28,6 +32,8 @@ services:
       traefik.frontend.auth.forward.address: http://oauth:4181
 
   radarr:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -45,6 +51,8 @@ services:
       traefik.frontend.auth.forward.address: http://oauth:4181
 
   # hydra:
+  #   networks:
+  #     - traefik_proxy
   #   labels:
   #     traefik.enable: true
   #     traefik.docker.network: traefik_proxy
@@ -62,6 +70,8 @@ services:
   #     traefik.frontend.auth.forward.address: http://oauth:4181
 
   espial:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -79,6 +89,8 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   # healthchecks:
+  #   networks:
+  #     - traefik_proxy
   #   labels:
   #     traefik.enable: true
   #     traefik.docker.network: traefik_proxy
@@ -95,6 +107,8 @@ services:
   #     traefik.frontend.headers.frameDeny: true
 
   miniflux:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -112,6 +126,8 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   nzbget:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -129,6 +145,8 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   plex:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -146,6 +164,8 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   ombi:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -162,6 +182,8 @@ services:
       traefik.frontend.headers.frameDeny: true
 
   tautulli:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
@@ -181,6 +203,8 @@ services:
       traefik.frontend.auth.forward.trustForwardHeader: true
 
   portainer:
+    networks:
+      - traefik_proxy
     labels:
       traefik.enable: true
       traefik.docker.network: traefik_proxy
