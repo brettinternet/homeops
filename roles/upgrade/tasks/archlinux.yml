@@ -29,5 +29,6 @@
 
 # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 - name: Reboot
+  become: yes
   ansible.builtin.reboot:
   when: upgrade__should_restart_result.rc == 0 and allow_reboot is true

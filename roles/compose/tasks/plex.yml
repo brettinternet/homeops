@@ -1,3 +1,4 @@
+---
 # https://github.com/plexinc/pms-docker
 # Rootless podman can't overwrite mapped permissions unless they're `user:user`
 # Try this if you get permission errors:

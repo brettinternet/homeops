@@ -1,5 +1,29 @@
+---
 ### Rootless Podman orchestration ###
 # https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
+# STATUS: incomplete; see traefik.yml
+
+- name: Check supported containers
+  vars:
+    supported_containers:
+      - traefik
+      - oauth
+      - plex
+      - nzbget
+      - sonarr
+      - radarr
+      - espial
+      - miniflux
+      - ombi
+      - tautulli
+      - healthchecks
+      - hydra
+  fail:
+    msg:
+      - "Unsupported container: {{ item }}"
+      - "Supported containers are {{ supported_containers }}"
+  when: item | lower not in supported_containers
+  loop: "{{ containers }}"
 
 # TODO: Perhaps ensure that kernel params are set
 # https://github.com/Difrex/Ansible/blob/master/roles/docker/tasks/grub.yml
@@ -28,23 +52,13 @@
 # https://podman.io/getting-started/network#container---container-communication
 
 - name: Orchestration
-  include_tasks: "{{ item }}.yml"
-  with_items:
-    # - auth
-    # - traefik
-    # - plex
-    # - nzbget
-    # - sonarr
-    # - radarr
-    # - espial
-    # - miniflux
-    # - ombi
-    # - tautulli
+  include_tasks: "{{ item | lower }}.yml"
+  loop: "{{ containers }}"
 #
 # - name: Enable the podman daemon (for cockpit)
 #   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
 #   ansible.builtin.systemd:
-#     name:
+#     name: podman
 #     scope: user
 #     enabled: yes
 #     state: started

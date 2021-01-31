@@ -1,0 +1,38 @@
+---
+http:
+  middlewares:
+    oauth:
+      # https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
+      forwardAuth:
+        # See tasks/oauth.yml
+        address: https://oauth:4181
+        trustForwardHeader: yes
+        authResponseHeaders:
+          - X-Forwarded-User
+
+    secure-headers:
+      # https://doc.traefik.io/traefik/v2.0/middlewares/headers/
+      # https://developers.google.com/search/reference/robots_meta_tag
+      # https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Clickjacking_Defense_Cheat_Sheet.md
+      headers:
+        accessControlAllowMethods: ["GET", "OPTIONS", "PUT"]
+        accessControlMaxAge: 100
+        hostsProxyHeaders: ["X-Forwarded-Host"]
+        sslRedirect: yes
+        stsSeconds: 63072000
+        stsIncludeSubdomains: yes
+        stsPreload: yes
+        forceSTSHeader: yes
+        frameDeny: yes
+        contentTypeNosniff: yes
+        browserXssFilter: yes
+        referrerPolicy: "same-origin"
+        featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
+        customResponseHeaders:
+          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
+
+    rate-limit:
+      # https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/
+      rateLimit:
+        average: 100
+        burst: 50
