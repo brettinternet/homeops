@@ -2,135 +2,125 @@
 # {{ ansible_managed }}
 
 http:
-{# Routes #}
   routers:
 {% if 'traefik' in containers %}
     traefik:
-      rule: "Host(`traefik.{{ root_domain }})"
+      rule: "Host(`traefik.{{ root_domain }}`)"
       service: api@internal
-      middlewares:
-        - secure-headers
-        - oauth
+      tls:
+        certResolver: http
+      #middlewares:
+        #- secure-headers
+        #- oauth
 {% endif %}
 
 {% if 'oauth' in containers %}
     oauth:
       entryPoints:
         - websecure
-      rule: "Host(`oauth.{{ root_domain }})"
+      rule: "Host(`oauth.{{ root_domain }}`)"
+      service: api@internal
+      tls:
+        certResolver: http
       middlewares:
         - secure-headers
-        {# secure-chain@file,rate-limit@file" #}
+        # secure-chain@file,rate-limit@file"
 {% endif %}
 
 {% if 'plex' in containers %}
     plex:
-      rule: "Host(`plex.{{ root_domain }})"
+      rule: "Host(`plex.{{ root_domain }}`)"
+      service: api@internal
+      tls:
+        certResolver: http
 {% endif %}
 
 {% if 'nzbget' in containers %}
     nzbget:
-      rule: "Host(`nzbget.{{ root_domain }})"
+      rule: "Host(`nzbget.{{ root_domain }}`)"
       middlewares:
         - secure-headers
         - oauth
     nzbget-api:
-      rule: "Host(`nzbget.{{ root_domain }}) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
+      rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'sonarr' in containers %}
     sonarr:
-      rule: "Host(`sonarr.{{ root_domain }})"
+      rule: "Host(`sonarr.{{ root_domain }}`)"
       middlewares:
         - secure-headers
         - oauth
     sonarr-api:
-      rule: "Host(`sonarr.{{ root_domain }}) && PathPrefix(`/api`)"
+      rule: "Host(`sonarr.{{ root_domain }}`) && PathPrefix(`/api`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'radarr' in containers %}
     radarr:
-      rule: "Host(`radarr.{{ root_domain }})"
+      rule: "Host(`radarr.{{ root_domain }}`)"
       middlewares:
         - secure-headers
         - oauth
     radarr-api:
-      rule: "Host(`radarr.{{ root_domain }}) && PathPrefix(`/api`)"
+      rule: "Host(`radarr.{{ root_domain }}`) && PathPrefix(`/api`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'hydra' in containers %}
     hydra:
-      rule: "Host(`hydra.{{ root_domain }})"
+      rule: "Host(`hydra.{{ root_domain }}`)"
       middlewares:
         - secure-headers
         - oauth
     hydra-api:
-      rule: "Host(`hydra.{{ root_domain }}) && PathPrefix(`/api`,`/getnzb`,`/gettorrent`,`/rss`,`/torznab/api`)"
+      rule: "Host(`hydra.{{ root_domain }}`) && PathPrefix(`/api`,`/getnzb`,`/gettorrent`,`/rss`,`/torznab/api`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'ombi' in containers %}
     ombi:
-      rule: "Host(`request.{{ root_domain }})"
+      rule: "Host(`request.{{ root_domain }}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'duplicati' in containers %}
     duplicati:
-      rule: "Host(`duplicati.{{ root_domain }})"
+      rule: "Host(`duplicati.{{ root_domain }}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'espial' in containers %}
     espial:
-      rule: "Host(`bookmarks.{{ root_domain }})"
+      rule: "Host(`bookmarks.{{ root_domain }}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'miniflux' in containers %}
     miniflux:
-      rule: "Host(`rss.{{ root_domain }})"
+      rule: "Host(`rss.{{ root_domain }}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'tautulli' in containers %}
     tautulli:
-      rule: "Host(`plexpy.{{ root_domain }})"
+      rule: "Host(`plexpy.{{ root_domain }}`)"
       middlewares:
         - secure-headers
 {% endif %}
 
 {% if 'healthchecks' in containers %}
     healthchecks:
-      rule: "Host(`healthchecks.{{ root_domain }})"
+      rule: "Host(`healthchecks.{{ root_domain }}`)"
       middlewares:
         - secure-headers
-{% endif %}
-
-{# Services #}
-  services:
-{% if 'oauth' in containers %}
-    oauth:
-      loadbalancer:
-        server:
-          port: 4181
-{% endif %}
-
-{% if 'plex' in containers %}
-    plex:
-      loadbalancer:
-        server:
-          port: 32400
-          scheme: http
 {% endif %}

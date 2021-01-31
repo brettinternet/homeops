@@ -8,9 +8,17 @@
     image: docker.io/library/traefik:2.4
     state: "{{ state }}"
     restart: yes
+    env:
+      TZ: "{{ tz }}"
+      # https://go-acme.github.io/lego/dns/cloudflare/
+      CF_API_EMAIL: "{{ cloudflare_email }}"
+      CF_API_KEY: "{{ cloudflare_api_key }}"
     volumes:
       - "{{ appdata_dir }}/traefik:/etc/traefik:rw"
       - "{{ storage_dir }}/logs/traefik:/var/log/traefik"
     ports:
-      - "{{ network_bind_addr }}:4080:80"
-      - "{{ network_bind_addr }}:4443:443"
+      # - "{{ network_bind_addr }}:4080:80"
+      # - "{{ network_bind_addr }}:4443:443"
+      # Must match ports in `traefik.yml`
+      - 4080:4080
+      - 4443:4443

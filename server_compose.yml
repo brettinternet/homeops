@@ -5,8 +5,6 @@
     - "{{ playbook_dir }}/vars/secret.yml"
   vars:
     containers:
-      - traefik
-      - oauth
       - plex
       # - nzbget
       # - sonarr
@@ -15,6 +13,8 @@
       # - miniflux
       # - ombi
       # - tautulli
+      - oauth
+      - traefik
   roles:
     - name: traefik
       when: "'traefik' in containers"
