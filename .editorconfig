@@ -13,6 +13,9 @@ trim_trailing_whitespace = true
 [*.yml]
 indent_size = 2
 
+[*.yml.j2]
+indent_size = 2
+
 [*.tf]
 indent_size = 2
 
