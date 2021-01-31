@@ -1,0 +1,76 @@
+---
+# {{ ansible_managed }}
+{# https://doc.traefik.io/traefik/v2.0/reference/static-configuration/file/ #}
+
+global:
+  checkNewVersion: yes
+  sendAnonymousUsage: no
+
+{# https://doc.traefik.io/traefik/v2.0/routing/entrypoints/ #}
+entryPoints:
+  web:
+    address: :4080
+    forwardedHeaders:
+      trustedIPs:
+        - "{{ network_bind_addr }}"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  websecure:
+    address: :4443
+    forwardedHeaders:
+      trustedIPs:
+        - "{{ network_bind_addr }}"
+
+log:
+  filePath: /var/log/traefik/traefik.log
+  {# level: INFO #}
+
+accessLog:
+  filePath: /var/log/traefik/access.log
+
+{# https://doc.traefik.io/traefik/v2.0/operations/dashboard/ #}
+api:
+  dashboard: yes
+  {# insecure: yes #}
+
+{# https://doc.traefik.io/traefik/v2.0/operations/ping/ #}
+ping:
+  entryPoint: traefik
+
+{# https://doc.traefik.io/traefik/v2.0/providers/file/ #}
+providers:
+  file:
+    directory: /etc/traefik
+    watch: yes
+
+{# https://doc.traefik.io/traefik/v2.0/https/acme/ #}
+certificatesResolvers:
+  http:
+    acme:
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      storage: /etc/traefik/acme.json
+      email: "{{ cloudflare_email }}"
+      tlschallenge: yes
+      dnsChallenge:
+        delayBeforeCheck: 10
+        provider: cloudflare
+        resolvers:
+          - 1.1.1.1:53
+          - 1.0.0.1:53
+          - 8.8.8.8:53
+{#
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addEntryPointsLabels: yes
+    addServicesLabels: yes
+    manualRouting: no
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+#}

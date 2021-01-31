@@ -1,68 +1,16 @@
-# UNSUPPORTED BY PODMAN:
+---
+# Docker provider is unsupported by Traefik with podman:
 # https://github.com/traefik/traefik/issues/5730
-# BLOCKED BY:
-# https://github.com/containers/podman/issues/5580
 
 - name: traefik
   containers.podman.podman_container:
     name: traefik
-    image: docker.io/library/traefik:v1.7
+    image: docker.io/library/traefik:2.4
     state: "{{ state }}"
     restart: yes
-    env:
-      PUID: "0"
-      PGID: "0"
-      TZ: "{{ tz }}"
-      CLOUDFLARE_EMAIL: "{{ cloudflare_email }}"
-      CLOUDFLARE_API_KEY: "{{ cloudflare_api_key }}"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - "{{ appdata_dir }}/traefik:/etc/traefik:rw"
+      - "{{ storage_dir }}/logs/traefik:/var/log/traefik"
     ports:
-      # TODO: for rootless bind to higher ports and forward to them from bastion
-      - "{{ network_bind_addr }}:80:80"
-      - "{{ network_bind_addr }}:443:443"
-    command:
-      - "--logLevel=INFO"
-      - "--api"
-      - "--defaultentrypoints=http,https"
-      - "--entrypoints=Name:http Address::80 Compress:true ForwardedHeaders.TrustedIPs:10.0.0.2 Redirect.EntryPoint:https"
-      - "--entrypoints=Name:https Address::443 TLS Compress:true ForwardedHeaders.TrustedIPs:10.0.0.2 TLS.SniStrict:true TLS.MinVersion:VersionTLS12 CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256, TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384, TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256, TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256"
-      - "--acme"
-      - "--acme.storage=/etc/traefik/acme.json"
-      - "--acme.entryPoint=https"
-      - "--acme.dnsChallenge=true"
-      - "--acme.dnsChallenge.provider=cloudflare"
-      - "--acme.dnsChallenge.delayBeforeCheck=60"
-      - "--acme.dnsChallenge.resolvers=1.1.1.1,1.0.0.1"
-      - "--acme.onHostRule=true"
-      - "--acme.email={{ cloudflare_email }}"
-      - "--acme.acmeLogging=true"
-      # - "--acme.domains={{ root_domain }},*.{{ root_domain }},"
-      - "--acme.domains=*.{{ root_domain }},"
-      - "--acme.KeyType=RSA4096"
-      - "--docker"
-      - "--docker.domain={{ root_domain }}"
-      - "--docker.watch"
-      - "--docker.exposedbydefault=false"
-      - "--retry"
-    labels:
-      traefik.enable: true
-      traefik.docker.network: traefik_proxy
-      traefik.backend: traefik
-      traefik.port: 8080
-      traefik.frontend.rule: "Host:traefik.{{ root_domain }}"
-      traefik.frontend.headers.SSLRedirect: true
-      traefik.frontend.headers.STSSeconds: 315360000
-      traefik.frontend.headers.browserXSSFilter: true
-      traefik.frontend.headers.contentTypeNosniff: true
-      traefik.frontend.headers.forceSTSHeader: true
-      traefik.frontend.headers.STSIncludeSubdomains: true
-      traefik.frontend.headers.STSPreload: true
-      traefik.frontend.headers.customResponseHeaders: X-Robots-Tag:noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
-      traefik.frontend.headers.frameDeny: true
-      # traefik.frontend.auth.basic.users: "{{ htpasswd }}"
-      # add this to any containers you want to protect (if possible, sometimes mobile apps dont work)
-      traefik.frontend.auth.forward.address: http://oauth:4181
-      traefik.frontend.auth.forward.authResponseHeaders: X-Forwarded-User
-      traefik.frontend.auth.forward.trustForwardHeader: true
+      - "{{ network_bind_addr }}:4080:80"
+      - "{{ network_bind_addr }}:4443:443"
