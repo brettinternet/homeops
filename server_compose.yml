@@ -3,7 +3,21 @@
   hosts: server
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
+  vars:
+    containers:
+      - traefik
+      - oauth
+      - plex
+      # - nzbget
+      # - sonarr
+      # - radarr
+      # - espial
+      # - miniflux
+      # - ombi
+      # - tautulli
   roles:
+    - name: traefik
+      when: "'traefik' in containers"
     - name: compose
       vars:
         # absent - A container matching the specified name will be stopped and removed.
