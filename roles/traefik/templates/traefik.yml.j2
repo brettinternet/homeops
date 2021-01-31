@@ -10,23 +10,24 @@ global:
 entryPoints:
   web:
     address: :4080
-    forwardedHeaders:
-      trustedIPs:
-        - "{{ network_bind_addr }}"
-    http:
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
+    #forwardedHeaders:
+    #  trustedIPs:
+    #    - "{{ network_bind_addr }}"
+    #http:
+    #  redirections:
+    #    entryPoint:
+    #      to: websecure
+    #      scheme: https
   websecure:
     address: :4443
-    forwardedHeaders:
-      trustedIPs:
-        - "{{ network_bind_addr }}"
+    #forwardedHeaders:
+    #  trustedIPs:
+    #    - "{{ network_bind_addr }}"
 
-log:
-  filePath: /var/log/traefik/traefik.log
-  {# level: INFO #}
+{# https://doc.traefik.io/traefik/v2.0/observability/logs/ #}
+#log:
+#  filePath: /var/log/traefik/traefik.log
+  # level: INFO
 
 accessLog:
   filePath: /var/log/traefik/access.log
@@ -46,6 +47,9 @@ providers:
     directory: /etc/traefik
     watch: yes
 
+serversTransport:
+  insecureSkipVerify: true
+
 {# https://doc.traefik.io/traefik/v2.0/https/acme/ #}
 certificatesResolvers:
   http:
@@ -53,14 +57,16 @@ certificatesResolvers:
       caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       storage: /etc/traefik/acme.json
       email: "{{ cloudflare_email }}"
-      tlschallenge: yes
+      tlsChallenge: yes
       dnsChallenge:
-        delayBeforeCheck: 10
         provider: cloudflare
         resolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
           - 8.8.8.8:53
+      httpChallenge:
+        entryPoint: web
+
 {#
 metrics:
   prometheus:
