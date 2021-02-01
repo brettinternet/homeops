@@ -4,6 +4,8 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./screenshots/badblocks.png)
 
+I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with ZFS volumes, behind a Traefik ingress and OAuth, with Ansible deployment to an Arch Linux server, on a WireGuard network. 🏅
+
 ## Setup
 
 Run setup to create local configuration files and install `requirements.yml` from ansible-galaxy.
