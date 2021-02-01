@@ -43,5 +43,5 @@ Rootless podman support for container images and deployment within [an ansible r
 ### Traefik Reverse Proxy
 
 -   [x] Use [Traefik OAuth](https://github.com/thomseddon/traefik-forward-auth)
--   [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html) or [Authelia](https://github.com/clems4ever/authelia)
--   [ ] Update to Traefik v2
+-   [x] Update to Traefik v2
+<!-- -   [ ] Switch to [KeyCloak](https://www.keycloak.org/index.html) or [Authelia](https://github.com/clems4ever/authelia) -->
