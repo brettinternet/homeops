@@ -7,6 +7,7 @@
     # https://hub.docker.com/r/linuxserver/ombi
     image: docker.io/linuxserver/ombi
     state: "{{ state }}"
+    recreate: "{{ recreate }}"
     restart: yes
     env:
       PUID: "0"

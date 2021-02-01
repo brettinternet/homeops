@@ -12,6 +12,7 @@
     # https://github.com/jonschoning/espial-docker
     image: docker.io/jonschoning/espial:espial
     state: "{{ state }}"
+    recreate: "{{ recreate }}"
     restart: yes
     env:
       TZ: "{{ tz }}"
