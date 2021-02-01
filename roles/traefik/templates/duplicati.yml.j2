@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    duplicati:
+      rule: "Host(`duplicati.{{ root_domain }}`)"
+      service: duplicati
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      duplicati:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8200"

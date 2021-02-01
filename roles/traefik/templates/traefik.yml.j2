@@ -1,63 +1,54 @@
 ---
 # {{ ansible_managed }}
-{# https://doc.traefik.io/traefik/v2.0/reference/static-configuration/file/ #}
+{# https://doc.traefik.io/traefik/reference/static-configuration/file/ #}
 
 global:
   checkNewVersion: yes
   sendAnonymousUsage: no
 
-{# https://doc.traefik.io/traefik/v2.0/routing/entrypoints/ #}
+{# https://doc.traefik.io/traefik/routing/entrypoints/ #}
 entryPoints:
   web:
-    address: :4080
+    address: :80
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
     #forwardedHeaders:
     #  trustedIPs:
     #    - "{{ network_bind_addr }}"
-    #http:
-    #  redirections:
-    #    entryPoint:
-    #      to: websecure
-    #      scheme: https
   websecure:
-    address: :4443
+    address: :443
     #forwardedHeaders:
     #  trustedIPs:
     #    - "{{ network_bind_addr }}"
 
 {# https://doc.traefik.io/traefik/v2.0/observability/logs/ #}
-#log:
-#  filePath: /var/log/traefik/traefik.log
-  # level: INFO
-
 accessLog:
   filePath: /var/log/traefik/access.log
 
-{# https://doc.traefik.io/traefik/v2.0/operations/dashboard/ #}
+{# https://doc.traefik.io/traefik/operations/dashboard/ #}
 api:
   dashboard: yes
-  {# insecure: yes #}
 
-{# https://doc.traefik.io/traefik/v2.0/operations/ping/ #}
+{# https://doc.traefik.io/traefik/operations/ping/ #}
 ping:
   entryPoint: traefik
 
-{# https://doc.traefik.io/traefik/v2.0/providers/file/ #}
+{# https://doc.traefik.io/traefik/providers/file/ #}
 providers:
   file:
     directory: /etc/traefik
     watch: yes
 
-serversTransport:
-  insecureSkipVerify: true
-
-{# https://doc.traefik.io/traefik/v2.0/https/acme/ #}
+{# https://doc.traefik.io/traefik/https/acme/ #}
+{# https://letsencrypt.org/docs/challenge-types/ #}
+{# caServer: https://acme-staging-v02.api.letsencrypt.org/directory #}
 certificatesResolvers:
   http:
     acme:
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       storage: /etc/traefik/acme.json
       email: "{{ cloudflare_email }}"
-      tlsChallenge: yes
       dnsChallenge:
         provider: cloudflare
         resolvers:
@@ -80,3 +71,20 @@ metrics:
       - 1.2
       - 5.0
 #}
+
+http:
+  routers:
+    dashboard:
+      rule: "Host(`traefik.{{ root_domain }}`)"
+      service: api@internal
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        #- oauth
+
+  #services:
+  #    plex:
+  #      loadBalancer:
+  #        servers:
+  #          - url: "http://{{ homelab_local_ip }}:8080"

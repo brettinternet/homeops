@@ -1,0 +1,26 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    radarr:
+      rule: "Host(`radarr.{{ root_domain }}`)"
+      service: radarr
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth
+    radarr-api:
+      rule: "Host(`radarr.{{ root_domain }}`) && PathPrefix(`/api`)"
+      service: radarr
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      radarr:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:7878"

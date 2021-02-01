@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    tautulli:
+      rule: "Host(`plexpy.{{ root_domain }}`)"
+      service: tautulli
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      tautulli:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8181"
