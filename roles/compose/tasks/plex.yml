@@ -5,12 +5,20 @@
 # https://medium.com/@Pooch/containerized-media-server-setup-with-podman-3727727c8c5f
 # and be sure to reset permissions if you have root/sudo `sudo chown $(id -u -n):$(id -g -n) /mnt/storage/movies`
 
+- name: Add Plex transcode directory
+  ansible.builtin.file:
+    path: /tmp/transcode
+    state: directory
+    owner: "{{ puid }}"
+    group: "{{ pgid }}"
+
 - name: plex
   containers.podman.podman_container:
     name: plex
     # https://hub.docker.com/r/plexinc/pms-docker
     image: docker.io/plexinc/pms-docker:plexpass
     state: "{{ state }}"
+    recreate: "{{ recreate }}"
     restart: yes
     hostname: "{{ plex_hostname }}"
     env:
@@ -27,7 +35,7 @@
       - "{{ storage_dir }}/movies:/data/Movies"
       - "{{ storage_dir }}/tv:/data/TV"
       - "{{ storage_dir }}/photos:/data/Photos"
-      - /tmp:/transcode
+      - /tmp/transcode:/transcode
     # Quick Sync https://github.com/plexinc/pms-docker#intel-quick-sync-hardware-transcoding-support
     device: /dev/dri:/dev/dri
     ports:

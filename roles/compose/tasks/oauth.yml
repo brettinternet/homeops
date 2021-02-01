@@ -9,6 +9,7 @@
     # https://hub.docker.com/r/thomseddon/traefik-forward-auth
     image: docker.io/thomseddon/traefik-forward-auth
     state: "{{ state }}"
+    recreate: "{{ recreate }}"
     restart: yes
     env:
       CLIENT_ID: "{{ oauth_client_id }}"
