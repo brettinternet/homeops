@@ -6,23 +6,17 @@
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
 
-- name: Add Traefik base configuration
-  ansible.builtin.template:
-    src: traefik.yml.j2
-    dest: "{{ appdata_dir }}/traefik/traefik.yml"
-    owner: "{{ ansible_facts['user_uid'] }}"
-    group: "{{ ansible_facts['user_gid'] }}"
-
 - name: Add Traefik middleware
-  ansible.builtin.copy:
-    src: middleware.yml
+  ansible.builtin.template:
+    src: middleware.yml.j2
     dest: "{{ appdata_dir }}/traefik/middleware.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
 
-- name: Add Traefik routes
+- name: Add Traefik routes and services
   ansible.builtin.template:
-    src: routes.yml.j2
-    dest: "{{ appdata_dir }}/traefik/routes.yml"
+    src: "{{ item | lower }}.yml.j2"
+    dest: "{{ appdata_dir }}/traefik/{{ item | lower }}.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
+  loop: "{{ containers }}"

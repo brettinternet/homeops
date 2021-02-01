@@ -1,0 +1,24 @@
+---
+http:
+  routers:
+    hydra:
+      rule: "Host(`hydra.{{ root_domain }}`)"
+      service: hydra
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth
+    hydra-api:
+      rule: "Host(`hydra.{{ root_domain }}`) && PathPrefix(`/api`,`/getnzb`,`/gettorrent`,`/rss`,`/torznab/api`)"
+      service: hydra
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      hydra:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:5076"

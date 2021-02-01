@@ -4,8 +4,7 @@ http:
     oauth:
       # https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
       forwardAuth:
-        # See tasks/oauth.yml
-        address: https://oauth:4181
+        address: "https://{{ homelab_local_ip }}:4181"
         trustForwardHeader: yes
         authResponseHeaders:
           - X-Forwarded-User
@@ -30,6 +29,15 @@ http:
         featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
         customResponseHeaders:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
+
+    # If needed, remove redirection in `entryPoints` and implement per domain:
+    # https://doc.traefik.io/traefik/migration/v1-to-v2/#http-to-https-redirection-is-now-configured-on-routers
+    redirect-https:
+      # https://doc.traefik.io/traefik/v2.0/middlewares/redirectscheme/
+      redirectScheme:
+        scheme: https
+        port: 443
+        #permanent: true
 
     rate-limit:
       # https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/

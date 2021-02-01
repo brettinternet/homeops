@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    miniflux:
+      rule: "Host(`rss.{{ root_domain }}`)"
+      service: miniflux
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      miniflux:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8082"

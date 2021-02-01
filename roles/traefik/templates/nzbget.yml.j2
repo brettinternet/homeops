@@ -1,0 +1,25 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    nzbget:
+      rule: "Host(`nzbget.{{ root_domain }}`)"
+      service: nzbget
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+    nzbget-api:
+      rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
+      service: nzbget
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      nzbget:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:6788"
