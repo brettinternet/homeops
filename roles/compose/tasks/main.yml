@@ -1,7 +1,6 @@
 ---
 ### Rootless Podman orchestration ###
 # https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
-# STATUS: incomplete; see traefik.yml
 
 - name: Check supported containers
   vars:
