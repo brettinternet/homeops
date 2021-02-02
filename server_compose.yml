@@ -13,6 +13,8 @@
       - miniflux
       - ombi
       - tautulli
+      # - healthchecks
+      # - syncthing
       - oauth
       - traefik
   roles:

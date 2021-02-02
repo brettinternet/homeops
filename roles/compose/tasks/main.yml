@@ -19,6 +19,7 @@
       - tautulli
       - healthchecks
       - hydra
+      - syncthing
   fail:
     msg:
       - "Unsupported container: {{ item }}"
