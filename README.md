@@ -62,6 +62,8 @@ Here's a nice convenience for setting up `authorized_keys` that both Github and 
 curl https://github.com/<username>.keys -o authorized_keys
 ```
 
+You could pipe the output to `sed` to only grab a specific line `sed '4!d'`.
+
 #### Check disks
 
 Use [badblocks](https://wiki.archlinux.org/index.php/Badblocks) to check the status of new disks.
