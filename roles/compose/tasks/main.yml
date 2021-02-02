@@ -2,6 +2,8 @@
 ### Rootless Podman orchestration ###
 # https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
 
+# TODO: add log storage https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
+
 - name: Check supported containers
   vars:
     supported_containers:

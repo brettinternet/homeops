@@ -1,5 +1,6 @@
 ---
 # https://github.com/syncthing/syncthing/blob/main/README-Docker.md
+# https://docs.syncthing.net/intro/getting-started.html
 
 - name: syncthing
   containers.podman.podman_container:
