@@ -54,6 +54,14 @@ I purchased a [Dell Perc H310](https://www.ebay.com/sch/i.html?_nkw=Dell+Perc+H3
 
 ## Software
 
+#### SSH
+
+Here's a nice convenience for setting up `authorized_keys` that both Github and Gitlab offer:
+
+```sh
+curl https://github.com/<username>.keys -o authorized_keys
+```
+
 #### Check disks
 
 Use [badblocks](https://wiki.archlinux.org/index.php/Badblocks) to check the status of new disks.
