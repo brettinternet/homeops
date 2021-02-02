@@ -10,8 +10,10 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - oauth
     nzbget-api:
-      rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
+      #rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
+      rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^/:]*:[^/:]*/)?jsonrpc}`,`/{xmlrpc:([^/:]*:[^/:]*/)?xmlrpc}`)"
       service: nzbget
       tls:
         certResolver: http

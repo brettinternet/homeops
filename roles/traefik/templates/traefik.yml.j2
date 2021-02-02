@@ -55,10 +55,9 @@ certificatesResolvers:
           - 1.1.1.1:53
           - 1.0.0.1:53
           - 8.8.8.8:53
-      httpChallenge:
-        entryPoint: web
 
 {#
+TODO: setup metric collection with TICK stack
 metrics:
   prometheus:
     entryPoint: metrics
@@ -70,6 +69,9 @@ metrics:
       - 0.3
       - 1.2
       - 5.0
+
+serversTransport:
+  insecureSkipVerify: true
 #}
 
 http:
@@ -81,10 +83,4 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
-        #- oauth
-
-  #services:
-  #    plex:
-  #      loadBalancer:
-  #        servers:
-  #          - url: "http://{{ homelab_local_ip }}:8080"
+        - oauth
