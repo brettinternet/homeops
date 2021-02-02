@@ -1,0 +1,22 @@
+---
+- name: Add Traefik log directory
+  ansible.builtin.file:
+    path: "{{ storage_dir }}/logs/traefik"
+    state: directory
+    owner: "{{ ansible_facts['user_uid'] }}"
+    group: "{{ ansible_facts['user_gid'] }}"
+
+- name: Add Traefik middleware
+  ansible.builtin.template:
+    src: middleware.yml.j2
+    dest: "{{ appdata_dir }}/traefik/middleware.yml"
+    owner: "{{ ansible_facts['user_uid'] }}"
+    group: "{{ ansible_facts['user_gid'] }}"
+
+- name: Add Traefik routes and services
+  ansible.builtin.template:
+    src: "{{ item | lower }}.yml.j2"
+    dest: "{{ appdata_dir }}/traefik/{{ item | lower }}.yml"
+    owner: "{{ ansible_facts['user_uid'] }}"
+    group: "{{ ansible_facts['user_gid'] }}"
+  loop: "{{ containers }}"

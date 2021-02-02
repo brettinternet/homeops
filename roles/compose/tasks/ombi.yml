@@ -1,0 +1,19 @@
+---
+# https://github.com/linuxserver/docker-ombi
+
+- name: ombi
+  containers.podman.podman_container:
+    name: ombi
+    # https://hub.docker.com/r/linuxserver/ombi
+    image: docker.io/linuxserver/ombi
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/ombi:/config"
+    ports:
+      - 3579:3579

@@ -1,0 +1,26 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    sonarr:
+      rule: "Host(`sonarr.{{ root_domain }}`)"
+      service: sonarr
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth
+    sonarr-api:
+      rule: "Host(`sonarr.{{ root_domain }}`) && PathPrefix(`/api`)"
+      service: sonarr
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      sonarr:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8989"

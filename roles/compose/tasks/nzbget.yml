@@ -1,0 +1,21 @@
+---
+# https://github.com/linuxserver/docker-nzbget
+
+- name: nzbget
+  containers.podman.podman_container:
+    name: nzbget
+    # https://hub.docker.com/r/linuxserver/nzbget
+    image: docker.io/linuxserver/nzbget
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/nzbget:/config"
+      - "{{ storage_dir }}/downloads:/downloads"
+      # - "{{ storage_dir }}/movies:/movies" # for VideoSort post-processing script
+    ports:
+      - 6788:6789

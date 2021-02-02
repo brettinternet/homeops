@@ -1,0 +1,28 @@
+---
+# Docker provider is unsupported by Traefik with podman:
+# https://github.com/traefik/traefik/issues/5730
+# We use the file provider instead, see `roles/traefik`
+
+- name: traefik
+  containers.podman.podman_container:
+    name: traefik
+    # version 2.4 is blocked by https://github.com/traefik/traefik/issues/7809
+    image: docker.io/library/traefik:2.3
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      TZ: "{{ tz }}"
+      # https://go-acme.github.io/lego/dns/cloudflare/
+      CF_API_EMAIL: "{{ cloudflare_email }}"
+      CF_API_KEY: "{{ cloudflare_api_key }}"
+    volumes:
+      - "{{ appdata_dir }}/traefik:/etc/traefik:rw"
+      - "{{ storage_dir }}/logs/traefik:/var/log/traefik"
+    ports:
+      # Rootless containers don't support ports below 1024
+      # https://podman.io/getting-started/network#publishing-ports
+      # - "{{ network_bind_addr }}:4080:80"
+      # - "{{ network_bind_addr }}:4443:443"
+      - 4080:80
+      - 4443:443

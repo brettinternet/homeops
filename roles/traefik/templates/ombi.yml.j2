@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    ombi:
+      rule: "Host(`request.{{ root_domain }}`)"
+      service: ombi
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      ombi:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:3579"

@@ -1,0 +1,86 @@
+---
+# {{ ansible_managed }}
+{# https://doc.traefik.io/traefik/reference/static-configuration/file/ #}
+
+global:
+  checkNewVersion: yes
+  sendAnonymousUsage: no
+
+{# https://doc.traefik.io/traefik/routing/entrypoints/ #}
+entryPoints:
+  web:
+    address: :80
+    http:
+      redirections:
+        entrypoint:
+          to: websecure
+    #forwardedHeaders:
+    #  trustedIPs:
+    #    - "{{ network_bind_addr }}"
+  websecure:
+    address: :443
+    #forwardedHeaders:
+    #  trustedIPs:
+    #    - "{{ network_bind_addr }}"
+
+{# https://doc.traefik.io/traefik/v2.0/observability/logs/ #}
+accessLog:
+  filePath: /var/log/traefik/access.log
+
+{# https://doc.traefik.io/traefik/operations/dashboard/ #}
+api:
+  dashboard: yes
+
+{# https://doc.traefik.io/traefik/operations/ping/ #}
+ping:
+  entryPoint: traefik
+
+{# https://doc.traefik.io/traefik/providers/file/ #}
+providers:
+  file:
+    directory: /etc/traefik
+    watch: yes
+
+{# https://doc.traefik.io/traefik/https/acme/ #}
+{# https://letsencrypt.org/docs/challenge-types/ #}
+{# caServer: https://acme-staging-v02.api.letsencrypt.org/directory #}
+certificatesResolvers:
+  http:
+    acme:
+      storage: /etc/traefik/acme.json
+      email: "{{ cloudflare_email }}"
+      dnsChallenge:
+        provider: cloudflare
+        resolvers:
+          - 1.1.1.1:53
+          - 1.0.0.1:53
+          - 8.8.8.8:53
+
+{#
+TODO: setup metric collection with TICK stack
+metrics:
+  prometheus:
+    entryPoint: metrics
+    addEntryPointsLabels: yes
+    addServicesLabels: yes
+    manualRouting: no
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0
+
+serversTransport:
+  insecureSkipVerify: true
+#}
+
+http:
+  routers:
+    dashboard:
+      rule: "Host(`traefik.{{ root_domain }}`)"
+      service: api@internal
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth

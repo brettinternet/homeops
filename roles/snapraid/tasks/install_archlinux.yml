@@ -1,0 +1,15 @@
+---
+- name: Install SnapRAID from AUR (Archlinux)
+  become_user: aur_builder
+  aur:
+    use: yay
+    aur_only: yes
+    name: snapraid
+    state: present
+
+# Cron is required to run snapraid-runner script periodically
+- name: Install cronie package (Archlinux)
+  become: yes
+  pacman:
+    name: cronie
+    state: present
