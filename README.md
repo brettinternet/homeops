@@ -52,6 +52,8 @@ I purchased a [Dell Perc H310](https://www.ebay.com/sch/i.html?_nkw=Dell+Perc+H3
 
 [These printable stackers](https://www.thingiverse.com/thing:582781) are great for stacking SSDs in a homelab.
 
+## Software
+
 #### Check disks
 
 Use [badblocks](https://wiki.archlinux.org/index.php/Badblocks) to check the status of new disks.
@@ -89,3 +91,7 @@ You must also include an entry for the MergerFS union, such as:
 ```
 
 See also [perfectmediaserver: MergerFS](https://perfectmediaserver.com/installation/manual-install/#mergerfs)
+
+#### OS Installation
+
+[Ventoy](https://www.ventoy.net/en/index.html) seems like an interesting project. Some of my ARM hardware requires Ubuntu, so it'd be nice to have a single USB to manage installations.
