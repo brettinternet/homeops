@@ -66,9 +66,9 @@ sudo badblocks -wsv -b 4096 /dev/sda > sda_badblocks.txt
 
 Here's some additional advice from [/r/DataHoarders](https://www.reddit.com/r/DataHoarder/comments/7seion/new_drive_first_steps_you_take_before_using/).
 
-#### [MergerFS](https://github.com/trapexit/mergerfs)
+#### JBOD
 
-This is a union filesystem for pooling drives together. It's a great pair with SnapRAID.
+[MergerFS](https://github.com/trapexit/mergerfs) is a union filesystem for pooling drives together. It's a great pair with SnapRAID.
 
 ```sh
 mkdir /mnt/disk{1,2,3,4}
