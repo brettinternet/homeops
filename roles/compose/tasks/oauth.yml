@@ -1,7 +1,8 @@
 ---
 # https://github.com/thomseddon/traefik-forward-auth
-
-# BLOCKED BY: see issues in traefik.yml
+# TODO: Should I switch to:
+# KeyCloak https://www.keycloak.org/index.html
+# Authelia https://github.com/clems4ever/authelia)
 
 - name: oauth
   containers.podman.podman_container:
