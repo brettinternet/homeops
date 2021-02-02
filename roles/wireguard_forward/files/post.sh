@@ -48,6 +48,8 @@ TCP_PORTS_TO_FORWARD=(
   [443]=443
   # SSH
 #   [2222]=22
+  # Syncthing
+# [22000]=22000
   # DNS
   [53]=53
 )
