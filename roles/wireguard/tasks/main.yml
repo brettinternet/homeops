@@ -1,5 +1,7 @@
 ---
-# With help from https://github.com/githubixx/ansible-role-wireguard
+# With help from:
+# https://github.com/githubixx/ansible-role-wireguard
+# https://wiki.archlinux.org/index.php/WireGuard
 
 - name: Check supported distribution
   fail:

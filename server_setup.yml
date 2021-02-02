@@ -84,6 +84,7 @@
 #
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
+# https://wiki.archlinux.org/index.php/ZFS
 
 # TODO: check smart output for disk errors
 # https://wiki.archlinux.org/index.php/S.M.A.R.T.
