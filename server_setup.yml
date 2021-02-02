@@ -9,7 +9,6 @@
     - role: sudoers
     - role: snapraid
       vars:
-        docker_compose_dir: "{{ ansible_facts['user_dir'] }}/apps"
         # TODO: add email values for snapraid-runner.conf.j2
         parity_disks:
           - path: /mnt/parity1
