@@ -48,7 +48,7 @@ Rootless podman support for container images and deployment within [an ansible r
 
 I purchased a [Dell Perc H310](https://www.ebay.com/sch/i.html?_nkw=Dell+Perc+H310+SATA) a long while back. Mine did come from overseas, but it turned out to be legit. [This video](https://www.youtube.com/watch?v=EOcpp-GdhKo) shows how it can be flashed to an LSI 9211-8i IT (see also [1](https://www.servethehome.com/ibm-serveraid-m1015-part-4/), [2](https://www.truenas.com/community/threads/confused-about-that-lsi-card-join-the-crowd.11901/)).
 
-#### 2.5" driver stackers
+#### 2.5" drive stackers
 
 [These printable stackers](https://www.thingiverse.com/thing:582781) are great for stacking SSDs in a homelab.
 
