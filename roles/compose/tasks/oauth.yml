@@ -12,16 +12,14 @@
     recreate: "{{ recreate }}"
     restart: yes
     env:
-      CLIENT_ID: "{{ oauth_client_id }}"
-      CLIENT_SECRET: "{{ oauth_client_secret }}"
+      PROVIDERS_GOOGLE_CLIENT_ID: "{{ oauth_client_id }}"
+      PROVIDERS_GOOGLE_CLIENT_SECRET: "{{ oauth_client_secret }}"
       SECRET: "{{ oauth_secret }}"
       INSECURE_COOKIE: false
       COOKIE_DOMAIN: "{{ root_domain }}"
       AUTH_HOST: "oauth.{{ root_domain }}"
-      URL_PATH: /_oauth
       WHITELIST: "{{ oauth_whitelist }}"
-      LOG_LEVEL: warn
-      LOG_FORMAT: text
+      LOG_LEVEL: debug
       LIFETIME: 2592000 # 30 days
     ports:
       - 4181:4181
