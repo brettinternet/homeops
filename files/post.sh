@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Reverse proxy - forward traffic on defined ports to a peer IP
+# TODO: for rootless bind to higher ports and forward to them from bastion
 
 IPTABLES_ARG=""
 
