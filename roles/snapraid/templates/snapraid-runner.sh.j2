@@ -5,16 +5,13 @@ if [ "$EUID" -ne 0 ]; then
   exit 126
 fi
 
-SERVICES_DIR="{{ docker_compose_dir }}"
-cd $SERVICES_DIR
-
 SERVICES_TO_SHUTDOWN=("automators" "espial" "mailserver" "miniflux" "nzbget" "watchtower")
 
 run_as_user() {
     /bin/su -c "$@" - {{ ansible_user }}
 }
 
-run_as_user 'docker-compose down "${SERVICES_TO_SHUTDOWN[@]}"'
+run_as_user 'podman pause "${SERVICES_TO_SHUTDOWN[@]}"'
 
 /usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/snapraid-runner.conf -q
 if [ $? -eq 0 ]; then
@@ -24,4 +21,4 @@ else
     echo "ERROR: Unable to run snapraid-runner.py"
 fi
 
-run_as_user 'docker-compose up -d "${SERVICES_TO_SHUTDOWN[@]}"'
+run_as_user 'podman unpause "${SERVICES_TO_SHUTDOWN[@]}"'

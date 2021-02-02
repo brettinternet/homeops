@@ -3,8 +3,6 @@ supported_distributions:
   - archlinux
   - debian
 
-docker_compose_dir: "{{ ansible_facts['user_dir'] }}/apps"
-
 ## snapraid.conf.j2 template defaults
 
 snapraid_config_excludes: []
