@@ -5,12 +5,18 @@
 # https://medium.com/@Pooch/containerized-media-server-setup-with-podman-3727727c8c5f
 # and be sure to reset permissions if you have root/sudo `sudo chown $(id -u -n):$(id -g -n) /mnt/storage/movies`
 
-- name: Add Plex transcode directory
-  ansible.builtin.file:
-    path: /tmp/transcode
-    state: directory
-    owner: "{{ puid }}"
-    group: "{{ pgid }}"
+- block:
+    - name: Check transcode directory
+      ansible.builtin.stat:
+        path: /tmp/transcode
+      register: transcode_dir_result
+    - name: Add Plex transcode directory
+      ansible.builtin.file:
+        path: /tmp/transcode
+        state: directory
+        owner: "{{ puid | int }}"
+        group: "{{ pgid | int }}"
+      when: not transcode_dir_result.stat.exists
 
 - name: plex
   containers.podman.podman_container:
