@@ -5,14 +5,14 @@
     - "{{ playbook_dir }}/vars/secret.yml"
   vars:
     containers:
-      # - plex
+      - plex
       - nzbget
       - sonarr
-      # - radarr
+      - radarr
       - espial
-      # - miniflux
-      # - ombi
-      # - tautulli
+      - miniflux
+      - ombi
+      - tautulli
       - oauth
       - traefik
   roles:
@@ -25,4 +25,4 @@
         # started - Asserts there is a running container matching the name and any provided configuration. If no container matches the name, a container will be created and started. Use recreate to always re-create a matching container, even if it is running. Use force_restart to force a matching container to be stopped and restarted.
         # stopped - Asserts that the container is first present, and then if the container is running moves it to a stopped state.
         state: started
-        recreate: yes
+        # recreate: yes
