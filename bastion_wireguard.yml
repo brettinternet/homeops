@@ -1,26 +1,10 @@
 ---
-- name: Copy WireGuard post script
-  hosts: bastion
-  tasks:
-    - name: Create configuration directory
-      file:
-        path: /etc/wireguard/
-        state: directory
-        mode: 0700
-
-    - name: Copy script
-      copy:
-        src: "{{ playbook_dir }}/files/post.sh"
-        dest: /etc/wireguard/post.sh
-        owner: root
-        group: wheel
-        mode: 0700
-
 - name: Setup WireGuard remote server
   hosts: bastion
   vars_files:
     - "{{ playbook_dir }}/vars/secret.yml"
   roles:
+    - role: wireguard_forward
     - role: wireguard
       vars:
         host_ip: 10.0.0.1
