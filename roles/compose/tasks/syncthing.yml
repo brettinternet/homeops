@@ -1,0 +1,19 @@
+---
+# https://github.com/syncthing/syncthing/blob/main/README-Docker.md
+
+- name: syncthing
+  containers.podman.podman_container:
+    name: syncthing
+    # https://hub.docker.com/r/syncthing/syncthing
+    image: docker.io/syncthing/syncthing:latest
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+    volumes:
+      - "{{ appdata_dir }}/syncthing:/var/syncthing"
+    ports:
+      - 8384:8384
+      - 22000:22000

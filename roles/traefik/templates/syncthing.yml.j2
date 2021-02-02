@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    syncthing:
+      rule: "Host(`syncthing.{{ root_domain }}`)"
+      service: syncthing
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      syncthing:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8384"
