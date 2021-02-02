@@ -20,7 +20,15 @@
       - "{{ storage_dir }}/data/miniflux_db:/var/lib/postgresql/data"
     ports:
       - 5432:5432
-  register: miniflux_db
+
+# WIP - perhaps there's a more elegant way
+- name: Wait for Miniflux database
+  containers.podman.podman_container_info:
+    name: miniflux_db
+  register: miniflux_db_info_result
+  until: miniflux_db_info_result.containers[0]['State']['Running']
+  retries: 5
+  delay: 3
 
 - name: miniflux
   containers.podman.podman_container:
