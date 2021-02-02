@@ -1,2 +1,5 @@
 ---
 recreate: no
+
+network_bind_addr: 0.0.0.0
+homelab_local_ip: 0.0.0.0
