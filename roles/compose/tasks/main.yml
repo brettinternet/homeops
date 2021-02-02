@@ -1,0 +1,63 @@
+---
+### Rootless Podman orchestration ###
+# https://wiki.archlinux.org/index.php/Podman#Rootless_Podman
+
+- name: Check supported containers
+  vars:
+    supported_containers:
+      - traefik
+      - oauth
+      - plex
+      - nzbget
+      - sonarr
+      - radarr
+      - espial
+      - miniflux
+      - ombi
+      - tautulli
+      - healthchecks
+      - hydra
+  fail:
+    msg:
+      - "Unsupported container: {{ item }}"
+      - "Supported containers are {{ supported_containers }}"
+  when: item | lower not in supported_containers
+  loop: "{{ containers }}"
+
+# TODO: Perhaps ensure that kernel params are set
+# https://github.com/Difrex/Ansible/blob/master/roles/docker/tasks/grub.yml
+
+- name: Configure /etc/subuid
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    line: "{{ ansible_user }}:165536:65536"
+    create: yes
+
+- name: Configure /etc/subgid
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    line: "{{ ansible_user }}:165536:65536"
+    create: yes
+
+### Orchestration ###
+
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
+
+# Rootless container to container communication either requires using the local ip address
+# or enable the flag `network: slirp4netns:allow_host_loopback=true` and use the default
+# podman network `10.0.2.2` for localhost loopback
+# https://podman.io/getting-started/network#container---container-communication
+
+- name: Orchestration
+  include_tasks: "{{ item | lower }}.yml"
+  loop: "{{ containers }}"
+#
+# - name: Enable the podman daemon (for cockpit)
+#   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+#   ansible.builtin.systemd:
+#     name: podman
+#     scope: user
+#     enabled: yes
+#     state: started

@@ -1,0 +1,71 @@
+---
+# With help from https://github.com/IronicBadger/ansible-role-snapraid
+
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - "Supported role distributions are {{ supported_distributions }}"
+  when: ansible_facts['distribution'] | lower not in supported_distributions
+
+- name: Install SnapRAID
+  include_tasks: "install_{{ ansible_facts['distribution'] | lower }}.yml"
+
+# https://www.snapraid.it/manual
+- name: Create snapraid.conf
+  become: yes
+  template:
+    src: snapraid.conf.j2
+    dest: "{{ snapraid_config }}"
+    owner: root
+    group: wheel
+    mode: 0775
+
+# Using local copy for now, but may want to use upstream master soon
+- name: Copy snapraid-runner.py
+  become: true
+  copy:
+    src: "{{ role_path }}/files/snapraid-runner.py"
+    dest: "{{ snapraid_runner_dir }}/"
+
+# - block:
+#     - name: Clone snapraid-runner
+#       git:
+#         repo: https://github.com/Chronial/snapraid-runner.git
+#         dest: /tmp/snapraid-runner
+
+#     - name: "Copy script to {{ snapraid_runner_dir }}"
+#       copy:
+#         remote_src: /tmp/snapraid-runner/snapraid-runner.py
+#         dest: "{{ snapraid_runner_dir }}"
+
+- name: Create snapraid-runner.conf
+  become: yes
+  template:
+    src: snapraid-runner.conf.j2
+    dest: "{{ snapraid_runner_dir }}/snapraid-runner.conf"
+    # owner: root
+    # group: root
+    # mode: 0775
+
+- name: Create snapraid-runner.sh
+  become: yes
+  template:
+    src: "snapraid-runner.sh.j2"
+    dest: "{{ snapraid_runner_dir }}/snapraid-runner.sh"
+    # owner: root
+    # group: root
+    # mode: 0775
+
+# https://wiki.archlinux.org/index.php/Cron
+- name: Setup snapraid-runner cron
+  become: yes
+  cron:
+    user: root
+    name: snapraid_runner
+    state: present
+    job: "/bin/bash {{ snapraid_runner_dir }}/snapraid-runner.sh"
+    minute: "00"
+    hour: "03"
+    day: "*"
+    weekday: "*"

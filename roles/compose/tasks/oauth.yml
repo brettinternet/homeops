@@ -1,0 +1,25 @@
+---
+# https://github.com/thomseddon/traefik-forward-auth
+
+# BLOCKED BY: see issues in traefik.yml
+
+- name: oauth
+  containers.podman.podman_container:
+    name: oauth
+    # https://hub.docker.com/r/thomseddon/traefik-forward-auth
+    image: docker.io/thomseddon/traefik-forward-auth
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      PROVIDERS_GOOGLE_CLIENT_ID: "{{ oauth_client_id }}"
+      PROVIDERS_GOOGLE_CLIENT_SECRET: "{{ oauth_client_secret }}"
+      SECRET: "{{ oauth_secret }}"
+      INSECURE_COOKIE: false
+      COOKIE_DOMAIN: "{{ root_domain }}"
+      AUTH_HOST: "oauth.{{ root_domain }}"
+      WHITELIST: "{{ oauth_whitelist }}"
+      LOG_LEVEL: debug
+      LIFETIME: 2592000 # 30 days
+    ports:
+      - 4181:4181

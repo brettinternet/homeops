@@ -1,0 +1,14 @@
+---
+all:
+  children:
+    server:
+      hosts:
+        # Define homelab host
+        myhost:
+          # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
+          # ansible_host:
+          # ansible_user:
+
+    bastion:
+      hosts:
+        # Define bastion host

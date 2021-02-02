@@ -1,0 +1,5 @@
+---
+- name: Install qrencode package (Archlinux)
+  pacman:
+    name: "{{ name }}"
+    state: "{{ state }}"

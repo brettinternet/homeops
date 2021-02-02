@@ -1,0 +1,99 @@
+---
+# First, setup mergerfs and correct fstab mounts
+
+- name: Setup SnapRAID
+  hosts: server
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  roles:
+    - role: sudoers
+    - role: snapraid
+      vars:
+        # TODO: add email values for snapraid-runner.conf.j2
+        parity_disks:
+          - path: /mnt/parity1
+            content: false
+        data_disks:
+          - path: /mnt/disk1
+            content: true
+          - path: /mnt/disk2
+            content: true
+          - path: /mnt/disk3
+            content: false
+          - path: /mnt/disk4
+            content: false
+          - path: /mnt/disk5
+            content: false
+        snapraid_config_excludes:
+          - "*.unrecoverable"
+          - /tmp/
+          - /lost+found/
+          - downloads/
+          - appdata/
+          - snapshots/
+          - "*.!sync"
+          - .AppleDouble
+          - ._AppleDouble
+          - .DS_Store
+          - ._.DS_Store
+          - .Thumbs.db
+          - .fseventsd
+          - .Spotlight-V100
+          - .TemporaryItems
+          - .Trashes
+          - .AppleDB
+
+  tasks:
+    # TODO: remove extra keys from github, or is it possible to filter in this task?
+    # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
+    # - name: Add authorized key
+    #   authorized_key:
+    #     user: "{{ ansible_user }}"
+    #     state: present
+    #     key: https://github.com/brettinternet.keys
+    # TODO: secure `authorized_keys` https://wiki.archlinux.org/index.php/OpenSSH#Securing_the_authorized_keys_file
+    - name: Disable password tunneling
+      become: yes
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: PasswordAuthentication no
+
+    - name: Only allow currernt user
+      become: yes
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        line: "AllowUsers {{ ansible_user }}"
+
+    - name: Enable cockpit.socket
+      become: yes
+      ansible.builtin.systemd:
+        name: cockpit.socket
+        enabled: yes
+
+    - name: Remove Cockpit motd
+      become: yes
+      ansible.builtin.file:
+        path: /etc/motd.d/cockpit
+        state: absent
+
+    - name: Enable pmlogger (cockpit metrics)
+      become: yes
+      ansible.builtin.systemd:
+        name: pmlogger
+        enabled: yes
+#
+# TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
+# https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
+
+# TODO: check smart output for disk errors
+# https://wiki.archlinux.org/index.php/S.M.A.R.T.
+# https://github.com/grimmjow8/ansible-smartmontools
+# https://github.com/LibreIT/ansible-smartd
+# https://github.com/stuvusIT/smartd
+
+# TODO: add telegraf support, and others
+# https://github.com/dj-wasabi/ansible-telegraf
+
+# Additional setup:
+# https://github.com/ironicbadger/infra
+# https://github.com/davestephens/ansible-nas

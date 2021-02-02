@@ -1,0 +1,7 @@
+---
+supported_distributions:
+  - archlinux
+  - ubuntu
+  - debian
+
+state: present

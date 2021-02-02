@@ -1,5 +1,6 @@
 .env
 .terraform
 terraform.tfstate*
-wg0*
 *.log
+secret.yml
+inventory.yml

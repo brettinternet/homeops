@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    healthchecks:
+      rule: "Host(`healthchecks.{{ root_domain }}`)"
+      service: healthchecks
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      healthchecks:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8001"

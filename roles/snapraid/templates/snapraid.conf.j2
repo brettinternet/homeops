@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+# Source https://github.com/amadvance/snapraid/blob/master/snapraid.conf.example
+
+# Parity location(s)
+{% for disk in parity_disks %}
+{{ loop.index}}-parity {{ disk.path }}/snapraid.parity
+{% endfor %}
+
+# Content file location(s)
+content /var/snapraid.content
+{% for disk in parity_disks %}
+{% if disk.content == true %}
+content {{ disk.path }}/snapraid.content
+{% endif %}
+{% endfor %}
+{% for disk in data_disks %}
+{% if disk.content == true %}
+content {{ disk.path }}/.snapraid.content
+{% endif %}
+{% endfor %}
+
+# Data disks
+{% for disk in data_disks %}
+data d{{ loop.index }} {{ disk.path }}
+{% endfor %}
+
+{% if snapraid_config_exclude_hidden %}
+# Excludes hidden files and directories
+nohidden
+{% endif %}
+
+# Files and directories to exclude (relative to mount points)
+{% for item in snapraid_config_excludes %}
+exclude {{ item }}
+{% endfor %}

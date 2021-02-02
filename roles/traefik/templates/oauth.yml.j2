@@ -1,0 +1,19 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    oauth:
+      rule: "Host(`oauth.{{ root_domain }}`)"
+      service: oauth
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth
+
+  services:
+      oauth:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:4181"

@@ -1,0 +1,9 @@
+---
+- name: Destroy bastion server
+  hosts: server
+  vars:
+    state: absent
+  vars_files:
+    - "{{ playbook_dir }}/vars/secret.yml"
+  roles:
+    - terraform

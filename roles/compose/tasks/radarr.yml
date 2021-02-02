@@ -1,0 +1,20 @@
+---
+# https://github.com/linuxserver/docker-radarr
+- name: radarr
+  containers.podman.podman_container:
+    name: radarr
+    # https://hub.docker.com/r/linuxserver/radarr
+    image: docker.io/linuxserver/radarr
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    restart: yes
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/radarr:/config"
+      - "{{ storage_dir }}/movies:/movies"
+      - "{{ storage_dir }}/downloads:/downloads"
+    ports:
+      - 7878:7878

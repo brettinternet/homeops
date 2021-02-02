@@ -1,0 +1,10 @@
+---
+supported_distributions:
+  - archlinux
+  - ubuntu
+  - debian
+
+allow_reboot: no
+
+# debian/ubuntu
+allow_dist_upgrade: no
