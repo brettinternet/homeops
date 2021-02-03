@@ -98,3 +98,6 @@
 # Additional setup:
 # https://github.com/ironicbadger/infra
 # https://github.com/davestephens/ansible-nas
+
+# TODO: backup with rsync
+# https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html
