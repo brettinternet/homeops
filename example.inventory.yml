@@ -1,9 +1,11 @@
 ---
+# https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#intro-inventory
+
 all:
   children:
     server:
       hosts:
-        # Define homelab host
+        # Define homelab hostname and vars
         myhost:
           # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
           # ansible_host:
@@ -11,4 +13,6 @@ all:
 
     bastion:
       hosts:
-        # Define bastion host
+        # Define bastion hostname and vars
+        myremote:
+          ansible_python_interpreter: /usr/bin/python3
