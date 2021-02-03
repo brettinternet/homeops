@@ -1,5 +1,0 @@
----
-- name: Install qrencode package (Ubuntu)
-  apt:
-    name: "{{ name }}"
-    state: "{{ state }}"
