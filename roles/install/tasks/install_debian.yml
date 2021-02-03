@@ -1,5 +1,0 @@
----
-- name: Install qrencode package (Debian)
-  apt:
-    name: "{{ name }}"
-    state: "{{ state }}"

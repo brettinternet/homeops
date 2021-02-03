@@ -5,13 +5,12 @@
   hosts: bastion
   vars:
     encode_file_path: /etc/wireguard/wg0.conf
-  roles:
-    - role: install
-      vars:
+  tasks:
+    - name: Install qrencode
+      package:
         name: qrencode
         state: present
 
-  tasks:
     - name: "Check if {{ encode_file_path }} exists"
       stat:
         path: "{{ encode_file_path }}"
