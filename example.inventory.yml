@@ -8,7 +8,7 @@ all:
         # Define homelab hostname and vars
         myhost:
           # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
-          ansible_host:
+          ansible_host: # use `ansible_connection: local` for local
           ansible_user:
 
     bastion:
