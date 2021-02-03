@@ -11,10 +11,6 @@
       debug:
         var: ansible_facts['all_ipv4_addresses']
 
-    - name: Display project directory
-      debug:
-        var: playbook_dir
-
     - name: OS Distribution
       debug:
         var: ansible_distribution | lower
