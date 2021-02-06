@@ -2,6 +2,22 @@
 - name: Server packages
   hosts: server
   roles:
+    ### AUR ###
+    - role: yay
+      vars:
+        packages:
+          # Base
+          - downgrade
+          - powerpill
+          - python-fangfrisch
+          - tzupdate
+          - vim-plug
+          # Server
+          - mergerfs
+          - needrestart
+          - snapraid
+          - cockpit-zfs-manager
+        state: present
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
     - role: upgrade
@@ -11,7 +27,7 @@
     ### Official ###
     - name: Install packages (pacman)
       become: yes
-      pacman:
+      ansible.builtin.package:
         name:
           # Setup
           - base
@@ -74,41 +90,6 @@
           - terraform
           - transmission-cli
         state: present
-
-    ### AUR ###
-    - block:
-        - name: Create aur_builder
-          become: yes
-          user:
-            name: aur_builder
-            create_home: no
-            group: sudo
-
-        - name: Add aur_builder to sudoers
-          become: yes
-          lineinfile:
-            path: /etc/sudoers.d/11-install-aur_builder
-            line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
-            create: yes
-            validate: "visudo -cf %s"
-
-        - name: Install AUR packages (yay)
-          aur:
-            use: yay
-            aur_only: yes
-            name:
-              # Base
-              - downgrade
-              - powerpill
-              - python-fangfrisch
-              - tzupdate
-              - vim-plug
-              # Server
-              - mergerfs
-              - needrestart
-              - snapraid
-              - cockpit-zfs-manager
-            state: present
 
     ### Unofficial repositories ###
 
