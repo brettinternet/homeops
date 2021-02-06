@@ -1,4 +1,0 @@
----
-dependencies:
-  # https://github.com/kewlfft/ansible-aur
-  - kewlfft.aur
