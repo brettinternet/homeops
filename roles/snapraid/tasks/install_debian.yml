@@ -1,7 +1,7 @@
 ---
 - name: Determine if SnapRAID is installed (Debian)
   shell: "dpkg-query -W 'snapraid'"
-  ignore_errors: yes
+  ignore_errors: true
   register: is_installed
   changed_when: "is_installed.rc != 0"
 
@@ -10,7 +10,7 @@
       git:
         repo: https://github.com/IronicBadger/docker-snapraid.git
         dest: /tmp/snapraid
-        force: yes
+        force: true
 
     # Requires docker
     - name: Set SnapRAID build script executable (Debian)

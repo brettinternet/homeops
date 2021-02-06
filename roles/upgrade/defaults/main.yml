@@ -4,7 +4,7 @@ supported_distributions:
   - ubuntu
   - debian
 
-allow_reboot: no
+allow_reboot: false
 
 # debian/ubuntu
-allow_dist_upgrade: no
+allow_dist_upgrade: false

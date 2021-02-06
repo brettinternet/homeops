@@ -1,16 +1,16 @@
 ---
 - name: Upgrade packages (pacman)
-  become: yes
+  become: true
   community.general.pacman:
-    update_cache: yes
-    upgrade: yes
+    update_cache: true
+    upgrade: true
 
 - name: Upgrade AUR packages (yay)
-  become: no
+  become: false
   aur:
     use: yay
-    aur_only: yes
-    upgrade: yes
+    aur_only: true
+    upgrade: true
 
 - name: Check if kernel needs upgrade (Archlinux)
   # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
@@ -29,6 +29,6 @@
 
 # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 - name: Reboot
-  become: yes
+  become: true
   ansible.builtin.reboot:
   when: upgrade__should_restart_result.rc == 0 and allow_reboot is true

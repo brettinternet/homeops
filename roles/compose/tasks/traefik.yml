@@ -10,7 +10,7 @@
     image: docker.io/library/traefik:2.3
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     env:
       TZ: "{{ tz }}"
       # https://go-acme.github.io/lego/dns/cloudflare/

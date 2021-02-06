@@ -7,7 +7,7 @@
 
 # Cron is required to run snapraid-runner script periodically
 - name: Install cronie package (Archlinux)
-  become: yes
+  become: true
   ansible.builtin.package:
     name: cronie
     state: present

@@ -3,8 +3,8 @@
 {# https://doc.traefik.io/traefik/reference/static-configuration/file/ #}
 
 global:
-  checkNewVersion: yes
-  sendAnonymousUsage: no
+  checkNewVersion: true
+  sendAnonymousUsage: false
 
 {# https://doc.traefik.io/traefik/routing/entrypoints/ #}
 entryPoints:
@@ -29,7 +29,7 @@ accessLog:
 
 {# https://doc.traefik.io/traefik/operations/dashboard/ #}
 api:
-  dashboard: yes
+  dashboard: true
 
 {# https://doc.traefik.io/traefik/operations/ping/ #}
 ping:
@@ -39,7 +39,7 @@ ping:
 providers:
   file:
     directory: /etc/traefik
-    watch: yes
+    watch: true
 
 {# https://doc.traefik.io/traefik/https/acme/ #}
 {# https://letsencrypt.org/docs/challenge-types/ #}
@@ -61,9 +61,9 @@ TODO: setup metric collection with TICK stack
 metrics:
   prometheus:
     entryPoint: metrics
-    addEntryPointsLabels: yes
-    addServicesLabels: yes
-    manualRouting: no
+    addEntryPointsLabels: true
+    addServicesLabels: true
+    manualRouting: false
     buckets:
       - 0.1
       - 0.3

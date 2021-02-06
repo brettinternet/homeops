@@ -43,7 +43,7 @@
       command: wg --help
       register: wireguard__subcommands_result
       changed_when: false
-      check_mode: no
+      check_mode: false
 
     - name: Check if wg syncconf subcommand is available
       set_fact:
@@ -85,7 +85,7 @@
     stdin: "{{ wireguard_private_key }}"
   register: wireguard__public_key_result
   changed_when: false
-  check_mode: no
+  check_mode: false
 
 - name: Set public key fact
   set_fact:
@@ -109,5 +109,5 @@
   service:
     name: "wg-quick@{{ wireguard_interface }}"
     state: started
-    enabled: yes
+    enabled: true
   when: not ansible_os_family == 'Darwin'

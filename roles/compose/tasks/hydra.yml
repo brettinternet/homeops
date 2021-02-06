@@ -5,7 +5,7 @@
     image: docker.io/linuxserver/hydra2
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     env:
       PUID: "0"
       PGID: "0"

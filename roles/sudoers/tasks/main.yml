@@ -1,6 +1,6 @@
 ---
 - name: Copy sudoers defaults
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: defaults
     dest: /etc/sudoers.d/

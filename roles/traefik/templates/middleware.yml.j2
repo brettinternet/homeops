@@ -5,7 +5,7 @@ http:
       # https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
       forwardAuth:
         address: "http://{{ homelab_local_ip }}:4181"
-        trustForwardHeader: yes
+        trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
 
@@ -17,14 +17,14 @@ http:
         accessControlAllowMethods: ["GET", "OPTIONS", "PUT"]
         accessControlMaxAge: 100
         hostsProxyHeaders: ["X-Forwarded-Host"]
-        sslRedirect: yes
+        sslRedirect: true
         stsSeconds: 63072000
-        stsIncludeSubdomains: yes
-        stsPreload: yes
-        forceSTSHeader: yes
-        frameDeny: yes
-        contentTypeNosniff: yes
-        browserXssFilter: yes
+        stsIncludeSubdomains: true
+        stsPreload: true
+        forceSTSHeader: true
+        frameDeny: true
+        contentTypeNosniff: true
+        browserXssFilter: true
         referrerPolicy: "same-origin"
         featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
         customResponseHeaders:

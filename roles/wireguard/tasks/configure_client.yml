@@ -109,8 +109,8 @@
 - name: Start the Bastion Host WireGuard service
   systemd:
     name: wg-quick@wg0
-    enabled: "yes"
-    daemon-reload: "yes"
+    enabled: true
+    daemon-reload: true
     state: restarted
   when: "'bastion' in group_names"
 
@@ -121,7 +121,7 @@
 - name: Start the HomeServer WireGuard service
   systemd:
     name: wireguard-homelabos
-    enabled: "yes"
-    daemon-reload: "yes"
+    enabled: true
+    daemon-reload: true
     state: restarted
   when: "'homelabos' in group_names"

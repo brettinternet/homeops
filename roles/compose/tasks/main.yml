@@ -31,18 +31,18 @@
 # https://github.com/Difrex/Ansible/blob/master/roles/docker/tasks/grub.yml
 
 - name: Configure /etc/subuid
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/subuid
     line: "{{ ansible_user }}:165536:65536"
-    create: yes
+    create: true
 
 - name: Configure /etc/subgid
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/subgid
     line: "{{ ansible_user }}:165536:65536"
-    create: yes
+    create: true
 
 ### Orchestration ###
 
@@ -62,5 +62,5 @@
 #   ansible.builtin.systemd:
 #     name: podman
 #     scope: user
-#     enabled: yes
+#     enabled: true
 #     state: started
