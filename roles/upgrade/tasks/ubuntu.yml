@@ -11,7 +11,7 @@
     name: "*"
     state: latest
 
-- name: Remove dependencies that are false longer required (apt)
+- name: Remove dependencies that are no longer required (apt)
   apt:
     autoremove: true
 
