@@ -9,7 +9,7 @@
     image: docker.io/linuxserver/healthchecks
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     env:
       PUID: "0"
       PGID: "0"
@@ -21,9 +21,9 @@
       EMAIL_PORT: " {{ smtp_port }}"
       EMAIL_HOST_USER: "{{ smtp_user }}"
       EMAIL_HOST_PASSWORD: "{{ smtp_password }}"
-      EMAIL_USE_TLS: yes
+      EMAIL_USE_TLS: true
       ALLOWED_HOSTS: "healthchecks.{{ root_domain }}" # change to allow from server?
-      REGISTRATION_OPEN: no # make false for initial setup
+      REGISTRATION_OPEN: false # make false for initial setup
     volumes:
       - "{{ appdata_dir }}/healthchecks:/config"
     ports:

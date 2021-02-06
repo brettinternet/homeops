@@ -13,10 +13,10 @@
     image: docker.io/jonschoning/espial:espial
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     env:
       TZ: "{{ tz }}"
-      IP_FROM_HEADER: yes
+      IP_FROM_HEADER: true
       SQLITE_DATABASE: /app/data/espial.sqlite3
       SHOULD_LOG_ALL: false
     volumes:

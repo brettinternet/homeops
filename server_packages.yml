@@ -22,11 +22,11 @@
     # upgrade `linux` kernel with `zfs-linux`
     - role: upgrade
       vars:
-        allow_reboot: no
+        allow_reboot: false
   pre_tasks:
     ### Official ###
     - name: Install packages (pacman)
-      become: yes
+      become: true
       ansible.builtin.package:
         name:
           # Setup
@@ -96,7 +96,7 @@
     # Add archzfs repositories: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#archzfs
     # Then, you may need downgrade the kernel to this package's version
     - name: Install zfs (pacman)
-      become: yes
+      become: true
       pacman:
         name: zfs-linux
         state: present

@@ -3,7 +3,7 @@
 
 - name: Update package cache (apt)
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
 
 - name: Update packages (apt)
@@ -11,9 +11,9 @@
     name: "*"
     state: latest
 
-- name: Remove dependencies that are no longer required (apt)
+- name: Remove dependencies that are false longer required (apt)
   apt:
-    autoremove: yes
+    autoremove: true
 
 - name: Upgrade the OS (apt)
   apt:
@@ -24,9 +24,9 @@
   stat:
     # https://wiki.ubuntu.com/UpdateNotifier
     path: /var/run/reboot-required
-    get_attributes: no
-    get_checksum: no
-    get_mime: no
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: upgrade__should_restart_stat
 
 - name: Print reboot status

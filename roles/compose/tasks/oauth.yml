@@ -11,7 +11,7 @@
     image: docker.io/thomseddon/traefik-forward-auth
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     env:
       PROVIDERS_GOOGLE_CLIENT_ID: "{{ oauth_client_id }}"
       PROVIDERS_GOOGLE_CLIENT_SECRET: "{{ oauth_client_secret }}"

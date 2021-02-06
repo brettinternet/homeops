@@ -13,7 +13,7 @@
 
 # https://www.snapraid.it/manual
 - name: Create snapraid.conf
-  become: yes
+  become: true
   template:
     src: snapraid.conf.j2
     dest: "{{ snapraid_config }}"
@@ -40,7 +40,7 @@
 #         dest: "{{ snapraid_runner_dir }}"
 
 - name: Create snapraid-runner.conf
-  become: yes
+  become: true
   template:
     src: snapraid-runner.conf.j2
     dest: "{{ snapraid_runner_dir }}/snapraid-runner.conf"
@@ -49,7 +49,7 @@
     # mode: 0775
 
 - name: Create snapraid-runner.sh
-  become: yes
+  become: true
   template:
     src: "snapraid-runner.sh.j2"
     dest: "{{ snapraid_runner_dir }}/snapraid-runner.sh"
@@ -59,7 +59,7 @@
 
 # https://wiki.archlinux.org/index.php/Cron
 - name: Setup snapraid-runner cron
-  become: yes
+  become: true
   cron:
     user: root
     name: snapraid_runner

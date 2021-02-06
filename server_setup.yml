@@ -53,34 +53,34 @@
     #     key: https://github.com/brettinternet.keys
     # TODO: secure `authorized_keys` https://wiki.archlinux.org/index.php/OpenSSH#Securing_the_authorized_keys_file
     - name: Disable password tunneling
-      become: yes
+      become: true
       lineinfile:
         path: /etc/ssh/sshd_config
         line: PasswordAuthentication no
 
     - name: Only allow currernt user
-      become: yes
+      become: true
       lineinfile:
         path: /etc/ssh/sshd_config
         line: "AllowUsers {{ ansible_user }}"
 
     - name: Enable cockpit.socket
-      become: yes
+      become: true
       ansible.builtin.systemd:
         name: cockpit.socket
-        enabled: yes
+        enabled: true
 
     - name: Remove Cockpit motd
-      become: yes
+      become: true
       ansible.builtin.file:
         path: /etc/motd.d/cockpit
         state: absent
 
     - name: Enable pmlogger (cockpit metrics)
-      become: yes
+      become: true
       ansible.builtin.systemd:
         name: pmlogger
-        enabled: yes
+        enabled: true
 #
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html

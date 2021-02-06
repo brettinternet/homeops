@@ -25,7 +25,7 @@
     image: docker.io/plexinc/pms-docker:plexpass
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: yes
+    restart: true
     hostname: "{{ plex_hostname }}"
     env:
       PLEX_UID: "{{ puid }}"
