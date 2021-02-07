@@ -7,20 +7,12 @@ charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 indent_style = space
-indent_size = 4
+indent_size = 2
 trim_trailing_whitespace = true
-
-[*.yml]
-indent_size = 2
-
-[*.yml.j2]
-indent_size = 2
-
-[*.tf]
-indent_size = 2
 
 [*.md]
 trim_trailing_whitespace = false
 
 [Makefile]
+indent_size = 4
 indent_style = tab
