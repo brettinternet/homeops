@@ -23,7 +23,10 @@
       EMAIL_HOST_PASSWORD: "{{ smtp_password }}"
       EMAIL_USE_TLS: true
       ALLOWED_HOSTS: "healthchecks.{{ root_domain }}" # change to allow from server?
-      REGISTRATION_OPEN: false # make false for initial setup
+      SUPERUSER_EMAIL: "{{ healthchecks_email }}"
+      SUPERUSER_PASSWORD: "{{ healthchecks_password }}"
+      REGISTRATION_OPEN: false
+      SECRET_KEY: "{{ healthchecks_secret_key }}"
     volumes:
       - "{{ appdata_dir }}/healthchecks:/config"
     ports:

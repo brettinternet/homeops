@@ -13,7 +13,7 @@
       - miniflux
       - ombi
       - tautulli
-      # - healthchecks
+      - healthchecks
       # - syncthing
       - oauth
       - traefik
