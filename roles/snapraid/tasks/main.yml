@@ -1,5 +1,8 @@
 ---
 # With help from https://github.com/IronicBadger/ansible-role-snapraid
+# TODO: send tail 10kb of logs to healthchecks
+# TODO: use latest snapraid-runner instead of fork
+# https://healthchecks.io/docs/attaching_logs/
 
 - name: Check supported distribution
   fail:

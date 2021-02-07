@@ -8,7 +8,12 @@ vars/secret.yml:
 	@cp vars/example.secret.yml vars/secret.yml
 	@printf "\x1B[01;93m✔ vars/secret.yml created\n\x1B[0m"
 
-requirements:
+.PHONY: latest-podman
+latest-podman:
+	@mkdir -p ~/.ansible/collections/ansible_collections/containers
+	@git clone https://github.com/containers/ansible-podman-collections.git ~/.ansible/collections/ansible_collections/containers/podman
+
+requirements: latest-podman
 	@ansible-galaxy install -r requirements.yml
 	@printf "\x1B[01;93m✔ Galaxy collections installed\n\x1B[0m"
 

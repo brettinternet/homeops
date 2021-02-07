@@ -29,6 +29,7 @@
   until: miniflux_db_info_result.containers[0]['State']['Running']
   retries: 5
   delay: 3
+  when: state == 'present' or state == 'started'
 
 - name: miniflux
   containers.podman.podman_container:

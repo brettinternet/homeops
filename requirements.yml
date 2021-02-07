@@ -1,2 +1,7 @@
 ---
-- src: kewlfft.aur
+roles:
+  - src: kewlfft.aur
+
+collections:
+  # Installed manually until latest features are released
+  # - containers.podman
