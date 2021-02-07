@@ -18,6 +18,14 @@
           - snapraid
           - cockpit-zfs-manager
         state: present
+    # Explicitly upgrade packages that are in IgnorePkg list
+    - role: yay
+      vars:
+        packages:
+          - zfs-dkms-git
+          - zfs-utils-git
+        state: latest
+      when: upgrade_zfs
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
     - role: upgrade
@@ -38,6 +46,7 @@
           - grub
           - gvim
           - linux
+          - linux-headers
           - linux-firmware
           - mtools
           - nano
@@ -91,12 +100,10 @@
           - transmission-cli
         state: present
 
-    ### Unofficial repositories ###
-
-    # Add archzfs repositories: https://wiki.archlinux.org/index.php/Unofficial_user_repositories#archzfs
-    # Then, you may need downgrade the kernel to this package's version
-    - name: Install zfs (pacman)
+    # Ignore zfs-dkms and zfs-utils AUR packages and upgrade them explicitly
+    - name: Add private environment values
       become: true
-      pacman:
-        name: zfs-linux
+      ansible.builtin.lineinfile:
+        path: /etc/pacman.conf
+        line: "IgnorePkg = zfs-dkms-git zfs-utils-git"
         state: present
