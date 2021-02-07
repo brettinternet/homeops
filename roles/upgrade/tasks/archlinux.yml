@@ -4,6 +4,7 @@
   community.general.pacman:
     update_cache: true
     upgrade: true
+  tags: upgrade
 
 - name: Upgrade AUR packages (yay)
   become: false
@@ -11,24 +12,61 @@
     use: yay
     aur_only: true
     upgrade: true
+  tags: upgrade
 
 - name: Check if kernel needs upgrade (Archlinux)
-  # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
-  # Need to modify to accommodate linux-lts and linux-hardened
-  # Determines if installed kernel version is higher than runtime
-  # Still searching for a more comprehensive way: https://unix.stackexchange.com/q/630626/224048
-  ansible.builtin.shell: '[[ $(pacman -Q linux | cut -d " " -f 2) > $(uname -r) ]]'
-  args:
-    executable: /bin/bash
+  # Source: https://unix.stackexchange.com/a/630982/224048
+  ansible.builtin.shell: |
+    get_boot_kernel() {
+      local get_version=0
+      for field in $(file /boot/vmlinuz*); do
+        if [[ $get_version -eq 1 ]]; then
+          echo $field
+          return
+        elif [[ $field == version ]]; then
+          # the next field contains the version
+          get_version=1
+        fi
+      done
+    }
+
+    rc=1
+
+    libs=$(lsof -n +c 0 2> /dev/null | grep 'DEL.*lib' | awk '1 { print $1 ": " $NF }' | sort -u)
+    if [[ -n $libs ]]; then
+      cat <<< $libs
+      echo "# LIBS: reboot required"
+      rc=0
+    fi
+
+    active_kernel=$(uname -r)
+    current_kernel=$(get_boot_kernel)
+    if [[ $active_kernel != $current_kernel ]]; then
+      echo "$active_kernel < $current_kernel"
+      echo "# KERNEL: reboot required"
+      rc=0
+    fi
+
+    exit $rc
   register: upgrade__should_restart_result
+  tags: reboot
   failed_when: upgrade__should_restart_result.stderr != ""
+  changed_when: upgrade__should_restart_result.rc == 0
+
+- name: Debug reboot_required.sh stdout
+  ansible.builtin.debug:
+    msg: "{{ upgrade__should_restart_result.stdout.split('\n') }}"
+  when: upgrade__should_restart_result.rc == 0
+  tags: reboot
 
 - name: Print reboot status
   debug:
-    msg: "Reboot {{ (upgrade__should_restart_result.rc == 0) | ternary('is', 'is not') }} required to complete the upgrade"
+    msg: "Reboot {{ (upgrade__should_restart_result.rc == 0) | ternary('is', 'is NOT') }} required to complete the upgrade"
+  tags: reboot
 
 # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 - name: Reboot
   become: true
   ansible.builtin.reboot:
   when: upgrade__should_restart_result.rc == 0 and allow_reboot is true
+  tags: reboot
