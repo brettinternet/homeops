@@ -7,7 +7,7 @@
     encode_file_path: /etc/wireguard/wg0.conf
   tasks:
     - name: Install qrencode
-      package:
+      ansible.builtin.package:
         name: qrencode
         state: present
 
