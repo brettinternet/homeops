@@ -1,6 +1,6 @@
 ---
 - name: Display facts
-  hosts: all
+  hosts: localhost
 
   tasks:
     # - name: Display all facts
