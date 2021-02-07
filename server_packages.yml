@@ -88,16 +88,16 @@
           - cockpit-machines
           - cockpit-pcp
           - cockpit-podman
-          - udisks2
-          - packagekit
           - cronie
-          - libvirt # Also includes qemu-headless
-          # - docker
-          # - docker-compose
-          - podman
           - crun # https://github.com/containers/podman/issues/8687
+          - inetutils
+          - libvirt # Also includes qemu-headless
+          - packagekit
+          - podman
+          - renameutils
           - terraform
           - transmission-cli
+          - udisks2
         state: present
 
     # Ignore zfs-dkms and zfs-utils AUR packages and upgrade them explicitly
