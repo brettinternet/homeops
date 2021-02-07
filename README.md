@@ -30,9 +30,9 @@ Provision and setup a bastion server with a Digital Ocean Droplet. The setup cre
 
 #### Server setup and upgrade
 
--   Upgrade pacman and apt cache, packages and the apt distribution.
--   Deploy rootless containers in an orchestration behind Traefik's reverse proxy.
--   Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
+- Upgrade pacman and apt cache, packages and the apt distribution.
+- Deploy rootless containers in an orchestration behind Traefik's reverse proxy.
+- Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
 
 #### Container composition
 
@@ -101,6 +101,16 @@ You must also include an entry for the MergerFS union, such as:
 ```
 
 See also [perfectmediaserver: MergerFS](https://perfectmediaserver.com/installation/manual-install/#mergerfs)
+
+#### mkinitcpio
+
+Be sure to add `zfs` and `resume`
+
+```
+HOOKS=(base udev autodetect modconf block filesystems keyboard zfs resume fsck)
+```
+
+Then, [regenerate the image](https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation).
 
 #### OS Installation
 
