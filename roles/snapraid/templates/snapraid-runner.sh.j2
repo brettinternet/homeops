@@ -1,11 +1,13 @@
 #!/bin/bash
 
+# {{ ansible_managed }}
+
 if [ "$EUID" -ne 0 ]; then
   echo "Permission denied: SnapRAID requires root access."
   exit 126
 fi
 
-SERVICES_TO_SHUTDOWN=("automators" "espial" "mailserver" "miniflux" "nzbget" "watchtower")
+SERVICES_TO_SHUTDOWN=("sonarr" "radarr" "espial" "miniflux" "nzbget")
 
 run_as_user() {
     /bin/su -c "$@" - {{ ansible_user }}
