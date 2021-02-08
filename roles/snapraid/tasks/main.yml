@@ -51,6 +51,8 @@
     # group: root
     # mode: 0775
 
+# TODO: move to systemd timer/service instead of cron
+
 - name: Create snapraid-runner.sh
   become: true
   template:
