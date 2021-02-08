@@ -23,3 +23,5 @@
       - "{{ appdata_dir }}/espial:/app/data"
     ports:
       - 3006:3000
+    label:
+      io.containers.autoupdate: image

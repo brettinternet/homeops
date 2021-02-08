@@ -24,8 +24,10 @@
 
 - block:
     - name: "Generate {{ container_name }} systemd unit file"
+      # Usage suggested by https://podman.io/blogs/2020/12/09/podman-systemd-demo.html
+      # `--new` is suggested for `podman auto-update` https://github.com/containers/podman/issues/7407
       ansible.builtin.shell: |
-        podman generate systemd {{ container_name }} --restart-policy=always -t 5 -f -n
+        podman generate systemd {{ container_name }} --restart-policy=always -t 5 -f -n --new
 
     - name: "Copy {{ container_name }} systemd unit file"
       ansible.builtin.copy:
@@ -44,10 +46,3 @@
         state: stopped
       when: container_info_result.containers[0]['State']['Running']
   when: not existing_unit_stat_result.stat.exists or podman_systemd_force is true
-
-- name: "Start/enable user {{ container_name }}.service"
-  ansible.builtin.systemd:
-    name: "{{ container_name }}.service"
-    scope: user
-    enabled: true
-    state: started

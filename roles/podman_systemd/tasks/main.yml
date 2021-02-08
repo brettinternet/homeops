@@ -8,3 +8,42 @@
   vars:
     container_name: "{{ item }}"
   loop: "{{ containers }}"
+
+- block:
+    - name: Run user daemon-reload
+      ansible.builtin.systemd:
+        daemon_reload: true
+        scope: user
+
+    - name: "Start/enable user {{ item }}.service"
+      ansible.builtin.systemd:
+        name: "{{ item }}.service"
+        scope: user
+        enabled: true
+        state: started
+      loop: "{{ containers }}"
+
+    # - name: Run auto update
+    #   ansible.builtin.shell: podman auto-update
+
+    # http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
+    - name: Copy custom podman auto update timer
+      become: true
+      ansible.builtin.copy:
+        # Edit `OnCalendar` value in timer file
+        # https://www.freedesktop.org/software/systemd/man/systemd.time.html#
+        src: podman-auto-update.timer
+        dest: /usr/lib/systemd/user/podman-auto-update.timer
+
+    # View logs: `journalctl --user-unit podman-auto-update.service`
+    - name: Enable podman auto update timer
+      ansible.builtin.systemd:
+        name: podman-auto-update.timer
+        scope: user
+        state: started
+        enabled: true
+  when: podman_systemd_action == 'generate'
+
+# https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances
+- name: Enable automatic start-up of systemd user services
+  ansible.builtin.shell: "loginctl enable-linger {{ ansible_user }}"

@@ -55,3 +55,5 @@
       - 32412:32412/udp # network discovery
       - 32413:32413/udp # network discovery
       - 32414:32414/udp # network discovery
+    label:
+      io.containers.autoupdate: image

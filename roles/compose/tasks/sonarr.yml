@@ -19,3 +19,5 @@
       - "{{ storage_dir }}/downloads:/downloads"
     ports:
       - 8989:8989
+    label:
+      io.containers.autoupdate: image

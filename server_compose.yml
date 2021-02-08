@@ -10,7 +10,8 @@
       - sonarr
       - radarr
       - espial
-      - miniflux # need to add miniflux_db to this for podman_systemd
+      - miniflux
+      - miniflux_db
       - ombi
       - tautulli
       - healthchecks
@@ -19,6 +20,20 @@
       - traefik
   roles:
     - role: traefik
+      vars:
+        frontend_containers:
+          - plex
+          - nzbget
+          - sonarr
+          - radarr
+          - espial
+          - miniflux
+          - ombi
+          - tautulli
+          - healthchecks
+          # - syncthing
+          - oauth
+          - traefik
       when: "'traefik' in containers"
     - role: compose
       vars:
@@ -31,4 +46,5 @@
         # recreate: true
     - role: podman_systemd
       # vars:
+      #   podman_systemd_force: true
       #   podman_systemd_action: remove

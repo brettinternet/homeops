@@ -112,6 +112,10 @@ HOOKS=(base udev autodetect modconf block filesystems keyboard zfs resume fsck)
 
 Then, [regenerate the image](https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation).
 
+#### ZFS
+
+Install `zfs-dkms-git` and `zfs-utils-git`, and be sure to have `linux-headers` installed for dkms to work.
+
 #### OS Installation
 
 [Ventoy](https://www.ventoy.net/en/index.html) seems like an interesting project. Some of my ARM hardware requires Ubuntu, so it'd be nice to have a single USB to manage installations.
