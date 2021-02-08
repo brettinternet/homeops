@@ -31,3 +31,5 @@
       - "{{ appdata_dir }}/healthchecks:/config"
     ports:
       - 8001:8000
+    label:
+      io.containers.autoupdate: image

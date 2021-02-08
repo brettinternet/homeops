@@ -1,0 +1,9 @@
+[Unit]
+Description=Podman auto-update timer
+
+[Timer]
+OnCalendar=*-*-* 01:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

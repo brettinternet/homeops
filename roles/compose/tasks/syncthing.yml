@@ -18,3 +18,5 @@
     ports:
       - 8384:8384
       - 22000:22000
+    label:
+      io.containers.autoupdate: image

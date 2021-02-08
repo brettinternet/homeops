@@ -18,3 +18,5 @@
       - "{{ appdata_dir }}/plex/Library/Application Support/Plex Media Server/Logs:/plex_logs:ro"
     ports:
       - 8181:8181
+    label:
+      io.containers.autoupdate: image

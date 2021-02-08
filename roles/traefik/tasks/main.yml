@@ -19,4 +19,4 @@
     dest: "{{ appdata_dir }}/traefik/{{ item | lower }}.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
-  loop: "{{ containers }}"
+  loop: "{{ frontend_containers }}"

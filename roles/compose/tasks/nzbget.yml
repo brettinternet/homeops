@@ -19,3 +19,5 @@
       # - "{{ storage_dir }}/movies:/movies" # for VideoSort post-processing script
     ports:
       - 6788:6789
+    label:
+      io.containers.autoupdate: image

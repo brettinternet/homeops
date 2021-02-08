@@ -1,26 +1,6 @@
 ---
 # https://github.com/miniflux/miniflux
 
-- name: miniflux DB
-  containers.podman.podman_container:
-    name: miniflux_db
-    image: docker.io/postgres:10.10
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
-    restart: true
-    env:
-      PGID: "{{ pgid }}"
-      PUID: "{{ puid }}"
-      TZ: "{{ tz }}"
-      POSTGRES_DB: miniflux
-      POSTGRES_USER: miniflux
-      POSTGRES_PASSWORD: "{{ miniflux_postgres_password }}"
-    userns: keep-id
-    volume:
-      - "{{ storage_dir }}/data/miniflux_db:/var/lib/postgresql/data"
-    ports:
-      - 5432:5432
-
 # WIP - perhaps there's a more elegant way
 - name: Wait for Miniflux database
   containers.podman.podman_container_info:
@@ -47,3 +27,5 @@
       ADMIN_PASSWORD: "{{ miniflux_password }}"
     ports:
       - 8082:8080
+    label:
+      io.containers.autoupdate: image
