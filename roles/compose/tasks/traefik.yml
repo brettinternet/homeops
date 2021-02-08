@@ -3,6 +3,9 @@
 # https://github.com/traefik/traefik/issues/5730
 # We use the file provider instead, see `roles/traefik`
 
+# ISSUE: https://github.com/traefik/traefik/issues/6117
+# Traefik doesn't seem to notice when services go down
+
 - name: traefik
   containers.podman.podman_container:
     name: traefik
