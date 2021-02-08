@@ -11,7 +11,7 @@ fi
 curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/start" &> /dev/null
 {% endif %}
 
-SERVICES_TO_SHUTDOWN=("sonarr" "radarr" "espial" "miniflux" "nzbget" "plex")
+SERVICES_TO_SHUTDOWN=("sonarr" "radarr" "espial" "miniflux" "nzbget" "plex" "miniflux" "miniflux_db")
 
 run_as_user() {
   /bin/su -c "$@" - {{ ansible_user }}
