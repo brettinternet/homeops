@@ -7,7 +7,6 @@
     image: docker.io/linuxserver/radarr
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: true
     env:
       PUID: "0"
       PGID: "0"

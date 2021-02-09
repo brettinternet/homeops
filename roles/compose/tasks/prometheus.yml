@@ -1,0 +1,24 @@
+---
+- name: Copy prometheus configuration
+  ansible.builtin.copy:
+    src: prometheus.yml
+    dest: "{{ appdata_dir }}/prometheus/"
+
+# https://prometheus.io/docs/prometheus/latest/installation/
+- name: prometheus
+  containers.podman.podman_container:
+    name: prometheus
+    # https://hub.docker.com/r/prom/prometheus/
+    image: docker.io/prom/prometheus
+    state: "{{ state }}"
+    recreate: "{{ recreate }}"
+    env:
+      # PUID: "0"
+      # PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/prometheus:/etc/prometheus"
+    ports:
+      - 9091:9090
+    label:
+      io.containers.autoupdate: image

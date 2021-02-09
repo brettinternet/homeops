@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    prometheus:
+      rule: "Host(`prometheus.{{ root_domain }}`)"
+      service: prometheus
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      prometheus:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:9091"

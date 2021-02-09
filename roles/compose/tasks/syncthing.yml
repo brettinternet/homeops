@@ -9,7 +9,6 @@
     image: docker.io/syncthing/syncthing:latest
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: true
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"
