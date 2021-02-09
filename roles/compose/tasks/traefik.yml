@@ -9,11 +9,10 @@
 - name: traefik
   containers.podman.podman_container:
     name: traefik
-    # version 2.4 is blocked by https://github.com/traefik/traefik/issues/7809
-    image: docker.io/library/traefik:2.3
+    # :2.4
+    image: docker.io/library/traefik:latest
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: true
     env:
       TZ: "{{ tz }}"
       # https://go-acme.github.io/lego/dns/cloudflare/

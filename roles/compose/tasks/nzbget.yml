@@ -8,7 +8,6 @@
     image: docker.io/linuxserver/nzbget
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: true
     env:
       PUID: "0"
       PGID: "0"

@@ -17,7 +17,6 @@
     # https://hub.docker.com/r/miniflux/miniflux
     image: docker.io/miniflux/miniflux
     state: "{{ state }}"
-    restart: true
     env:
       TZ: "{{ tz }}"
       DATABASE_URL: "postgres://miniflux:{{ miniflux_postgres_password }}@{{ homelab_local_ip }}/miniflux?sslmode=disable"

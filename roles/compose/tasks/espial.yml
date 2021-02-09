@@ -13,7 +13,6 @@
     image: docker.io/jonschoning/espial:espial
     state: "{{ state }}"
     recreate: "{{ recreate }}"
-    restart: true
     env:
       TZ: "{{ tz }}"
       IP_FROM_HEADER: true
