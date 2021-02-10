@@ -1,8 +1,5 @@
 ---
-- name: Copy prometheus configuration
-  ansible.builtin.copy:
-    src: prometheus.yml
-    dest: "{{ appdata_dir }}/prometheus/"
+# A configuration file is required before starting - see `prometheus` role
 
 # https://prometheus.io/docs/prometheus/latest/installation/
 - name: prometheus
@@ -13,11 +10,10 @@
     state: "{{ state }}"
     recreate: "{{ recreate }}"
     env:
-      # PUID: "0"
-      # PGID: "0"
       TZ: "{{ tz }}"
     volumes:
-      - "{{ appdata_dir }}/prometheus:/etc/prometheus"
+      - "{{ appdata_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "{{ appdata_dir }}/data:/prometheus"
     ports:
       - 9091:9090
     label:
