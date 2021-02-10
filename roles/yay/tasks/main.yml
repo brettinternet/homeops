@@ -43,5 +43,6 @@
   aur:
     use: yay
     aur_only: true
-    name: "{{ packages }}"
-    state: "{{ state }}"
+    name: "{{ yay_packages }}"
+    state: "{{ yay_state }}"
+    extra_args: "{{ yay_extra_args | default(None) }}"
