@@ -1,10 +1,10 @@
 ---
 - name: Setup docker compose services
   hosts: server
-  vars_files:
-    - "{{ playbook_dir }}/vars/secret.yml"
   vars:
     containers:
+      # TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
+      # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
       - plex
       - nzbget
       - sonarr
@@ -16,6 +16,7 @@
       - tautulli
       - healthchecks
       # - syncthing
+      # - prometheus
       - oauth
       - traefik
   roles:
@@ -32,6 +33,7 @@
           - tautulli
           - healthchecks
           # - syncthing
+          # - prometheus
           - oauth
           - traefik
       when: "'traefik' in containers"
@@ -45,6 +47,6 @@
         state: created
         # recreate: true
     - role: podman_systemd
-      # vars:
-      #   podman_systemd_force: true
-      #   podman_systemd_action: remove
+    # vars:
+    #   podman_systemd_force: true
+    #   podman_systemd_action: remove
