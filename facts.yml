@@ -14,3 +14,15 @@
     - name: OS Distribution
       debug:
         var: ansible_distribution | lower
+
+    - name: ansible_fqdn
+      debug:
+        var: ansible_fqdn
+
+    - name: ansible_host
+      debug:
+        var: ansible_host
+
+    - name: inventory_hostname
+      debug:
+        var: inventory_hostname
