@@ -5,7 +5,7 @@
     ### AUR ###
     - role: yay
       vars:
-        packages:
+        yay_packages:
           # Base
           - downgrade
           - powerpill
@@ -17,14 +17,15 @@
           - needrestart
           - snapraid
           - cockpit-zfs-manager
-        state: present
+        yay_state: present
     # Explicitly upgrade packages that are in IgnorePkg list
     - role: yay
       vars:
-        packages:
-          - zfs-dkms-git
-          - zfs-utils-git
-        state: latest
+        yay_packages:
+          - zfs-dkms
+          - zfs-utils
+        yay_state: latest
+        yay_extra_args: --batchinstall --answerclean All
       when: upgrade_zfs
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
@@ -105,5 +106,5 @@
       become: true
       ansible.builtin.lineinfile:
         path: /etc/pacman.conf
-        line: "IgnorePkg = zfs-dkms-git zfs-utils-git"
+        line: "IgnorePkg = zfs-dkms zfs-utils"
         state: present
