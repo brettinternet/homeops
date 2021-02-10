@@ -3,8 +3,8 @@
   include_role:
     name: yay
   vars:
-    packages: snapraid
-    state: present
+    yay_packages: snapraid
+    yay_state: present
 
 # Cron is required to run snapraid-runner script periodically
 - name: Install cronie package (Archlinux)
