@@ -11,6 +11,58 @@ all:
           ansible_host: # use `ansible_connection: local` for local
           ansible_user:
 
+          # Server host
+          upgrade_zfs: false
+
+          # Snapraid
+          snapraid_healthchecks_url:
+
+          # Prometheus
+          prometheus_install_node_exporter: true
+          node_exporter_basic_auth_users:
+            randomuser: examplepassword
+          prometheus_install_server_config: true
+          prometheus_server_config_path: "{{ appdata_dir }}/prometheus/prometheus.yml"
+          prometheus_scrape_configs:
+            - job_name: prometheus
+              static_configs:
+                - targets:
+                    - localhost:9090
+            - job_name: node
+              file_sd_configs:
+                - files:
+                    - /etc/prometheus/file_sd/node.yml
+            - job_name: traefik
+              metrics_path: /metrics
+              static_configs:
+                - targets:
+                    - "{{ ansible_host }}:9180"
+            - job_name: alertmanager
+              file_sd_configs:
+                - files:
+                    - /etc/prometheus/file_sd/alertmanager.yml
+            - job_name: grafana
+              file_sd_configs:
+                - files:
+                    - /etc/prometheus/file_sd/grafana.yml
+          prometheus_targets:
+            node:
+              # Add node exporter targets here
+              - targets:
+                  - 192.168.86.159:9100
+                labels:
+                  env: node
+            alertmanager:
+              - targets:
+                  - "{{ ansible_host }}:9093"
+                labels:
+                  env: home
+            grafana:
+              - targets:
+                  - "{{ ansible_host }}:3002"
+                labels:
+                  env: home
+
     bastion:
       hosts:
         # Define bastion hostname and vars
