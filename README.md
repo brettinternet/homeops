@@ -6,6 +6,8 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with ZFS volumes, behind a Traefik ingress and OAuth, with Ansible deployment to an Arch Linux server, on a WireGuard network. 🏅
 
+This infrastructure as code is written for me because I'm forgetful. But perhaps it'll help you develop your own server architecture.
+
 ## Setup
 
 Run setup to create local configuration files and install `requirements.yml` from ansible-galaxy.
@@ -14,7 +16,7 @@ Run setup to create local configuration files and install `requirements.yml` fro
 make setup
 ```
 
-Then, edit `inventory` with the server target and `vars/secret.yml` with secrets.
+Then, edit `inventory.yml` with the target vars and secrets. See [example.inventory.yml](./example.inventory.yml) for what that looks like.
 
 ## Deploy
 

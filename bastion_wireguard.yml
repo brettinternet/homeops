@@ -1,8 +1,6 @@
 ---
 - name: Setup WireGuard remote server
   hosts: bastion
-  vars_files:
-    - "{{ playbook_dir }}/vars/secret.yml"
   roles:
     - role: wireguard_forward
     - role: wireguard
@@ -25,8 +23,6 @@
 
 - name: Setup WireGuard local client
   hosts: server
-  vars_files:
-    - "{{ playbook_dir }}/vars/secret.yml"
   roles:
     - role: wireguard
       vars:

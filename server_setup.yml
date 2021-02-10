@@ -3,10 +3,8 @@
 
 - name: Setup SnapRAID
   hosts: server
-  vars_files:
-    - "{{ playbook_dir }}/vars/secret.yml"
   roles:
-    - role: sudoers
+    - sudoers
     - role: snapraid
       vars:
         # TODO: add email values for snapraid-runner.conf.j2
@@ -42,6 +40,7 @@
           - .TemporaryItems
           - .Trashes
           - .AppleDB
+    - prometheus
 
   tasks:
     # TODO: remove extra keys from github, or is it possible to filter in this task?
