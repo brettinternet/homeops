@@ -12,9 +12,17 @@
     env:
       TZ: "{{ tz }}"
     volumes:
-      - "{{ appdata_dir }}/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-      - "{{ appdata_dir }}/data:/prometheus"
+      - "{{ storage_dir }}/data/prometheus/config:/etc/prometheus"
+      - "{{ storage_dir }}/data/prometheus/data:/prometheus"
     ports:
       - 9091:9090
+    # For additional args that don't fit in the config
+    # See default: https://github.com/prometheus/prometheus/blob/master/Dockerfile#L26-L29
+    command:
+      # https://prometheus.io/docs/prometheus/latest/storage/
+      - "--storage.tsdb.retention.time={{ prometheus_storage_retention_time }}"
+      - "--storage.tsdb.retention.size={{ prometheus_storage_retention_size }}"
+      # - "--web.console.libraries=/etc/prometheus/console_libraries"
+      # - "--web.console.templates=/etc/prometheus/consoles"
     label:
       io.containers.autoupdate: image
