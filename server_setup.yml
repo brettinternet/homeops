@@ -5,6 +5,7 @@
   hosts: server
   roles:
     - sudoers
+    - ssh_setup
     - role: snapraid
       vars:
         # TODO: add email values for snapraid-runner.conf.j2
@@ -43,26 +44,6 @@
     - prometheus
 
   tasks:
-    # TODO: remove extra keys from github, or is it possible to filter in this task?
-    # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
-    # - name: Add authorized key
-    #   authorized_key:
-    #     user: "{{ ansible_user }}"
-    #     state: present
-    #     key: https://github.com/brettinternet.keys
-    # TODO: secure `authorized_keys` https://wiki.archlinux.org/index.php/OpenSSH#Securing_the_authorized_keys_file
-    - name: Disable password tunneling
-      become: true
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        line: PasswordAuthentication no
-
-    - name: Only allow currernt user
-      become: true
-      lineinfile:
-        path: /etc/ssh/sshd_config
-        line: "AllowUsers {{ ansible_user }}"
-
     - name: Enable cockpit.socket
       become: true
       ansible.builtin.systemd:
