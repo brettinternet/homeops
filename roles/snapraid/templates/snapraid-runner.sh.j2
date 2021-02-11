@@ -2,10 +2,6 @@
 
 # {{ ansible_managed }}
 
-exec 3>&1 4>&2
-trap 'exec 2>&4 1>&3' 0 1 2 3
-exec 1>/opt/snapraid-runner/script.log 2>&1
-
 if [ "$EUID" -ne 0 ]; then
   echo "Permission denied: SnapRAID requires root access."
   exit 126
@@ -18,10 +14,11 @@ curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/start" &> /dev/null
 SERVICES_TO_SHUTDOWN=("sonarr" "radarr" "espial" "miniflux" "nzbget" "plex" "miniflux" "miniflux_db")
 
 run_as_user() {
-  /bin/su -c "$@" - {{ ansible_user }}
+  /bin/su {{ ansible_user }} -c "$@"
 }
 
-run_as_user 'podman pause "${SERVICES_TO_SHUTDOWN[@]}"'
+PAUSE="podman pause ${SERVICES_TO_SHUTDOWN[@]}"
+run_as_user "$PAUSE"
 
 /usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/snapraid-runner.conf -q
 {% if snapraid_healthchecks_url is defined %}
@@ -29,4 +26,5 @@ run_as_user 'podman pause "${SERVICES_TO_SHUTDOWN[@]}"'
 curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/$?" &> /dev/null
 {% endif %}
 
-run_as_user 'podman unpause "${SERVICES_TO_SHUTDOWN[@]}"'
+UNPAUSE="podman unpause ${SERVICES_TO_SHUTDOWN[@]}"
+run_as_user "$UNPAUSE"
