@@ -21,7 +21,7 @@
     dest: "{{ prometheus_server_config_dir }}/rules/ansible_managed.rules"
     mode: 0640
   when: prometheus_alert_rules != []
-  notify: Reload Prometheus
+  notify: Restart Prometheus
 
 - name: Copy custom alerting rule files
   ansible.builtin.copy:
@@ -29,14 +29,14 @@
     dest: "{{ prometheus_server_config_dir }}/rules/"
     mode: 0640
   with_fileglob: "{{ prometheus_alert_rules_files }}" # What to do...
-  notify: Reload Prometheus
+  notify: Restart Prometheus
 
 - name: Create Prometheus config
   ansible.builtin.template:
     src: prometheus.yml.j2
     dest: "{{ prometheus_server_config_dir }}/prometheus.yml"
     mode: 0640
-  notify: Reload Prometheus
+  notify: Restart Prometheus
 
 - name: Create Prometheus static targets
   ansible.builtin.copy:
