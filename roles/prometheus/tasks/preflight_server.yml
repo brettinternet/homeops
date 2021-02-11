@@ -1,22 +1,11 @@
 ---
+# Some steps required jmespath but I removed them to avoid external python deps
 # https://github.com/cloudalchemy/ansible-prometheus/blob/master/tasks/preflight.yml
 
 - name: Assert external_labels aren't configured twice
   assert:
     that: prometheus_global.external_labels is not defined
     msg: Use prometheus_external_labels to define external labels
-
-- name: Get all file_sd files from scrape_configs
-  set_fact:
-    file_sd_files: "{{ prometheus_scrape_configs | json_query('[*][].file_sd_configs[*][].files[]') }}"
-
-- name: Fail when file_sd targets are not defined in scrape_configs
-  fail:
-    msg: |
-      Uh oh! `{{ item.key }}` couldn't be found in your scrape configs. Please ensure you provided
-      all targets from prometheus_targets in prometheus_scrape_configs
-  when: not prometheus_config_dir + "/file_sd/" + item.key + ".yml" in file_sd_files
-  with_dict: "{{ prometheus_targets }}"
 
 - name: Alert when prometheus_alertmanager_config is empty, but prometheus_alert_rules is specified
   debug:
