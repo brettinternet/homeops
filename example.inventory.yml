@@ -98,6 +98,12 @@ all:
           ansible_host: # use `ansible_connection: local` for local
           ansible_user:
 
+          # Config
+          ssh_keys_url: https://github.com/<username>.keys # gitlab works, too
+          # include or exclude in same order as https://github.com/settings/keys
+          # e.g. exclude all but the first line (1!d) or delete specific lines
+          ssh_keys_sed_arg: 1d;3d;5d
+
           # Server host
           upgrade_zfs: false
 
