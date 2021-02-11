@@ -1,9 +1,114 @@
 ---
 # First, setup mergerfs and correct fstab mounts
 
-- name: Setup SnapRAID
+- name: "Setup server: {{ ansible_hostname }}"
   hosts: server
+  pre_tasks:
+    ### Official ###
+    - name: Install packages (pacman)
+      become: true
+      ansible.builtin.package:
+        name:
+          # Setup
+          - base
+          - dhcpcd
+          - dosfstools
+          - efibootmgr
+          - git
+          - grub
+          - gvim
+          - linux
+          - linux-headers
+          - linux-firmware
+          - mtools
+          - nano
+          - os-prober
+          # Base
+          - broot
+          - clamav
+          - curl
+          - etckeeper
+          - fd
+          - firejail
+          - fzy
+          - htop
+          - hwinfo
+          - intel-ucode
+          - man-db
+          - mesa
+          - neofetch
+          - networkmanager
+          - openssh
+          - pacmatic
+          - reflector
+          - rsync
+          - smartmontools
+          - speedtest-cli
+          - the_silver_searcher
+          - tmux
+          - trash-cli
+          - ttf-liberation
+          - unzip
+          - usbguard
+          - usbutils
+          - vifm
+          - zsh
+          - wget
+          - w3m
+          # Server
+          - cockpit
+          - cockpit-machines
+          - cockpit-pcp
+          - cockpit-podman
+          - cronie
+          - crun # https://github.com/containers/podman/issues/8687
+          - inetutils
+          - libvirt # Also includes qemu-headless
+          - packagekit
+          - podman
+          - renameutils
+          - terraform
+          - transmission-cli
+          - udisks2
+        state: present
+
+    # Ignore zfs-dkms and zfs-utils AUR packages and upgrade them explicitly
+    - name: Ignore ZFS packages
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/pacman.conf
+        line: "IgnorePkg = zfs-dkms zfs-utils"
+        state: present
+
   roles:
+    ### AUR ###
+    - role: yay
+      vars:
+        yay_packages:
+          # Base
+          - downgrade
+          - powerpill
+          - python-fangfrisch
+          - tzupdate
+          - vim-plug
+          # Server
+          - mergerfs
+          - needrestart
+          - snapraid
+          - cockpit-zfs-manager
+        yay_state: present
+    # Explicitly upgrade packages that are in IgnorePkg list
+    - role: yay
+      vars:
+        yay_packages:
+          - zfs-dkms
+          - zfs-utils
+        yay_state: latest
+        yay_extra_args: --batchinstall --answerclean All
+      when: upgrade_zfs
+    # If upgrades fail, it's likely the server requires manual intervention to
+    # upgrade `linux` kernel with `zfs-linux`
+    - upgrade
     - sudoers
     - ssh_setup
     - role: snapraid
@@ -42,25 +147,7 @@
           - .Trashes
           - .AppleDB
     - prometheus
-
-  tasks:
-    - name: Enable cockpit.socket
-      become: true
-      ansible.builtin.systemd:
-        name: cockpit.socket
-        enabled: true
-
-    - name: Remove Cockpit motd
-      become: true
-      ansible.builtin.file:
-        path: /etc/motd.d/cockpit
-        state: absent
-
-    - name: Enable pmlogger (cockpit metrics)
-      become: true
-      ansible.builtin.systemd:
-        name: pmlogger
-        enabled: true
+    - cockpit
 #
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
