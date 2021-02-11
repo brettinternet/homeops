@@ -16,15 +16,9 @@
 #     privatekey_path: /etc/node_exporter/tls.key
 #     provider: selfsigned
 
-- name: Install packages
-  become: true
-  ansible.builtin.package:
-    name:
-      - prometheus-node-exporter
-    state: present
-
-- name: Setup
-  include_role: cloudalchemy.node-exporter
+- name: Run node exporter
+  include_role:
+    name: cloudalchemy.node-exporter
   # vars:
   #   node_exporter_tls_server_config:
   #     cert_file: /etc/node_exporter/tls.cert
