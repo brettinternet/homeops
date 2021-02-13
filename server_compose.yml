@@ -1,9 +1,0 @@
----
-- name: Setup docker compose services
-  hosts: server
-  roles:
-    - traefik
-      when: "'traefik' in containers"
-    - compose
-    - podman_systemd
-  tags: compose

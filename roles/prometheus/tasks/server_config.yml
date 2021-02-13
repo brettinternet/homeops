@@ -28,6 +28,7 @@
     src: "{{ item }}"
     dest: "{{ prometheus_server_config_dir }}/rules/"
     mode: 0640
+  when: item is defined
   with_fileglob: "{{ prometheus_alert_rules_files }}" # What to do...
   notify: Restart Prometheus
 
@@ -53,4 +54,5 @@
     src: "{{ item }}"
     dest: "{{ prometheus_server_config_dir }}/file_sd/"
     mode: 0640
+  when: item is defined
   with_fileglob: "{{ prometheus_static_targets_files }}"

@@ -1,8 +1,9 @@
 ---
 # First, setup mergerfs and correct fstab mounts
 
-- name: "Setup server: {{ ansible_hostname }}"
+- name: "Setup server"
   hosts: server
+  tags: setup
   pre_tasks:
     ### Official ###
     - name: Install packages (pacman)
@@ -78,34 +79,35 @@
       ansible.builtin.lineinfile:
         path: /etc/pacman.conf
         line: "IgnorePkg = zfs-dkms zfs-utils"
+        insertafter: IgnorePkg
         state: present
 
   roles:
     ### AUR ###
-    - role: yay
-      vars:
-        yay_packages:
-          # Base
-          - downgrade
-          - powerpill
-          - python-fangfrisch
-          - tzupdate
-          - vim-plug
-          # Server
-          - mergerfs
-          - needrestart
-          - snapraid
-          - cockpit-zfs-manager
-        yay_state: present
-    # Explicitly upgrade packages that are in IgnorePkg list
-    - role: yay
-      vars:
-        yay_packages:
-          - zfs-dkms
-          - zfs-utils
-        yay_state: latest
-        yay_extra_args: --batchinstall --answerclean All
-      when: upgrade_zfs
+    # - role: yay
+    #   vars:
+    #     yay_packages:
+    #       # Base
+    #       - downgrade
+    #       - powerpill
+    #       - python-fangfrisch
+    #       - tzupdate
+    #       - vim-plug
+    #       # Server
+    #       - mergerfs
+    #       - needrestart
+    #       - snapraid
+    #       - cockpit-zfs-manager
+    #     yay_state: present
+    # # Explicitly upgrade packages that are in IgnorePkg list
+    # - role: yay
+    #   vars:
+    #     yay_packages:
+    #       - zfs-dkms
+    #       - zfs-utils
+    #     yay_state: latest
+    #     yay_extra_args: --batchinstall --answerclean All --nodeps
+    #   when: upgrade_zfs
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
     - upgrade
@@ -148,7 +150,7 @@
           - .AppleDB
     - prometheus
     - cockpit
-#
+
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
 # https://wiki.archlinux.org/index.php/ZFS
@@ -168,3 +170,12 @@
 
 # TODO: backup with rsync
 # https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html
+
+- name: Setup services
+  hosts: server
+  tags: compose
+  roles:
+    - role: traefik
+      when: "'traefik' in containers"
+    - compose
+    - podman_systemd
