@@ -24,6 +24,8 @@
     group: wheel
     mode: 0775
 
+# snapraid-runner (snapraid automation)
+
 # Using local copy for now, but may want to use upstream master soon
 - name: Copy snapraid-runner.py
   become: true
@@ -31,6 +33,7 @@
     src: "{{ role_path }}/files/snapraid-runner.py"
     dest: "{{ snapraid_runner_dir }}/"
 
+# TODO: should clone latest instead of custom script with --quiet option?
 # - block:
 #     - name: Clone snapraid-runner
 #       git:
@@ -45,22 +48,16 @@
 - name: Create snapraid-runner.conf
   become: true
   template:
-    src: snapraid-runner.conf.j2
-    dest: "{{ snapraid_runner_dir }}/snapraid-runner.conf"
-    # owner: root
-    # group: root
-    # mode: 0775
+    src: options.conf.j2
+    dest: "{{ snapraid_runner_dir }}/options.conf"
 
 # TODO: move to systemd timer/service instead of cron
 
-- name: Create snapraid-runner.sh
+- name: Create run.sh entrypoint
   become: true
   template:
-    src: "snapraid-runner.sh.j2"
-    dest: "{{ snapraid_runner_dir }}/snapraid-runner.sh"
-    # owner: root
-    # group: root
-    # mode: 0775
+    src: "run.sh.j2"
+    dest: "{{ snapraid_runner_dir }}/run.sh"
 
 # https://wiki.archlinux.org/index.php/Cron
 - name: Setup snapraid-runner cron
@@ -69,7 +66,7 @@
     user: root
     name: snapraid_runner
     state: present
-    job: "/bin/bash {{ snapraid_runner_dir }}/snapraid-runner.sh"
+    job: "/bin/bash {{ snapraid_runner_dir }}/run.sh"
     minute: "00"
     hour: "03"
     day: "*"

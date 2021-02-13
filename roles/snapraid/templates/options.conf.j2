@@ -8,7 +8,7 @@ deletethreshold = {{ snapraid_delete_threshold }}
 touch = {{ snapraid_touch }}
 
 [logging]
-file = {{ snapraid_runner_dir }}/snapraid.log
+file = {{ snapraid_runner_dir }}/runner.log
 maxsize = 5000
 {% if snapraid_email_address is defined and snapraid_email_address %}
 
