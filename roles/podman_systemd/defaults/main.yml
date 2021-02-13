@@ -1,4 +1,2 @@
 ---
-# generate | remove
-podman_systemd_action: generate
-podman_systemd_force: false
+podman_systemd_force_regenerate: false

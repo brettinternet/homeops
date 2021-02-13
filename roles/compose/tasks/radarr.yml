@@ -5,8 +5,8 @@
     name: radarr
     # https://hub.docker.com/r/linuxserver/radarr
     image: docker.io/linuxserver/radarr
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"

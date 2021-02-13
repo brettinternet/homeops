@@ -23,8 +23,8 @@
     name: plex
     # https://hub.docker.com/r/plexinc/pms-docker
     image: docker.io/plexinc/pms-docker:plexpass
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     hostname: "{{ plex_hostname }}"
     env:
       PLEX_UID: "{{ puid }}"

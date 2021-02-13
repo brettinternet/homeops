@@ -11,8 +11,8 @@
     name: espial
     # https://github.com/jonschoning/espial-docker
     image: docker.io/jonschoning/espial:espial
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       TZ: "{{ tz }}"
       IP_FROM_HEADER: true
