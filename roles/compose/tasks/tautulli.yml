@@ -6,8 +6,8 @@
     name: tautulli
     # https://hub.docker.com/r/tautulli/tautulli
     image: docker.io/tautulli/tautulli
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"

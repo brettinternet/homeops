@@ -2,6 +2,21 @@
 # Role based on https://podman.io/blogs/2020/12/09/podman-systemd-demo.html
 # https://github.com/edhaynes/podman_systemd_usermode_demo
 # https://github.com/containers/podman/issues/6940
+# `podman_systemd_action` is `generate` or `remove`
+
+- name: Generate container services
+  ansible.builtin.set_fact:
+    podman_systemd_action: generate
+  when:
+    - podman_systemd_action is not defined
+    - container_state in ['created', 'present', 'started']
+
+- name: Remove container services
+  ansible.builtin.set_fact:
+    podman_systemd_action: remove
+  when:
+    - podman_systemd_action is not defined
+    - container_state in ['absent', 'stopped']
 
 - name: "Running {{ podman_systemd_action }} on containers"
   include_tasks: "{{ podman_systemd_action | lower }}.yml"
@@ -22,9 +37,6 @@
         enabled: true
         state: started
       loop: "{{ containers }}"
-
-    # - name: Run auto update
-    #   ansible.builtin.shell: podman auto-update
 
     # http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
     - name: Copy custom podman auto update timer

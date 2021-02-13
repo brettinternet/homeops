@@ -7,8 +7,8 @@
     name: healthchecks
     # https://hub.docker.com/r/linuxserver/healthchecks
     image: docker.io/linuxserver/healthchecks
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"

@@ -11,8 +11,8 @@
     name: traefik
     # :2.4
     image: docker.io/library/traefik:latest
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       TZ: "{{ tz }}"
       # https://go-acme.github.io/lego/dns/cloudflare/

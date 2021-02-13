@@ -7,8 +7,8 @@
     name: prometheus
     # https://hub.docker.com/r/prom/prometheus/
     image: docker.io/prom/prometheus
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       TZ: "{{ tz }}"
     volumes:
@@ -18,6 +18,7 @@
       - 9091:9090
     # For additional args that don't fit in the config
     # See default: https://github.com/prometheus/prometheus/blob/master/Dockerfile#L26-L29
+    # userns: keep-id
     command:
       # https://prometheus.io/docs/prometheus/latest/storage/
       - "--storage.tsdb.retention.time={{ prometheus_storage_retention_time }}"

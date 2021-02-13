@@ -6,8 +6,8 @@
     name: nzbget
     # https://hub.docker.com/r/linuxserver/nzbget
     image: docker.io/linuxserver/nzbget
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"

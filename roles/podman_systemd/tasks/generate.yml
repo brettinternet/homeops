@@ -45,4 +45,4 @@
         name: "{{ container_name }}"
         state: stopped
       when: container_info_result.containers[0]['State']['Running']
-  when: not existing_unit_stat_result.stat.exists or podman_systemd_force is true
+  when: not existing_unit_stat_result.stat.exists or podman_systemd_force_regenerate is true

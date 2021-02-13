@@ -6,8 +6,8 @@
     name: ombi
     # https://hub.docker.com/r/linuxserver/ombi
     image: docker.io/linuxserver/ombi
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"

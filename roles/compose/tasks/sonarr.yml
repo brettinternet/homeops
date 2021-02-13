@@ -6,8 +6,8 @@
     name: sonarr
     # https://hub.docker.com/r/linuxserver/sonarr
     image: docker.io/linuxserver/sonarr
-    state: "{{ state }}"
-    recreate: "{{ recreate }}"
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
     env:
       PUID: "0"
       PGID: "0"
