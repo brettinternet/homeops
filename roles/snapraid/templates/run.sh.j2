@@ -11,13 +11,13 @@ fi
 curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/start" &> /dev/null
 {% endif %}
 
-SERVICES_TO_SHUTDOWN=("traefik" "sonarr" "radarr" "espial" "nzbget" "plex" "miniflux" "miniflux_db")
+SERVICES_TO_PAUSE=({{ containers | join(' ') }})
 
 run_as_user() {
   /bin/su {{ ansible_user }} -c "$@"
 }
 
-PAUSE="podman pause ${SERVICES_TO_SHUTDOWN[@]}"
+PAUSE="podman pause ${SERVICES_TO_PAUSE[@]}"
 run_as_user "$PAUSE"
 
 /usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/options.conf
@@ -26,7 +26,7 @@ run_as_user "$PAUSE"
 SNAPRAID_RC=$?
 {% endif %}
 
-UNPAUSE="podman unpause ${SERVICES_TO_SHUTDOWN[@]}"
+UNPAUSE="podman unpause ${SERVICES_TO_PAUSE[@]}"
 run_as_user "$UNPAUSE"
 {% if snapraid_healthchecks_url is defined %}
 
