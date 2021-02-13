@@ -2,8 +2,8 @@
 # Role based on https://podman.io/blogs/2020/12/09/podman-systemd-demo.html
 # https://github.com/edhaynes/podman_systemd_usermode_demo
 # https://github.com/containers/podman/issues/6940
-# `podman_systemd_action` is `generate` or `remove`
 
+# `podman_systemd_action` is `generate` or `remove`
 - name: Generate container services
   ansible.builtin.set_fact:
     podman_systemd_action: generate
