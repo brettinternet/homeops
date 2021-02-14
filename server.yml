@@ -84,30 +84,30 @@
 
   roles:
     ### AUR ###
-    # - role: yay
-    #   vars:
-    #     yay_packages:
-    #       # Base
-    #       - downgrade
-    #       - powerpill
-    #       - python-fangfrisch
-    #       - tzupdate
-    #       - vim-plug
-    #       # Server
-    #       - mergerfs
-    #       - needrestart
-    #       - snapraid
-    #       - cockpit-zfs-manager
-    #     yay_state: present
-    # # Explicitly upgrade packages that are in IgnorePkg list
-    # - role: yay
-    #   vars:
-    #     yay_packages:
-    #       - zfs-dkms
-    #       - zfs-utils
-    #     yay_state: latest
-    #     yay_extra_args: --batchinstall --answerclean All --nodeps
-    #   when: upgrade_zfs
+    - role: yay
+      vars:
+        yay_packages:
+          # Base
+          - downgrade
+          - powerpill
+          - python-fangfrisch
+          - tzupdate
+          - vim-plug
+          # Server
+          - mergerfs
+          - needrestart
+          - snapraid
+          - cockpit-zfs-manager
+        yay_state: present
+    # Explicitly upgrade packages that are in IgnorePkg list
+    - role: yay
+      vars:
+        yay_packages:
+          - zfs-dkms
+          - zfs-utils
+        yay_state: latest
+        yay_extra_args: --batchinstall --answerclean All --nodeps
+      when: upgrade_zfs
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
     - upgrade
@@ -174,6 +174,54 @@
 - name: Setup services
   hosts: server
   tags: compose
+  vars:
+    # Containers to use (roles/compose/tasks)
+    containers:
+      # TODO: fix prometheus rootless volume permissions https://github.com/MoOyeg/Rootless-Podman-For-Prometheus-Grafana/blob/main/prometheus.sh
+      # TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
+      # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
+      - plex
+      - nzbget
+      - sonarr
+      - radarr
+      - espial
+      - miniflux
+      - miniflux_db
+      - ombi
+      - tautulli
+      - healthchecks
+      # - syncthing
+      # - prometheus
+      - oauth
+      - traefik
+
+    # absent - A container matching the specified name will be stopped and removed.
+    # present - Asserts the existence of a container matching the name and any provided configuration parameters. If no container matches the name, a container will be created. If a container matches the name but the provided configuration does not match, the container will be updated, if it can be. If it cannot be updated, it will be removed and re-created with the requested config. Image version will be taken into account when comparing configuration. Use the recreate option to force the re-creation of the matching container.
+    # started - Asserts there is a running container matching the name and any provided configuration. If no container matches the name, a container will be created and started. Use recreate to always re-create a matching container, even if it is running. Use force_restart to force a matching container to be stopped and restarted.
+    # stopped - Asserts that the container is first present, and then if the container is running moves it to a stopped state.
+    # created - (new feature) just created the image since our podman_systemd role will start the image with systemd
+    container_state: created
+    # container_recreate: true
+
+    # Containers with a frontend to use with Traefik (roles/traefik/templates)
+    frontend_containers:
+      - plex
+      - nzbget
+      - sonarr
+      - radarr
+      - espial
+      - miniflux
+      - ombi
+      - tautulli
+      - healthchecks
+      # - syncthing
+      # - prometheus
+      - oauth
+      - traefik
+
+    # Systemd user setup for podman containers - default setup/teardown depends on `container_state` var
+    # podman_systemd_action: remove
+    # podman_systemd_force_regenerate: true
   roles:
     - role: traefik
       when: "'traefik' in containers"
