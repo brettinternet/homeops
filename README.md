@@ -82,7 +82,7 @@ Here's some additional advice from [/r/DataHoarders](https://www.reddit.com/r/Da
 
 #### JBOD
 
-[MergerFS](https://github.com/trapexit/mergerfs) is a union filesystem for pooling drives together. It's a great pair with SnapRAID.
+[MergerFS](https://github.com/trapexit/mergerfs) is a union filesystem for pooling drives together. It's a great pair with SnapRAID. An alternative is [SnapRAID-BTRFS](https://wiki.selfhosted.show/tools/snapraid-btrfs/).
 
 ```sh
 mkdir /mnt/disk{1,2,3,4}
