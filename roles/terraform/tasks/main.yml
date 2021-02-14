@@ -13,7 +13,7 @@
   community.general.terraform:
     # https://docs.ansible.com/ansible/latest/reference_appendices/special_variables.html
     project_path: "{{ terraform_dir }}"
-    state: "{{ state }}"
+    state: "{{ terraform_state }}"
     plan_file: "{{ terraform_plan | default(omit) }}"
     variables:
       do_token: "{{ do_token }}"

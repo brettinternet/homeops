@@ -1,7 +1,0 @@
----
-- name: Provision bastion server
-  hosts: server
-  roles:
-    - role: terraform
-      vars:
-        state: present
