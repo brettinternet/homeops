@@ -11,14 +11,11 @@ fi
 curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/start" &> /dev/null
 {% endif %}
 
-SERVICES_TO_PAUSE=({{ containers | join(' ') }})
-
 run_as_user() {
   /bin/su {{ ansible_user }} -c "$@"
 }
 
-PAUSE="podman pause ${SERVICES_TO_PAUSE[@]}"
-run_as_user "$PAUSE"
+run_as_user "podman pause -a"
 
 /usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/options.conf
 {% if snapraid_healthchecks_url is defined %}
@@ -26,8 +23,7 @@ run_as_user "$PAUSE"
 SNAPRAID_RC=$?
 {% endif %}
 
-UNPAUSE="podman unpause ${SERVICES_TO_PAUSE[@]}"
-run_as_user "$UNPAUSE"
+run_as_user "podman unpause -a"
 {% if snapraid_healthchecks_url is defined %}
 
 curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/$SNAPRAID_RC" &> /dev/null
