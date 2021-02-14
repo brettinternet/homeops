@@ -25,7 +25,11 @@
   hosts: bastion
   tags: setup
   roles:
-    - role: wireguard_forward
+    - role: upgrade
+      vars:
+        allow_reboot: false
+        allow_dist_upgrade: false
+    - wireguard_forward
     - role: wireguard
       vars:
         host_ip: 10.0.0.1

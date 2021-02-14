@@ -1,7 +1,0 @@
----
-- name: Update hosts
-  hosts: all
-  roles:
-    - name: upgrade
-      allow_reboot: false
-      allow_dist_upgrade: false
