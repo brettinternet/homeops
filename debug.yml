@@ -1,0 +1,17 @@
+---
+- name: Debug facts
+  hosts: localhost
+  tasks:
+    - name: Debug all facts
+      tags: all_facts
+      ansible.builtin.debug:
+        var: ansible_facts
+
+    - name: Debug specific facts
+      tags: specific_facts
+      ansible.builtin.debug:
+        msg:
+          - "ansible_distribution: {{ ansible_distribution | lower }}"
+          - "ansible_fqdn: {{ ansible_fqdn }}"
+          - "ansible_host: {{ ansible_host }}"
+          - "inventory_hostname: {{ inventory_hostname }}"
