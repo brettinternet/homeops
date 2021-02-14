@@ -1,7 +1,0 @@
----
-- name: Destroy bastion server
-  hosts: server
-  vars:
-    state: absent
-  roles:
-    - terraform

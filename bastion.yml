@@ -1,0 +1,94 @@
+---
+# WIP
+
+# TODO: add setup steps for bastion host
+# Secure SSH https://github.com/vitalk/ansible-secure-ssh
+# https://wiki.archlinux.org/index.php/Fail2ban
+# https://github.com/geerlingguy/ansible-role-security
+
+# Implement firewall https://wiki.archlinux.org/index.php/Simple_stateful_firewall
+# https://wiki.archlinux.org/index.php/Iptables
+# https://wiki.archlinux.org/index.php/Nftables
+
+# SSH server with `ProxyJump` to access homelab from outsite the server
+# https://perfectmediaserver.com/remote-access/ssh/#proxyjump
+
+- name: Setup bastion server
+  hosts: server
+  tags: provision
+  vars:
+    terraform_state: present
+  roles:
+    - terraform
+
+- name: Setup WireGuard remote server
+  hosts: bastion
+  tags: setup
+  roles:
+    - role: wireguard_forward
+    - role: wireguard
+      vars:
+        host_ip: 10.0.0.1
+        peer_ip: 10.0.0.2
+        # The bastion host is a WireGuard server for our homelab
+        wireguard_address: "{{ host_ip }}/24"
+        # wireguard_allowed_ips: 10.0.0.1/32 # fix snat for this to work?
+        wireguard_allowed_ips: "{{ host_ip }}/0"
+        wireguard_persistent_keepalive: 25
+        wireguard_postup:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh up"
+        wireguard_postdown:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh down"
+
+- name: Setup WireGuard local client
+  hosts: server
+  roles:
+    - role: wireguard
+      vars:
+        # The homelab server is a client to the bastion's WireGuard server
+        wireguard_endpoint: "{{ terraform_public_ip }}"
+        wireguard_address: 10.0.0.2/24
+
+# TODO: create a third client config file, then proceed below
+- name: Print mobile client QR code
+  hosts: bastion
+  vars:
+    encode_file_path: /etc/wireguard/wg0.conf
+  tasks:
+    - name: Install qrencode
+      ansible.builtin.package:
+        name: qrencode
+        state: present
+
+    - name: "Check if {{ encode_file_path }} exists"
+      stat:
+        path: "{{ encode_file_path }}"
+      register: encode_file_result
+
+    - name: "{{ encode_file_path }} must exist"
+      fail:
+        msg: "{{ encode_file_path }} does not exist"
+      when: not encode_file_result.stat.exists
+
+    # Source: https://wiki.debian.org/Wireguard#A3._Import_by_reading_a_QR_code_.28most_secure_method.29
+    - name: Print QR encoded file
+      command: "qrencode -t ansiutf8 < {{ encode_file_path }}"
+#
+# - name: Print mobile client QR code
+#   hosts: bastion
+#   roles:
+#     - role: qrencode
+#       vars:
+#         encode_file_path: /etc/wireguard/wg0.conf
+
+# TODO: setup firewall
+# iptables firewall configuration https://wiki.archlinux.org/index.php/Simple_stateful_firewall
+# iptables tables and chains: https://www.frozentux.net/iptables-tutorial/iptables-tutorial.html#TRAVERSINGOFTABLES
+
+# Configure iptables: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/iptables_module.html
+# Save iptables: https://docs.ansible.com/ansible/latest/collections/community/general/iptables_state_module.html
+
