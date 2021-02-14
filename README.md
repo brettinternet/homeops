@@ -104,6 +104,8 @@ You must also include an entry for the MergerFS union, such as:
 
 See also [perfectmediaserver: MergerFS](https://perfectmediaserver.com/installation/manual-install/#mergerfs)
 
+Remember, for data that's irreplaceable [RAID is _not_ a backup](https://www.raidisnotabackup.com/).
+
 #### mkinitcpio
 
 Be sure to add `zfs` and `resume`

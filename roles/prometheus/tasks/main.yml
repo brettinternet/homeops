@@ -4,7 +4,7 @@
   when: prometheus_install_node_exporter
 
 - name: Validate Prometheus server vars
-  include: preflight_server.yml
+  include: server_preflight.yml
   when: prometheus_install_server_config
 
 - name: Setup Prometheus server
