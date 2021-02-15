@@ -180,6 +180,7 @@
       # TODO: fix prometheus rootless volume permissions https://github.com/MoOyeg/Rootless-Podman-For-Prometheus-Grafana/blob/main/prometheus.sh
       # TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
       # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
+      # TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
       - plex
       - nzbget
       - sonarr
