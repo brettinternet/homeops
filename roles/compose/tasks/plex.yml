@@ -5,18 +5,27 @@
 # https://medium.com/@Pooch/containerized-media-server-setup-with-podman-3727727c8c5f
 # and be sure to reset permissions if you have root/sudo `sudo chown $(id -u -n):$(id -g -n) /mnt/storage/movies`
 
+# ISSUE: on restart, tmp directory for transcode is missing...
 - block:
-    - name: Check transcode directory
+    - name: File stat transcode directory
       ansible.builtin.stat:
-        path: /tmp/transcode
+        # /var/tmp: https://www.pathname.com/fhs/pub/fhs-2.3.html#PURPOSE50
+        # Can't use /tmp because the directory wouldn't survive a reboot
+        path: /var/tmp/transcode
       register: transcode_dir_result
-    - name: Add Plex transcode directory
+
+    - name: Clean transcode directory
       ansible.builtin.file:
-        path: /tmp/transcode
+        path: /var/tmp/transcode
+        state: absent
+      when: transcode_dir_result.stat.exists
+
+    - name: Add transcode directory
+      ansible.builtin.file:
+        path: /var/tmp/transcode
         state: directory
         owner: "{{ puid | int }}"
         group: "{{ pgid | int }}"
-      when: not transcode_dir_result.stat.exists
 
 - name: plex
   containers.podman.podman_container:
@@ -40,7 +49,7 @@
       - "{{ storage_dir }}/movies:/data/Movies"
       - "{{ storage_dir }}/tv:/data/TV"
       - "{{ storage_dir }}/photos:/data/Photos"
-      - /tmp/transcode:/transcode
+      - /var/tmp/transcode:/transcode
     # Quick Sync https://github.com/plexinc/pms-docker#intel-quick-sync-hardware-transcoding-support
     device: /dev/dri:/dev/dri
     ports:
