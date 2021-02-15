@@ -8,6 +8,7 @@
     ### Official ###
     - name: Install packages (pacman)
       become: true
+      tags: update
       ansible.builtin.package:
         name:
           # Setup
@@ -76,6 +77,7 @@
     # Ignore zfs-dkms and zfs-utils AUR packages and upgrade them explicitly
     - name: Ignore ZFS packages
       become: true
+      tags: update
       ansible.builtin.lineinfile:
         path: /etc/pacman.conf
         line: "IgnorePkg = zfs-dkms zfs-utils"
@@ -85,6 +87,7 @@
   roles:
     ### AUR ###
     - role: yay
+      tags: update
       vars:
         yay_packages:
           # Base
@@ -99,8 +102,10 @@
           - snapraid
           - cockpit-zfs-manager
         yay_state: present
+        yay_extra_args:
     # Explicitly upgrade packages that are in IgnorePkg list
     - role: yay
+      tags: update
       vars:
         yay_packages:
           - zfs-dkms
