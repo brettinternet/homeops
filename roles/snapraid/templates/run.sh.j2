@@ -17,7 +17,7 @@ run_as_user() {
 
 run_as_user "podman pause -a"
 
-/usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/options.conf
+/usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/options.conf &>/dev/null
 {% if snapraid_healthchecks_url is defined %}
 
 SNAPRAID_RC=$?

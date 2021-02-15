@@ -5,17 +5,3 @@
   vars:
     yay_packages: snapraid
     yay_state: present
-
-# Cron is required to run snapraid-runner script periodically
-- name: Install cronie package (Archlinux)
-  become: true
-  ansible.builtin.package:
-    name: cronie
-    state: present
-
-- name: Enable cronie
-  become: true
-  ansible.builtin.systemd:
-    name: cronie.service
-    enabled: true
-    state: started
