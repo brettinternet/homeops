@@ -26,16 +26,3 @@
         deb: /tmp/snapraid/build/snapraid-from-source.deb
         state: present
   when: "{{ snapraid_force_install is true or is_installed is failed }}"
-
-- name: Install cron
-  become: true
-  ansible.builtin.package:
-    name: cron
-    state: present
-
-- name: Enable crond
-  become: true
-  ansible.builtin.systemd:
-    name: crond.service
-    enabled: true
-    state: started
