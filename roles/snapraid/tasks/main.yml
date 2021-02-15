@@ -60,6 +60,7 @@
   ansible.builtin.template:
     src: run.sh.j2
     dest: "{{ snapraid_runner_dir }}/run.sh"
+    mode: 0744
 
 - name: Create systemd unit file
   become: true
