@@ -9,8 +9,7 @@
 - name: traefik
   containers.podman.podman_container:
     name: traefik
-    # :2.4
-    image: docker.io/library/traefik:latest
+    image: docker.io/library/traefik
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:
