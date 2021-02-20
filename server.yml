@@ -42,6 +42,7 @@
           - networkmanager
           - openssh
           - pacmatic
+          - powertop
           - reflector
           - rsync
           - smartmontools
