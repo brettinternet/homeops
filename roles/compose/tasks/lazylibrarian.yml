@@ -1,0 +1,23 @@
+---
+# https://gitlab.com/LazyLibrarian/LazyLibrarian
+
+- name: lazylibrarian
+  containers.podman.podman_container:
+    name: lazylibrarian
+    # https://hub.docker.com/r/linuxserver/lazylibrarian
+    image: docker.io/linuxserver/lazylibrarian
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+      DOCKER_MODS: linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg
+    volumes:
+      - "{{ appdata_dir }}/lazylibrarian:/config"
+      - "{{ storage_dir }}/books:/books"
+      - "{{ storage_dir }}/downloads:/downloads"
+    ports:
+      - 5299:5299
+    label:
+      io.containers.autoupdate: image
