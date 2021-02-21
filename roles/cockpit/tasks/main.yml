@@ -10,6 +10,14 @@
   ansible.builtin.systemd:
     name: pmlogger
     enabled: true
+    state: started
+
+- name: Enable pmcd (cockpit metrics)
+  become: true
+  ansible.builtin.systemd:
+    name: pmcd
+    enabled: true
+    state: started
 
 - name: Enable cockpit.socket
   become: true
