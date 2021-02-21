@@ -177,6 +177,8 @@
 # TODO: backup with rsync
 # https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html
 
+# TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
+
 - name: Setup services
   hosts: server
   tags: compose
