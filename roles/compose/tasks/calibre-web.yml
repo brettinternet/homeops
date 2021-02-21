@@ -1,0 +1,24 @@
+---
+# https://github.com/janeczku/calibre-web
+# https://github.com/linuxserver/docker-calibre-web
+
+- name: calibre-web
+  containers.podman.podman_container:
+    name: calibre-web
+    # https://hub.docker.com/r/linuxserver/calibre-web
+    image: docker.io/linuxserver/calibre-web
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+      DOCKER_MODS: linuxserver/calibre-web:calibre
+    volumes:
+      - "{{ appdata_dir }}/calibre-web:/config"
+      - "{{ storage_dir }}/books:/books"
+      - "{{ storage_dir }}/downloads:/downloads"
+    ports:
+      - 8083:8083
+    label:
+      io.containers.autoupdate: image
