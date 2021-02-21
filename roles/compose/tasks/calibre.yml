@@ -1,0 +1,21 @@
+---
+# https://calibre-ebook.com/
+# https://github.com/linuxserver/docker-calibre
+
+- name: calibre
+  containers.podman.podman_container:
+    name: calibre
+    # https://hub.docker.com/r/linuxserver/calibre
+    image: docker.io/linuxserver/calibre
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/calibre:/config"
+    ports:
+      - 8081:8081
+    label:
+      io.containers.autoupdate: image

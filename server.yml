@@ -181,7 +181,7 @@
 
 - name: Setup services
   hosts: server
-  tags: compose
+  tags: services
   vars:
     # Containers to use (roles/compose/tasks)
     containers:
@@ -196,6 +196,8 @@
       - espial
       - miniflux
       - miniflux_db
+      - lazylibrarian
+      - calibre-web
       - ombi
       - tautulli
       - healthchecks
@@ -209,7 +211,7 @@
     # started - Asserts there is a running container matching the name and any provided configuration. If no container matches the name, a container will be created and started. Use recreate to always re-create a matching container, even if it is running. Use force_restart to force a matching container to be stopped and restarted.
     # stopped - Asserts that the container is first present, and then if the container is running moves it to a stopped state.
     # created - (new feature) just created the image since our podman_systemd role will start the image with systemd
-    container_state: created
+    container_state: started
     # container_recreate: true
 
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
@@ -233,6 +235,13 @@
     # podman_systemd_force_regenerate: true
   roles:
     - role: traefik
+      tags: traefik
       when: "'traefik' in containers"
-    - compose
-    - podman_systemd
+    - role: compose
+      tags:
+        - containers
+        - compose
+    - role: podman_systemd
+      tags:
+        - compose
+        - podman_systemd
