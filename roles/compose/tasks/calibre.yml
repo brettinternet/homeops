@@ -16,6 +16,7 @@
     volumes:
       - "{{ appdata_dir }}/calibre:/config"
     ports:
-      - 8081:8081
+      - 8085:8080
+      - 8086:8081
     label:
       io.containers.autoupdate: image
