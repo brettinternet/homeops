@@ -2,7 +2,7 @@
 - name: hydra
   containers.podman.podman_container:
     name: hydra
-    image: docker.io/linuxserver/hydra2
+    image: docker.io/linuxserver/nzbhydra2
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:
