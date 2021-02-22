@@ -245,3 +245,10 @@
       tags:
         - compose
         - podman_systemd
+#
+# TODO: I'd really like to use `scrutiny` but it requires sudo?
+# podman run --name=scrutiny --cap-add=SYS_RAWIO --cap-add=SYS_ADMIN -e PUID=65534 -e PGID=65534 -e SCRUTINY_WEB=true -e SCRUTINY_COLLECTOR=true -p 8084:8080 -v /run/udev:/run/udev:ro --device /dev/sde:/dev/sde --user root:root --rm ghcr.io/linuxserver/scrutiny
+# https://github.com/linuxserver/docker-scrutiny
+# https://github.com/AnalogJ/scrutiny/issues/44
+# https://github.com/containers/podman/blob/master/rootless.md
+# https://github.com/containers/podman/issues/6884
