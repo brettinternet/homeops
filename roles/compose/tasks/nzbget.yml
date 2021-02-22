@@ -5,7 +5,7 @@
   containers.podman.podman_container:
     name: nzbget
     # https://hub.docker.com/r/linuxserver/nzbget
-    image: docker.io/linuxserver/nzbget
+    image: ghcr.io/linuxserver/nzbget
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:

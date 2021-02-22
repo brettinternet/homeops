@@ -6,7 +6,7 @@
   containers.podman.podman_container:
     name: calibre
     # https://hub.docker.com/r/linuxserver/calibre
-    image: docker.io/linuxserver/calibre
+    image: ghcr.io/linuxserver/calibre
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:

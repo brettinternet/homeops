@@ -12,7 +12,7 @@
   containers.podman.podman_container:
     name: calibre-web
     # https://hub.docker.com/r/linuxserver/calibre-web
-    image: docker.io/linuxserver/calibre-web
+    image: ghcr.io/linuxserver/calibre-web
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:

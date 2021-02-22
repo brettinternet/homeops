@@ -6,7 +6,7 @@
   containers.podman.podman_container:
     name: healthchecks
     # https://hub.docker.com/r/linuxserver/healthchecks
-    image: docker.io/linuxserver/healthchecks
+    image: ghcr.io/linuxserver/healthchecks
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:
