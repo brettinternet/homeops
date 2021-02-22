@@ -4,7 +4,7 @@
   containers.podman.podman_container:
     name: radarr
     # https://hub.docker.com/r/linuxserver/radarr
-    image: docker.io/linuxserver/radarr
+    image: ghcr.io/linuxserver/radarr
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:
