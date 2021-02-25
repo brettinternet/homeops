@@ -89,6 +89,9 @@ all:
     smtp_user:
     smtp_password:
 
+    valheim_server_name:
+    valheim_server_password:
+
   children:
     server:
       hosts:
