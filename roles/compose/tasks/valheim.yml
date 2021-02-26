@@ -4,6 +4,7 @@
 - name: valheim
   containers.podman.podman_container:
     name: valheim
+    # https://hub.docker.com/r/mbround18/valheim
     image: docker.io/mbround18/valheim:latest
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
@@ -17,6 +18,10 @@
       PUBLIC: false
       AUTO_BACKUP: true
       AUTO_BACKUP_SCHEDULE: "*/15 * * * *"
+      AUTO_UPDATE: true
+      AUTO_UPDATE_SCHEDULE: "0 2 * * *"
+      AUTO_BACKUP_ON_UPDATE: true
+      AUTO_BACKUP_ON_SHUTDOWN: true
     volumes:
       - "{{ appdata_dir }}/valheim/saves:/home/steam/.config/unity3d/IronGate/Valheim"
       - "{{ appdata_dir }}/valheim/server:/home/steam/valheim"
