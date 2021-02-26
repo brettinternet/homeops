@@ -35,5 +35,5 @@ snapraid_use_ssl: true
 
 ## scrub
 snapraid_run_scrub: true
-snapraid_run_scrub_percent: 8
-snapraid_run_scrub_age: 10
+snapraid_run_scrub_percent: 6
+snapraid_run_scrub_age: 15
