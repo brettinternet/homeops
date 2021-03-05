@@ -18,9 +18,6 @@
       PUBLIC: false
       AUTO_BACKUP: true
       AUTO_BACKUP_SCHEDULE: "*/15 * * * *"
-      AUTO_UPDATE: true
-      AUTO_UPDATE_SCHEDULE: "0 2 * * *"
-      AUTO_BACKUP_ON_UPDATE: true
       AUTO_BACKUP_ON_SHUTDOWN: true
     volumes:
       - "{{ appdata_dir }}/valheim/saves:/home/steam/.config/unity3d/IronGate/Valheim"
