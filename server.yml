@@ -18,7 +18,7 @@
           - efibootmgr
           - git
           - grub
-          - gvim
+          - vim
           - linux
           - linux-headers
           - linux-firmware
