@@ -212,7 +212,7 @@
     # started - Asserts there is a running container matching the name and any provided configuration. If no container matches the name, a container will be created and started. Use recreate to always re-create a matching container, even if it is running. Use force_restart to force a matching container to be stopped and restarted.
     # stopped - Asserts that the container is first present, and then if the container is running moves it to a stopped state.
     # created - (new feature) just created the image since our podman_systemd role will start the image with systemd
-    container_state: started
+    container_state: created
     # container_recreate: true
 
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
@@ -233,6 +233,8 @@
 
     # Systemd user setup for podman containers - default setup/teardown depends on `container_state` var
     # podman_systemd_action: remove
+    # NOTE: if changes are made to images in `compose/tasks` then you must stop/remove the systemd unit files, recreate the images, and force regenerate the unit files,
+    # or else systemd will use stale start commands
     # podman_systemd_force_regenerate: true
   roles:
     - role: traefik
