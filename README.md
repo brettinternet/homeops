@@ -91,11 +91,11 @@ You could pipe the output to `sed` to only grab a specific line `sed '4!d'`.
 
 #### Check disks
 
-Use [badblocks](https://wiki.archlinux.org/index.php/Badblocks) to check the status of new disks.
+Here's a handy script to automatically test disks with [badblocks](https://wiki.archlinux.org/index.php/Badblocks) and SMART: [Spearfoot/disk-burnin-and-testing](https://github.com/Spearfoot/disk-burnin-and-testing).
 
-This command will take a long time for larger drives, but it's worth it to be thorough before determining whether to make a return. This is a destructive test, so it's probably best to use `/dev/disk/by-id` to be certain you're targeting the correct drive.
+Testing disks takes a long time for larger drives, but it's worth it to be thorough before determining whether to make a return. This is a destructive test, so it's probably best to use `/dev/disk/by-id` to be certain you're targeting the correct drive.
 
-Use `tune2fs -l <partition>` as the root user to identify the block size.
+Use `tune2fs -l <partition>` to identify the block size.
 
 ```sh
 sudo badblocks -wsv -b 4096 /dev/sda > sda_badblocks.txt
