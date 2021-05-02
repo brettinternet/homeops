@@ -63,15 +63,18 @@ Rootless podman support for container images and deployment within [an ansible r
 
 #### Other
 
+- [DataHoarder Wiki: Hardware](https://www.reddit.com/r/DataHoarder/wiki/hardware)
 - [2020 DIY NAS](https://blog.briancmoses.com/2020/11/diy-nas-2020-edition.html)
 - [2020 Economy DIY NAS](https://blog.briancmoses.com/2020/12/diy-nas-econonas-2020.html)
 - [Home server case recommendations](https://perfectmediaserver.com/hardware/cases/)
 
 ### Storage
 
-#### Inexpensive PCIe SATA
+#### Controller
 
-I purchased a [Dell Perc H310](https://www.ebay.com/sch/i.html?_nkw=Dell+Perc+H310+SATA) a long while back. Mine did come from overseas, but it turned out to be legit. [This video](https://www.youtube.com/watch?v=EOcpp-GdhKo) shows how it can be flashed to an LSI 9211-8i IT (see also [1](https://www.servethehome.com/ibm-serveraid-m1015-part-4/), [2](https://www.truenas.com/community/threads/confused-about-that-lsi-card-join-the-crowd.11901/)).
+I used a widely-known and inexpensive method to add additional SATA storage via a Host Bus Adapter (HBA). I purchased a [Dell Perc H310](https://www.ebay.com/sch/i.html?_nkw=Dell+Perc+H310+SATA) a long while back. Mine did come from overseas, but it turned out to be legit. [This video](https://www.youtube.com/watch?v=EOcpp-GdhKo) shows how it can be flashed to an LSI 9211-8i IT (see also [1](https://www.servethehome.com/ibm-serveraid-m1015-part-4/), [2](https://www.truenas.com/community/threads/confused-about-that-lsi-card-join-the-crowd.11901/)).
+
+Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wiki/hardware#wiki_controllers).
 
 #### 2.5" drive stackers
 
