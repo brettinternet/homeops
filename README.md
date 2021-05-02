@@ -84,7 +84,7 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 #### SSH
 
-Here's a nice convenience for setting up `authorized_keys` that both Github and Gitlab offer:
+Here's a nice convenience for setting up `authorized_keys` stored on Github or Gitlab:
 
 ```sh
 curl https://github.com/<username>.keys -o authorized_keys
