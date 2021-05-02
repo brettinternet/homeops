@@ -44,6 +44,29 @@ Rootless podman support for container images and deployment within [an ansible r
 
 ![book cover: Mommy, Why is There a Server is the House?](./screenshots/stay_at_home_server.jpg)
 
+### Builds
+
+#### Current
+
+| Type             | Item                                                                                                                                                             |
+| :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CPU**          | [Intel Core i7-7700 3.6 GHz Quad-Core Processor](https://pcpartpicker.com/product/9mRFf7/intel-core-i7-7700-36ghz-quad-core-processor-bx80677i77700)             |
+| **CPU Cooler**   | [Noctua NH-L9i 33.84 CFM CPU Cooler](https://pcpartpicker.com/product/xxphP6/noctua-nh-l9i-3384-cfm-cpu-cooler-nh-l9i)                                           |
+| **Motherboard**  | [Gigabyte GA-H270N-WIFI Mini ITX LGA1151 Motherboard](https://pcpartpicker.com/product/gVZ2FT/gigabyte-ga-h270n-wifi-mini-itx-lga1151-motherboard-ga-h270n-wifi) |
+| **Memory**       | [Corsair Vengeance LPX 16 GB (2 x 8 GB) DDR4-3000 CL15 Memory](https://pcpartpicker.com/product/MYH48d/corsair-memory-cmk16gx4m2b3000c15)                        |
+| **Case**         | [Fractal Design Node 804 MicroATX Mid Tower Case](https://pcpartpicker.com/product/yTdqqs/fractal-design-case-fdcanode804blw)                                    |
+| **Power Supply** | [EVGA G2 550 W 80+ Gold Certified Fully Modular ATX Power Supply](https://pcpartpicker.com/product/qYTrxr/evga-power-supply-220g20550y1)                         |
+
+<!-- | **Storage**      | [Hitachi Deskstar NAS 3 TB 3.5" 7200RPM Internal Hard Drive](https://pcpartpicker.com/product/TP2kcf/hitachi-internal-hard-drive-0s03660)                        | -->
+
+[PCPartPicker](https://pcpartpicker.com/list/PKJqfP)
+
+#### Other
+
+- [2020 DIY NAS](https://blog.briancmoses.com/2020/11/diy-nas-2020-edition.html)
+- [2020 Economy DIY NAS](https://blog.briancmoses.com/2020/12/diy-nas-econonas-2020.html)
+- [Home server case recommendations](https://perfectmediaserver.com/hardware/cases/)
+
 ### Storage
 
 #### Inexpensive PCIe SATA
