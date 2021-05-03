@@ -255,3 +255,5 @@
 # https://github.com/AnalogJ/scrutiny/issues/44
 # https://github.com/containers/podman/blob/master/rootless.md
 # https://github.com/containers/podman/issues/6884
+
+# TODO: setup samba share
