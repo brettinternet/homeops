@@ -78,6 +78,10 @@ all:
     miniflux_password:
     miniflux_postgres_password:
 
+    # `head /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9' | head -c 32 && echo`
+    firefly_app_key:
+    firefly_postgres_password:
+
     healthchecks_email:
     healthchecks_password:
     healthchecks_secret_key:

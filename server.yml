@@ -194,8 +194,10 @@
       - sonarr
       - radarr
       - espial
-      - miniflux
       - miniflux_db
+      - miniflux
+      - firefly_db
+      - firefly
       - lazylibrarian
       - calibre-web
       - ombi
@@ -223,6 +225,7 @@
       - radarr
       - espial
       - miniflux
+      - firefly
       - ombi
       - tautulli
       - healthchecks
