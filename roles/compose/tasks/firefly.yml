@@ -1,0 +1,27 @@
+---
+# https://docs.firefly-iii.org/firefly-iii/installation/docker/
+# https://github.com/firefly-iii/firefly-iii
+
+- name: firefly
+  containers.podman.podman_container:
+    name: firefly
+    image: docker.io/fireflyiii/core:latest
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      TZ: "{{ tz }}"
+      DB_HOST: "{{ homelab_local_ip }}"
+      DB_PORT: 5433
+      DB_CONNECTION: pgsql
+      DB_DATABASE: firefly
+      DB_USERNAME: firefly
+      DB_PASSWORD: "{{ firefly_postgres_password }}"
+      APP_KEY: "{{ firefly_app_key }}"
+      APP_URL: "budget.{{ root_domain }}"
+      TRUSTED_PROXIES: "**"
+    volume:
+      - "{{ appdata_dir }}/firefly/upload:/var/www/html/storage/upload"
+    ports:
+      - 8087:8080
+    label:
+      io.containers.autoupdate: image

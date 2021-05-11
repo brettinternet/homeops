@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    firefly:
+      rule: "Host(`budget.{{ root_domain }}`)"
+      service: firefly
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      firefly:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:8087"
