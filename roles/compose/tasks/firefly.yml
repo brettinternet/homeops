@@ -1,6 +1,7 @@
 ---
 # https://docs.firefly-iii.org/firefly-iii/installation/docker/
 # https://github.com/firefly-iii/firefly-iii
+# https://github.com/firefly-iii/docker
 
 - name: firefly
   containers.podman.podman_container:
@@ -19,6 +20,14 @@
       APP_KEY: "{{ firefly_app_key }}"
       APP_URL: "budget.{{ root_domain }}"
       TRUSTED_PROXIES: "**"
+      MAPBOX_API_KEY: "{{ firefly_mapbox_api_key }}"
+      MAIL_MAILER: smtp
+      MAIL_FROM: "{{ smtp_email_from }}"
+      MAIL_HOST: "{{ smtp_host }}"
+      MAIL_PORT: "{{ smtp_port }}"
+      MAIL_USERNAME: "{{ smtp_user }}"
+      MAIL_PASSWORD: "{{ smtp_password }}"
+      MAIL_ENCRYPTION: tls
     volume:
       - "{{ appdata_dir }}/firefly/upload:/var/www/html/storage/upload"
     ports:
