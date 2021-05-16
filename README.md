@@ -2,7 +2,7 @@
 
 Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks).
 
-![sudo badblocks -wsv -b 4096 /dev/sda output](./screenshots/badblocks.png)
+![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
 
 I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with ZFS volumes, behind a Traefik ingress and OAuth, with Ansible deployment to an Arch Linux server, on a WireGuard network. 🏅
 
@@ -42,7 +42,7 @@ Rootless podman support for container images and deployment within [an ansible r
 
 ## Hardware
 
-![book cover: Mommy, Why is There a Server is the House?](./screenshots/stay_at_home_server.jpg)
+![book cover: Mommy, Why is There a Server is the House?](./files/stay_at_home_server.jpg)
 
 ### Builds
 
