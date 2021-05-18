@@ -3,6 +3,8 @@
 
 # Test AdGuard DNS: https://adguard.com/en/test.html
 
+# TODO: setup DNS encryption - https://github.com/AdguardTeam/AdGuardHome/wiki/Encryption
+
 - name: adguard
   containers.podman.podman_container:
     name: adguard
