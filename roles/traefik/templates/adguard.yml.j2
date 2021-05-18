@@ -1,0 +1,19 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    adguard:
+      rule: "Host(`adguard.{{ root_domain }}`)"
+      service: adguard
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - oauth
+
+  services:
+      adguard:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:3003"

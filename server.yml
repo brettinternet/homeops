@@ -189,6 +189,7 @@
       # TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
       # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
       # TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
+      - adguard
       - plex
       - nzbget
       - sonarr
@@ -219,6 +220,7 @@
 
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
     frontend_containers:
+      - adguard
       - plex
       - nzbget
       - sonarr

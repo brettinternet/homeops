@@ -1,0 +1,29 @@
+---
+# https://github.com/AdguardTeam/AdGuardHome
+
+# Test AdGuard DNS: https://adguard.com/en/test.html
+
+- name: adguard
+  containers.podman.podman_container:
+    name: adguard
+    # https://hub.docker.com/r/adguard/adguardhome
+    image: docker.io/adguard/adguardhome
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/adguard/data:/opt/adguardhome/work"
+      - "{{ appdata_dir }}/adguard/conf:/opt/adguardhome/conf"
+    ports:
+      - "8553:53"
+      # Disable for now while using `network: host`
+      # DNS-over-HTTPS https://github.com/AdguardTeam/Adguardhome/wiki/Encryption
+      # - 8443:443
+      # - 3003:80
+    network:
+      - host
+    dns:
+      - "1.1.1.1"
+    label:
+      io.containers.autoupdate: image
