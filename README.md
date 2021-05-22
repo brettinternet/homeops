@@ -82,6 +82,10 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 ## Software
 
+### Linux
+
+Since I use [Arch Linux](https://archlinux.org/) as my daily driver, it's convenient for me to also use it to run my servers. Debian is a worthy alternative, however I find the stability of Arch to be sufficient for home use. See [my linux notes and automation](https://github.com/brettinternet/linux).
+
 #### SSH
 
 Here's a nice convenience for setting up `authorized_keys` stored on Github or Gitlab:
