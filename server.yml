@@ -207,7 +207,7 @@
       - ombi
       - tautulli
       - healthchecks
-      - valheim
+      # - valheim
       # - syncthing
       # - prometheus
       - oauth
