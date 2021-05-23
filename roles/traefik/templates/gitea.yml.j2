@@ -12,20 +12,22 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
-    git_ssh:
+
+    {# git_ssh:
       entryPoints:
         - ssh
-      rule: "Host(`{{ root_domain }}`)"
+      rule: "Host(`git.{{ root_domain }}`)"
       service: git_ssh
       tls:
-        certResolver: http
+        certResolver: http #}
 
   services:
       git:
         loadBalancer:
           servers:
             - url: "http://{{ homelab_local_ip }}:3004"
-      git_ssh:
+
+      {# git_ssh:
         loadBalancer:
           servers:
-            - url: "http://{{ homelab_local_ip }}:2223"
+            - url: "http://{{ homelab_local_ip }}:2223" #}
