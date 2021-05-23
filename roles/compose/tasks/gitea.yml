@@ -1,6 +1,10 @@
 ---
 # https://docs.gitea.io/en-us/install-with-docker/
+# https://docs.gitea.io/en-us/install-with-docker-rootless/
+# Try changing the logo: https://docs.gitea.io/en-us/customizing-gitea/#changing-the-logo
+# move logo files to `<data dir>/gitea/public/assets/img/`
 # Gitea alternatives: https://docs.gitea.io/en-us/comparison/
+# May consider cgit for something lighter weight: https://wiki.archlinux.org/title/Cgit
 
 - name: Wait for gitea database
   containers.podman.podman_container_info:
