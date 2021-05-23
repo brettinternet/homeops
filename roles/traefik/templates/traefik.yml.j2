@@ -19,9 +19,8 @@ entryPoints:
     #    - "{{ network_bind_addr }}"
   websecure:
     address: :443
-    #forwardedHeaders:
-    #  trustedIPs:
-    #    - "{{ network_bind_addr }}"
+  ssh:
+    address: :22
 
 {# https://doc.traefik.io/traefik/v2.0/observability/logs/ #}
 accessLog:

@@ -78,6 +78,8 @@ all:
     miniflux_password:
     miniflux_postgres_password:
 
+    gitea_postgres_password:
+
     # `head /dev/urandom | LC_ALL=C tr -dc 'A-Za-z0-9' | head -c 32 && echo`
     firefly_app_key:
     firefly_mapbox_api_key:
