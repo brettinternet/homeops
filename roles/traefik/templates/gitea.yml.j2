@@ -1,0 +1,30 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    git:
+      entryPoints:
+        - websecure
+      rule: "Host(`git.{{ root_domain }}`)"
+      service: git
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+    git_ssh:
+      entryPoints:
+        - ssh
+      service: git_ssh
+      tls:
+        certResolver: http
+
+  services:
+      git:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:3004"
+      git_ssh:
+        loadBalancer:
+          servers:
+            - url: "http://{{ homelab_local_ip }}:2223"

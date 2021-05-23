@@ -196,6 +196,8 @@
       - sonarr
       - radarr
       - espial
+      - gitea_db
+      - gitea
       - miniflux_db
       - miniflux
       - firefly_db
@@ -227,6 +229,7 @@
       - sonarr
       - radarr
       - espial
+      - gitea
       - miniflux
       - firefly
       - ombi
