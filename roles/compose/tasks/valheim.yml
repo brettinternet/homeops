@@ -1,5 +1,6 @@
 ---
 # https://github.com/mbround18/valheim-docker
+# DNS: create A record `valheim` pointed to IP, don't proxy IP
 
 - name: valheim
   containers.podman.podman_container:
