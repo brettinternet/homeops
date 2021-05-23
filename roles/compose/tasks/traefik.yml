@@ -27,5 +27,7 @@
       # - "{{ network_bind_addr }}:4443:443"
       - 4080:80
       - 4443:443
+      # https://community.traefik.io/t/routing-ssh-traffic-with-traefik-v2/717/7
+      - "2222:22"
     label:
       io.containers.autoupdate: image
