@@ -51,5 +51,6 @@
 - name: Persist iptable routing across reboots
   shell: iptables-save > /etc/iptables/rules.v4
 
+# Allow forwarding packets to other hosts
 - name: Enable IP Forwarding
   shell: sysctl net.ipv4.ip_forward=1

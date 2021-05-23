@@ -2,6 +2,8 @@
 # https://github.com/AdguardTeam/AdGuardHome
 
 # Test AdGuard DNS: https://adguard.com/en/test.html
+# DNS is configured to server from port 4053 so DNS is forwarded on the host
+# See compose/ingress for port forward from privileged port
 
 # TODO: setup DNS encryption - https://github.com/AdguardTeam/AdGuardHome/wiki/Encryption
 
@@ -12,20 +14,13 @@
     image: docker.io/adguard/adguardhome
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
-    env:
-      TZ: "{{ tz }}"
     volumes:
       - "{{ appdata_dir }}/adguard/data:/opt/adguardhome/work"
       - "{{ appdata_dir }}/adguard/conf:/opt/adguardhome/conf"
     ports:
-      - "8553:53"
-      # Disable for now while using `network: host`
+      - "4053:53"
+      - "3003:80"
       # DNS-over-HTTPS https://github.com/AdguardTeam/Adguardhome/wiki/Encryption
       # - 8443:443
-      # - 3003:80
-    network:
-      - host
-    dns:
-      - "1.1.1.1"
     label:
       io.containers.autoupdate: image
