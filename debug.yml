@@ -15,3 +15,4 @@
           - "ansible_fqdn: {{ ansible_fqdn }}"
           - "ansible_host: {{ ansible_host }}"
           - "inventory_hostname: {{ inventory_hostname }}"
+          - "IP address: {{ ansible_default_ipv4.address }}"
