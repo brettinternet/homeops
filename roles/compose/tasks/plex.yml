@@ -42,7 +42,7 @@
       PLEX_CLAIM: "{{ plex_claim_code }}"
       # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
       # the dashboard will say "Not available outside your network" even though it is... >:(
-      ADVERTISE_IP: "http://{{ homelab_local_ip }}:32400,https://plex.{{ root_domain }}:443"
+      ADVERTISE_IP: "http://{{ ansible_default_ipv4.address }}:32400,https://plex.{{ root_domain }}:443"
     volumes:
       - "{{ appdata_dir }}/plex:/config"
       - "{{ storage_dir }}/music:/data/Music"

@@ -11,7 +11,7 @@
     recreate: "{{ container_recreate }}"
     env:
       TZ: "{{ tz }}"
-      DB_HOST: "{{ homelab_local_ip }}"
+      DB_HOST: "{{ ansible_default_ipv4.address }}"
       DB_PORT: 5433
       DB_CONNECTION: pgsql
       DB_DATABASE: firefly

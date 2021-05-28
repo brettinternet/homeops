@@ -13,10 +13,17 @@
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
 
+# frontend_containers:
+#   - name:
+#     host:
+# TODO: convert repetition to single template in `templates` with more vars
 - name: Add Traefik routes and services
   ansible.builtin.template:
-    src: "{{ item | lower }}.yml.j2"
-    dest: "{{ appdata_dir }}/traefik/{{ item | lower }}.yml"
+    src: "{{ item['name'] | lower }}.yml.j2"
+    dest: "{{ appdata_dir }}/traefik/{{ item['name'] | lower }}.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
+  vars:
+    hostname: "{{ item['host'] }}"
+    service_ip: "{{ hostvars[hostname]['ansible_host'] }}"
   loop: "{{ frontend_containers }}"

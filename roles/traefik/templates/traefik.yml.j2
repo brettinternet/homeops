@@ -16,7 +16,7 @@ entryPoints:
           to: websecure
     #forwardedHeaders:
     #  trustedIPs:
-    #    - "{{ network_bind_addr }}"
+    #    - "{{ ansible_default_ipv4.address }}"
   websecure:
     address: :443
   ssh:

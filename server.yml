@@ -180,7 +180,30 @@
 
 # TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
 
-- name: Setup services
+- name: Setup media services
+  hosts: media
+  tags: services
+  vars:
+    containers:
+      - plex
+      - tautulli
+      - ombi
+      - nzbget
+      - sonarr
+      - radarr
+      - lazylibrarian
+      - calibre-web
+  roles:
+    - role: compose
+      tags:
+        - containers
+        - compose
+    - role: podman_systemd
+      tags:
+        - compose
+        - podman_systemd
+
+- name: Setup general services
   hosts: server
   tags: services
   vars:
@@ -191,10 +214,6 @@
       # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
       # TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
       - adguard
-      - plex
-      - nzbget
-      - sonarr
-      - radarr
       - espial
       - gitea_db
       - gitea
@@ -202,10 +221,6 @@
       - miniflux
       - firefly_db
       - firefly
-      - lazylibrarian
-      - calibre-web
-      - ombi
-      - tautulli
       - healthchecks
       # - valheim
       # - syncthing
@@ -221,24 +236,44 @@
     container_state: created
     # container_recreate: true
 
+    ingress_local_ip: "{{ hostvars['server']['ansible_host'] }}"
+
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
     frontend_containers:
-      - adguard
-      - plex
-      - nzbget
-      - sonarr
-      - radarr
-      - espial
-      - gitea
-      - miniflux
-      - firefly
-      - ombi
-      - tautulli
-      - healthchecks
-      # - syncthing
-      # - prometheus
-      - oauth
-      - traefik
+      # media
+      - name: plex
+        host: media
+      - name: tautulli
+        host: media
+      - name: ombi
+        host: media
+      - name: nzbget
+        host: media
+      - name: sonarr
+        host: media
+      - name: radarr
+        host: media
+      # server (needs a better name...)
+      - name: adguard
+        host: server
+      - name: espial
+        host: server
+      - name: gitea
+        host: server
+      - name: miniflux
+        host: server
+      - name: firefly
+        host: server
+      - name: healthchecks
+        host: server
+      # - name: syncthing
+      #   host: server
+      # - name: prometheus
+      #   host: server
+      - name: oauth
+        host: server
+      - name: traefik
+        host: server
 
     # Systemd user setup for podman containers - default setup/teardown depends on `container_state` var
     # podman_systemd_action: remove

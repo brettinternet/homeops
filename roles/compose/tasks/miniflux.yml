@@ -19,7 +19,7 @@
     state: "{{ container_state }}"
     env:
       TZ: "{{ tz }}"
-      DATABASE_URL: "postgres://miniflux:{{ miniflux_postgres_password }}@{{ homelab_local_ip }}/miniflux?sslmode=disable"
+      DATABASE_URL: "postgres://miniflux:{{ miniflux_postgres_password }}@{{ ansible_default_ipv4.address }}/miniflux?sslmode=disable"
       RUN_MIGRATIONS: 1
       CREATE_ADMIN: 1
       ADMIN_USERNAME: admin

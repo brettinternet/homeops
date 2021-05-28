@@ -1,9 +1,6 @@
 ---
 container_recreate: false
 
-network_bind_addr: 0.0.0.0
-homelab_local_ip: 0.0.0.0
-
 # Prometheus
 prometheus_storage_retention_time: "60d"
 # Maximum number of bytes that can be stored for blocks. Units
