@@ -25,9 +25,9 @@ http:
       git:
         loadBalancer:
           servers:
-            - url: "http://{{ homelab_local_ip }}:3004"
+            - url: "http://{{ service_ip }}:3004"
 
       {# git_ssh:
         loadBalancer:
           servers:
-            - url: "http://{{ homelab_local_ip }}:2223" #}
+            - url: "http://{{ service_ip }}:2223" #}

@@ -4,7 +4,7 @@ http:
     oauth:
       # https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
       forwardAuth:
-        address: "http://{{ homelab_local_ip }}:4181"
+        address: "http://{{ ingress_local_ip }}:4181"
         trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User

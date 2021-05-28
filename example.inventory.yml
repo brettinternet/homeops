@@ -15,7 +15,7 @@ all:
 
     ### Containers ###
 
-    # Folder and container ownership
+    # Folder and container ownership, you may also define these per host
     puid: 1000
     pgid: 1000
 
@@ -32,26 +32,6 @@ all:
     cloudflare_api_key:
     # Your root domain name with TLD (e.g. example.com)
     root_domain:
-
-    # Provide a directory for storing service configuration locally
-    # within container volumes; subdirectories are created by each service
-    # eg. /mnt/tank/appdata
-    appdata_dir:
-
-    # Provide a directory for storage and local media in container volumes
-    # Subdirectories can be created to separate tv, movies, nzbget, etc
-    # eg. /mnt/storage
-    storage_dir:
-
-    # Bind public facing ports to a specific address
-    # for routing traffic through VPN. This is because
-    # I route services to through WireGuard via Traefik
-    # instead of all host traffic.
-    # https://docs.docker.com/compose/compose-file/#ports
-    # https://github.com/containous/traefik/issues/5059
-    # default: 0.0.0.0
-    network_bind_addr:
-    homelab_local_ip:
 
     # Sets the basic authentication to this frontend in CSV format: User:Hash,User:Hash
     # http://www.htaccesstools.com/htpasswd-generator/
@@ -100,10 +80,10 @@ all:
     valheim_server_password:
 
   children:
-    server:
+    homelab:
       hosts:
-        # Define homelab hostname and vars
-        myhost:
+        # Define homelab hostname and vars (mine are separate into two hosts)
+        media:
           # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
           ansible_host: # use `ansible_connection: local` for local
           ansible_user:
@@ -116,6 +96,32 @@ all:
 
           # Server host
           upgrade_zfs: false
+
+          # Provide a directory for storage and local media in container volumes
+          # Subdirectories can be created to separate tv, movies, nzbget, etc
+          # eg. /mnt/storage
+          storage_dir:
+          # Provide a directory for storing service configuration locally
+          # within container volumes; subdirectories are created by each service
+          appdata_dir: "{{ storage_dir }}/appdata"
+
+        server:
+          # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
+          ansible_host: # use `ansible_connection: local` for local
+          ansible_user:
+
+          # Config
+          ssh_keys_url: https://github.com/<username>.keys # gitlab works, too
+          # include or exclude in same order as https://github.com/settings/keys
+          # e.g. exclude all but the first line (1!d) or delete specific lines
+          ssh_keys_sed_arg: 1d;3d;5d
+
+          # Server host
+          upgrade_zfs: false
+
+          # eg. /mnt/tank
+          storage_dir:
+          appdata_dir: "{{ storage_dir }}/appdata"
 
           # Snapraid
           snapraid_healthchecks_url:
@@ -140,7 +146,7 @@ all:
               metrics_path: /metrics
               static_configs:
                 - targets:
-                    - "{{ homelab_local_ip }}:9180"
+                    - "{{ ansible_default_ipv4.address }}:9180"
             - job_name: alertmanager
               file_sd_configs:
                 - files:
@@ -153,17 +159,17 @@ all:
             node:
               # Add node exporter targets here
               - targets:
-                  - "{{ homelab_local_ip }}:9100"
+                  - "{{ ansible_default_ipv4.address }}:9100"
                 labels:
                   env: node
             alertmanager:
               - targets:
-                  - "{{ homelab_local_ip }}:9093"
+                  - "{{ ansible_default_ipv4.address }}:9093"
                 labels:
                   env: home
             grafana:
               - targets:
-                  - "{{ homelab_local_ip }}:3002"
+                  - "{{ ansible_default_ipv4.address }}:3002"
                 labels:
                   env: home
 
