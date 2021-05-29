@@ -1,8 +1,8 @@
 ---
-# First, setup mergerfs and correct fstab mounts
-
-- name: Setup media server
-  hosts: media
+- name: Setup homelab servers
+  hosts:
+    - media
+    - server
   tags: setup
   pre_tasks:
     ### Official ###
@@ -70,9 +70,7 @@
           - packagekit
           - podman
           - renameutils
-          - transmission-cli
           - udisks2
-        state: present
   roles:
     ### AUR ###
     - role: yay
@@ -84,17 +82,39 @@
           - powerpill
           - python-fangfrisch
           - vim-plug
-          # Server
-          - mergerfs
           - needrestart
-          - snapraid
         yay_state: present
-        yay_extra_args:
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
     - upgrade
     - sudoers
     - ssh_setup
+    # - prometheus
+    - cockpit
+
+# BEFORE: some manual setup with mergerfs and fstab mounts is required
+- name: Setup media server
+  hosts: media
+  tags: setup
+  pre_tasks:
+    ### Official ###
+    - name: Install packages (pacman)
+      become: true
+      tags: update
+      ansible.builtin.package:
+        name:
+          - transmission-cli
+        state: present
+  roles:
+    ### AUR ###
+    - role: yay
+      tags: update
+      vars:
+        yay_packages:
+          - mergerfs
+          - snapraid
+        yay_state: present
+        yay_extra_args:
     - role: snapraid
       vars:
         # TODO: add email values for snapraid-runner.conf.j2
@@ -130,8 +150,6 @@
           - .TemporaryItems
           - .Trashes
           - .AppleDB
-    # - prometheus
-    - cockpit
 
 - name: Setup general server
   hosts: server
@@ -143,69 +161,7 @@
       tags: update
       ansible.builtin.package:
         name:
-          # Setup
-          - base
-          - dhcpcd
-          - dosfstools
-          - efibootmgr
-          - git
-          - grub
-          - vim
-          - linux
-          - linux-headers
-          - linux-firmware
-          - mtools
-          - nano
-          - os-prober
-          # Base
-          - broot
-          - clamav
-          - curl
-          - etckeeper
-          - fd
-          - firejail
-          - fzy
-          - htop
-          - hwinfo
-          - intel-ucode
-          - man-db
-          - mesa
-          - neofetch
-          - networkmanager
-          - net-tools
-          - openssh
-          - pacmatic
-          - powertop
-          - reflector
-          - rsync
-          - smartmontools
-          - speedtest-cli
-          - the_silver_searcher
-          - tmux
-          - trash-cli
-          - ttf-liberation
-          - unzip
-          - usbguard
-          - usbutils
-          - vifm
-          - zsh
-          - wget
-          - w3m
-          # Server
-          - cockpit
-          - cockpit-machines
-          - cockpit-pcp
-          - cockpit-podman
-          - cronie
-          - crun # https://github.com/containers/podman/issues/8687
-          - inetutils
           - libvirt # Also includes qemu-headless
-          - packagekit
-          - podman
-          - renameutils
-          - terraform
-          - transmission-cli
-          - udisks2
         state: present
 
     # Ignore zfs-dkms and zfs-utils AUR packages and upgrade them explicitly
@@ -224,14 +180,6 @@
       tags: update
       vars:
         yay_packages:
-          # Base
-          - downgrade
-          - powerpill
-          - python-fangfrisch
-          - tzupdate
-          - vim-plug
-          # Server
-          - needrestart
           - cockpit-zfs-manager
         yay_state: present
         yay_extra_args:
@@ -245,13 +193,6 @@
         yay_state: latest
         yay_extra_args: --batchinstall --answerclean All --nodeps
       when: upgrade_zfs
-    # If upgrades fail, it's likely the server requires manual intervention to
-    # upgrade `linux` kernel with `zfs-linux`
-    - upgrade
-    - sudoers
-    - ssh_setup
-    # - prometheus
-    - cockpit
 
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
