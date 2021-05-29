@@ -4,7 +4,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
 
-I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with ZFS volumes, behind a Traefik ingress and OAuth, with Ansible deployment to an Arch Linux server, on a WireGuard network. 🏅
+I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with a ZFS array, behind a Traefik ingress and OAuth, with Ansible deployment to multiple Arch Linux hosts, on a WireGuard network. 🏅
 
 This infrastructure as code is written for me because I'm forgetful. But perhaps it'll help you develop your own server architecture.
 
@@ -30,7 +30,7 @@ See [Working with playbooks](https://docs.ansible.com/ansible/latest/user_guide/
 
 Provision and setup a bastion server with a Digital Ocean Droplet. The setup creates a WireGuard server on the remote host and creates a client configuration on the home server. DNAT and SNAT traffic to and from the home server is routed through the bastion node with iptables.
 
-#### Server setup and upgrade
+#### Hosts setup and upgrade
 
 - Upgrade pacman and apt cache, packages and the apt distribution.
 - Deploy rootless containers in an orchestration behind Traefik's reverse proxy.
@@ -44,9 +44,11 @@ Rootless podman support for container images and deployment within [an ansible r
 
 ![book cover: Mommy, Why is There a Server is the House?](./files/stay_at_home_server.jpg)
 
-### Builds
+### Homelab
 
-#### Current
+- PowerEdge R430
+- Synology RS2414+
+- [custom NAS build](https://pcpartpicker.com/list/PKJqfP)
 
 | Type             | Item                                                                                                                                                             |
 | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -59,9 +61,7 @@ Rootless podman support for container images and deployment within [an ansible r
 
 <!-- | **Storage**      | [Hitachi Deskstar NAS 3 TB 3.5" 7200RPM Internal Hard Drive](https://pcpartpicker.com/product/TP2kcf/hitachi-internal-hard-drive-0s03660)                        | -->
 
-[PCPartPicker](https://pcpartpicker.com/list/PKJqfP)
-
-#### Other
+### Resources
 
 - [DataHoarder Wiki: Hardware](https://www.reddit.com/r/DataHoarder/wiki/hardware)
 - [2020 DIY NAS](https://blog.briancmoses.com/2020/11/diy-nas-2020-edition.html)
