@@ -18,8 +18,8 @@
       CF_API_EMAIL: "{{ cloudflare_email }}"
       CF_API_KEY: "{{ cloudflare_api_key }}"
     volumes:
-      - "{{ appdata_dir }}/traefik:/etc/traefik:rw"
-      - "{{ storage_dir }}/logs/traefik:/var/log/traefik"
+      - "{{ appdata_dir }}/traefik/config:/etc/traefik:rw"
+      - "{{ appdata_dir }}/traefik/logs:/var/log/traefik"
     ports:
       # Rootless containers don't support ports below 1024
       # https://podman.io/getting-started/network#publishing-ports
