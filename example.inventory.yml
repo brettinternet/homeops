@@ -94,9 +94,6 @@ all:
           # e.g. exclude all but the first line (1!d) or delete specific lines
           ssh_keys_sed_arg: 1d;3d;5d
 
-          # Server host
-          upgrade_zfs: false
-
           # Provide a directory for storage and local media in container volumes
           # Subdirectories can be created to separate tv, movies, nzbget, etc
           # eg. /mnt/storage
