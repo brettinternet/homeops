@@ -1,12 +1,12 @@
 ---
 # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#intro-inventory
 
+# Consider encrypting this file with ansible-vault
+# Docs: https://docs.ansible.com/ansible/latest/user_guide/vault.html
+# Encrypt: `ansible-vault encrypt inventory.yml`
+
 all:
   vars:
-    # Consider encrypting this file with ansible-vault
-    # Docs: https://docs.ansible.com/ansible/latest/user_guide/vault.html
-    # Encrypt: `ansible-vault encrypt inventory.yml`
-
     ### Terraform ###
 
     # Digital Ocean token for provisioning the bastion server
