@@ -1,7 +1,139 @@
 ---
 # First, setup mergerfs and correct fstab mounts
 
-- name: "Setup server"
+- name: Setup media server
+  hosts: media
+  tags: setup
+  pre_tasks:
+    ### Official ###
+    - name: Install packages (pacman)
+      become: true
+      tags: update
+      ansible.builtin.package:
+        name:
+          # Setup
+          - base
+          - dhcpcd
+          - dosfstools
+          - efibootmgr
+          - git
+          - grub
+          - vim
+          - linux
+          - linux-headers
+          - linux-firmware
+          - mtools
+          - nano
+          - os-prober
+          # Base
+          - broot
+          - clamav
+          - curl
+          - etckeeper
+          - fd
+          - firejail
+          - fzy
+          - htop
+          - hwinfo
+          - intel-ucode
+          - man-db
+          - mesa
+          - neofetch
+          - networkmanager
+          - net-tools
+          - openssh
+          - pacmatic
+          - powertop
+          - reflector
+          - rsync
+          - smartmontools
+          - speedtest-cli
+          - the_silver_searcher
+          - tmux
+          - trash-cli
+          - ttf-liberation
+          - unzip
+          - usbguard
+          - usbutils
+          - vifm
+          - zsh
+          - wget
+          - w3m
+          # Server
+          - cockpit
+          - cockpit-machines
+          - cockpit-pcp
+          - cockpit-podman
+          - cronie
+          - crun # https://github.com/containers/podman/issues/8687
+          - inetutils
+          - packagekit
+          - podman
+          - renameutils
+          - transmission-cli
+          - udisks2
+        state: present
+  roles:
+    ### AUR ###
+    - role: yay
+      tags: update
+      vars:
+        yay_packages:
+          # Base
+          - downgrade
+          - powerpill
+          - python-fangfrisch
+          - vim-plug
+          # Server
+          - mergerfs
+          - needrestart
+          - snapraid
+        yay_state: present
+        yay_extra_args:
+    # If upgrades fail, it's likely the server requires manual intervention to
+    # upgrade `linux` kernel with `zfs-linux`
+    - upgrade
+    - sudoers
+    - ssh_setup
+    - role: snapraid
+      vars:
+        # TODO: add email values for snapraid-runner.conf.j2
+        parity_disks:
+          - path: /mnt/parity1
+            content: false
+        data_disks:
+          - path: /mnt/disk1
+            content: true
+          - path: /mnt/disk2
+            content: true
+          - path: /mnt/disk3
+            content: false
+          - path: /mnt/disk4
+            content: false
+          - path: /mnt/disk5
+            content: false
+        snapraid_config_excludes:
+          - "*.unrecoverable"
+          - /tmp/
+          - /lost+found/
+          - downloads/
+          - appdata/
+          - snapshots/
+          - "*.!sync"
+          - .AppleDouble
+          - ._AppleDouble
+          - .DS_Store
+          - ._.DS_Store
+          - .Thumbs.db
+          - .fseventsd
+          - .Spotlight-V100
+          - .TemporaryItems
+          - .Trashes
+          - .AppleDB
+    # - prometheus
+    - cockpit
+
+- name: Setup general server
   hosts: server
   tags: setup
   pre_tasks:
@@ -99,9 +231,7 @@
           - tzupdate
           - vim-plug
           # Server
-          - mergerfs
           - needrestart
-          - snapraid
           - cockpit-zfs-manager
         yay_state: present
         yay_extra_args:
@@ -120,42 +250,7 @@
     - upgrade
     - sudoers
     - ssh_setup
-    - role: snapraid
-      vars:
-        # TODO: add email values for snapraid-runner.conf.j2
-        parity_disks:
-          - path: /mnt/parity1
-            content: false
-        data_disks:
-          - path: /mnt/disk1
-            content: true
-          - path: /mnt/disk2
-            content: true
-          - path: /mnt/disk3
-            content: false
-          - path: /mnt/disk4
-            content: false
-          - path: /mnt/disk5
-            content: false
-        snapraid_config_excludes:
-          - "*.unrecoverable"
-          - /tmp/
-          - /lost+found/
-          - downloads/
-          - appdata/
-          - snapshots/
-          - "*.!sync"
-          - .AppleDouble
-          - ._AppleDouble
-          - .DS_Store
-          - ._.DS_Store
-          - .Thumbs.db
-          - .fseventsd
-          - .Spotlight-V100
-          - .TemporaryItems
-          - .Trashes
-          - .AppleDB
-    - prometheus
+    # - prometheus
     - cockpit
 
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
@@ -283,7 +378,7 @@
   roles:
     - role: traefik
       tags: traefik
-      when: "'traefik' in containers"
+      when: "'traefik' in containers"e
     - role: compose
       tags:
         - containers
