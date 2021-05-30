@@ -15,7 +15,7 @@
       POSTGRES_PASSWORD: "{{ miniflux_postgres_password }}"
     userns: keep-id
     volume:
-      - "{{ storage_dir }}/data/miniflux_db:/var/lib/postgresql/data"
+      - "{{ appdata_dir }}/miniflux_db:/var/lib/postgresql/data"
     ports:
       - 5432:5432
     label:
