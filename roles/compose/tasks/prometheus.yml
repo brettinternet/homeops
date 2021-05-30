@@ -12,8 +12,8 @@
     env:
       TZ: "{{ tz }}"
     volumes:
-      - "{{ storage_dir }}/data/prometheus/config:/etc/prometheus"
-      - "{{ storage_dir }}/data/prometheus/data:/prometheus"
+      - "{{ appdata_dir }}/prometheus/config:/etc/prometheus"
+      - "{{ appdata_dir }}/prometheus/data:/prometheus"
     ports:
       - 9091:9090
     # For additional args that don't fit in the config
