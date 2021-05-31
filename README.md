@@ -68,6 +68,12 @@ Rootless podman support for container images and deployment within [an ansible r
 - [2020 Economy DIY NAS](https://blog.briancmoses.com/2020/12/diy-nas-econonas-2020.html)
 - [Home server case recommendations](https://perfectmediaserver.com/hardware/cases/)
 
+### Memory
+
+- [Why use ECC](https://danluu.com/why-ecc/) ([discussion](https://news.ycombinator.com/item?id=14206635))
+- > [If you love your data, use ECC RAM.](https://arstechnica.com/civis/viewtopic.php?f=2&t=1235679&p=26303271#p26303271)
+- > [Error rates increase rapidly with rising altitude.](https://en.wikipedia.org/wiki/ECC_memory#Description)
+
 ### Storage
 
 #### Controller
