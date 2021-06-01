@@ -119,6 +119,8 @@
         parity_disks:
           - path: /mnt/parity1
             content: false
+          - path: /mnt/parity2
+            content: false
         data_disks:
           - path: /mnt/disk1
             content: true
