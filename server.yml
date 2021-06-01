@@ -38,6 +38,7 @@
           - intel-ucode
           - man-db
           - mesa
+          - ncdu
           - neofetch
           - networkmanager
           - net-tools
