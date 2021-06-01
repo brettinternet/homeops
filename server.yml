@@ -42,7 +42,6 @@
           - networkmanager
           - net-tools
           - openssh
-          - pacmatic
           - powertop
           - reflector
           - rsync
@@ -79,7 +78,6 @@
         yay_packages:
           # Base
           - downgrade
-          - powerpill
           - python-fangfrisch
           - vim-plug
           - needrestart
@@ -319,7 +317,7 @@
   roles:
     - role: traefik
       tags: traefik
-      when: "'traefik' in containers"e
+      when: "'traefik' in containers"
     - role: compose
       tags:
         - containers
