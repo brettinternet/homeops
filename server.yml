@@ -230,6 +230,7 @@
       - radarr
       - lazylibrarian
       - calibre-web
+    container_state: created
   roles:
     - role: compose
       tags:
@@ -273,6 +274,7 @@
     container_state: created
     # container_recreate: true
 
+    # Traefik middleware
     ingress_local_ip: "{{ hostvars['server']['ansible_host'] }}"
 
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
