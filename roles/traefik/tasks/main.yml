@@ -20,7 +20,7 @@
 - name: Add Traefik routes and services
   ansible.builtin.template:
     src: "{{ item['name'] | lower }}.yml.j2"
-    dest: "{{ appdata_dir }}/traefik/{{ item['name'] | lower }}.yml"
+    dest: "{{ appdata_dir }}/traefik/config/{{ item['name'] | lower }}.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
   vars:
