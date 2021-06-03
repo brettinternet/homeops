@@ -18,7 +18,8 @@
       - "{{ appdata_dir }}/adguard/data:/opt/adguardhome/work"
       - "{{ appdata_dir }}/adguard/conf:/opt/adguardhome/conf"
     ports:
-      - "4053:53"
+      - "4053:53/tcp"
+      - "4053:53/udp"
       - "3003:80"
       # DNS-over-HTTPS https://github.com/AdguardTeam/Adguardhome/wiki/Encryption
       # - 8443:443
