@@ -154,7 +154,7 @@ Then, [regenerate the image](https://wiki.archlinux.org/index.php/Mkinitcpio#Ima
 
 #### ZFS
 
-Install `zfs-dkms-git` and `zfs-utils-git`, and be sure to have `linux-headers` installed for dkms to work.
+Install `zfs-dkms` and `zfs-utils`, and be sure to have `linux-headers` installed for dkms to work.
 
 #### OS Installation
 
