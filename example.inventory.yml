@@ -74,6 +74,9 @@ all:
     valheim_server_name:
     valheim_server_password:
 
+    epicgames_email:
+    epicgames_password:
+
   children:
     homelab:
       hosts:
