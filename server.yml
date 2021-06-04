@@ -259,6 +259,7 @@
       - firefly_db
       - firefly
       - healthchecks
+      - epicgames
       # - valheim
       # - syncthing
       # - prometheus
