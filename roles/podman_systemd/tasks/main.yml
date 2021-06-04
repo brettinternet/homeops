@@ -18,6 +18,15 @@
     - podman_systemd_action is not defined
     - container_state in ['absent', 'stopped']
 
+- block:
+    - name: Disable podman auto update timer
+      ansible.builtin.systemd:
+        name: podman-auto-update.timer
+        scope: user
+        state: stopped
+        enabled: false
+  when: podman_systemd_action == 'remove'
+
 - name: "Running {{ podman_systemd_action }} on containers"
   include_tasks: "{{ podman_systemd_action | lower }}.yml"
   vars:

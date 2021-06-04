@@ -232,14 +232,13 @@
       - calibre-web
     container_state: created
   roles:
-    - role: compose
-      tags:
-        - containers
-        - compose
     - role: podman_systemd
-      tags:
-        - compose
-        - podman_systemd
+      vars:
+        podman_systemd_action: remove
+    - role: compose
+    - role: podman_systemd
+      vars:
+        podman_systemd_action: generate
 
 - name: Setup general services
   hosts: server
@@ -320,17 +319,16 @@
     # or else systemd will use stale start commands
     # podman_systemd_force_regenerate: true
   roles:
+    - role: podman_systemd
+      vars:
+        podman_systemd_action: remove
     - role: traefik
       tags: traefik
       when: "'traefik' in containers"
     - role: compose
-      tags:
-        - containers
-        - compose
     - role: podman_systemd
-      tags:
-        - compose
-        - podman_systemd
+      vars:
+        podman_systemd_action: generate
 
 - name: Setup host routing
   hosts: server
@@ -342,8 +340,6 @@
       vars:
         # ingress__iptables_flush: true
         # ingress__enable_forwarding: false
-      tags:
-        - compose
 #
 # TODO: I'd really like to use `scrutiny` but it requires sudo?
 # podman run --name=scrutiny --cap-add=SYS_RAWIO --cap-add=SYS_ADMIN -e PUID=65534 -e PGID=65534 -e SCRUTINY_WEB=true -e SCRUTINY_COLLECTOR=true -p 8084:8080 -v /run/udev:/run/udev:ro --device /dev/sde:/dev/sde --user root:root --rm ghcr.io/linuxserver/scrutiny
