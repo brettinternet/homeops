@@ -7,15 +7,9 @@
     scope: user
     enabled: false
     state: stopped
+  failed_when: false
 
 - name: "Remove {{ container_name }} systemd unit file"
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/{{ container_name }}.service"
     state: absent
-
-- name: Disable podman auto update timer
-  ansible.builtin.systemd:
-    name: podman-auto-update.timer
-    scope: user
-    state: stopped
-    enabled: false
