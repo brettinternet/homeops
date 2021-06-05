@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    n8n:
+      rule: "Host(`automate.{{ root_domain }}`)"
+      service: n8n
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      n8n:
+        loadBalancer:
+          servers:
+            - url: "http://{{ service_ip }}:5678"
