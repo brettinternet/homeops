@@ -4,7 +4,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
 
-I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with a ZFS array, behind a Traefik ingress and OAuth, with Ansible deployment to multiple Arch Linux hosts, on a WireGuard network. 🏅
+I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with a ZFS array and SnapRAID JBOD, behind an OPNsense firewall and a Traefik ingress with OAuth, deployed with Ansible to multiple Arch Linux hosts, on a WireGuard network. 🏅
 
 This infrastructure as code is written for me because I'm forgetful. But perhaps it'll help you develop your own server architecture.
 
