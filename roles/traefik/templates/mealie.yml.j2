@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    mealie:
+      rule: "Host(`recipes.{{ root_domain }}`)"
+      service: mealie
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      mealie:
+        loadBalancer:
+          servers:
+            - url: "http://{{ service_ip }}:9925"
