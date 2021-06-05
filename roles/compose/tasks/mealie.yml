@@ -1,0 +1,21 @@
+---
+# https://hay-kot.github.io/mealie/getting-started/install/
+
+- name: mealie
+  containers.podman.podman_container:
+    name: mealie
+    # https://hub.docker.com/r/hkotel/mealie
+    image: docker.io/hkotel/mealie
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      TZ: "{{ tz }}"
+      DB_TYPE: sqlite
+      TOKEN_TIME: 720 # 24 hours * 30 days
+      API_DOCS: true
+    volumes:
+      - "{{ appdata_dir }}/mealie:/app/data"
+    ports:
+      - 9925:80
+    label:
+      io.containers.autoupdate: image
