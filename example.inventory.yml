@@ -64,6 +64,10 @@ all:
     healthchecks_password:
     healthchecks_secret_key:
 
+    n8n_basic_auth_user:
+    n8n_basic_auth_password:
+    n8n_postgres_password:
+
     # For healthchecks,
     smtp_email_from:
     smtp_host: smtp.gmail.com
@@ -100,6 +104,10 @@ all:
           # within container volumes; subdirectories are created by each service
           appdata_dir: "{{ storage_dir }}/appdata"
 
+          scrutiny_collector_devices:
+            # - "/dev/sda:/dev/xvda:rwm"
+            # - /dev/sda
+
         server:
           # https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html#connecting-to-hosts-behavioral-inventory-parameters
           ansible_host: # use `ansible_connection: local` for local
@@ -120,6 +128,9 @@ all:
 
           # Snapraid
           snapraid_healthchecks_url:
+
+          scrutiny_collector_devices:
+            # - /dev/sda
 
           # Prometheus
           prometheus_install_node_exporter: true

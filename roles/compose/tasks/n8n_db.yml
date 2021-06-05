@@ -1,0 +1,19 @@
+---
+- name: n8n DB
+  containers.podman.podman_container:
+    name: n8n_db
+    # https://hub.docker.com/_/postgres
+    image: docker.io/postgres:10.10
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      TZ: "{{ tz }}"
+      POSTGRES_DB: n8n
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: "{{ n8n_postgres_password }}"
+    volume:
+      - "{{ appdata_dir }}/n8n_db:/var/lib/postgresql/data"
+    ports:
+      - 5435:5432
+    label:
+      io.containers.autoupdate: image
