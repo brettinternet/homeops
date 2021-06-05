@@ -1,0 +1,15 @@
+---
+# https://github.com/AnalogJ/scrutiny
+# See `compose/tasks/scrutiny_collector.yml` for backend
+
+- name: Scrutiny web
+  containers.podman.podman_container:
+    name: scrutiny_web
+    # https://hub.docker.com/r/analogj/scrutiny
+    image: docker.io/analogj/scrutiny:web
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    ports:
+      - 8084:8080
+    label:
+      io.containers.autoupdate: image
