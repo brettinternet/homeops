@@ -20,6 +20,8 @@
       SMTP_SECURE: true
       SMTP_USERNAME: "{{ smtp_user }}"
       SMTP_PASSWORD: "{{ smtp_password }}"
+      BASE_URL: "http://{{ ansible_default_ipv4.address }}:3007"
+      RUN_ON_STARTUP: false
     volumes:
       - "{{ appdata_dir }}/epicgames:/usr/app/config"
     ports:
