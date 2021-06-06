@@ -6,12 +6,18 @@
 
 # Ideas:
 # =====
+# https://www.reddit.com/r/homelab/comments/ntqtts/after_one_week_of_work_i_am_finally_happy_with_my/
+# https://github.com/Mbarmem/Grafana.Dashboard
+
 # Data:
 # https://github.com/Roadeo/qbittorrent-peers-location-grafana
-#
+
 # Air quality:
 # https://github.com/bastienwirtz/aqi_watcher, https://www.reddit.com/r/selfhosted/comments/irpoj2/air_quality_dashboard/
 # https://igor.moomers.org/minimal-viable-air-quality
+
+# Adguard
+# https://github.com/ebrianne/adguard-exporter
 
 # Create grafana volume directory and subdirectories, then run `podman unshare chown -R 1000:1000 grafana`
 - name: grafana
