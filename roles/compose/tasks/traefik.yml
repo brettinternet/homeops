@@ -6,9 +6,14 @@
 # ISSUE: https://github.com/traefik/traefik/issues/6117
 # Traefik doesn't seem to notice when services go down
 
+# TODO: add jaeger tracing https://doc.traefik.io/traefik/observability/tracing/jaeger/
+# https://www.jaegertracing.io/docs/1.22/getting-started/
+# https://www.openshift.com/blog/openshift-commons-briefing-82-distributed-tracing-with-jaeger-prometheus-on-kubernetes
+
 - name: traefik
   containers.podman.podman_container:
     name: traefik
+    # https://hub.docker.com/_/traefik
     image: docker.io/library/traefik
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
