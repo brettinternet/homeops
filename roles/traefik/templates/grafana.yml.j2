@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    grafana:
+      rule: "Host(`grafana.{{ root_domain }}`)"
+      service: grafana
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      grafana:
+        loadBalancer:
+          servers:
+            - url: "http://{{ service_ip }}:3008"
