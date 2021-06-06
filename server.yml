@@ -267,7 +267,7 @@
       # - scrutiny_collector
       # - valheim
       # - syncthing
-      # - prometheus
+      - prometheus
       - grafana
       - oauth
       - traefik
@@ -317,8 +317,8 @@
         host: server
       # - name: syncthing
       #   host: server
-      # - name: prometheus
-      #   host: server
+      - name: prometheus
+        host: server
       - name: grafana
         host: server
       - name: oauth
