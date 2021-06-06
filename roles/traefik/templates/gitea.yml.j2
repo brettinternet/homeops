@@ -13,21 +13,8 @@ http:
       middlewares:
         - secure-headers
 
-    {# git_ssh:
-      entryPoints:
-        - ssh
-      rule: "Host(`git.{{ root_domain }}`)"
-      service: git_ssh
-      tls:
-        certResolver: http #}
-
   services:
       git:
         loadBalancer:
           servers:
             - url: "http://{{ service_ip }}:3004"
-
-      {# git_ssh:
-        loadBalancer:
-          servers:
-            - url: "http://{{ service_ip }}:2223" #}
