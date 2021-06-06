@@ -33,6 +33,15 @@ all:
     # Your root domain name with TLD (e.g. example.com)
     root_domain:
 
+    # List of strings with basic auth user and password hash (User:Hash)
+    # Use `htpasswd` from the `apache` package to generate a password hash
+    # https://doc.traefik.io/traefik/middlewares/basicauth/
+    # BasicAuth is used for Prometheus (ideally use one user for Prometheus node exporters,
+    # and another for web users)
+    basic_auth_users:
+      - "admin:<htpasswd hash>" # `htpasswd -nB admin` (then enter password in prompt)
+      - "node:<htpasswd hash>"
+
     ### Apps ###
 
     # Google OAuth - https://console.developers.google.com
