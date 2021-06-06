@@ -68,6 +68,8 @@ all:
     n8n_basic_auth_password:
     n8n_postgres_password:
 
+    grafana_admin_password:
+
     # For healthchecks,
     smtp_email_from:
     smtp_host: smtp.gmail.com

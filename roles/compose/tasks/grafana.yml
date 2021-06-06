@@ -1,10 +1,40 @@
 ---
 # WIP
 
+# https://grafana.com/docs/grafana/latest/installation/docker/
+# https://grafana.com/docs/grafana/latest/administration/configure-docker/
+
 # Ideas:
+# =====
 # Data:
 # https://github.com/Roadeo/qbittorrent-peers-location-grafana
 #
 # Air quality:
 # https://github.com/bastienwirtz/aqi_watcher, https://www.reddit.com/r/selfhosted/comments/irpoj2/air_quality_dashboard/
 # https://igor.moomers.org/minimal-viable-air-quality
+
+# Create grafana volume directory and subdirectories, then run `podman unshare chown -R 1000:1000 grafana`
+- name: grafana
+  containers.podman.podman_container:
+    name: grafana
+    # https://hub.docker.com/r/grafana/grafana
+    image: docker.io/grafana/grafana
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      TZ: "{{ tz }}"
+      # https://grafana.com/docs/grafana/latest/administration/configuration/ (`GF_<SectionName>_<KeyName>`)
+      GF_ANALYTICS_REPORTING_ENABLED: false
+      GF_SECURITY_ADMIN_PASSWORD: "{{ grafana_admin_password }}"
+      GF_SMTP_ENABLED: true
+      GF_SMTP_HOST: "{{ smtp_host }}:{{ smtp_port }}"
+      GF_SMTP_USER: "{{ smtp_user }}"
+      GF_SMTP_PASSWORD: "{{ smtp_password }}"
+      GF_SMTP_FROM_ADDRESS: "{{ smtp_email_from }}"
+    volumes:
+      - "{{ appdata_dir }}/grafana:/var/lib/grafana"
+    user: "{{ puid }}:{{ pgid }}"
+    ports:
+      - 3008:3000
+    label:
+      io.containers.autoupdate: image
