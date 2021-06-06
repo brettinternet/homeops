@@ -9,7 +9,7 @@
 - name: Add Traefik middleware
   ansible.builtin.template:
     src: middleware.yml.j2
-    dest: "{{ appdata_dir }}/traefik/middleware.yml"
+    dest: "{{ appdata_dir }}/traefik/config/middleware.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
 
