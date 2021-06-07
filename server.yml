@@ -214,6 +214,7 @@
 
 # TODO: backup with rsync
 # https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html
+# https://wiki.archlinux.org/title/Synchronization_and_backup_programs
 
 # TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
 
