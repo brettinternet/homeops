@@ -299,6 +299,8 @@
         host: media
       - name: radarr
         host: media
+      - name: calibre-web
+        host: media
       # server (needs a better name...)
       - name: adguard
         host: server
