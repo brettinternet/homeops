@@ -1,6 +1,9 @@
 ---
 # https://github.com/linuxserver/docker-nzbget
 
+# provider map: https://upload.wikimedia.org/wikipedia/commons/7/7d/Usenet_Providers_and_Backbones.svg
+# provider wiki: https://www.reddit.com/r/usenet/wiki/providers#wiki_provider_map
+
 - name: nzbget
   containers.podman.podman_container:
     name: nzbget
