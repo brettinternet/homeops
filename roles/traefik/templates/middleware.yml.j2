@@ -15,6 +15,11 @@ http:
         users: {{ basic_auth_users }}
         removeHeader: true
 
+    basic-auth-prometheus:
+      basicAuth:
+        users: {{ basic_auth_users | list + basic_auth_users_prometheus | list }}
+        removeHeader: true
+
     secure-headers:
       # https://doc.traefik.io/traefik/v2.0/middlewares/headers/
       # https://developers.google.com/search/reference/robots_meta_tag

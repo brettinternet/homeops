@@ -36,11 +36,11 @@ all:
     # List of strings with basic auth user and password hash (User:Hash)
     # Use `htpasswd` from the `apache` package to generate a password hash
     # https://doc.traefik.io/traefik/middlewares/basicauth/
-    # BasicAuth is used for Prometheus (ideally use one user for Prometheus node exporters,
-    # and another for web users)
+    # BasicAuth is used for Prometheus, Calibre content server
     basic_auth_users:
-      - "admin:<htpasswd hash>" # `htpasswd -nB admin` (then enter password in prompt)
-      - "node:<htpasswd hash>"
+      - "<user>:<htpasswd hash>" # `htpasswd -nB admin` (then enter password in prompt)
+    basic_auth_users_prometheus:
+      - "<user>:<htpasswd hash>"
 
     ### Apps ###
 
