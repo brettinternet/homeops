@@ -230,6 +230,7 @@
       - sonarr
       - radarr
       - lazylibrarian
+      - calibre
       - calibre-web
     container_state: created
   roles:
@@ -298,6 +299,8 @@
       - name: sonarr
         host: media
       - name: radarr
+        host: media
+      - name: calibre
         host: media
       - name: calibre-web
         host: media

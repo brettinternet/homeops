@@ -24,7 +24,7 @@
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     env:
-      SCRUTINY_API_ENDPOINT: "{{ ingress_local_ip }}:8084"
+      SCRUTINY_API_ENDPOINT: "{{ ingress_local_ip }}:8086"
     privileged: true
     device: "{{ scrutiny_collector_devices }}"
     volumes:

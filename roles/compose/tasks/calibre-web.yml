@@ -2,11 +2,16 @@
 # https://github.com/janeczku/calibre-web
 # https://github.com/linuxserver/docker-calibre-web
 
-# SETUP:
+# Autoadd books to calibre-web requires separate functionality from Calibre
+# https://github.com/DobyTang/LazyLibrarian/issues/1052
+# https://github.com/janeczku/calibre-web/issues/344
+# https://github.com/janeczku/calibre-web/issues/412
+
 # Calibre web needs a calibre database `metadata.db` which you can get from a local calibre installation
 # or you can seed the calibre-web volume with one using https://github.com/linuxserver/docker-calibre
 # `podman run -d --name=calibre -e PUID=0 -e PGID=0 -v -p 8080:8080 </path/to/data>/calibre-web:/config ghcr.io/linuxserver/calibre`
 # Then, use the guacamole remote desktop at port 8080 to walk through the initial setup wizard then the database will be created.
+# I've put this Calibre db in calibre-shared to share between calibre and calibre-web
 
 - name: calibre-web
   containers.podman.podman_container:
@@ -22,7 +27,7 @@
       DOCKER_MODS: linuxserver/calibre-web:calibre
     volumes:
       - "{{ appdata_dir }}/calibre-web:/config"
-      - "{{ storage_dir }}/books:/books"
+      - "{{ appdata_dir }}/calibre-shared:/shared"
     ports:
       - 8083:8083
     label:

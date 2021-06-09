@@ -10,6 +10,6 @@
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     ports:
-      - 8084:8080
+      - 8086:8080
     label:
       io.containers.autoupdate: image
