@@ -2,6 +2,11 @@
 # https://calibre-ebook.com/
 # https://github.com/linuxserver/docker-calibre
 
+# https://manual.calibre-ebook.com/server.html
+
+# create dir `calibre-shared` for database to share library between calibre and calibre-web
+# create dir `calibre` and subdirectory `inbox` (configure this directory with Calibre auto-add feature)
+
 - name: calibre
   containers.podman.podman_container:
     name: calibre
@@ -15,8 +20,9 @@
       TZ: "{{ tz }}"
     volumes:
       - "{{ appdata_dir }}/calibre:/config"
+      - "{{ appdata_dir }}/calibre-shared:/shared"
     ports:
-      - 8085:8080
-      - 8086:8081
+      - 8084:8080
+      - 8085:8081
     label:
       io.containers.autoupdate: image
