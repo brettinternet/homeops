@@ -48,7 +48,8 @@
       - "{{ storage_dir }}/music:/data/Music"
       - "{{ storage_dir }}/movies:/data/Movies"
       - "{{ storage_dir }}/tv:/data/TV"
-      - "{{ storage_dir }}/media:/data/Media"
+      - "{{ storage_dir }}/videos:/data/Videos"
+      - "{{ storage_dir }}/audiobooks:/data/Audiobooks"
       - "{{ storage_dir }}/photos:/data/Photos"
       - /var/tmp/transcode:/transcode
     # Quick Sync https://github.com/plexinc/pms-docker#intel-quick-sync-hardware-transcoding-support
