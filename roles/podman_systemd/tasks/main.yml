@@ -47,8 +47,14 @@
         state: started
       loop: "{{ containers }}"
 
+    - name: Create custom podman-auto-update systemd unit file
+      become: true
+      ansible.builtin.template:
+        src: podman-auto-update.service.j2
+        dest: /usr/lib/systemd/user/podman-auto-update.service
+
     # http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
-    - name: Copy custom podman auto update timer
+    - name: Copy custom podman-auto-update timer
       become: true
       ansible.builtin.copy:
         # Edit `OnCalendar` value in timer file

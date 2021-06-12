@@ -72,6 +72,7 @@ all:
     healthchecks_email:
     healthchecks_password:
     healthchecks_secret_key:
+    podman_auto_update_healthchecks_url:
 
     n8n_basic_auth_user:
     n8n_basic_auth_password:
