@@ -6,10 +6,10 @@ After=network-online.target
 
 [Service]
 Type=oneshot
-ExecStartPre=/usr/bin/curl -fsS --retry 3 "{{ podman_auto_update_healthchecks_url }}/start" &> /dev/null
+ExecStartPre=/usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ podman_auto_update_healthchecks_url }}/start"
 ExecStart=/usr/bin/podman auto-update
 ExecStartPost=/usr/bin/podman image prune -f
-ExecStartPost=/usr/bin/curl -fsS --retry 3 "{{ podman_auto_update_healthchecks_url }}" &> /dev/null
+ExecStartPost=/usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ podman_auto_update_healthchecks_url }}"
 
 [Install]
 WantedBy=multi-user.target default.target

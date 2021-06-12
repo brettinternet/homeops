@@ -8,7 +8,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 {% if snapraid_healthchecks_url is defined %}
 
-curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/start" &> /dev/null
+/usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ snapraid_healthchecks_url }}/start"
 {% endif %}
 
 run_as_user() {
@@ -26,5 +26,5 @@ SNAPRAID_RC=$?
 run_as_user "podman unpause -a"
 {% if snapraid_healthchecks_url is defined %}
 
-curl -fsS --retry 3 "{{ snapraid_healthchecks_url }}/$SNAPRAID_RC" &> /dev/null
+/usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ snapraid_healthchecks_url }}/$SNAPRAID_RC"
 {% endif %}
