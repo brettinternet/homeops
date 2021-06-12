@@ -7,6 +7,8 @@
 # create dir `calibre-shared` for database to share library between calibre and calibre-web
 # create dir `calibre` and subdirectory `inbox` (configure this directory with Calibre auto-add feature)
 
+# Issue: In a rootless container, startup doesn't occur until gui connects
+
 - name: calibre
   containers.podman.podman_container:
     name: calibre
