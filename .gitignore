@@ -2,3 +2,4 @@
 terraform.tfstate*
 *.log
 inventory.yml
+.vscode
