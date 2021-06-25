@@ -42,7 +42,35 @@
         to_destination: "{{ ansible_default_ipv4.address }}:4053"
         comment: Redirect DNS to unprivileged port served by Adguard's rootless container
 
+    - name: Get unit file stat for iptables service (/usr/lib)
+      become: true
+      stat:
+        path: /usr/lib/systemd/system/iptables.service
+      register: ingress__iptables_unit_file_bak
+
+    - name: Disable/backup iptables unit file (/usr/lib)
+      become: true
+      shell: mv /usr/lib/systemd/system/iptables.service /usr/lib/systemd/system/iptables.service.bak
+      when: ingress__iptables_unit_file_bak.stat.exists
+
     - name: Persist iptable routing across reboots
       become: true
-      shell: iptables-save > /etc/iptables/rules.v4
+      # https://wiki.archlinux.org/title/Iptables#Configuration_and_usage
+      # rules file should match with ingress/files/iptables.service
+      shell: iptables-save -f /etc/iptables/homelab.rules
+
+    - name: Create
+      become: true
+      ansible.builtin.copy:
+        src: iptables.service
+        dest: /etc/systemd/system/iptables.service
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Enable custom iptables.service
+      become: true
+      ansible.builtin.systemd:
+        name: iptables.service
+        enabled: true
   when: ingress__enable_forwarding
