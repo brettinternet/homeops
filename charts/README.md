@@ -1,4 +1,4 @@
-# Homelab diagrams
+# Charts
 
 ![homelab's architecture diagram](./homelab.png)
 
