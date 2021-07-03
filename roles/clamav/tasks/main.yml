@@ -1,0 +1,18 @@
+---
+# https://wiki.archlinux.org/title/ClamAV
+
+- name: Update virus definitions
+  become: true
+  ansible.builtin.shell: freshclam
+
+- name: Enable clamav daemon
+  become: true
+  ansible.builtin.systemd:
+    name: clamav-daemon
+    enabled: true
+    state: started
+
+- name: Test clamav installation
+  ansible.builtin.shell: curl -s https://secure.eicar.org/eicar.com.txt | clamscan -
+  register: clamav__test_result
+  failed_when: "'stdin: Win.Test.EICAR_HDB-1 FOUND' not in clamav__test_result.stdout"

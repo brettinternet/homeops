@@ -90,6 +90,7 @@
     - ssh_setup
     # - prometheus
     - cockpit
+    - clamav
 
 # BEFORE: some manual setup with mergerfs and fstab mounts is required
 - name: Setup media server
