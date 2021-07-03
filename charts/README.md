@@ -1,7 +1,5 @@
 # Charts
 
-![homelab's architecture diagram](./homelab.png)
-
 ## Develop
 
 [Diagrams](https://github.com/mingrammer/diagrams) allows prototyping architecture diagrams as code.
@@ -17,3 +15,5 @@ Build the diagrams.
 ```sh
 make build
 ```
+
+![homelab's architecture diagram](./homelab.png)
