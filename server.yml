@@ -73,19 +73,19 @@
           - udisks2
   roles:
     ### AUR ###
-    - role: yay
-      tags: update
-      vars:
-        yay_packages:
-          # Base
-          - downgrade
-          - python-fangfrisch
-          - vim-plug
-          - needrestart
-        yay_state: present
+    # - role: yay
+    #   tags: update
+    #   vars:
+    #     yay_packages:
+    #       # Base
+    #       - downgrade
+    #       - python-fangfrisch
+    #       - vim-plug
+    #       - needrestart
+    #     yay_state: present
     # If upgrades fail, it's likely the server requires manual intervention to
     # upgrade `linux` kernel with `zfs-linux`
-    - upgrade
+    # - upgrade
     - sudoers
     - ssh_setup
     # - prometheus
@@ -107,14 +107,14 @@
         state: present
   roles:
     ### AUR ###
-    - role: yay
-      tags: update
-      vars:
-        yay_packages:
-          - mergerfs
-          - snapraid
-        yay_state: present
-        yay_extra_args:
+    # - role: yay
+    #   tags: update
+    #   vars:
+    #     yay_packages:
+    #       - mergerfs
+    #       - snapraid
+    #     yay_state: present
+    #     yay_extra_args:
     - role: snapraid
       vars:
         # TODO: add email values for snapraid-runner.conf.j2
@@ -178,23 +178,23 @@
 
   roles:
     ### AUR ###
-    - role: yay
-      tags: update
-      vars:
-        yay_packages:
-          - cockpit-zfs-manager
-        yay_state: present
-        yay_extra_args:
+    # - role: yay
+    #   tags: update
+    #   vars:
+    #     yay_packages:
+    #       - cockpit-zfs-manager
+    #     yay_state: present
+    #     yay_extra_args:
     # Explicitly upgrade packages that are in IgnorePkg list
-    - role: yay
-      tags: update
-      vars:
-        yay_packages:
-          - zfs-dkms
-          - zfs-utils
-        yay_state: latest
-        yay_extra_args: --batchinstall --answerclean All --nodeps
-      when: upgrade_zfs
+    # - role: yay
+    #   tags: update
+    #   vars:
+    #     yay_packages:
+    #       - zfs-dkms
+    #       - zfs-utils
+    #     yay_state: latest
+    #     yay_extra_args: --batchinstall --answerclean All --nodeps
+    #   when: upgrade_zfs
 
 # TODO: Setup/manage or just check state of ZFS https://wiki.archlinux.org/index.php/ZFS
 # https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
@@ -218,6 +218,10 @@
 # https://wiki.archlinux.org/title/Synchronization_and_backup_programs
 
 # TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
+# TODO: fix prometheus rootless volume permissions https://github.com/MoOyeg/Rootless-Podman-For-Prometheus-Grafana/blob/main/prometheus.sh
+# TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
+# TODO: add grafana https://prometheus.io/docs/visualization/grafana/
+# TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
 
 - name: Setup media services
   hosts: media
@@ -249,29 +253,25 @@
   vars:
     # Containers to use (roles/compose/tasks)
     containers:
-      # TODO: fix prometheus rootless volume permissions https://github.com/MoOyeg/Rootless-Podman-For-Prometheus-Grafana/blob/main/prometheus.sh
-      # TODO: add alertmanager https://hub.docker.com/r/prom/alertmanager
-      # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
-      # TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
       - adguard
       - espial
-      - gitea_db
-      - gitea
+      # - gitea_db
+      # - gitea
       - miniflux_db
       - miniflux
-      - mealie
-      - n8n_db
-      - n8n
-      - firefly_db
-      - firefly
+      # - mealie
+      # - n8n_db
+      # - n8n
+      # - firefly_db
+      # - firefly
       - healthchecks
       - epicgames
       # - scrutiny_web
       # - scrutiny_collector
       # - valheim
       # - syncthing
-      - prometheus
-      - grafana
+      # - prometheus
+      # - grafana
       - oauth
       - traefik
 
@@ -291,10 +291,10 @@
       # media
       - name: plex
         host: media
-      - name: tautulli
-        host: media
-      - name: ombi
-        host: media
+      # - name: tautulli
+      #   host: media
+      # - name: ombi
+      #   host: media
       - name: nzbget
         host: media
       - name: sonarr
@@ -310,24 +310,24 @@
         host: server
       - name: espial
         host: server
-      - name: gitea
-        host: server
+      # - name: gitea
+      #   host: server
       - name: miniflux
         host: server
-      - name: mealie
-        host: server
-      - name: n8n
-        host: server
-      - name: firefly
-        host: server
+      # - name: mealie
+      #   host: server
+      # - name: n8n
+      #   host: server
+      # - name: firefly
+      #   host: server
       - name: healthchecks
         host: server
       # - name: syncthing
       #   host: server
-      - name: prometheus
-        host: server
-      - name: grafana
-        host: server
+      # - name: prometheus
+      #   host: server
+      # - name: grafana
+      #   host: server
       - name: oauth
         host: server
       - name: traefik
