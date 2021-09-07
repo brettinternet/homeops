@@ -229,12 +229,12 @@
   vars:
     containers:
       - plex
-      - tautulli
-      - ombi
+      # - tautulli
+      # - ombi
       - nzbget
       - sonarr
       - radarr
-      - lazylibrarian
+      # - lazylibrarian
       - calibre
       - calibre-web
     container_state: created
