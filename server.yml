@@ -138,7 +138,9 @@
           - "*.unrecoverable"
           - /tmp/
           - /lost+found/
-          - downloads/
+          - /downloads/
+          - Cache/
+          - /appdata/plex/*/Metadata
           - appdata/
           - snapshots/
           - "*.!sync"
