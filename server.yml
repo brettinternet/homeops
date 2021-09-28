@@ -271,7 +271,7 @@
       - epicgames
       # - scrutiny_web
       # - scrutiny_collector
-      # - valheim
+      - valheim
       # - syncthing
       # - prometheus
       # - grafana
