@@ -23,13 +23,22 @@ content {{ disk.path }}/.snapraid.content
 {% for disk in data_disks %}
 data d{{ loop.index }} {{ disk.path }}
 {% endfor %}
-
 {% if snapraid_config_exclude_hidden %}
+
 # Excludes hidden files and directories
 nohidden
 {% endif %}
+{% if snapraid_config_excludes | length > 0 %}
 
 # Files and directories to exclude (relative to mount points)
 {% for item in snapraid_config_excludes %}
 exclude {{ item }}
 {% endfor %}
+{% endif %}
+{% if snapraid_config_includes | length > 0 %}
+
+  # Files/dirs to include
+  {% for item in snapraid_config_includes %}
+  include {{ item }}
+  {% endfor %}
+{% endif %}

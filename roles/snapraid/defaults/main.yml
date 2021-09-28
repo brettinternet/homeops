@@ -8,6 +8,8 @@ supported_distributions:
 snapraid_config_excludes: []
 snapraid_config_exclude_hidden: false
 
+snapraid_config_includes: []
+
 snapraid_runner_dir: /opt/snapraid-runner
 
 ## snapraid-runner.conf.j2 template defaults
