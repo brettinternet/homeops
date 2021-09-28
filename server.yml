@@ -139,9 +139,7 @@
           - /tmp/
           - /lost+found/
           - /downloads/
-          - Cache/
-          - /appdata/plex/*/Metadata
-          - appdata/
+          - /appdata/
           - snapshots/
           - "*.!sync"
           - .AppleDouble
@@ -153,7 +151,10 @@
           - .Spotlight-V100
           - .TemporaryItems
           - .Trashes
+          - .Trash-*
           - .AppleDB
+        snapraid_config_includes:
+          - /appdata/calibre-shared/Calibre\ Library/
 
 - name: Setup general server
   hosts: server
