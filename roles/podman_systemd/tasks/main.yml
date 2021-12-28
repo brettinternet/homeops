@@ -52,6 +52,7 @@
       ansible.builtin.template:
         src: podman-auto-update.service.j2
         dest: /usr/lib/systemd/user/podman-auto-update.service
+        mode: 0644
 
     # http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
     - name: Copy custom podman-auto-update timer
@@ -61,6 +62,7 @@
         # https://www.freedesktop.org/software/systemd/man/systemd.time.html#
         src: podman-auto-update.timer
         dest: /usr/lib/systemd/user/podman-auto-update.timer
+        mode: 0644
 
     # View logs: `journalctl --user-unit podman-auto-update.service`
     - name: Enable podman auto update timer
@@ -72,5 +74,5 @@
   when: podman_systemd_action == 'generate'
 
 # https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances
-- name: Enable automatic start-up of systemd user services
-  ansible.builtin.shell: "loginctl enable-linger {{ ansible_user }}"
+- name: Enable automatic start-up of systemd user services # noqa no-changed-when
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"

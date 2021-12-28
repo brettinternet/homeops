@@ -15,7 +15,7 @@
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user"
     state: directory
-    recurse: yes
+    recurse: true
 
 - name: Check for existing systemd unit file
   ansible.builtin.stat:
@@ -26,7 +26,7 @@
     - name: "Generate {{ container_name }} systemd unit file"
       # Usage suggested by https://podman.io/blogs/2020/12/09/podman-systemd-demo.html
       # `--new` is suggested for `podman auto-update` https://github.com/containers/podman/issues/7407
-      ansible.builtin.shell: |
+      ansible.builtin.command: |
         podman generate systemd {{ container_name }} --restart-policy=always -t 5 -f -n --new
 
     - name: "Copy {{ container_name }} systemd unit file"
@@ -34,6 +34,7 @@
         remote_src: true
         src: "{{ ansible_facts['user_dir'] }}/container-{{ container_name }}.service"
         dest: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/{{ container_name }}.service"
+        mode: 0644
 
     - name: Remove generated file
       ansible.builtin.file:

@@ -26,6 +26,7 @@
         state: directory
         owner: "{{ puid | int }}"
         group: "{{ pgid | int }}"
+        mode: 0766
 
 - name: plex
   containers.podman.podman_container:

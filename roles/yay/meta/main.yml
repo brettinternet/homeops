@@ -1,3 +1,13 @@
 ---
 dependencies:
   - kewlfft.aur
+
+galaxy_info:
+  author: kewl fft <kewl@alto.eu.org>
+  description: Install from AUR
+  license: GPL-3.0-or-later
+  min_ansible_version: 5
+  platforms:
+    - name: Arch
+      versions:
+        - all

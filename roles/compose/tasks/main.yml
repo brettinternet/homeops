@@ -13,6 +13,7 @@
     path: /etc/subuid
     line: "{{ ansible_user }}:165536:65536"
     create: true
+    mode: 0644
 
 - name: Configure /etc/subgid
   become: true
@@ -20,6 +21,7 @@
     path: /etc/subgid
     line: "{{ ansible_user }}:165536:65536"
     create: true
+    mode: 0644
 
 ### Orchestration ###
 

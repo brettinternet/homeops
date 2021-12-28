@@ -1,0 +1,11 @@
+---
+extends: default
+
+rules:
+  line-length:
+    false
+    # max: 140
+    # level: warning
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false

@@ -5,3 +5,4 @@
     src: defaults
     dest: /etc/sudoers.d/
     validate: "visudo -cf %s"
+    mode: 0644

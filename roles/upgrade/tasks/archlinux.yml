@@ -17,6 +17,8 @@
 - name: Check if kernel needs upgrade (Archlinux)
   # Source: https://unix.stackexchange.com/a/630982/224048
   ansible.builtin.shell: |
+    set -e -o pipefail
+
     get_boot_kernel() {
       local get_version=0
       for field in $(file /boot/vmlinuz*); do
