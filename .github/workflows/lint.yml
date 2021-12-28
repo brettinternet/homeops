@@ -20,7 +20,10 @@ jobs:
       - name: Install dependencies
         run: pip3 install ansible yamllint ansible-lint
 
-      - name: Lint
+      - name: Lint ansible yaml
         run: |
           ansible-lint --offline
-          shellcheck **/*.sh
+
+      - name: Lint shell
+        run: |
+          find -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.ksh' -o -name '*.bashrc' -o -name '*.bash_profile' -o -name '*.bash_login' -o -name '*.bash_logout' \) | xargs shellcheck
