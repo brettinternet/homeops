@@ -10,7 +10,7 @@
       ansible.builtin.iptables:
         table: nat
         chain: PREROUTING
-        flush: yes
+        flush: true
 
     - name: Remove previous persistent iptable rules
       become: true
@@ -50,14 +50,14 @@
 
     - name: Disable/backup iptables unit file (/usr/lib)
       become: true
-      shell: mv /usr/lib/systemd/system/iptables.service /usr/lib/systemd/system/iptables.service.bak
+      ansible.builtin.command: mv /usr/lib/systemd/system/iptables.service /usr/lib/systemd/system/iptables.service.bak
       when: ingress__iptables_unit_file_bak.stat.exists
 
     - name: Persist iptable routing across reboots
       become: true
       # https://wiki.archlinux.org/title/Iptables#Configuration_and_usage
       # rules file should match with ingress/files/iptables.service
-      shell: iptables-save -f /etc/iptables/homelab.rules
+      ansible.builtin.command: iptables-save -f /etc/iptables/homelab.rules
 
     - name: Create
       become: true

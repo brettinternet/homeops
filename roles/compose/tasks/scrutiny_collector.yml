@@ -14,7 +14,7 @@
 - name: Set NVMe capability
   ansible.builtin.set_fact:
     scrutiny_collector_cap_add: "{{ scrutiny_collector_cap_add + [ 'SYS_ADMIN' ] }}"
-  when: '/dev/nvme1n1' in scrutiny_collector_devices
+  when: '"/dev/nvme1n1" in scrutiny_collector_devices'
 
 - name: Scrutiny collector
   containers.podman.podman_container:

@@ -1,6 +1,6 @@
 ---
 - name: Determine if SnapRAID is installed (Debian)
-  shell: "dpkg-query -W 'snapraid'"
+  ansible.builtin.command: "dpkg-query -W 'snapraid'"
   ignore_errors: true
   register: is_installed
   changed_when: "is_installed.rc != 0"

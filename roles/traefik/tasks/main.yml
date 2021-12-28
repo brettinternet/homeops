@@ -5,6 +5,7 @@
     state: directory
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
+    mode: 0644
 
 - name: Add Traefik middleware
   ansible.builtin.template:
@@ -12,6 +13,7 @@
     dest: "{{ appdata_dir }}/traefik/config/middleware.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
+    mode: 0644
 
 # frontend_containers:
 #   - name:
@@ -23,6 +25,7 @@
     dest: "{{ appdata_dir }}/traefik/config/{{ item['name'] | lower }}.yml"
     owner: "{{ ansible_facts['user_uid'] }}"
     group: "{{ ansible_facts['user_gid'] }}"
+    mode: 0644
   vars:
     hostname: "{{ item['host'] }}"
     service_ip: "{{ hostvars[hostname]['ansible_host'] }}"

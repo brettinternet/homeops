@@ -17,7 +17,7 @@
       register: keys_sed_result
       when:
         - ssh_keys_sed_arg is defined
-        - ssh_keys_sed_arg != ""
+        - ssh_keys_sed_arg | length > 0
       changed_when: keys_result['content'] != keys_sed_result['stdout']
 
     - name: Set filtered key fact

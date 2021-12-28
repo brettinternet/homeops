@@ -1,3 +1,13 @@
 ---
 dependencies:
   - cloudalchemy.node-exporter
+
+galaxy_info:
+  author: cloudalchemy
+  description: Install node exporter for Prometheus agents
+  license: MIT
+  min_ansible_version: 5
+  platforms:
+    - name: Arch
+      versions:
+        - all

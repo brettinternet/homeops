@@ -16,3 +16,8 @@ requirements: install_podman
 
 setup: inventory.yml requirements
 	@printf "\x1B[01;93m✔ Setup complete\n\x1B[0m"
+
+# workon linux
+# pip3 install -r requirements.txt
+lint:
+	@ansible-lint --offline

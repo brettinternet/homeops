@@ -3,6 +3,7 @@
   file:
     dest: /etc/wireguard
     state: directory
+    mode: 0644
 
 - name: Check to see if private key already exists
   stat:
@@ -10,8 +11,10 @@
   register: private_key
 
 - name: Generate WireGuard private and public keys
-  shell: umask 077 && wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
-  when: private_key.stat.exists == False
+  ansible.builtin.command: |
+    set -o pipefail
+    umask 077 && wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
+  when: not private_key.stat.exists
 
 - name: Register BastionServer WireGuard private key as a variable
   slurp:
@@ -45,6 +48,7 @@
   copy:
     src: fetch/server_public_key
     dest: /etc/wireguard/serverpublickey
+    mode: 0644
   become: true
   when: "'homelabos' in group_names"
 
@@ -52,6 +56,7 @@
   copy:
     src: fetch/client_public_key
     dest: /etc/wireguard/homeserverpublickey
+    mode: 0644
   become: true
   when: "'bastion' in group_names"
 
@@ -87,8 +92,8 @@
     force: true
   when: "'homelabos' in group_names"
 
-- name: Enable WireGuard system service
-  shell: systemctl enable wg-quick@wg0
+- name: Enable WireGuard system service # noqa command-instead-of-module
+  ansible.builtin.command: systemctl enable wg-quick@wg0
   become: true
   when: "'bastion' in group_names"
 

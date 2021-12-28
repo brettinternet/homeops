@@ -95,4 +95,3 @@
 
 # Configure iptables: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/iptables_module.html
 # Save iptables: https://docs.ansible.com/ansible/latest/collections/community/general/iptables_state_module.html
-

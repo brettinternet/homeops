@@ -36,6 +36,7 @@
   ansible.builtin.copy:
     src: "{{ role_path }}/files/snapraid-runner.py"
     dest: "{{ snapraid_runner_dir }}/"
+    mode: 0644
 
 # TODO: should clone latest instead of custom script with --quiet option?
 # - block:
@@ -54,6 +55,7 @@
   ansible.builtin.template:
     src: options.conf.j2
     dest: "{{ snapraid_runner_dir }}/options.conf"
+    mode: 0644
 
 - name: Create service script entrypoint
   become: true

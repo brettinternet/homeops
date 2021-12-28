@@ -22,7 +22,7 @@
     name:
       - "linux-headers-{{ wireguard__fact_dpkg_arch.stdout }}"
     state: present
-  when: '-cloud-' not in ansible_facts['kernel']
+  when: "'-cloud-' not in ansible_facts['kernel']"
 
 - name: Install wireguard package (Debian)
   apt:

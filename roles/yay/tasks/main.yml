@@ -13,6 +13,7 @@
     line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
     create: true
     validate: "visudo -cf %s"
+    mode: 0644
 
 - name: Check yay installation
   ansible.builtin.shell: '! [ -x "$(command -v yay)" ]'
