@@ -1,4 +1,4 @@
-.PHONY: setup requirements install_podman
+.PHONY: setup requirements install_podman lint
 
 inventory.yml:
 	@cp example.inventory.yml inventory.yml
@@ -17,8 +17,11 @@ requirements: install_podman
 setup: inventory.yml requirements
 	@printf "\x1B[01;93m✔ Setup complete\n\x1B[0m"
 
+# ansible-lint:
 # workon linux
 # pip3 install -r requirements.txt
+# shellcheck: https://github.com/koalaman/shellcheck/wiki/Recursiveness
 lint:
 	@ansible-lint --offline
-	@shellcheck **/*.sh
+	@find -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.ksh' -o -name '*.bashrc' -o -name '*.bash_profile' -o -name '*.bash_login' -o -name '*.bash_logout' \) | xargs shellcheck
+
