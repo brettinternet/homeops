@@ -26,13 +26,13 @@ fi
 SERVER_PUB_NIC="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
 SERVER_WG_NIC="wg0"
 
-iptables -t nat -$IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-ip6tables -t nat -$IPTABLES_ARG POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+iptables -t nat -$IPTABLES_ARG POSTROUTING -o "$SERVER_PUB_NIC" -j MASQUERADE
+ip6tables -t nat -$IPTABLES_ARG POSTROUTING -o "$SERVER_PUB_NIC" -j MASQUERADE
 
-: ${PEER_IPV4:=""} # required variables
-: ${PEER_IPV6:=""}
-: ${HOST_IPV4:=""} # required variables
-: ${HOST_IPV6:=""}
+: "${PEER_IPV4:=""}" # required variables
+: "${PEER_IPV6:=""}"
+: "${HOST_IPV4:=""}" # required variables
+: "${HOST_IPV6:=""}"
 
 if [[ -z "$PEER_IPV4" || -z "$HOST_IPV4" ]]; then
   echo "Error: Vars PEER_IPV4 and HOST_IPV4 have not been defined."
@@ -56,23 +56,23 @@ TCP_PORTS_TO_FORWARD=(
 
 # Forward each port to VPN client via DNAT
 # configure response to bastion via SNAT
-for KEY in ${!TCP_PORTS_TO_FORWARD[@]}
+for KEY in "${!TCP_PORTS_TO_FORWARD[@]}"
 do
   # DNAT
   iptables -t nat -$IPTABLES_ARG PREROUTING \
     -p tcp \
-    -i $SERVER_PUB_NIC \
-    --dport $KEY \
+    -i "$SERVER_PUB_NIC" \
+    --dport "$KEY" \
     -j DNAT \
-    --to-destination $PEER_IPV4:${TCP_PORTS_TO_FORWARD[$KEY]}
+    --to-destination $PEER_IPV4:"${TCP_PORTS_TO_FORWARD[$KEY]}"
 
   [[ -n "$PEER_IPV6" ]] && \
     ip6tables -t nat -$IPTABLES_ARG PREROUTING \
     -p tcp \
-    -i $SERVER_PUB_NIC \
-    --dport $KEY \
+    -i "$SERVER_PUB_NIC" \
+    --dport "$KEY" \
     -j DNAT \
-    --to-destination $PEER_IPV6:${TCP_PORTS_TO_FORWARD[$KEY]}
+    --to-destination $PEER_IPV6:"${TCP_PORTS_TO_FORWARD[$KEY]}"
 
 done
 
@@ -99,23 +99,23 @@ UDP_PORTS_TO_FORWARD=(
 
 # Forward each port to VPN client via DNAT
 # configure response to bastion via SNAT
-for KEY in ${!UDP_PORTS_TO_FORWARD[@]}
+for KEY in "${!UDP_PORTS_TO_FORWARD[@]}"
 do
   # DNAT
   iptables -t nat -$IPTABLES_ARG PREROUTING \
     -p udp \
-    -i $SERVER_PUB_NIC \
-    --dport $KEY \
+    -i "$SERVER_PUB_NIC" \
+    --dport "$KEY" \
     -j DNAT \
-    --to-destination $PEER_IPV4:${UDP_PORTS_TO_FORWARD[$KEY]}
+    --to-destination $PEER_IPV4:"${UDP_PORTS_TO_FORWARD[$KEY]}"
 
   [[ -n "$PEER_IPV6" ]] && \
     ip6tables -t nat -$IPTABLES_ARG PREROUTING \
     -p udp \
-    -i $SERVER_PUB_NIC \
-    --dport $KEY \
+    -i "$SERVER_PUB_NIC" \
+    --dport "$KEY" \
     -j DNAT \
-    --to-destination $PEER_IPV6:${UDP_PORTS_TO_FORWARD[$KEY]}
+    --to-destination $PEER_IPV6:"${UDP_PORTS_TO_FORWARD[$KEY]}"
 
 done
 

@@ -21,3 +21,4 @@ setup: inventory.yml requirements
 # pip3 install -r requirements.txt
 lint:
 	@ansible-lint --offline
+	@shellcheck **/*.sh
