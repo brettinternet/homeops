@@ -1,5 +1,7 @@
 # Homelab
 
+[![Lint](https://github.com/brettinternet/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/brettinternet/homelab/actions/workflows/lint.yml)
+
 Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks).
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
