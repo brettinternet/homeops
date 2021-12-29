@@ -88,6 +88,12 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 [These printable stackers](https://www.thingiverse.com/thing:582781) are great for stacking SSDs in a homelab.
 
+### Home automation
+
+#### Zigbee/Z-Wave
+
+- [USB Zigbee/Z-Wave receiver](https://www.amazon.com/dp/B01GJ826F8) and [upgrade Zigbee firmware](https://github.com/walthowd/husbzb-firmware) for compatibility with Home Assistant ([notice this issue](https://github.com/walthowd/husbzb-firmware/issues/33))
+
 ## Software
 
 ### Linux

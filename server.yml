@@ -257,6 +257,7 @@
     # Containers to use (roles/compose/tasks)
     containers:
       - adguard
+      - home-assistant
       - espial
       # - gitea_db
       # - gitea
@@ -324,6 +325,8 @@
       # - name: firefly
       #   host: server
       - name: healthchecks
+        host: server
+      - name: home-assistant
         host: server
       # - name: syncthing
       #   host: server
