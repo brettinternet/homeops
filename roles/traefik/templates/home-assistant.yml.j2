@@ -1,0 +1,18 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    home-assistant:
+      rule: "Host(`home.{{ root_domain }}`)"
+      service: home-assistant
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+
+  services:
+      home-assistant:
+        loadBalancer:
+          servers:
+            - url: "http://{{ service_ip }}:8123"

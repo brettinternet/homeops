@@ -1,0 +1,20 @@
+---
+- name: home-assistant
+  containers.podman.podman_container:
+    name: home-assistant
+    image: ghcr.io/linuxserver/homeassistant
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/homeassistant:/config"
+    # ports: # (network: host)
+    #   - 8123:8123
+    network: host
+    device:
+      - /dev/ttyS1:/dev/ttyUSB1
+    label:
+      io.containers.autoupdate: image
