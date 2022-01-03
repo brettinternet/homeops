@@ -134,6 +134,8 @@
             content: false
           - path: /mnt/disk5
             content: false
+        snapraid_config_includes:
+          - /appdata/calibre-shared/Calibre\ Library/
         snapraid_config_excludes:
           - "*.unrecoverable"
           - /tmp/
@@ -153,8 +155,6 @@
           - .Trashes
           - .Trash-*
           - .AppleDB
-        snapraid_config_includes:
-          - /appdata/calibre-shared/Calibre\ Library/
 
 - name: Setup general server
   hosts: server

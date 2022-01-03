@@ -24,4 +24,3 @@ setup: inventory.yml requirements
 lint:
 	@ansible-lint --offline
 	@find -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.ksh' -o -name '*.bashrc' -o -name '*.bash_profile' -o -name '*.bash_login' -o -name '*.bash_logout' \) | xargs shellcheck
-
