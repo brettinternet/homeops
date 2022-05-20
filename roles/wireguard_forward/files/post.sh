@@ -3,6 +3,8 @@
 # Reverse proxy - forward traffic on defined ports to a peer IP
 # TODO: for rootless bind to higher ports and forward to them from bastion
 
+set -e
+
 IPTABLES_ARG=""
 
 if [ "$1" = "up" ]; then
@@ -132,3 +134,5 @@ iptables -t nat -$IPTABLES_ARG POSTROUTING \
   -o $SERVER_WG_NIC \
   -j SNAT \
   --to-source $HOST_IPV6
+
+echo "Completed post.sh $1 for $SERVER_WG_NIC"

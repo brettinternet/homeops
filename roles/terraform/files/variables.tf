@@ -17,5 +17,5 @@ variable "droplet_image" {
 }
 
 variable "droplet_region" {
-  default = "sfo2"
+  default = "sfo3"
 }

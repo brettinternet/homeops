@@ -9,7 +9,6 @@ wireguard_interface: wg0
 wireguard_remote_directory: /etc/wireguard
 
 wireguard_conf_owner: root
-wireguard_conf_group: wheel
 wireguard_conf_mode: 0600
 
 wireguard_ubuntu_update_cache: true

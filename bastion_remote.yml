@@ -1,0 +1,34 @@
+# - name: Setup bastion server
+#   hosts: localhost
+#   tags: provision
+#   vars:
+#     terraform_state: present
+#   roles:
+#     - terraform
+
+- name: Setup WireGuard remote server
+  hosts: bastion
+  tags: setup
+  roles:
+    - role: upgrade
+      vars:
+        allow_reboot: false
+        allow_dist_upgrade: false
+    - wireguard_forward
+    - role: wireguard
+      vars:
+        host_ip: 10.0.0.1
+        peer_ip: 10.0.0.2
+        # The bastion host is a WireGuard server for our homelab
+        wireguard_address: "{{ host_ip }}/24"
+        # wireguard_allowed_ips: 10.0.0.1/32 # fix snat for this to work?
+        wireguard_allowed_ips: "{{ host_ip }}/0"
+        wireguard_persistent_keepalive: 25
+        wireguard_postup:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh up"
+        wireguard_postdown:
+          - "PEER_IPV4={{ peer_ip }} \
+            HOST_IPV4={{ host_ip }} \
+            bash {{ wireguard_remote_directory }}/post.sh down"
