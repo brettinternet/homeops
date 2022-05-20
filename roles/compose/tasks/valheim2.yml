@@ -1,0 +1,29 @@
+---
+- name: valheim2
+  containers.podman.podman_container:
+    name: valheim2
+    # https://hub.docker.com/r/mbround18/valheim
+    image: docker.io/mbround18/valheim:latest
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "{{ puid }}"
+      PGID: "{{ pgid }}"
+      TZ: "{{ tz }}"
+      PORT: 2456
+      NAME: "{{ valheim_server_name }}"
+      PASSWORD: "{{ valheim_server_password }}"
+      PUBLIC: false
+      AUTO_BACKUP: true
+      AUTO_BACKUP_SCHEDULE: "*/15 * * * *"
+      AUTO_BACKUP_ON_SHUTDOWN: true
+    volumes:
+      - "{{ appdata_dir }}/valheim2/saves:/home/steam/.config/unity3d/IronGate/Valheim"
+      - "{{ appdata_dir }}/valheim2/server:/home/steam/valheim"
+      - "{{ appdata_dir }}/valheim2/backups:/home/steam/backups"
+    ports:
+      - 2459:2456/udp
+      - 2460:2457/udp
+      - 2461:2458/udp
+    label:
+      io.containers.autoupdate: image
