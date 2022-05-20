@@ -21,17 +21,17 @@ resource "digitalocean_ssh_key" "default" {
 
 #### Provision ####
 
-resource "digitalocean_droplet" "bastion2" {
+resource "digitalocean_droplet" "bastion" {
   image = var.droplet_image
-  name = "bastion2"
-  region = var.droplet_region"
+  name = "bastion"
+  region = var.droplet_region
   size = "s-1vcpu-1gb"
   ssh_keys = [
     digitalocean_ssh_key.default.fingerprint
   ]
 
   connection {
-    host = digitalocean_droplet.bastion2.ipv4_address
+    host = digitalocean_droplet.bastion.ipv4_address
     user = "root"
     type = "ssh"
     private_key = file(var.openssh_keypair_path)
