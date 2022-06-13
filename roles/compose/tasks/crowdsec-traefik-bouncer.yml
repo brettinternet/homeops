@@ -1,0 +1,21 @@
+---
+# https://ryan.mayobre.com/traefik-with-crowdsec/
+# middleware in traefik: http://crowdsec-traefik-bouncer:8089/api/v1/forwardAuth
+# https://github.com/fbonalair/traefik-crowdsec-bouncer
+
+- name: crowdsec-traefik-bouncer
+  containers.podman.podman_container:
+    name: crowdsec-traefik-bouncer
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      GIN_MODE: release # default is debug
+      # Get API key by registering the bouncer:
+      # podman exec -it crowdsec cscli bouncers add <agent_user_name>
+      CROWDSEC_BOUNCER_API_KEY: "{{ crowdsec_traefik_bouncer_api_key }}"
+      CROWDSEC_AGENT_HOST: "{{ ansible_default_ipv4.address }}:8088"
+    ports:
+      - 8089:8080
+    label:
+      io.containers.autoupdate: image

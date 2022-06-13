@@ -10,6 +10,8 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
+        - crowdsec
         - oauth
     radarr-api:
       rule: "Host(`radarr.{{ root_domain }}`) && PathPrefix(`/api`)"
@@ -18,6 +20,8 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
+        - crowdsec
 
   services:
       radarr:

@@ -1,0 +1,22 @@
+---
+# https://github.com/linuxserver/docker-readarr
+
+- name: readarr
+  containers.podman.podman_container:
+    name: readarr
+    # https://hub.docker.com/r/linuxserver/readarr
+    image: ghcr.io/linuxserver/readarr:develop
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/readarr:/config"
+      - "{{ storage_dir }}/books:/books"
+      - "{{ storage_dir }}/downloads:/downloads"
+    ports:
+      - 8787:8787
+    label:
+      io.containers.autoupdate: image

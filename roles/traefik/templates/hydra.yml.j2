@@ -8,6 +8,8 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
+        - crowdsec
         - oauth
     hydra-api:
       rule: "Host(`hydra.{{ root_domain }}`) && PathPrefix(`/api`,`/getnzb`,`/gettorrent`,`/rss`,`/torznab/api`)"
@@ -16,6 +18,7 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - crowdsec
 
   services:
       hydra:

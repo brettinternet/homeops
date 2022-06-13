@@ -1,10 +1,8 @@
 ---
 roles:
-  # https://github.com/kewlfft/ansible-aur
-  - kewlfft.aur
   # https://github.com/cloudalchemy/ansible-node-exporter
-  - cloudalchemy.node-exporter
+  # - cloudalchemy.node-exporter
 
 collections:
-  # Installed manually until latest features are released (see Makefile)
-  # - containers.podman
+  # https://github.com/kewlfft/ansible-aur
+  - name: kewlfft.aur

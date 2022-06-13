@@ -10,7 +10,9 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
         - basic-auth-prometheus
+        - crowdsec
 
   services:
       prometheus:

@@ -48,8 +48,6 @@ Rootless podman support for container images and deployment within [an ansible r
 
 ### Homelab
 
-- PowerEdge R430
-- Synology RS2414+
 - [custom NAS build](https://pcpartpicker.com/list/PKJqfP)
 
 | Type             | Item                                                                                                                                                             |

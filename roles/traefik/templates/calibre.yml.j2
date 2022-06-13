@@ -10,7 +10,9 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
         - basic-auth
+        - crowdsec
 
     calibre-content-server:
       rule: "Host(`read.{{ root_domain }}`)"

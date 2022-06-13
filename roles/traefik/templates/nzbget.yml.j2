@@ -10,6 +10,8 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
+        - crowdsec
         - oauth
     nzbget-api:
       #rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
@@ -19,6 +21,7 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - crowdsec
 
   services:
       nzbget:
