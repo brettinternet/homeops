@@ -1,0 +1,15 @@
+---
+# https://github.com/dmunozv04/iSponsorBlockTV
+# https://github.com/dmunozv04/iSponsorBlockTV/wiki/Installation
+
+- name: isponsorblocktv
+  containers.podman.podman_container:
+    name: isponsorblocktv
+    image: ghcr.io/dmunozv04/isponsorblocktv
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    volumes:
+      - "{{ appdata_dir }}/sponsorblock/appletv/config.json:/app/config.json"
+    network: host
+    label:
+      io.containers.autoupdate: image

@@ -30,7 +30,7 @@
     - name: Install yay
       become: true
       become_user: aur_builder
-      aur:
+      kewlfft.aur.aur:
         use: makepkg
         local_pkgbuild: "{{ ansible_facts['user_dir'] }}/yay"
 
@@ -41,7 +41,7 @@
   when: yay_command_result.rc == 0
 
 - name: Install AUR packages (yay)
-  aur:
+  kewlfft.aur.aur:
     use: yay
     aur_only: true
     name: "{{ yay_packages }}"

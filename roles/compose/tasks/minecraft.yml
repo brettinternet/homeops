@@ -1,0 +1,18 @@
+---
+# https://www.github.com/itzg/docker-minecraft-server
+
+- name: minecraft
+  containers.podman.podman_container:
+    name: minecraft
+    # https://hub.docker.com/r/itzg/minecraft-server
+    image: docker.io/itzg/minecraft-server
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    env:
+      EULA: "TRUE"
+    volumes:
+      - "{{ appdata_dir }}/minecraft:/data"
+    ports:
+      - 25565:25565
+    label:
+      io.containers.autoupdate: image

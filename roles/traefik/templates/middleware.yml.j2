@@ -2,14 +2,25 @@
 http:
   middlewares:
     oauth:
-      # https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/
+
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/ #}
+
       forwardAuth:
         address: "http://{{ ingress_local_ip }}:4181"
         trustForwardHeader: true
         authResponseHeaders:
           - X-Forwarded-User
 
-    # https://doc.traefik.io/traefik/middlewares/basicauth/
+    crowdsec:
+      forwardAuth:
+        address: "http://{{ ingress_local_ip }}:8089/api/v1/forwardAuth"
+
+    ip-whitelist:
+      ipWhitelist:
+        sourceRange: {{ traefik_ip_whitelist | list }}
+
+    {# https://doc.traefik.io/traefik/middlewares/basicauth/ #}
+
     basic-auth:
       basicAuth:
         users: {{ basic_auth_users }}
@@ -21,9 +32,11 @@ http:
         removeHeader: true
 
     secure-headers:
-      # https://doc.traefik.io/traefik/v2.0/middlewares/headers/
-      # https://developers.google.com/search/reference/robots_meta_tag
-      # https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Clickjacking_Defense_Cheat_Sheet.md
+
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/headers/ #}
+      {# https://developers.google.com/search/reference/robots_meta_tag #}
+      {# https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Clickjacking_Defense_Cheat_Sheet.md #}
+
       headers:
         accessControlAllowMethods: ["GET", "OPTIONS", "PUT"]
         accessControlMaxAge: 100
@@ -41,17 +54,22 @@ http:
         customResponseHeaders:
           X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
 
-    # If needed, remove redirection in `entryPoints` and implement per domain:
-    # https://doc.traefik.io/traefik/migration/v1-to-v2/#http-to-https-redirection-is-now-configured-on-routers
+    {# If needed, remove redirection in `entryPoints` and implement per domain: #}
+    {# https://doc.traefik.io/traefik/migration/v1-to-v2/#http-to-https-redirection-is-now-configured-on-routers #}
+
     redirect-https:
-      # https://doc.traefik.io/traefik/v2.0/middlewares/redirectscheme/
+
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/redirectscheme/ #}
+
       redirectScheme:
         scheme: https
         port: 443
-        #permanent: true
+        permanent: true
 
     rate-limit:
-      # https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/
+
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/ #}
+
       rateLimit:
         average: 100
         burst: 50

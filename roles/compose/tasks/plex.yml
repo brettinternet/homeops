@@ -15,6 +15,7 @@
       register: transcode_dir_result
 
     - name: Clean transcode directory
+      become: true
       ansible.builtin.file:
         path: /var/tmp/transcode
         state: absent

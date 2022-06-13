@@ -3,9 +3,9 @@
 
 http:
   routers:
-    sonarr:
-      rule: "Host(`sonarr.{{ root_domain }}`)"
-      service: sonarr
+    readarr:
+      rule: "Host(`readarr.{{ root_domain }}`)"
+      service: readarr
       tls:
         certResolver: http
       middlewares:
@@ -13,9 +13,9 @@ http:
         - ip-whitelist
         - crowdsec
         - oauth
-    sonarr-api:
-      rule: "Host(`sonarr.{{ root_domain }}`) && PathPrefix(`/api`)"
-      service: sonarr
+    readarr-api:
+      rule: "Host(`readarr.{{ root_domain }}`) && PathPrefix(`/api`)"
+      service: readarr
       tls:
         certResolver: http
       middlewares:
@@ -24,7 +24,7 @@ http:
         - crowdsec
 
   services:
-      sonarr:
+      readarr:
         loadBalancer:
           servers:
-            - url: "http://{{ service_ip }}:8989"
+            - url: "http://{{ service_ip }}:8787"

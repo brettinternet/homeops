@@ -8,7 +8,7 @@
 
 - name: Upgrade AUR packages (yay)
   become: false
-  aur:
+  kewlfft.aur.aur:
     use: yay
     aur_only: true
     upgrade: true

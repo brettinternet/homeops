@@ -1,5 +1,6 @@
 ---
 # https://github.com/linuxserver/docker-sonarr
+# notes on volumes: https://wiki.servarr.com/docker-guide#consistent-and-well-planned-paths
 
 - name: sonarr
   containers.podman.podman_container:
