@@ -15,7 +15,7 @@
   tags: upgrade
 
 - name: Check if kernel needs upgrade (Archlinux)
-  # Source: https://unix.stackexchange.com/a/630982/224048
+  # Source: https://unix.stackexchange.com/a/630982
   ansible.builtin.shell: |
     set -e -o pipefail
 

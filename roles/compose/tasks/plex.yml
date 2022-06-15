@@ -6,28 +6,27 @@
 # and be sure to reset permissions if you have root/sudo `sudo chown $(id -u -n):$(id -g -n) /mnt/storage/movies`
 
 # ISSUE: on restart, tmp directory for transcode is missing...
-- block:
-    - name: File stat transcode directory
-      ansible.builtin.stat:
-        # /var/tmp: https://www.pathname.com/fhs/pub/fhs-2.3.html#PURPOSE50
-        # Can't use /tmp because the directory wouldn't survive a reboot
-        path: /var/tmp/transcode
-      register: transcode_dir_result
+- name: File stat transcode directory
+  ansible.builtin.stat:
+    # /var/tmp: https://www.pathname.com/fhs/pub/fhs-2.3.html#PURPOSE50
+    # Can't use /tmp because the directory wouldn't survive a reboot
+    path: /var/tmp/transcode
+  register: transcode_dir_result
 
-    - name: Clean transcode directory
-      become: true
-      ansible.builtin.file:
-        path: /var/tmp/transcode
-        state: absent
-      when: transcode_dir_result.stat.exists
+- name: Clean transcode directory
+  become: true
+  ansible.builtin.file:
+    path: /var/tmp/transcode
+    state: absent
+  when: transcode_dir_result.stat.exists
 
-    - name: Add transcode directory
-      ansible.builtin.file:
-        path: /var/tmp/transcode
-        state: directory
-        owner: "{{ puid | int }}"
-        group: "{{ pgid | int }}"
-        mode: 0766
+- name: Add transcode directory
+  ansible.builtin.file:
+    path: /var/tmp/transcode
+    state: directory
+    owner: "{{ puid | int }}"
+    group: "{{ pgid | int }}"
+    mode: 0766
 
 - name: plex
   containers.podman.podman_container:

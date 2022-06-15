@@ -1,3 +1,4 @@
+---
 # - name: Setup bastion server
 #   hosts: localhost
 #   tags: provision
