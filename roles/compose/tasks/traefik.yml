@@ -33,6 +33,6 @@
       - 4443:443
       # https://community.traefik.io/t/routing-ssh-traffic-with-traefik-v2/717/7
       # - "2222:22"
-    healthcheck: traefik healtcheck --ping
+    healthcheck: traefik healthcheck
     label:
       io.containers.autoupdate: image
