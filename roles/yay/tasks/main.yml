@@ -3,10 +3,10 @@
   become: true
   ansible.builtin.user:
     name: aur_builder
-    create_home: false
+    create_home: true
     group: sudo
 
-- name: Add aur_builder to sudoers
+- name: Allow aur_builder to sudo pacman
   become: true
   ansible.builtin.lineinfile:
     path: /etc/sudoers.d/11-install-aur_builder
