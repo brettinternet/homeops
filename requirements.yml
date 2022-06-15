@@ -1,8 +1,4 @@
 ---
-roles:
-  # https://github.com/cloudalchemy/ansible-node-exporter
-  # - cloudalchemy.node-exporter
-
 collections:
   # https://github.com/kewlfft/ansible-aur
   - name: kewlfft.aur

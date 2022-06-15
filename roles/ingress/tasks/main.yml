@@ -4,7 +4,8 @@
 # Alternatively, you may allow podman unprivileged access to privileged ports
 # https://github.com/containers/podman/issues/3212
 
-- block:
+- name: Flush iptables rules for IPv4
+  block:
     - name: Iptables flush filter
       become: true
       ansible.builtin.iptables:
@@ -19,7 +20,8 @@
         state: absent
   when: ingress__iptables_flush
 
-- block:
+- name: Setup forwarding prerouting rules
+  block:
     - name: Forward TCP DNS
       become: true
       iptables:
