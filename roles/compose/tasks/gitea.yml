@@ -22,6 +22,7 @@
     image: docker.io/gitea/gitea
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       USER_UID: "{{ puid }}"
       USER_GID: "{{ pgid }}"

@@ -1,6 +1,4 @@
 ---
-# After systemd removal, containers will have to be restarted
-
 - name: "Stop/disable user {{ container_name }}.service"
   ansible.builtin.systemd:
     name: "{{ container_name }}.service"
@@ -12,4 +10,10 @@
 - name: "Remove {{ container_name }} systemd unit file"
   ansible.builtin.file:
     path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user/{{ container_name }}.service"
+    state: absent
+
+# In case container is not started by systemd
+- name: "Stop container {{ container_name }}"
+  containers.podman.podman_container:
+    name: "{{ container_name }}"
     state: absent

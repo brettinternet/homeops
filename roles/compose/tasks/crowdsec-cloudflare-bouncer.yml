@@ -19,6 +19,7 @@
     image: docker.io/crowdsecurity/cloudflare-bouncer
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     volumes:
       - "{{ appdata_dir }}/crowdsec/cloudflare-bouncer/cfg.yaml:/etc/crowdsec/bouncers/crowdsec-cloudflare-bouncer.yaml"
       - "{{ appdata_dir }}/crowdsec/cloudflare-bouncer/cloudflare-cache.json:/var/lib/crowdsec/crowdsec-cloudflare-bouncer/cache/cloudflare-cache.json"

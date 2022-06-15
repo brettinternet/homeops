@@ -27,6 +27,7 @@
     image: docker.io/grafana/grafana
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
       # https://grafana.com/docs/grafana/latest/administration/configuration/ (`GF_<SectionName>_<KeyName>`)

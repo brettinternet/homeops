@@ -9,6 +9,7 @@
     image: docker.io/n8nio/n8n
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       DB_TYPE: postgresdb
       DB_POSTGRESDB_HOST: "{{ ansible_default_ipv4.address }}"

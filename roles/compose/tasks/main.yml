@@ -7,6 +7,8 @@
 # TODO: Perhaps ensure that kernel params are set
 # https://github.com/Difrex/Ansible/blob/master/roles/docker/tasks/grub.yml
 
+### Setup ###
+
 - name: Configure /etc/subuid
   become: true
   ansible.builtin.lineinfile:
@@ -23,18 +25,99 @@
     create: true
     mode: 0644
 
+- name: Debug all facts
+  tags: all_facts
+  ansible.builtin.debug:
+    var: ansible_facts
+
 ### Orchestration ###
 
-# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
+# Doesn't seem like we should have to do this, but otherwise
+# the next step will fail
+- name: Stop all active systemd containers
+  ansible.builtin.systemd:
+    name: "{{ item }}.service"
+    scope: user
+    enabled: false
+    state: stopped
+  failed_when: false
+  with_items: "{{ containers }}"
 
 # Rootless container to container communication either requires using the local ip address
 # or enable the flag `network: slirp4netns:allow_host_loopback=true` and use the default
 # podman network `10.0.2.2` for localhost loopback
 # https://podman.io/getting-started/network#container---container-communication
 
-- name: Compose orchestration
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html
+- name: "Compose orchestration {{ containers }}"
   include_tasks: "{{ item | lower }}.yml"
+  vars:
+    container_state: created
+    container_generate_systemd:
+      container_prefix: ""
+      new: true
+      path: "{{ ansible_facts['user_dir'] }}/.config/systemd/user"
   loop: "{{ containers }}"
+
+### Systemd ###
+
+# - name: "Generate systemd unit file for {{ item }}"
+#   containers.podman.podman_container:
+#     name: "{{ item }}"
+#     state: present
+#     generate_systemd: "{{ container_generate_systemd }}"
+#   loop: "{{ containers }}"
+
+- name: Run user daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+    scope: user
+
+- name: "Start/enable user {{ item }}.service"
+  ansible.builtin.systemd:
+    name: "{{ item }}.service"
+    scope: user
+    enabled: true
+    state: started
+  loop: "{{ containers }}"
+
+- name: Create custom podman-auto-update systemd unit file
+  become: true
+  ansible.builtin.template:
+    src: podman-auto-update.service.j2
+    dest: /usr/lib/systemd/user/podman-auto-update.service
+    mode: 0644
+
+# http://docs.podman.io/en/latest/markdown/podman-auto-update.1.html
+- name: Copy custom podman-auto-update timer
+  become: true
+  ansible.builtin.copy:
+    # Edit `OnCalendar` value in timer file
+    # https://www.freedesktop.org/software/systemd/man/systemd.time.html#
+    src: podman-auto-update.timer
+    dest: /usr/lib/systemd/user/podman-auto-update.timer
+    mode: 0644
+
+# View logs: `journalctl --user-unit podman-auto-update.service`
+- name: Enable podman auto update timer
+  ansible.builtin.systemd:
+    name: podman-auto-update.timer
+    scope: user
+    state: started
+    enabled: true
+
+# https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances
+- name: Enable automatic start-up of systemd user services # noqa no-changed-when
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
+
+### Clean up ###
+
+- name: Removing unwanted containers
+  include_tasks: remove.yml
+  vars:
+    container_name: "{{ item }}"
+  loop: "{{ remove_containers }}"
+  when: remove_containers and remove_containers | length > 0
 #
 # - name: Enable the podman daemon (for cockpit)
 #   # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html

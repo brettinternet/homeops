@@ -11,6 +11,7 @@
     image: docker.io/prom/prometheus
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
     volumes:

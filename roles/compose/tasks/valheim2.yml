@@ -6,6 +6,7 @@
     image: docker.io/mbround18/valheim:latest
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       PUID: "{{ puid }}"
       PGID: "{{ pgid }}"

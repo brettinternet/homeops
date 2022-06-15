@@ -23,6 +23,7 @@
     image: docker.io/analogj/scrutiny:collector
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       SCRUTINY_API_ENDPOINT: "{{ ingress_local_ip }}:8086"
     privileged: true

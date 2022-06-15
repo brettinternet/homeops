@@ -8,6 +8,7 @@
     image: docker.io/mpepping/cyberchef
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     ports:
       - 8000:8000
     label:

@@ -9,6 +9,7 @@
     image: docker.io/analogj/scrutiny:web
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     ports:
       - 8086:8080
     label:

@@ -9,6 +9,7 @@
     image: docker.io/sickcodes/docker-osx:monterey
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       DISPLAY: "DISPLAY=:0.0"
       GENERATE_UNIQUE: true

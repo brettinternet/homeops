@@ -17,6 +17,7 @@
     # https://hub.docker.com/r/miniflux/miniflux
     image: docker.io/miniflux/miniflux
     state: "{{ container_state }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
       DATABASE_URL: "postgres://miniflux:{{ miniflux_postgres_password }}@{{ ansible_default_ipv4.address }}/miniflux?sslmode=disable"

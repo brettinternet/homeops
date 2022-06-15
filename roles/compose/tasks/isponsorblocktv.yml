@@ -8,6 +8,7 @@
     image: ghcr.io/dmunozv04/isponsorblocktv
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     volumes:
       - "{{ appdata_dir }}/sponsorblock/appletv/config.json:/app/config.json"
     network: host
