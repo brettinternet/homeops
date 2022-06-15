@@ -32,7 +32,6 @@
       - healthchecks
       - change-detection
       - minecraft
-      - valheim
       - oauth
       - traefik
       - crowdsec
@@ -40,6 +39,7 @@
       - crowdsec-dashboard
       - crowdsec-cloudflare-bouncer
     remove_containers:
+      - valheim
       - gitea_db
       - gitea
       - mealie
