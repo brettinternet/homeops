@@ -13,4 +13,4 @@
       - "{{ appdata_dir }}/sponsorblock/appletv/config.json:/app/config.json"
     network: host
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

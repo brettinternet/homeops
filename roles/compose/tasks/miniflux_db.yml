@@ -21,4 +21,4 @@
       - 5432:5432
     healthcheck: pg_isready -U miniflux
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

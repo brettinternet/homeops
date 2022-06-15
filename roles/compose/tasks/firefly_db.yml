@@ -22,4 +22,4 @@
     ports:
       - 5433:5432
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

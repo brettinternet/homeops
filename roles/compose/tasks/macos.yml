@@ -21,4 +21,4 @@
     device:
       - /dev/kvm
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

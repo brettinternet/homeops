@@ -13,4 +13,4 @@
     ports:
       - 5000:5000
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

@@ -25,4 +25,4 @@
       # DNS-over-HTTPS https://github.com/AdguardTeam/Adguardhome/wiki/Encryption
       # - 8443:443
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

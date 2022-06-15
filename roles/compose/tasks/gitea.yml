@@ -38,4 +38,4 @@
       - "3004:3000"
       # - "2223:22"
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

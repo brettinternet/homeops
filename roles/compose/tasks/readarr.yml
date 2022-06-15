@@ -20,4 +20,4 @@
     ports:
       - 8787:8787
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

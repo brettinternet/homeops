@@ -37,4 +37,4 @@
       # use for metrics such as prometheus:
       # - 6060:6060
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry
