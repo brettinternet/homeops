@@ -13,6 +13,7 @@
     image: docker.io/jonschoning/espial:espial
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
       IP_FROM_HEADER: true

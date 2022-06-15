@@ -22,8 +22,10 @@
     image: docker.io/crowdsecurity/crowdsec
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+      PID: "{{ puid }}"
       GID: "{{ pgid }}"
     volumes:
       # create acquis.yaml in config first: https://docs.crowdsec.net/docs/concepts/#acquisition

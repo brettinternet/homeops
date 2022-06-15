@@ -9,6 +9,7 @@
     image: docker.io/fireflyiii/core:latest
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
       DB_HOST: "{{ ansible_default_ipv4.address }}"

@@ -36,6 +36,7 @@
     image: docker.io/plexinc/pms-docker:plexpass
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     hostname: "{{ plex_hostname }}"
     env:
       PLEX_UID: "{{ puid }}"

@@ -6,6 +6,7 @@
     image: docker.io/postgres:10.10
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       PGID: "{{ pgid }}"
       PUID: "{{ puid }}"
@@ -18,5 +19,6 @@
       - "{{ appdata_dir }}/miniflux_db:/var/lib/postgresql/data"
     ports:
       - 5432:5432
+    healthcheck: pg_isready -U miniflux
     label:
       io.containers.autoupdate: image

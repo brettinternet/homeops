@@ -1,0 +1,21 @@
+---
+# {{ ansible_managed }}
+
+http:
+  routers:
+    crowdsec-dashboard:
+      rule: "Host(`crowdsec.{{ root_domain }}`)"
+      service: crowdsec-dashboard
+      tls:
+        certResolver: http
+      middlewares:
+        - secure-headers
+        - ip-whitelist
+        - crowdsec
+        - oauth
+
+  services:
+      crowdsec-dashboard:
+        loadBalancer:
+          servers:
+            - url: "http://{{ service_ip }}:3009"

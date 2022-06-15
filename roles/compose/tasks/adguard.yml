@@ -14,6 +14,7 @@
     image: docker.io/adguard/adguardhome
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     volumes:
       - "{{ appdata_dir }}/adguard/data:/opt/adguardhome/work"
       - "{{ appdata_dir }}/adguard/conf:/opt/adguardhome/conf"

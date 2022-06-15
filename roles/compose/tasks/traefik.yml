@@ -17,6 +17,7 @@
     image: docker.io/library/traefik
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       TZ: "{{ tz }}"
       # https://go-acme.github.io/lego/dns/cloudflare/
@@ -32,5 +33,6 @@
       - 4443:443
       # https://community.traefik.io/t/routing-ssh-traffic-with-traefik-v2/717/7
       # - "2222:22"
+    healthcheck: traefik healtcheck --ping
     label:
       io.containers.autoupdate: image

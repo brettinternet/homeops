@@ -9,6 +9,7 @@
     image: docker.io/fbonalair/traefik-crowdsec-bouncer
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       GIN_MODE: release # default is debug
       # Get API key by registering the bouncer:

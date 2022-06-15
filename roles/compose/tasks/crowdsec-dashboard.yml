@@ -1,0 +1,23 @@
+---
+# https://docs.crowdsec.net/docs/observability/dashboard/
+# Setup: get sqlite database for metabase image
+# https://github.com/crowdsecurity/example-docker-compose/blob/main/crowdsec/dashboard/Dockerfile
+
+- name: crowdsec-dashboard
+  containers.podman.podman_container:
+    name: crowdsec-dashboard
+    # https://hub.docker.com/r/metabase/metabase
+    image: docker.io/metabase/metabase
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      MB_DB_FILE: /metabase-data/metabase.db
+      MUID: "{{ puid }}"
+      MGID: "{{ pgid }}"
+    volumes:
+      - "{{ appdata_dir }}/crowdsec/data:/metabase-data"
+    ports:
+      - 3009:3000
+    label:
+      io.containers.autoupdate: image

@@ -11,6 +11,7 @@
     image: ghcr.io/linuxserver/nzbget
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
     env:
       PUID: "0"
       PGID: "0"
