@@ -8,7 +8,14 @@
 - name: Enable clamav daemon
   become: true
   ansible.builtin.systemd:
-    name: clamav-daemon
+    name: clamav-daemon.service
+    enabled: true
+    state: started
+
+- name: Enable clamav definitions update
+  become: true
+  ansible.builtin.systemd:
+    name: clamav-freshclam.service
     enabled: true
     state: started
 
