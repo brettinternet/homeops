@@ -27,4 +27,4 @@
       - 2460:2457/udp
       - 2461:2458/udp
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

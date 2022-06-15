@@ -32,4 +32,4 @@
     ports:
       - 8083:8083
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

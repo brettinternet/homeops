@@ -32,4 +32,4 @@
       - /run/udev:/run/udev:ro
     cap_add: "{{ scrutiny_collector_cap_add }}"
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

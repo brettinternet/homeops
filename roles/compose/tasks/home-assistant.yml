@@ -21,4 +21,4 @@
     device:
       - /dev/ttyS1:/dev/ttyUSB1
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

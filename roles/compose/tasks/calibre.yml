@@ -28,4 +28,4 @@
       - 8084:8080
       - 8085:8081
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

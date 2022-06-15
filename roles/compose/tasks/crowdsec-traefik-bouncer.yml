@@ -19,4 +19,4 @@
     ports:
       - 8089:8080
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

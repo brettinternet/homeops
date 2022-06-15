@@ -44,4 +44,4 @@
     ports:
       - 3008:3000
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

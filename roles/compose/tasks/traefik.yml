@@ -35,4 +35,4 @@
       # - "2222:22"
     healthcheck: traefik healthcheck
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

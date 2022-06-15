@@ -34,4 +34,4 @@
     ports:
       - 8087:8080
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry

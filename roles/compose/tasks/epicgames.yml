@@ -28,4 +28,4 @@
     ports:
       - "3007:3000"
     label:
-      io.containers.autoupdate: image
+      io.containers.autoupdate: registry
