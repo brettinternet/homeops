@@ -1,10 +1,6 @@
 ---
 # https://wiki.archlinux.org/title/ClamAV
 
-- name: Update virus definitions # noqa no-changed-when
-  become: true
-  ansible.builtin.command: freshclam
-
 - name: Enable clamav daemon
   become: true
   ansible.builtin.systemd:
