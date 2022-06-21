@@ -2,7 +2,7 @@
 - name: home-assistant
   containers.podman.podman_container:
     name: home-assistant
-    image: ghcr.io/linuxserver/homeassistant
+    image: lscr.io/linuxserver/homeassistant
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

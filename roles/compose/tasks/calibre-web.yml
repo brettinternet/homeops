@@ -9,7 +9,7 @@
 
 # Calibre web needs a calibre database `metadata.db` which you can get from a local calibre installation
 # or you can seed the calibre-web volume with one using https://github.com/linuxserver/docker-calibre
-# `podman run -d --name=calibre -e PUID=0 -e PGID=0 -v -p 8080:8080 </path/to/data>/calibre-web:/config ghcr.io/linuxserver/calibre`
+# `podman run -d --name=calibre -e PUID=0 -e PGID=0 -v -p 8080:8080 </path/to/data>/calibre-web:/config lscr.io/linuxserver/calibre`
 # Then, use the guacamole remote desktop at port 8080 to walk through the initial setup wizard then the database will be created.
 # I've put this Calibre db in calibre-shared to share between calibre and calibre-web
 
@@ -17,7 +17,7 @@
   containers.podman.podman_container:
     name: calibre-web
     # https://hub.docker.com/r/linuxserver/calibre-web
-    image: ghcr.io/linuxserver/calibre-web
+    image: lscr.io/linuxserver/calibre-web
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

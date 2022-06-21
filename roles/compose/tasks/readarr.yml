@@ -5,7 +5,7 @@
   containers.podman.podman_container:
     name: readarr
     # https://hub.docker.com/r/linuxserver/readarr
-    image: ghcr.io/linuxserver/readarr:develop
+    image: lscr.io/linuxserver/readarr:develop
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

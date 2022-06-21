@@ -1,0 +1,23 @@
+---
+# https://www.github.com/itzg/docker-minecraft-server
+
+- name: Minecraft Bedrock
+  containers.podman.podman_container:
+    name: minecraft-bedrock
+    # https://hub.docker.com/r/itzg/minecraft-bedrock-server
+    image: docker.io/itzg/minecraft-bedrock-server
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      EULA: "TRUE"
+      GAMEMODE: survival
+      DIFFICULTY: peaceful
+      ALLOW_CHEATS: "true"
+      OPS: "{{ minecraft_bedrock_ops }}"
+    volumes:
+      - "{{ appdata_dir }}/minecraft-bedrock:/data"
+    ports:
+      - 19132:19132/udp
+    label:
+      io.containers.autoupdate: registry

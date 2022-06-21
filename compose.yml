@@ -4,6 +4,7 @@
   tags: services
   vars:
     containers:
+      - adguard # redundant, secondary DNS
       - plex
       - nzbget
       - sonarr
@@ -17,6 +18,7 @@
       - lazylibrarian
   roles:
     - role: compose
+    - role: ingress
 
 - name: Setup general services
   hosts: server
@@ -25,6 +27,9 @@
     # Containers to use (roles/compose/tasks)
     containers:
       - adguard
+      - adguard-sync
+      - babybuddy
+      - uptime-kuma
       - home-assistant
       - espial
       - miniflux_db
@@ -32,6 +37,7 @@
       - healthchecks
       - change-detection
       - minecraft
+      - minecraft-bedrock
       - oauth
       - traefik
       - crowdsec
@@ -40,6 +46,7 @@
       - crowdsec-cloudflare-bouncer
     remove_containers:
       - valheim
+      - valheim2
       - gitea_db
       - gitea
       - mealie
@@ -50,7 +57,6 @@
       - epicgames
       - scrutiny_web
       - scrutiny_collector
-      - valheim2
       - syncthing
       - prometheus
       - grafana
@@ -61,6 +67,8 @@
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
     frontend_containers:
       # media server
+      - name: adguard2
+        host: media
       - name: plex
         host: media
       - name: nzbget
@@ -85,6 +93,10 @@
       - name: miniflux
         host: server
       - name: healthchecks
+        host: server
+      - name: uptime-kuma
+        host: server
+      - name: babybuddy
         host: server
       - name: home-assistant
         host: server

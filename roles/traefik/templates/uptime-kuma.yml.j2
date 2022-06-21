@@ -3,20 +3,19 @@
 
 http:
   routers:
-    git:
-      entryPoints:
-        - websecure
-      rule: "Host(`git.{{ root_domain }}`)"
-      service: git
+    uptime-kuma:
+      rule: "Host(`status.{{ root_domain }}`)"
+      service: uptime-kuma
       tls:
         certResolver: http
       middlewares:
         - secure-headers
         - ip-whitelist
         - crowdsec
+        - oauth
 
   services:
-      git:
+      uptime-kuma:
         loadBalancer:
           servers:
-            - url: "http://{{ service_ip }}:3010"
+            - url: "http://{{ service_ip }}:3004"

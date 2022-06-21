@@ -8,7 +8,7 @@
   containers.podman.podman_container:
     name: nzbget
     # https://hub.docker.com/r/linuxserver/nzbget
-    image: ghcr.io/linuxserver/nzbget
+    image: lscr.io/linuxserver/nzbget
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"
