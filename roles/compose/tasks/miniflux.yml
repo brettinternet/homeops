@@ -34,5 +34,5 @@
   ansible.builtin.lineinfile:
     path: ~/.config/systemd/user/miniflux.service
     line: RestartSec=5
-    insertafter: "[Service]"
+    insertafter: "^Restart="
     state: present

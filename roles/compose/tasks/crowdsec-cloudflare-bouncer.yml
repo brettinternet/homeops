@@ -38,5 +38,5 @@
   ansible.builtin.lineinfile:
     path: ~/.config/systemd/user/crowdsec-cloudflare-bouncer.service
     line: RestartSec=5
-    insertafter: "[Service]"
+    insertafter: "^Restart="
     state: present
