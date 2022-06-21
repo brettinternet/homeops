@@ -35,7 +35,7 @@
       - "{{ appdata_dir }}/gitea:/data"
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - "3004:3000"
+      - "3010:3000"
       # - "2223:22"
     label:
       io.containers.autoupdate: registry

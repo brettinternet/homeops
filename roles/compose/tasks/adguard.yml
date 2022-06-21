@@ -21,7 +21,7 @@
     ports:
       - "4053:53/tcp"
       - "4053:53/udp"
-      - "3003:80"
+      - "3003:3000"
       # DNS-over-HTTPS https://github.com/AdguardTeam/Adguardhome/wiki/Encryption
       # - 8443:443
     label:

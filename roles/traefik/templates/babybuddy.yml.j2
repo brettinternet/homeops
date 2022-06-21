@@ -3,11 +3,9 @@
 
 http:
   routers:
-    git:
-      entryPoints:
-        - websecure
-      rule: "Host(`git.{{ root_domain }}`)"
-      service: git
+    babybuddy:
+      rule: "Host(`baby.{{ root_domain }}`)"
+      service: babybuddy
       tls:
         certResolver: http
       middlewares:
@@ -16,7 +14,7 @@ http:
         - crowdsec
 
   services:
-      git:
+      babybuddy:
         loadBalancer:
           servers:
-            - url: "http://{{ service_ip }}:3010"
+            - url: "http://{{ service_ip }}:8002"

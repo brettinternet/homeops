@@ -6,7 +6,7 @@
   containers.podman.podman_container:
     name: sonarr
     # https://hub.docker.com/r/linuxserver/sonarr
-    image: ghcr.io/linuxserver/sonarr
+    image: lscr.io/linuxserver/sonarr
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

@@ -5,7 +5,7 @@
   containers.podman.podman_container:
     name: ombi
     # https://hub.docker.com/r/linuxserver/ombi
-    image: ghcr.io/linuxserver/ombi
+    image: lscr.io/linuxserver/ombi
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

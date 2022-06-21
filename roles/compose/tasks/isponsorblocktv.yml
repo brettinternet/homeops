@@ -5,7 +5,7 @@
 - name: isponsorblocktv
   containers.podman.podman_container:
     name: isponsorblocktv
-    image: ghcr.io/dmunozv04/isponsorblocktv
+    image: lscr.io/dmunozv04/isponsorblocktv
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

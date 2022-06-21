@@ -3,11 +3,9 @@
 
 http:
   routers:
-    git:
-      entryPoints:
-        - websecure
-      rule: "Host(`git.{{ root_domain }}`)"
-      service: git
+    adguard2:
+      rule: "Host(`adguard2.{{ root_domain }}`)"
+      service: adguard2
       tls:
         certResolver: http
       middlewares:
@@ -16,7 +14,7 @@ http:
         - crowdsec
 
   services:
-      git:
+      adguard2:
         loadBalancer:
           servers:
-            - url: "http://{{ service_ip }}:3010"
+            - url: "http://{{ service_ip }}:3003"

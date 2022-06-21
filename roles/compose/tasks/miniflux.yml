@@ -29,3 +29,10 @@
       - 8082:8080
     label:
       io.containers.autoupdate: registry
+
+- name: Delay systemd unit file service restart to wait for DB on startup
+  ansible.builtin.lineinfile:
+    path: ~/.config/systemd/user/miniflux.service
+    line: RestartSec=5
+    insertafter: "[Service]"
+    state: present

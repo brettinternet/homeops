@@ -5,7 +5,7 @@
   containers.podman.podman_container:
     name: lazylibrarian
     # https://hub.docker.com/r/linuxserver/lazylibrarian
-    image: ghcr.io/linuxserver/lazylibrarian
+    image: lscr.io/linuxserver/lazylibrarian
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"

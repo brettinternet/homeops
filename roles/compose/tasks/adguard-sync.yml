@@ -1,0 +1,23 @@
+---
+# https://docs.linuxserver.io/images/docker-adguardhome-sync
+# https://github.com/linuxserver/docker-adguardhome-sync
+
+- name: Adguard Home Sync
+  containers.podman.podman_container:
+    name: adguard-sync
+    # https://hub.docker.com/r/linuxserver/adguardhome-sync
+    image: lscr.io/linuxserver/adguardhome-sync
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      PUID: "0"
+      PGID: "0"
+      TZ: "{{ tz }}"
+      CONFIGFILE: /config/adguardhome-sync.yaml
+    volumes:
+      - "{{ appdata_dir }}/adguard/conf:/config"
+    ports:
+      - 8091:8080
+    label:
+      io.containers.autoupdate: registry

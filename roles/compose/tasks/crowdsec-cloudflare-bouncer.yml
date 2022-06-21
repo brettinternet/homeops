@@ -33,3 +33,10 @@
     path: "{{ appdata_dir }}/crowdsec/cloudflare-bouncer/cfg.yaml"
     line: "crowdsec_lapi_url: http://{{ ansible_default_ipv4.address }}:8088/"
     state: present
+
+- name: Delay systemd unit file service restart to wait for crowdsec service on startup
+  ansible.builtin.lineinfile:
+    path: ~/.config/systemd/user/crowdsec-cloudflare-bouncer.service
+    line: RestartSec=5
+    insertafter: "[Service]"
+    state: present
