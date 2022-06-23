@@ -1,0 +1,23 @@
+---
+- name: miniflux DB
+  containers.podman.podman_container:
+    name: miniflux_db
+    # https://hub.docker.com/_/postgres
+    image: docker.io/postgres:14
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      PGID: "{{ pgid }}"
+      PUID: "{{ puid }}"
+      TZ: "{{ tz }}"
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: "{{ nextcloud_postgres_password }}"
+    userns: keep-id
+    volume:
+      - "{{ appdata_dir }}/nextcloud_db:/var/lib/postgresql/data"
+    ports:
+      - 5436:5432
+    label:
+      io.containers.autoupdate: registry

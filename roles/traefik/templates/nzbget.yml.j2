@@ -14,7 +14,6 @@ http:
         - crowdsec
         - oauth
     nzbget-api:
-      #rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^\/:]*:[^\/:]*/)?jsonrpc}`,`/{xmlrpc:([^\/:]*:[^\/:]*/)?xmlrpc}`)"
       rule: "Host(`nzbget.{{ root_domain }}`) && PathPrefix(`/{jsonrpc:([^/:]*:[^/:]*/)?jsonrpc}`,`/{xmlrpc:([^/:]*:[^/:]*/)?xmlrpc}`)"
       service: nzbget
       tls:

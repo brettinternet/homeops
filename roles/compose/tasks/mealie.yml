@@ -1,22 +1,19 @@
 ---
 # https://hay-kot.github.io/mealie/getting-started/install/
 
-- name: mealie
+- name: Mealie
   containers.podman.podman_container:
     name: mealie
     # https://hub.docker.com/r/hkotel/mealie
-    image: docker.io/hkotel/mealie
+    image: docker.io/hkotel/mealie:frontend-v1.0.0beta-3
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"
     env:
-      TZ: "{{ tz }}"
-      DB_TYPE: sqlite
-      TOKEN_TIME: 720 # 24 hours * 30 days
-      API_DOCS: true
+      API_URL: "http://{{ ansible_default_ipv4.address }}:3013"
+    ports:
+      - 3012:3000
     volumes:
       - "{{ appdata_dir }}/mealie:/app/data"
-    ports:
-      - 9925:80
     label:
       io.containers.autoupdate: registry
