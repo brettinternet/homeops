@@ -1,16 +1,15 @@
----
-# https://github.com/dgtlmoon/changedetection.io
-
-- name: change-detection
+- name: Nextcloud Redis
   containers.podman.podman_container:
-    name: change-detection
-    image: docker.io/dgtlmoon/changedetection.io
+    name: nextcloud_redis
+    # https://hub.docker.com/_/nextcloud
+    image: docker.io/library/redis
     state: "{{ container_state }}"
     recreate: "{{ container_recreate }}"
     generate_systemd: "{{ container_generate_systemd }}"
+    env:
     volumes:
-      - "{{ appdata_dir }}/change-detection/data:/datastore"
+      - "{{ appdata_dir }}/nextcloud_redis:/var/www/html"
     ports:
-      - 3014:5000
+      - 8081:80
     label:
       io.containers.autoupdate: registry

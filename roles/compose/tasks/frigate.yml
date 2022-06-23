@@ -1,0 +1,29 @@
+---
+- name: Frigate
+  containers.podman.podman_container:
+    name: frigate
+    # https://hub.docker.com/r/blakeblackshear/frigate
+    image: docker.io/blakeblackshear/frigate:stable-amd64
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      # https://docs.frigate.video/configuration/index/
+      FRIGATE_RTSP_PASSWORD: "{{ frigate_rtsp_password }}"
+      FRIGATE_MQTT_PASSWORD: "{{ ansible_default_ipv4.address }}"
+    volumes:
+      - "{{ appdata_dir }}/frigate/config.yml:/config/config.yml:ro"
+      - "{{ appdata_dir }}/frigate/data:/media/frigate"
+    tmpfs:
+      /tmp/cache: rw,size=1000000000
+    # (width * height * 1.5 * 9 + 270480)/1048576
+    # 2560 * 1440: Amcrest ASH41-W = ~48
+    # shm_size: 64m # default 64m
+    # TODO: get PCIe or M.2 Accelerator: https://coral.ai/products/#production-products
+    # device:
+    #   - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+    ports:
+      - 3015:5000
+      - 1935:1935 # RTMP feeds
+    label:
+      io.containers.autoupdate: registry

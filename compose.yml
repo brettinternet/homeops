@@ -18,6 +18,7 @@
       - lazylibrarian
   roles:
     - role: compose
+    # TODO: only forward once adguard is completely deployed!
     - role: ingress
 
 - name: Setup general services
@@ -28,6 +29,7 @@
     containers:
       - adguard
       - adguard-sync
+      - mosquitto
       - babybuddy
       - uptime-kuma
       - home-assistant
@@ -35,6 +37,8 @@
       - miniflux_db
       - miniflux
       - healthchecks
+      - mealie
+      - mealie_api
       - change-detection
       - minecraft
       - minecraft-bedrock
@@ -45,11 +49,12 @@
       - crowdsec-dashboard
       - crowdsec-cloudflare-bouncer
     remove_containers:
+      - frigate
+      - organizr
       - valheim
       - valheim2
       - gitea_db
       - gitea
-      - mealie
       - n8n_db
       - n8n
       - firefly_db
@@ -67,8 +72,6 @@
     # Containers with a frontend to use with Traefik (roles/traefik/templates)
     frontend_containers:
       # media server
-      - name: adguard2
-        host: media
       - name: plex
         host: media
       - name: nzbget
@@ -86,6 +89,8 @@
       # server
       - name: adguard
         host: server
+      - name: frigate
+        host: server
       - name: espial
         host: server
       - name: change-detection
@@ -99,6 +104,8 @@
       - name: babybuddy
         host: server
       - name: home-assistant
+        host: server
+      - name: mealie
         host: server
       - name: crowdsec-dashboard
         host: server
@@ -119,8 +126,6 @@
 # - name: ombi
 #   host: media
 # - name: gitea
-#   host: server
-# - name: mealie
 #   host: server
 # - name: n8n
 #   host: server
