@@ -1,4 +1,11 @@
 ---
+- name: Add user to dialout group
+  become: true
+  ansible.builtin.user:
+    user: "{{ ansible_user }}"
+    groups: dialout
+    append: true
+
 - name: home-assistant
   containers.podman.podman_container:
     name: home-assistant
@@ -18,7 +25,11 @@
     cap_add:
       - CAP_NET_RAW
       - CAP_NET_BIND_SERVICE
+    group_add: keep-groups
+    # Ensure user has access to same group as devices
     device:
-      - /dev/ttyS1:/dev/ttyUSB1
+      # https://github.com/walthowd/husbzb-firmware
+      - /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0:/dev/ttyUSB0 # z-wave
+      - /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if01-port0:/dev/ttyUSB1 # zigbee
     label:
       io.containers.autoupdate: registry

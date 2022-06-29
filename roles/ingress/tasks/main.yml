@@ -1,8 +1,11 @@
 ---
+# iptables rules for DNS, because DNS can't point to a specific port
 # https://wiki.archlinux.org/title/Iptables
 
 # Alternatively, you may allow podman unprivileged access to privileged ports
 # https://github.com/containers/podman/issues/3212
+
+# VARS: ingress__iptables_flush, ingress__enable_forwarding
 
 - name: Flush iptables rules for IPv4
   block:
@@ -16,7 +19,7 @@
     - name: Remove previous persistent iptable rules
       become: true
       ansible.builtin.file:
-        path: /etc/iptables/rules.v4
+        path: /etc/iptables/homelab.rules
         state: absent
   when: ingress__iptables_flush
 
@@ -29,8 +32,8 @@
         chain: PREROUTING
         protocol: tcp
         destination_port: 53
-        jump: DNAT
-        to_destination: "{{ ansible_default_ipv4.address }}:4053"
+        jump: REDIRECT
+        to_ports: 4053
         comment: Redirect DNS to unprivileged port served by Adguard's rootless container
 
     - name: Forward UDP DNS
@@ -40,8 +43,8 @@
         chain: PREROUTING
         protocol: udp
         destination_port: 53
-        jump: DNAT
-        to_destination: "{{ ansible_default_ipv4.address }}:4053"
+        jump: REDIRECT
+        to_ports: 4053
         comment: Redirect DNS to unprivileged port served by Adguard's rootless container
 
     - name: Get unit file stat for iptables service (/usr/lib)

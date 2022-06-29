@@ -20,6 +20,7 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
         - crowdsec
 
   services:

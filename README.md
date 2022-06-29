@@ -28,9 +28,10 @@ If you're unfamiliar with [Ansible](https://www.ansible.com/), it's absolutely w
 
 See [Working with playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html) and [ansible-playbook](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
 
-#### Bastion provision
+<!-- #### Bastion provision
 
 Provision and setup a bastion server with a Digital Ocean Droplet. The setup creates a WireGuard server on the remote host and creates a client configuration on the home server. DNAT and SNAT traffic to and from the home server is routed through the bastion node with iptables.
+-->
 
 #### Hosts setup and upgrade
 
@@ -173,3 +174,9 @@ Use [Ventoy](https://www.ventoy.net) to bundle bootable ISO and IMG images on a 
 ### Media
 
 For a media server, it's a good idea to [understand digital video](https://github.com/leandromoreira/digital_video_introduction).
+
+### HTTP
+
+Traefik's reverse proxy directs HTTP traffic to the appropriate container based on the service declared by [these frontend configurations](./roles/traefik/templates/).
+
+[Middlewares](./roles/traefik/templates/middleware.yml.j2) configure Traefik in different ways, including security headers. [Scan your site](https://observatory.mozilla.org/) to confirm good practice with some headers.

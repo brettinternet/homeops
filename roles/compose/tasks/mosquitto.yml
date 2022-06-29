@@ -1,5 +1,7 @@
 ---
 # https://github.com/eclipse/mosquitto
+# Note! I had to add `listener 1883 0.0.0.0` to the config in order
+# for messages to reach the host from outside the docker network
 
 - name: mosquitto MQTT broker
   containers.podman.podman_container:

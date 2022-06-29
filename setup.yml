@@ -225,3 +225,6 @@
 # TODO: add grafana https://prometheus.io/docs/visualization/grafana/
 # TODO: integrate traefik with prometheus https://prometheus.io/docs/instrumenting/exporters/
 # TODO: setup samba share
+
+# TODO: backup and detect bitrot with https://blog.cyplo.dev/posts/2022/06/legdur/
+# install with: https://docs.ansible.com/ansible/devel/collections/community/general/cargo_module.html

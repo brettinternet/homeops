@@ -1,0 +1,24 @@
+---
+# https://github.com/zwave-js/zwavejs2mqtt
+# https://github.com/zwave-js/zwavejs2mqtt/blob/master/docker/docker-compose.yml
+
+- name: Z-Wave.JS to MQTT
+  containers.podman.podman_container:
+    name: zwavejs2mqtt
+    image: docker.io/zwavejs/zwavejs2mqtt
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      SESSION_SECRET: "{{ zwavejs2mqtt_session_secret }}"
+      ZWAVEJS_EXTERNAL_CONFIG: /usr/src/app/store/.config-db
+      TZ: "{{ tz }}"
+    volumes:
+      - "{{ appdata_dir }}/zwavejs2mqtt:/usr/src/app/store"
+    device:
+      - /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0:/dev/ttyUSB0
+    ports:
+      - 3016:8091 # web interface
+      - 3017:3000 # Z-Wave JS websocket server
+    label:
+      io.containers.autoupdate: registry
