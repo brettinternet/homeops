@@ -1,12 +1,12 @@
 ---
 # {{ ansible_managed }}
-{# https://doc.traefik.io/traefik/reference/static-configuration/file/ #}
+{# https://doc.traefik.io/traefik/reference/static-configuration/file/ -#}
 
 global:
   checkNewVersion: true
   sendAnonymousUsage: false
 
-{# https://doc.traefik.io/traefik/routing/entrypoints/ #}
+{# https://doc.traefik.io/traefik/routing/entrypoints/ -#}
 entryPoints:
   web:
     address: :80
@@ -14,33 +14,32 @@ entryPoints:
       redirections:
         entrypoint:
           to: websecure
-    #forwardedHeaders:
-    #  trustedIPs:
-    #    - "{{ ansible_default_ipv4.address }}"
+          scheme: https
+
   websecure:
     address: :443
 
-{# https://doc.traefik.io/traefik/v2.0/observability/logs/ #}
+{# https://doc.traefik.io/traefik/v2.0/observability/logs/ -#}
 accessLog:
   filePath: /var/log/traefik/access.log
 
-{# https://doc.traefik.io/traefik/operations/dashboard/ #}
+{# https://doc.traefik.io/traefik/operations/dashboard/ -#}
 api:
   dashboard: true
 
-{# https://doc.traefik.io/traefik/operations/ping/ #}
+{# https://doc.traefik.io/traefik/operations/ping/ -#}
 ping:
   entryPoint: traefik
 
-{# https://doc.traefik.io/traefik/providers/file/ #}
+{# https://doc.traefik.io/traefik/providers/file/ -#}
 providers:
   file:
     directory: /etc/traefik
     watch: true
 
-{# https://doc.traefik.io/traefik/https/acme/ #}
-{# https://letsencrypt.org/docs/challenge-types/ #}
-{# caServer: https://acme-staging-v02.api.letsencrypt.org/directory #}
+{# https://doc.traefik.io/traefik/https/acme/ -#}
+{# https://letsencrypt.org/docs/challenge-types/ -#}
+{# caServer: https://acme-staging-v02.api.letsencrypt.org/directory -#}
 certificatesResolvers:
   http:
     acme:
@@ -79,4 +78,5 @@ http:
         certResolver: http
       middlewares:
         - secure-headers
+        - ip-whitelist
         - oauth

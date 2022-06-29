@@ -1,4 +1,16 @@
 ---
+# Cameras:
+# https://docs.frigate.video/hardware/
+# https://github.com/rroller/dahua
+
+# Amcrest:
+# 1. Download the Windows app Amcrest Surveillance Pro to configure the camera to use h.264 compression
+# (otherwise disable rtmp and add output_args: { record: -f segment -segment_time 30 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v libx264 -crf 18 -c:a copy -vf format=yuv420p -b:v 4M -r 15 })
+# 2. Setup audio: https://docs.frigate.video/faqs/#audio-in-recordings
+#
+# https://support.amcrest.com/hc/en-us/articles/360004527171-Amcrest-IP-Config-Tool-Download
+# https://support.amcrest.com/hc/en-us/articles/360001012572-How-To-Setup-RTSP-Streaming
+
 - name: Frigate
   containers.podman.podman_container:
     name: frigate
@@ -12,6 +24,7 @@
       FRIGATE_RTSP_PASSWORD: "{{ frigate_rtsp_password }}"
       FRIGATE_MQTT_PASSWORD: "{{ ansible_default_ipv4.address }}"
     volumes:
+      - /etc/localtime:/etc/localtime:ro
       - "{{ appdata_dir }}/frigate/config.yml:/config/config.yml:ro"
       - "{{ appdata_dir }}/frigate/data:/media/frigate"
     tmpfs:
@@ -24,6 +37,6 @@
     #   - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
     ports:
       - 3015:5000
-      - 1935:1935 # RTMP feeds
+      - 1935:1935 # RTMP feeds - e.g. to HA
     label:
       io.containers.autoupdate: registry

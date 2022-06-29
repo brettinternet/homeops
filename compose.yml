@@ -17,9 +17,8 @@
       - ombi
       - lazylibrarian
   roles:
-    - role: compose
-    # TODO: only forward once adguard is completely deployed!
-    - role: ingress
+    - compose
+    - ingress
 
 - name: Setup general services
   hosts: server
@@ -30,6 +29,9 @@
       - adguard
       - adguard-sync
       - mosquitto
+      - zwavejs2mqtt
+      - esphome
+      - frigate
       - babybuddy
       - uptime-kuma
       - home-assistant
@@ -49,7 +51,6 @@
       - crowdsec-dashboard
       - crowdsec-cloudflare-bouncer
     remove_containers:
-      - frigate
       - organizr
       - valheim
       - valheim2
@@ -117,9 +118,8 @@
     - role: traefik
       tags: traefik
       when: "'traefik' in containers"
-    - role: compose
-    # Forward DNS ports to rootless DNS resolver
-    - role: ingress
+    - compose
+    - ingress
 # TODO: remove frontend files
 # - name: tautulli
 #   host: media

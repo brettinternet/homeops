@@ -1,0 +1,18 @@
+---
+- name: ESPHome
+  containers.podman.podman_container:
+    name: esphome
+    # https://hub.docker.com/r/esphome/esphome
+    image: docker.io/esphome/esphome
+    state: "{{ container_state }}"
+    recreate: "{{ container_recreate }}"
+    generate_systemd: "{{ container_generate_systemd }}"
+    env:
+      ESPHOME_DASHBOARD_USE_PING: true
+    volumes:
+      - "{{ appdata_dir }}/esphome:/config"
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 6052:6052 # dashboard
+    label:
+      io.containers.autoupdate: registry

@@ -2,9 +2,7 @@
 http:
   middlewares:
     oauth:
-
-      {# https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/ #}
-
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/forwardauth/ -#}
       forwardAuth:
         address: "http://{{ ingress_local_ip }}:4181"
         trustForwardHeader: true
@@ -19,8 +17,7 @@ http:
       ipWhitelist:
         sourceRange: {{ traefik_ip_whitelist | list }}
 
-    {# https://doc.traefik.io/traefik/middlewares/basicauth/ #}
-
+    {# https://doc.traefik.io/traefik/middlewares/basicauth/ -#}
     basic-auth:
       basicAuth:
         users: {{ basic_auth_users }}
@@ -31,14 +28,12 @@ http:
         users: {{ basic_auth_users | list + basic_auth_users_prometheus | list }}
         removeHeader: true
 
+    {# https://doc.traefik.io/traefik/middlewares/http/headers/#using-security-headers -#}
+    {# https://developers.google.com/search/reference/robots_meta_tag -#}
+    {# https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Clickjacking_Defense_Cheat_Sheet.md -#}
     secure-headers:
-
-      {# https://doc.traefik.io/traefik/middlewares/http/headers/#using-security-headers #}
-      {# https://developers.google.com/search/reference/robots_meta_tag #}
-      {# https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Clickjacking_Defense_Cheat_Sheet.md #}
-
       headers:
-        accessControlAllowMethods: ["GET", "OPTIONS", "PUT"]
+        accessControlAllowMethods: ["GET", "OPTIONS", "PUT", "POST", "PATCH"]
         accessControlMaxAge: 100
         hostsProxyHeaders: ["X-Forwarded-Host"]
         sslRedirect: true
@@ -46,32 +41,58 @@ http:
         stsIncludeSubdomains: true
         stsPreload: true
         forceSTSHeader: true
+        {# https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options -#}
+        {# X-Frame-Options: DENY -#}
         frameDeny: true
         contentTypeNosniff: true
+        {# X-XSS-Protection: 1; mode=block -#}
         browserXssFilter: true
-        referrerPolicy: "same-origin"
-        featurePolicy: "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
+        contentSecurityPolicy:
+        referrerPolicy: same-origin
+        permissionsPolicy: camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none';
         customResponseHeaders:
-          X-Robots-Tag: "none,noarchive,nosnippet,notranslate,noimageindex,"
-          X-XSS-Protection: 1
-          X-Frame-Options: SAMEORIGIN
+          X-Robots-Tag: noindex,nofollow,nosnippet,noarchive,notranslate,noimageindex
 
-    {# If needed, remove redirection in `entryPoints` and implement per domain: #}
-    {# https://doc.traefik.io/traefik/migration/v1-to-v2/#http-to-https-redirection-is-now-configured-on-routers #}
+    {# TODO: WIP, each service may require a different policy -#}
+    {# Use this to debug: Content-Security-Policy-Report-Only: default-src 'self' {{ root_domain }} *.{{ root_domain }} -#}
+    content-security-strict:
+      headers:
+        {# https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -#}
+        contentSecurityPolicy: |
+          default-src 'self';
 
+    content-security-plex:
+      headers:
+        {# https://security.stackexchange.com/a/95011 -#}
+        contentSecurityPolicy: |
+          default-src 'none';
+          script-src 'report-sample' 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com;
+          style-src 'report-sample' 'self' 'unsafe-inline' https://fonts.googleapis.com;
+          object-src 'none';
+          base-uri 'self';
+          connect-src 'self' https://*.plex.direct:32400 https://*.plex.tv https;://plex.tv wss://*.plex.tv wss://*.plex.direct:32400;
+          font-src 'self';
+          frame-src 'self';
+          frame-ancestors 'none';
+          img-src 'self' blob: data: https://*.plex.tv https://*.plex.direct:32400;
+          manifest-src 'self';
+          media-src 'self';
+          worker-src 'none';
+          form-action 'self';
+          upgrade-insecure-requests;
+          always;
+
+    {# If needed, remove redirection in `entryPoints` and implement per domain: -#}
+    {# https://doc.traefik.io/traefik/migration/v1-to-v2/#http-to-https-redirection-is-now-configured-on-routers -#}
     redirect-https:
-
-      {# https://doc.traefik.io/traefik/v2.0/middlewares/redirectscheme/ #}
-
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/redirectscheme/ -#}
       redirectScheme:
         scheme: https
         port: 443
         permanent: true
 
     rate-limit:
-
-      {# https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/ #}
-
+      {# https://doc.traefik.io/traefik/v2.0/middlewares/ratelimit/ -#}
       rateLimit:
         average: 100
         burst: 50
