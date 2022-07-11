@@ -10,6 +10,9 @@
 # https://www.jaegertracing.io/docs/1.22/getting-started/
 # https://www.openshift.com/blog/openshift-commons-briefing-82-distributed-tracing-with-jaeger-prometheus-on-kubernetes
 
+# TODO: automate DNS setup
+# https://github.com/tiredofit/docker-traefik-cloudflare-companion
+
 - name: traefik
   containers.podman.podman_container:
     name: traefik
