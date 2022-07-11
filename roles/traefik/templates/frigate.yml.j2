@@ -15,7 +15,7 @@ http:
         - oauth
 
   services:
-      frigate:
-        loadBalancer:
-          servers:
-            - url: "http://{{ service_ip }}:3015"
+    frigate:
+      loadBalancer:
+        servers:
+          - url: "http://{{ service_ip }}:3015"

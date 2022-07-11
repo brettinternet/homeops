@@ -32,6 +32,7 @@
       - zwavejs2mqtt
       - esphome
       - frigate
+      - unifi
       - babybuddy
       - uptime-kuma
       - home-assistant
@@ -89,6 +90,8 @@
         host: media
       # server
       - name: adguard
+        host: server
+      - name: unifi
         host: server
       - name: frigate
         host: server
