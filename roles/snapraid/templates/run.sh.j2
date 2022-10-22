@@ -6,10 +6,11 @@ if [ "$EUID" -ne 0 ]; then
   echo "Permission denied: SnapRAID requires root access."
   exit 126
 fi
-{% if snapraid_healthchecks_url is defined %}
+
+{# {% if snapraid_healthchecks_url is defined %}
 
 /usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ snapraid_healthchecks_url }}/start"
-{% endif %}
+{% endif %} #}
 
 run_as_user() {
   /bin/su {{ ansible_user }} -c "$@"
@@ -24,7 +25,8 @@ SNAPRAID_RC=$?
 {% endif %}
 
 run_as_user "podman unpause -a"
-{% if snapraid_healthchecks_url is defined %}
+
+{# {% if snapraid_healthchecks_url is defined %}
 
 /usr/bin/curl -fsS -m 10 --retry 3 -o /dev/null "{{ snapraid_healthchecks_url }}/$SNAPRAID_RC"
-{% endif %}
+{% endif %} #}
