@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - csi-driver-nfs
+  - descheduler
+  # - goldilocks
+  - kube-vip
+  - kyverno
+  - metrics-server
+  - node-feature-discovery
+  - reloader
+  # - rook-ceph
+  # - smarter-device-manager
+  # - vpa

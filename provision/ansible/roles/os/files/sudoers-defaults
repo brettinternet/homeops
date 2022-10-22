@@ -1,0 +1,3 @@
+Defaults  passwd_timeout=0
+Defaults  timestamp_timeout=30
+Defaults  editor=/usr/bin/rvim

@@ -1,0 +1,60 @@
+# MQTT broker
+# https://github.com/eclipse/mosquitto
+# Note! I had to add `listener 1883 0.0.0.0` to the config in order
+# for messages to reach the host from outside the docker network
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mosquitto
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      # https://hub.docker.com/_/eclipse-mosquitto
+      repository: docker.io/library/eclipse-mosquitto
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+    persistence:
+      data:
+        enabled: true
+        type: pvc
+        existingClaim: appdata
+        subPath:
+          - path: mosquitto/mosquitto.conf
+            mountPath: /mosquitto/config/mosquitto.conf
+          - path: mosquitto/data
+            mountPath: /mosquitto/data
+          - path: mosquitto/log
+            mountPath: /mosquitto/log
+    service:
+      main:
+        ports:
+          http:
+            port: 1883
+      socket:
+        enabled: true
+        ports:
+          socket:
+            enabled: true
+            port: 9001
+            protocol: TCP
+            targetPort: 9001

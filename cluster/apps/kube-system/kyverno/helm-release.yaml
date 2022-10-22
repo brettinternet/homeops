@@ -1,0 +1,34 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kyverno
+  namespace: kube-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: kyverno
+      version: v2.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: kyverno
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  # Some resources are filtered from rules by default:
+  # https://artifacthub.io/packages/helm/kyverno/kyverno#default-resource-filters
+  values:
+    installCRDs: true
+    replicaCount: 3
+    extraArgs:
+      - --autogenInternals=false
+      - --clientRateLimitQPS=30
+      - --clientRateLimitBurst=60
+    serviceMonitor:
+      enabled: false

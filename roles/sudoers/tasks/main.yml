@@ -1,8 +1,0 @@
----
-- name: Copy sudoers defaults
-  become: true
-  ansible.builtin.copy:
-    src: defaults
-    dest: /etc/sudoers.d/
-    validate: "visudo -cf %s"
-    mode: 0644

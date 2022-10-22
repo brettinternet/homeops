@@ -1,0 +1,159 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: plex
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      # https://hub.docker.com/r/plexinc/pms-docker/
+      repository: docker.io/plexinc/pms-docker
+      tag: plexpass
+      pullPolicy: IfNotPresent
+    # See https://support.plex.tv/articles/201105343-advanced-hidden-server-settings/
+    # NOTE: Plex preference options are camelCase and CASE SENSITIVE
+    env:
+      TZ: ${TIMEZONE}
+      PLEX_UID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PLEX_GID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
+      # the dashboard will say "Not available outside your network" even though it is... >:(
+      # The local IP is also required for direct play with some apps (such as the Apple TV apparently)
+      ADVERTISE_IP: "https://plex.${PUBLIC_DOMAIN},http://${METALLB_PLEX_ADDR}:32400"
+      ALLOWED_NETWORKS: "10.1.1.0/24,10.1.2.0/24,10.42.0.0/16,10.43.0.0/16"
+      # PLEX_CLAIM:
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: plex
+      #       key: PLEX_CLAIM
+    # Ports: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/loadBalancerIPs: "${METALLB_PLEX_ADDR}"
+        ports:
+          # primary
+          http:
+            port: &port 32400
+          # Plex DLNA Server
+          # https://support.plex.tv/articles/200350536-dlna/
+          dnla-tcp:
+            enabled: true
+            port: 32469
+            protocol: TCP
+          dnla-udp:
+            enabled: true
+            port: 1900
+            protocol: UDP
+          # GDM Network discovery
+          # https://support.plex.tv/articles/200430283-network/
+          gdm-1-udp:
+            enabled: true
+            port: 32410
+            protocol: UDP
+          gdm-2-udp:
+            enabled: true
+            port: 32412
+            protocol: UDP
+          gdm-3-udp:
+            enabled: true
+            port: 32413
+            protocol: UDP
+          gdm-4-udp:
+            enabled: true
+            port: 32414
+            protocol: UDP
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+          httpGet:
+            path: /identity
+            port: *port
+    securityContext:
+      privileged: true
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: plex
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data/library
+        subPath: library
+      # https://support.plex.tv/articles/200250347-transcoder/
+      transcode:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        # sizeLimit: 20Gi
+        mountPath: /transcode
+      tuner:
+        enabled: true
+        type: hostPath
+        mountPath: /dev/dvb
+        hostPath: /dev/dvb
+      # Quick Sync https://github.com/plexinc/pms-docker#intel-quick-sync-hardware-transcoding-support
+      dri:
+        enabled: true
+        type: hostPath
+        mountPath: /dev/dri
+        hostPath: /dev/dri
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          # redirect to /web since the plex server doesn't handle this and just returns 401 at root 🤔
+          nginx.ingress.kubernetes.io/app-root: /web
+          nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+          hajimari.io/enable: "true"
+          hajimari.io/icon: plex
+        hosts:
+          - host: &host plex.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    resources:
+      requests:
+        # Hardware acceleration using an Intel iGPU w/ QuickSync and
+        # using intel-gpu-plugin (https://github.com/intel/intel-device-plugins-for-kubernetes)
+        cpu: 100m
+        memory: 2000Mi
+      limits:
+        # Hardware acceleration using an Intel iGPU w/ QuickSync and
+        # using intel-gpu-plugin (https://github.com/intel/intel-device-plugins-for-kubernetes)
+        memory: 10000Mi
+    nodeSelector:
+      feature.node.kubernetes.io/custom-tuner: "true"

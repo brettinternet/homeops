@@ -1,0 +1,4 @@
+extends: "google"
+parserOptions:
+  sourceType: module
+  ecmaVersion: latest

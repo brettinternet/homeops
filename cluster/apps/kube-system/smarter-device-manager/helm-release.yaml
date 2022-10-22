@@ -1,0 +1,79 @@
+# https://gitlab.com/arm-research/smarter/smarter-device-manager/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app smarter-device-manager
+  namespace: kube-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: registry.gitlab.com/arm-research/smarter/smarter-device-manager
+      tag: latest
+    global:
+      nameOverride: *app
+    # See https://gitlab.com/arm-research/smarter/smarter-device-manager for configuration examples
+    config: |
+      - devicematch: ^sda1$
+        nummaxdevices: 1
+    # When using hostNetwork make sure you set dnsPolicy to `ClusterFirstWithHostNet`
+    hostNetwork: true
+    # Defaults to "ClusterFirst" if hostNetwork is false and "ClusterFirstWithHostNet" if hostNetwork is true.
+    dnsPolicy: ClusterFirstWithHostNet
+    termination:
+      # Configure the path at which the file to which the main container's termination message will be written.
+      # Overrides the default of `/dev/termination-log` to allow read-only `persistence.devfs` at `/dev`.
+      # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#lifecycle-1
+      messagePath: /var/log/termination-log
+      # Indicate how the main container's termination message should be populated.
+      # Valid options are `File` and `FallbackToLogsOnError`.
+      # smarter-device-manager does not support a termination-log, so use the container's log.
+      # https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#lifecycle-1
+      messagePolicy: FallbackToLogsOnError
+    # Custom priority class for different treatment by the scheduler
+    # Setting this is not necessary, but it is recommended.
+    # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+    priorityClassName: system-node-critical
+    persistence:
+      devfs:
+        enabled: true
+        type: hostPath
+        hostPath: /dev
+        readOnly: true
+      sysfs:
+        enabled: true
+        type: hostPath
+        hostPath: /sys
+        readOnly: true
+      kubeletsockets:
+        enabled: true
+        type: hostPath
+        hostPath: "/var/lib/kubelet/device-plugins"
+    # Configure the securityContext for this pod
+    # https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
+    # https://gitlab.com/arm-research/smarter/smarter-device-manager/-/blob/master/smarter-device-management-pod-k3s.yaml#L7-10
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      allowPrivilegeEscalation: false
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      # runAsUser: 1000

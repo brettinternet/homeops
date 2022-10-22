@@ -1,0 +1,80 @@
+# TODO: tag reader - https://www.home-assistant.io/blog/2020/09/15/home-assistant-tags/
+# TODO: floorplan - https://experiencelovelace.github.io/ha-floorplan/docs/quick-start/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: home-assistant
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: lscr.io/linuxserver/homeassistant
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    securityContext:
+      # Privileged securityContext may be required if USB devices are accessed directly through the host machine
+      privileged: true
+      # capabilities:
+      #   add: ["CAP_NET_RAW", "CAP_NET_BIND_SERVICE"]
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: homeassistant
+      zwave:
+        enabled: true
+        type: hostPath
+        # mountPath: /dev/zwave
+        mountPath: /dev/ttyUSB0
+        hostPath: /dev/serial/by-id/${DEVICE_ID_ZWAVE}
+      zigbee:
+        enabled: true
+        type: hostPath
+        # mountPath: /dev/zigbee
+        mountPath: /dev/ttyUSB1
+        hostPath: /dev/serial/by-id/${DEVICE_ID_ZIGBEE}
+    service:
+      main:
+        ports:
+          http:
+            port: 8123
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: home-assistant
+        hosts:
+          - host: &host "home.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    nodeSelector:
+      feature.node.kubernetes.io/custom-zwave: "true"

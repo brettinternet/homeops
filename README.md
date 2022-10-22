@@ -6,61 +6,79 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
 
-I tried to fit as many buzzwords into this stack as I could: rootless Podman container orchestration with a ZFS array and SnapRAID JBOD, behind an OPNsense firewall and a Traefik ingress with OAuth, deployed with Ansible to multiple Arch Linux hosts, on a WireGuard network. 🏅
+## Features
 
-This infrastructure as code is written for me because I'm forgetful. But perhaps it'll help you develop your own server architecture.
+- Rancher's K3s
+- Flux GitOps
+- Ansible node provisioning
+- Terraform DNS updates
+- SOPS
+- Renovate bot dependency updates
+- Cloudflared HTTP tunnel
+- WireGuard VPN pod gateway
+- K8s gateway and NGINX ingress controller
+- Both internal & external services
+- OIDC authentication
+- Automatic Cloudflare DNS updates
+- [MetalLB](https://metallb.universe.tf/) bare metal K8s network loadbalancing
 
-## Setup
+## Usage
 
-Run setup to create local configuration files and install `requirements.yml` from ansible-galaxy.
+Setup and usage is inspired heavily by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. Historical revisions of this repository had rootless Podman containers deployed with ansible as systemd units.
+
+### Setup
+
+[Install go-task](https://taskfile.dev/installation/)
 
 ```sh
-make setup
+task init
 ```
 
-Then, edit `inventory.yml` with the target vars and secrets. See [example.inventory.yml](./example.inventory.yml) for what that looks like.
+Setup env vars in `.env`.
 
-## Deploy
+```sh
+task verify
 
-If you're unfamiliar with [Ansible](https://www.ansible.com/), it's absolutely worth the effort to learn the mechanics and employ it in your own homelab.
+task configure
+```
 
-### Playbooks
+Then, provision your infrastructure.
 
-See [Working with playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html) and [ansible-playbook](https://docs.ansible.com/ansible/latest/cli/ansible-playbook.html)
+```sh
+task ansible:{list,setup,install,status,nodes}
+```
 
-<!-- #### Bastion provision
+Setup DNS.
 
-Provision and setup a bastion server with a Digital Ocean Droplet. The setup creates a WireGuard server on the remote host and creates a client configuration on the home server. DNAT and SNAT traffic to and from the home server is routed through the bastion node with iptables.
--->
+```sh
+task terraform:{init,plan,apply}
+```
 
-#### Hosts setup and upgrade
+### Deploy
 
-- Upgrade pacman and apt cache, packages and the apt distribution.
-- Deploy rootless containers in an orchestration behind Traefik's reverse proxy.
-- Setup [SnapRAID](https://www.snapraid.it/) for JBOD disk parity and configure cron to run a [snapraid-runner](https://github.com/Chronial/snapraid-runner) script to sync parity and periodically check the data for errors.
+Verify flux can be installed. Then, push changes to remote repo and install.
 
-#### Container composition
+```sh
+task cluster:{verify,install}
+```
 
-Rootless podman support for container images and deployment within [an ansible role](./roles/compose/tasks).
+Push latest to repo - you can use the [wip.sh](./scripts/wip.sh) script for that with `task wip`.
+
+```sh
+task cluster:{reconcile,resources}
+```
+
+### Deployments
+
+Most deployments in this repo use an `app-template` chart with [these configuration options](https://github.com/bjw-s/helm-charts/tree/main/charts/library/common).
+
+### Update
+
+The Renovate bot will help find updates for charts and images. [Install Renovate Bot](https://github.com/apps/renovate), add to your repository and [view Renovate bot activity](https://app.renovatebot.com/dashboard), or use the self-hosted option.
 
 ## Hardware
 
 ![book cover: Mommy, Why is There a Server is the House?](./files/stay_at_home_server.jpg)
-
-### Homelab
-
-- [custom NAS build](https://pcpartpicker.com/list/PKJqfP)
-
-| Type             | Item                                                                                                                                                             |
-| :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CPU**          | [Intel Core i7-7700 3.6 GHz Quad-Core Processor](https://pcpartpicker.com/product/9mRFf7/intel-core-i7-7700-36ghz-quad-core-processor-bx80677i77700)             |
-| **CPU Cooler**   | [Noctua NH-L9i 33.84 CFM CPU Cooler](https://pcpartpicker.com/product/xxphP6/noctua-nh-l9i-3384-cfm-cpu-cooler-nh-l9i)                                           |
-| **Motherboard**  | [Gigabyte GA-H270N-WIFI Mini ITX LGA1151 Motherboard](https://pcpartpicker.com/product/gVZ2FT/gigabyte-ga-h270n-wifi-mini-itx-lga1151-motherboard-ga-h270n-wifi) |
-| **Memory**       | [Corsair Vengeance LPX 16 GB (2 x 8 GB) DDR4-3000 CL15 Memory](https://pcpartpicker.com/product/MYH48d/corsair-memory-cmk16gx4m2b3000c15)                        |
-| **Case**         | [Fractal Design Node 804 MicroATX Mid Tower Case](https://pcpartpicker.com/product/yTdqqs/fractal-design-case-fdcanode804blw)                                    |
-| **Power Supply** | [EVGA G2 550 W 80+ Gold Certified Fully Modular ATX Power Supply](https://pcpartpicker.com/product/qYTrxr/evga-power-supply-220g20550y1)                         |
-
-<!-- | **Storage**      | [Hitachi Deskstar NAS 3 TB 3.5" 7200RPM Internal Hard Drive](https://pcpartpicker.com/product/TP2kcf/hitachi-internal-hard-drive-0s03660)                        | -->
 
 ### Resources
 
@@ -97,11 +115,8 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 ### Linux
 
-Since I use [Arch Linux](https://archlinux.org/) as my daily driver, it's convenient for me to also use it to run my servers. Debian is a worthy alternative, however I find the stability of Arch to be sufficient for home use. See [my linux notes and automation](https://github.com/brettinternet/linux).
-
-#### Podman
-
-[How do user IDs and rootless containers work?](https://blog.christophersmart.com/2021/01/26/user-ids-and-rootless-containers-with-podman/)
+- [Arch Linux](https://archlinux.org)
+- [Raspberry Pi Debian](https://wiki.debian.org/RaspberryPiImages)
 
 #### SSH
 
@@ -155,7 +170,7 @@ Remember, for data that's irreplaceable [RAID is _not_ a backup](https://www.rai
 
 #### mkinitcpio
 
-Be sure to add `zfs` and `resume`
+Be sure to add `zfs` and `resume`.
 
 ```
 HOOKS=(base udev autodetect modconf block filesystems keyboard zfs resume fsck)
@@ -165,7 +180,7 @@ Then, [regenerate the image](https://wiki.archlinux.org/index.php/Mkinitcpio#Ima
 
 #### ZFS
 
-Install `zfs-dkms` and `zfs-utils`, and be sure to have `linux-headers` installed for dkms to work.
+Install `zfs-dkms` and `zfs-utils`, and be sure to have `linux-headers` installed for dkms to work. [Update the ZFS libraries together](https://gist.github.com/brettinternet/311c0ff31164d3cab4a38ea71cb4b01f) using a AUR helper.
 
 #### OS Installation
 
