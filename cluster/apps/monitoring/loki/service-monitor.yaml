@@ -1,0 +1,15 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: loki-minio
+  namespace: dbms
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: loki-minio
+      app.kubernetes.io/name: loki-minio
+  endpoints:
+    - port: api
+      scheme: http
+      path: /minio/v2/metrics/cluster

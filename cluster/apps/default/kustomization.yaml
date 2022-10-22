@@ -1,0 +1,81 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - appdata-pvc.yaml
+  - namespace.yaml
+  - adguard
+  # - apprise
+  - archivebox
+  - authelia
+  - babybuddy
+  - change-detection
+  # - cloudbeaver
+  - cyberchef
+  # - dokuwiki
+  - esphome
+  - espial
+  - frigate
+  - ghostfolio
+  ## - glauth
+  - hajimari
+  # - hajimari-public
+  - home-assistant
+  - kubernetes-dashboard
+  - linkding
+  - lldap
+  - maddy
+  - mealie
+  - miniflux
+  - mosquitto
+  # - neko
+  # - nextcloud
+  - ntfy
+  - paperless-ngx
+  - pinry
+  - privatebin
+  - privatebin-public
+  # - scrutiny
+  - unifi
+  - uptime-kuma
+  # - wger
+  - whoogle
+  - wikijs
+  - zwavejs2mqtt
+
+# Add:
+
+# - Photos: https://github.com/photoprism/photoprism/blob/develop/docker/examples/docker-compose.yml
+# If necessary for mobile: https://www.photosync-app.com/premium.html
+# also may consider: https://photoview.github.io/, https://github.com/webreaper/damselfly, https://github.com/photostructure
+# https://github.com/immich-app/immich (has mobile backup!)
+
+# https://github.com/bemasher/rtlamr
+# https://flightaware.com/adsb/piaware/build/
+# https://github.com/akhilrex/podgrab
+# https://github.com/seanap/Plex-Audiobook-Guide#create-audiobook-library-in-plex
+# https://github.com/advplyr/audiobookshelf
+
+# authentication:
+# https://github.com/authelia/authelia
+# OR https://github.com/goauthentik/authentik
+# https://github.com/nitnelave/lldap
+
+# email backup:
+# http://www.offlineimap.org/screenshots/
+# https://blog.wikichoon.com/2017/05/configuring-offlineimap-dovecot.html
+# alias: https://github.com/simple-login/app
+
+# system backup:
+# https://github.com/restic/restic, https://github.com/Lobaro/restic-backup-docker
+# https://github.com/minio/minio
+
+# system:
+# https://github.com/tiredofit/docker-traefik-cloudflare-companion
+
+# security:
+# https://github.com/stamparm/maltrail
+# https://hub.docker.com/r/tomdesinto/maltrail/
+
+# plausible analytics:
+# https://plausible.io/docs/self-hosting, https://hub.docker.com/r/plausible/analytics, https://github.com/plausible/hosting

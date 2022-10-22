@@ -1,0 +1,78 @@
+# Optional frontend: https://github.com/WDaan/VueTorrent
+
+# IP checker: https://ipleak.net
+# Chromium addon: https://github.com/bogenpirat/remote-torrent-adder
+
+# TODO: https://bbs.archlinux.org/viewtopic.php?id=277867
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: downloads-gateway
+      namespace: vpn
+  values:
+    image:
+    # https://hub.docker.com/r/linuxserver/qbittorrent
+      repository: lscr.io/linuxserver/qbittorrent
+      tag: latest
+    env:
+      TZ: ${TIMEZONE}
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      WEBUI_PORT: &web-port 8080
+    hostname: qbittorrent
+    service:
+      main:
+        ports:
+          http:
+            port: *web-port
+      # bittorrent connection ports are access from gateway sidecar
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: qbittorrent
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data/torrent
+        subPath: torrent
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: download-network
+        hosts:
+          - host: &host torrent.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      set-downloads-gateway: "true"

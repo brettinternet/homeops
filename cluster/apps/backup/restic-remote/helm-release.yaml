@@ -1,0 +1,62 @@
+# https://github.com/djmaze/resticker
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: restic-remote
+  namespace: backup
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/lobaro/restic-backup-docker
+      tag: latest
+    # https://github.com/djmaze/resticker#configuration-options
+    env:
+      TZ: "${TIMEZONE}"
+      BACKUP_CRON: 0 0 0 * * *
+      PRUNE_CRON: 0 0 1 * * *
+      CHECK_CRON: 0 0 2 * * *
+      # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
+      # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#backblaze-b2
+      RESTIC_REPOSITORY:
+      RESTIC_PASSWORD:
+      RESTIC_BACKUP_SOURCES: /data
+      POST_COMMANDS_FAILURE: |-
+        curl -d "The remote restic backup failed" "http://ntfy.default.svc.cluster.local/homelab"
+    securityContext:
+      privileged: true
+      # capabilities:
+      #   add: ["SYS_ADMIN"]
+    persistence:
+      data:
+        enabled: true
+        # change to backup location
+        existingClaim: appdata
+        subPath:
+          # TODO: target specific subdirectories
+          - path: /
+            mountPath: /data
+      # https://github.com/djmaze/resticker#using-restic-mount
+      fuse:
+        enabled: true
+        mountPath: /dev/fuse
+        type: hostPath
+        hostPath: /dev/fuse
+        readOnly: true

@@ -1,0 +1,44 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: busybox
+  namespace: busybox
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/library/busybox
+      tag: latest
+    service:
+      main:
+        enabled: false
+    command:
+      - sleep
+      - "3600"
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "5"
+    ## healthcheck?
+    # command:
+    #   - sh
+    #   - -c
+    #   # https://stackoverflow.com/a/19139134
+    #   # https://busybox.net/downloads/BusyBox.html#nc
+    #   - while true ; do echo -e 'HTTP/1.1 200 OK\n\n $(date)' | nc -l -p 3000; done

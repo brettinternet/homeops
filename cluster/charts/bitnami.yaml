@@ -1,0 +1,11 @@
+# ARM64 is unsupported
+# https://github.com/bitnami/charts/issues/7305
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://charts.bitnami.com/bitnami

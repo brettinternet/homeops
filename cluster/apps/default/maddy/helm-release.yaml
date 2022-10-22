@@ -1,0 +1,85 @@
+# Mail:
+# Resources:
+# - https://github.com/anonaddy/docker
+# - https://anonaddy.com/self-hosting/
+
+# Right now, maddy only works as a relay to the SMTP values defined in the secret
+# maddy.default.svc.cluster.local:2525
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app maddy
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    controller:
+      strategy: RollingUpdate
+    image:
+      repository: ghcr.io/foxcpp/maddy
+      tag: 0.6.2
+    env:
+      DEBUG: "false"
+      SMTP_PORT: "587"
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: 2525
+          metrics:
+            enabled: false
+            port: 9749
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: *app
+        subPath: maddy.conf
+        mountPath: /data/maddy.conf
+        readOnly: true
+      shm:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 1Gi
+        mountPath: /dev/shm
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: *app
+      secret.reloader.stakater.com/reload: *app
+    # probes:
+    #   liveness:
+    #     enabled: true
+    #     custom: true
+    #     spec:
+    #       initialDelaySeconds: 30
+    #       periodSeconds: 10
+    #       timeoutSeconds: 1
+    #       failureThreshold: 3
+    #       httpGet:
+    #         path: /
+    #         port: 9749
+    # resources:
+    #   requests:
+    #     cpu: 10m
+    #     memory: 10Mi
+    #   limits:
+    #     memory: 50Mi

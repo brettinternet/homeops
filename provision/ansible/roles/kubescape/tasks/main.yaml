@@ -1,0 +1,17 @@
+---
+- name: Download kubescape {{ kubescape_version }}
+  ansible.builtin.get_url:
+    url: "{{ kubescape_download_url }}"
+    dest: "{{ kubescape_bin_path }}"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Run kubescape
+  ansible.builtin.command: /opt/bin/kubescape scan --submit --enable-host-scan --verbose
+  register: kubescape_result
+
+- name: Print kubescape result
+  ansible.builtin.debug:
+    var: kubescape_result
+    verbosity: 2

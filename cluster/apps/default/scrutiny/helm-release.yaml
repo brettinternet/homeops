@@ -1,0 +1,205 @@
+# https://github.com/AnalogJ/scrutiny/blob/master/docker/example.hubspoke.docker-compose.yml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: scrutiny
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: scrutiny-influxdb
+      namespace: default
+  values:
+    image:
+      repository: ghcr.io/analogj/scrutiny
+      tag: master-web
+    env:
+      TZ: "${TIMEZONE}"
+      SCRUTINY_WEB_INFLUXDB_HOST: scrutiny-influxdb.default.svc.cluster.local
+    service:
+      main:
+        ports:
+          http:
+            port: &port 8080
+    probes:
+      liveness: &health
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+          httpGet:
+            path: /api/health
+            port: *port
+      readiness: *health
+      startup:
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 30
+          httpGet:
+            path: /api/health
+            port: *port
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /opt/scrutiny/config
+        subPath: scrutiny
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: harddisk
+        hosts:
+          - host: &host "disks.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+
+# https://github.com/AnalogJ/scrutiny/blob/master/docs/TROUBLESHOOTING_DEVICE_COLLECTOR.md
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: scrutiny-collector
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  dependsOn:
+    - name: scrutiny
+      namespace: default
+  values:
+    image:
+      repository: ghcr.io/analogj/scrutiny
+      tag: master-collector
+    env:
+      COLLECTOR_API_ENDPOINT: http://scrutiny.default.svc.cluster.local:8080
+    service:
+      main:
+        enabled: false
+    securityContext:
+      privileged: true
+      # capabilities:
+      #   add: ["SYS_RAWIO"]
+    persistence:
+      udev:
+        enabled: true
+        mountPath: /run/udev
+        type: hostPath
+        hostPath: /run/udev
+        readOnly: true
+      sda:
+        enabled: true
+        mountPath: /dev/sda
+        type: hostPath
+        hostPath: /dev/sda
+        readOnly: true
+    nodeSelector:
+      kubernetes.io/hostname: harambe
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: scrutiny-influxdb
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: docker.io/library/influxdb
+      tag: 2.4-alpine
+    service:
+      main:
+        ports:
+          http:
+            port: &port 8086
+    probes:
+      liveness: &health
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: *port
+      readiness: *health
+      startup:
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 0
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 30
+          httpGet:
+            path: /health
+            port: *port
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/influxdb2
+        existingClaim: appdata
+        subPath: scrutiny_influxdb

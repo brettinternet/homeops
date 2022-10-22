@@ -1,0 +1,129 @@
+# https://docs.requarks.io/install/docker
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app wikijs
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: wikijs-postgres
+      namespace: default
+  values:
+    image:
+      # https://hub.docker.com/r/requarks/wiki
+      repository: ghcr.io/requarks/wiki
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      DB_TYPE: postgres
+      DB_HOST: wikijs-postgres.default.svc.cluster.local
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_NAME: wikijs
+      HA_ACTIVE: true
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+    # local storage on disk, backups, keys, etc
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        existingClaim: appdata
+        subPath: wikijs
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: file-document-multiple
+        hosts:
+          - host: &host "wiki.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: wikijs-postgres
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: docker.io/library/postgres
+      tag: "14"
+    env:
+      POSTGRES_USER: wikijs
+      POSTGRES_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: wikijs
+            key: DB_PASS
+      POSTGRES_DB: wikijs
+      PGDATA: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 5432
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: wikijs_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: wikijs

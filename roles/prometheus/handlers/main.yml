@@ -1,9 +1,0 @@
----
-- name: Restart Prometheus
-  containers.podman.podman_container:
-    name: prometheus
-    state: started
-    force_restart: true
-  when:
-    - prometheus_container_info_result.containers | length > 0
-    - prometheus_container_info_result.containers[0]['State']['Running']

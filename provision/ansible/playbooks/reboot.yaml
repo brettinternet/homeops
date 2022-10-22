@@ -1,0 +1,11 @@
+---
+- hosts:
+    - master
+    - worker
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Reboot
+      ansible.builtin.reboot:
+      retries: 10
+      delay: 10

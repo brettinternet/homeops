@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-settings
+  namespace: flux-system
+data:
+  CLUSTER_NAME: home
+  TIMEZONE: America/Denver
+  # Must be the same subnet as Node https://github.com/metallb/metallb/issues/433
+  METALLB_LB_RANGE: 10.1.2.101-10.1.2.120
+  METALLB_K8S_GATEWAY_ADDR: 10.1.2.101
+  METALLB_INGRESS_ADDR: 10.1.2.102
+  METALLB_INGRESS_INTERNAL_ADDR: 10.1.2.103
+  METALLB_DNS_ADDR: 10.1.2.104
+  METALLB_MADDY_ADDR: 10.1.2.105
+  METALLB_PLEX_ADDR: 10.1.2.106
+  METALLB_UNIFI_ADDR: 10.1.2.107
+  METALLB_NFS_SHARED_ADDR: 10.1.2.108
+  NFS_SHARED_DIR: /mnt/tank/shared
+  METALLB_SMB_SHARED_ADDR: 10.1.2.109
+  SMB_SHARED_DIR: /mnt/tank/shared
+  UPSTREAM_DNS_ADDR: 10.1.2.1:4053 # fallback/alternate
+  NFS_FAST_TANK_CLUSTERIP: 10.43.1.10
+  NFS_FAST_TANK_DIR: /mnt/tank
+  NFS_JBOD_CLUSTERIP: 10.43.1.11
+  NFS_JBOD_DIR: /mnt/storage
+  BITTORRENT_LOCALHOST_PORT: "56231"
+  MAIL_SMTP_LOCALHOST_PORT: "25"
+  SECURITY_CONTEXT_RUN_AS_USER: "1000"
+  SECURITY_CONTEXT_RUN_AS_GROUP: "1000"
+  SECURITY_CONTEXT_FS_GROUP: "1000"
+  # https://github.com/walthowd/husbzb-firmware
+  DEVICE_ID_ZWAVE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0
+  DEVICE_ID_ZIGBEE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if01-port0
+  # NET_POD_CIDR: "10.42.0.0/16"
+  # NET_SVC_CIDR: "10.43.0.0/16"
+  # NET_NODE_CIDR: "10.1.2.0/24"

@@ -1,0 +1,147 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app miniflux
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  dependsOn:
+    - name: miniflux-postgres
+      namespace: default
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: docker.io/miniflux/miniflux
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      CREATE_ADMIN: "1"
+      RUN_MIGRATIONS: "1"
+      LOG_DATE_TIME: "1"
+      # https://miniflux.app/docs/howto.html#oauth2
+      OAUTH2_PROVIDER: oidc
+      OAUTH2_CLIENT_ID: miniflux
+      # openssl rand -hex 16
+      OAUTH2_CLIENT_SECRET: "${MINIFLUX_OAUTH_CLIENT_SECRET}"
+      # OAUTH2_USER_CREATION: "1"
+      OAUTH2_REDIRECT_URL: "https://rss.${PUBLIC_DOMAIN}/oauth2/oidc/callback"
+      OAUTH2_OIDC_DISCOVERY_ENDPOINT: "https://auth.${PUBLIC_DOMAIN}"
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: &port 8080
+    probes:
+      liveness:
+        enabled: true
+        custom: true
+        spec:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+          httpGet:
+            path: /healthcheck
+            port: *port
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: rss
+        hosts:
+          - host: &host "rss.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    # resources:
+    #   requests:
+    #     cpu: 50m
+    #     memory: 64Mi
+    #   limits:
+    #     memory: 96Mi
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: miniflux-postgres
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: library/postgres
+      tag: "10.10"
+    env:
+      - name: POSTGRES_USER
+        value: miniflux
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: miniflux
+            key: POSTGRES_PASSWORD
+      - name: POSTGRES_DB
+        value: miniflux
+      - name: PGDATA
+        value: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            enabled: true
+            port: 5432
+            protocol: TCP
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: miniflux_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: miniflux

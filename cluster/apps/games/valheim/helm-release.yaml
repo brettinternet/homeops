@@ -1,0 +1,100 @@
+# https://github.com/mbround18/valheim-docker
+# DNS: create A record `valheim` pointed to IP, don't proxy IP
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app valheim
+  namespace: games
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      # https://hub.docker.com/r/mbround18/valheim
+      repository: docker.io/mbround18/valheim
+      tag: latest
+    # https://github.com/lloesche/valheim-server-docker#environment-variables
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      SERVER_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: *app
+            key: SERVER_1_NAME
+      SERVER_PASS:
+        valueFrom:
+          secretKeyRef:
+            name: *app
+            key: SERVER_1_PASSWORD
+      SERVER_PORT: 2456
+      SERVER_PUBLIC: false
+      BACKUPS: true
+      BACKUPS_CRON: "*/15 * * * *"
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          - path: valheim/saves
+            mountPath: /home/steam/.config/unity3d/IronGate/Valheim
+          - path: valheim/server
+            mountPath: /home/steam/valheim
+          - path: valheim/backups
+            mountPath: /home/steam/backups
+    service:
+      main:
+        # type: LoadBalancer
+        # externalTrafficPolicy: Cluster
+        # loadBalancerIP:
+        ports:
+          http:
+            enabled: false
+          valheim-1:
+            enabled: true
+            port: 2456
+            protocol: UDP
+            targetPort: 2456
+          valheim-2:
+            enabled: false
+            port: 2457
+            protocol: UDP
+            targetPort: 2457
+          valheim-3:
+            enabled: false
+            port: 2458
+            protocol: UDP
+            targetPort: 2458
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: bell-outline
+        hosts:
+          - host: &host "valheim.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host

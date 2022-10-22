@@ -1,0 +1,37 @@
+# Also try: https://github.com/aquasecurity/kube-bench
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: trivy
+  namespace: trivy-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: trivy-operator
+      version: 0.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: aqua
+        namespace: flux-system
+  install:
+    createNamespace: true
+    crds: CreateReplace
+    remediation:
+      retries: 5
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 5
+  values:
+    excludeNamespaces: "{{ .Release.Namespace }}"
+    operator:
+      replicas: 1
+      scanJobsConcurrentLimit: 3
+      vulnerabilityScannerScanOnlyCurrentRevisions: true
+      configAuditScannerScanOnlyCurrentRevisions: true
+    trivy:
+      ignoreUnfixed: true
+    serviceMonitor:
+      enabled: true

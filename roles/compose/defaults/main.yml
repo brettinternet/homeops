@@ -1,8 +1,0 @@
----
-container_recreate: false
-
-# Prometheus
-prometheus_storage_retention_time: "60d"
-# Maximum number of bytes that can be stored for blocks. Units
-# supported: KB, MB, GB, TB, PB.
-prometheus_storage_retention_size: "0"

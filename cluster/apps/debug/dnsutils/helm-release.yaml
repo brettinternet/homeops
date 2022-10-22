@@ -1,0 +1,34 @@
+# Debugging DNS https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/#create-a-simple-pod-to-use-as-a-test-environment
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: dnsutils
+  namespace: debug
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    service:
+      main:
+        enabled: false
+    image:
+      repository: gcr.io/kubernetes-e2e-test-images/jessie-dnsutils
+      tag: "1.0"
+    command:
+      - sleep
+      - "3600"

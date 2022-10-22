@@ -1,0 +1,12 @@
+---
+version: "3"
+
+tasks:
+  yaml:
+    desc: Run yamllint
+    cmds:
+      - yamllint .
+    preconditions:
+      - sh: command -v yamllint
+        msg: |
+          Install 'yamllint' with 'pip install -r requirements.txt' or via your package manager (e.g. homebrew).
