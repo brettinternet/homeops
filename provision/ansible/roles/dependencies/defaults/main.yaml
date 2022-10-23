@@ -1,0 +1,9 @@
+---
+supported_distributions:
+  - archlinux
+  - debian
+
+allow_reboot: false
+
+# debian
+allow_dist_upgrade: true

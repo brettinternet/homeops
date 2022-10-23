@@ -1,0 +1,32 @@
+---
+# Source: https://github.com/raspbernetes/k8s-cluster-installation/blob/c86f98ad6344c1d263d75d295be5b5dd25f7fdd0/ansible/roles/kubernetes/tasks/debian.yml#L109-L122
+# Swap disabled. You MUST disable swap in order for the kubelet to work properly.
+# https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+# https://serverfault.com/a/881518
+# https://github.com/kubernetes/kubernetes/issues/53533
+- name: disable swap since kubernetes can't work with swap enabled
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: disable swap in /etc/fstab since kubernetes can't work with swap enabled
+  mount:
+    name: "{{ item }}"
+    fstype: swap
+    state: absent
+  loop:
+    - swap
+    - none
+
+- name: Turn off, uninstall and remove swap
+  ansible.builtin.command: "{{ item }}"
+  with_items:
+    - dphys-swapfile swapoff
+    - dphys-swapfile uninstall
+    - update-rc.d dphys-swapfile remove
+
+# https://manpages.ubuntu.com/manpages/bionic/man8/dphys-swapfile.8.html
+- name: Disable swapfile service
+  ansible.builtin.systemd:
+    name: dphys-swapfile.service
+    state: stopped
+    enabled: false

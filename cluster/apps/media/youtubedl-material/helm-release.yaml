@@ -1,0 +1,129 @@
+# https://github.com/Tzahi12345/YoutubeDL-Material/blob/master/docker-compose.yml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: youtubedl
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: youtubedl-mongo
+      namespace: media
+  values:
+    image:
+      repository: docker.io/tzahi12345/youtubedl-material
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      ytdl_use_local_db: "false"
+      write_ytdl_config: "true"
+      ytdl_mongodb_connection_string:
+        valueFrom:
+          secretKeyRef:
+            name: youtubedl
+            key: MONGO_CONNECTION
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /app/appdata
+        subPath: youtubedl
+      media:
+        enabled: true
+        existingClaim: media
+        subPath:
+          - path: library/youtube/audio
+            mountPath: /app/audio
+          - path: library/youtube/video
+            mountPath: /app/video
+          - path: library/youtube/subscriptions
+            mountPath: /app/subscriptions
+          - path: library/youtube/users
+            mountPath: /app/users
+    service:
+      main:
+        ports:
+          http:
+            port: 17442
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: youtube
+        hosts:
+          - host: &host "youtube.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: youtubedl-mongo
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      interval: 15m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controller:
+      strategy: RollingUpdate
+    image:
+      repository: docker.io/library/mongo
+      tag: latest
+    env:
+      MONGO_INITDB_ROOT_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: youtubedl
+            key: MONGO_USERNAME
+      MONGO_INITDB_ROOT_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: youtubedl
+            key: MONGO_PASSWORD
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data/db
+        existingClaim: appdata
+        subPath: youtubedl_mongo
+    service:
+      main:
+        ports:
+          http:
+            port: 27017

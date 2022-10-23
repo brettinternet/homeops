@@ -1,0 +1,283 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app authelia
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      # official Authelia chart is still in beta
+      # https://github.com/authelia/chartrepo
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: lldap
+      namespace: default
+    - name: authelia-postgres
+      namespace: default
+    - name: authelia-redis
+      namespace: default
+  values:
+    controller:
+      replicas: 1
+      strategy: RollingUpdate
+    image:
+      repository: ghcr.io/authelia/authelia
+      tag: 4.36.6
+    # https://www.authelia.com/configuration/methods/secrets/
+    env:
+      AUTHELIA_JWT_SECRET_FILE: /app/secrets/JWT_SECRET
+      AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE: /app/secrets/LDAP_PASSWORD
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_HMAC_SECRET_FILE: /app/secrets/OIDC_HMAC_SECRET
+      AUTHELIA_IDENTITY_PROVIDERS_OIDC_ISSUER_PRIVATE_KEY_FILE: /app/secrets/OIDC_ISSUER_PRIVATE_KEY
+      AUTHELIA_SESSION_REDIS_PASSWORD_FILE: /app/secrets/REDIS_PASSWORD
+      AUTHELIA_SESSION_SECRET_FILE: /app/secrets/SESSION_SECRET
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /app/secrets/STORAGE_ENCRYPTION_KEY
+      AUTHELIA_STORAGE_POSTGRES_PASSWORD_FILE: /app/secrets/POSTGRES_PASSWORD
+      # AUTHELIA_NOTIFIER_SMTP_PASSWORD_FILE: /app/secrets/SMTP_PASSWORD
+    persistence:
+      # Base configuration
+      configuration:
+        enabled: true
+        type: configMap
+        name: authelia-config
+        subPath: configuration.yaml
+        mountPath: /config/configuration.yml
+        readOnly: true
+      # Not pretty, but recommended:
+      # https://github.com/authelia/authelia/blob/352b360a50cf32897649315cd1907e5f44f2cb73/docs/content/en/integration/kubernetes/secrets.md
+      postgres-password:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: POSTGRES_PASSWORD
+        mountPath: /app/secrets/POSTGRES_PASSWORD
+        readOnly: true
+      redis-password:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: REDIS_PASSWORD
+        mountPath: /app/secrets/REDIS_PASSWORD
+        readOnly: true
+      jwt-secret:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: JWT_SECRET
+        mountPath: /app/secrets/JWT_SECRET
+        readOnly: true
+      session-secret:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: SESSION_SECRET
+        mountPath: /app/secrets/SESSION_SECRET
+        readOnly: true
+      storage-encryption-key:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: STORAGE_ENCRYPTION_KEY
+        mountPath: /app/secrets/STORAGE_ENCRYPTION_KEY
+        readOnly: true
+      ldap-password:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: LDAP_PASSWORD
+        mountPath: /app/secrets/LDAP_PASSWORD
+        readOnly: true
+      oidc-hmac-secret:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: OIDC_HMAC_SECRET
+        mountPath: /app/secrets/OIDC_HMAC_SECRET
+        readOnly: true
+      oidc-issuer-private-key:
+        enabled: true
+        type: secret
+        name: authelia
+        subPath: OIDC_ISSUER_PRIVATE_KEY
+        mountPath: /app/secrets/OIDC_ISSUER_PRIVATE_KEY
+        readOnly: true
+    enableServiceLinks: false
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+          metrics:
+            enabled: false
+            port: 8080
+    # Discovery endpoint https://www.authelia.com/integration/openid-connect/introduction/#well-known-discovery-endpoints
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            add_header Cache-Control "no-store";
+            add_header Pragma "no-cache";
+            add_header X-Frame-Options "SAMEORIGIN";
+            add_header X-XSS-Protection "1; mode=block";
+        hosts:
+          - host: &host "auth.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: authelia-config
+      secret.reloader.stakater.com/reload: *app
+    # topologySpreadConstraints:
+    #   - maxSkew: 1
+    #     topologyKey: kubernetes.io/hostname
+    #     whenUnsatisfiable: DoNotSchedule
+    #     labelSelector:
+    #       matchLabels:
+    #         app.kubernetes.io/name: *app
+    # resources:
+    #   requests:
+    #     cpu: 5m
+    #     memory: 10Mi
+    #   limits:
+    #     memory: 100Mi
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authelia-postgres
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: library/postgres
+      tag: "14"
+    env:
+      - name: POSTGRES_USER
+        value: authelia
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: authelia
+            key: POSTGRES_PASSWORD
+      - name: POSTGRES_DB
+        value: authelia
+      - name: PGDATA
+        value: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            enabled: false
+            primary: false
+          sql:
+            enabled: true
+            primary: true
+            port: 5432
+            protocol: TCP
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: authelia_db
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authelia-redis
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      interval: 15m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controller:
+      strategy: RollingUpdate
+    image:
+      repository: docker.io/library/redis
+      tag: 7.0.4
+    command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+    env:
+      REDIS_REPLICATION_MODE: master
+    envFrom:
+      - secretRef:
+          name: authelia
+    persistence:
+      data:
+        enabled: true
+        path: /data
+        existingClaim: appdata
+        subPath: authelia_redis
+    service:
+      main:
+        ports:
+          http:
+            enabled: false
+            primary: false
+          redis:
+            enabled: true
+            primary: true
+            port: 6379
+    # resources:
+    #   requests:
+    #     cpu: 15m
+    #     memory: 64M
+    #   limits:
+    #     memory: 128M
+    podAnnotations:
+      secret.reloader.stakater.com/reload: authelia

@@ -1,0 +1,22 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  tasks:
+    - name: Get k3s service status
+      ansible.builtin.systemd:
+        name: k3s.service
+      register: k3s_service_result
+
+    - debug:
+        var: k3s_service_result.status.ActiveState
+
+    - name: Find reboot-required file
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: reboot_required_result
+
+    - ansible.builtin.debug:
+        msg:
+          - "Reboot required: {{ reboot_required_result.stat.exists }}"

@@ -1,0 +1,131 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mealie
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/hkotel/mealie
+      tag: frontend-v1.0.0beta-4
+    env:
+      TZ: "${TIMEZONE}"
+      API_URL: "http://mealie-api.default.svc.cluster.local:9000"
+      # Light Mode Config
+      THEME_LIGHT_PRIMARY: "#005AE6"
+      THEME_LIGHT_ACCENT: "#FEBF00"
+      THEME_LIGHT_SECONDARY: "#0DFC9D"
+      THEME_LIGHT_SUCCESS: "#43A047"
+      THEME_LIGHT_INFO: "#1976D2"
+      THEME_LIGHT_WARNING: "#FF6D00"
+      THEME_LIGHT_ERROR: "#EF5350"
+      # Dark Mode Config
+      THEME_DARK_PRIMARY: "#0097A7"
+      THEME_DARK_ACCENT: "#007A99"
+      THEME_DARK_SECONDARY: "#4ba3c7"
+      THEME_DARK_SUCCESS: "#43A047"
+      THEME_DARK_INFO: "#1976D2"
+      THEME_DARK_WARNING: "#FF6D00"
+      THEME_DARK_ERROR: "#EF5350"
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+    persistence:
+      config:
+        enabled: true
+        mountPath: /app/data
+        existingClaim: appdata
+        subPath: mealie
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: chef-hat
+        hosts:
+          - host: &host "recipes.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: mealie-api
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/hkotel/mealie
+      tag: api-v1.0.0beta-4
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      TOKEN_TIME: 720 # 24 hours * 30 days
+      BASE_URL: "https://recipes.${PUBLIC_DOMAIN}"
+      AUTO_BACKUP_ENABLED: true
+      ALLOW_SIGNUP: false
+      SMTP_HOST: maddy.default.svc.cluster.local
+      SMTP_PORT: 2525
+      SMTP_AUTH_STRATEGY: NONE
+      SMTP_FROM_NAME: Recipes
+      SMTP_FROM_EMAIL: "${SMTP_USER}"
+      LDAP_AUTH_ENABLED: true
+      LDAP_SERVER_URL: "ldap://lldap.default.svc.cluster.local:3890"
+      LDAP_TLS_INSECURE: true
+      LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
+      LDAP_BASE_DN: dc=home,dc=arpa
+      LDAP_ADMIN_FILTER: cn=admin,ou=people,dc=home,dc=arpa
+    service:
+      main:
+        ports:
+          http:
+            port: 9000
+    persistence:
+      config:
+        enabled: true
+        mountPath: /app/data
+        existingClaim: appdata
+        subPath: mealie

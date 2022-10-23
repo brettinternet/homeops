@@ -1,0 +1,18 @@
+{
+  "ansible.ansibleLint.arguments": "-c .github/linters/.ansible-lint",
+  "files.associations": {
+    "*.json5": "jsonc",
+    "**/provision/ansible/**/*.yaml": "ansible",
+    "**/provision/terraform/**/*.tf": "terraform",
+    ".env": "shellscript",
+    "example.env": "shellscript",
+    "**/cluster/**/*.sops.toml": "plaintext"
+  },
+  "prettier.configPath": ".github/linters/.prettierrc.yaml",
+  "prettier.ignorePath": ".github/linters/.prettierignore",
+  "yaml.schemas": {
+    "Kubernetes": "cluster/*.yaml"
+  },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active"
+}

@@ -1,6 +1,0 @@
----
-- name: Reload WireGuard interface
-  service:
-    name: "wg-quick@{{ wireguard_interface }}"
-    state: reloaded
-  when: ansible_os_family != 'Darwin'

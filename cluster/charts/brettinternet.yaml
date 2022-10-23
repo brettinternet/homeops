@@ -1,0 +1,16 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: brettinternet
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://github.com/brettinternet/charts
+  ref:
+    branch: main
+  ignore: |
+    # exclude all
+    /*
+    # include local charts
+    !/charts/

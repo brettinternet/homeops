@@ -1,0 +1,42 @@
+---
+version: "3"
+
+tasks:
+  init:
+    desc: Install homebrew dependencies
+    cmds:
+      - brew install -q {{.DEPS}} {{.CLI_ARGS}}
+    preconditions:
+      - sh: command -v brew
+        msg: Homebrew is not installed
+    vars:
+      DEPS: >-
+        age
+        ansible
+        cloudflare/cloudflare/cloudflared
+        fluxcd/tap/flux
+        go-task/tap/go-task
+        helm
+        kubernetes-cli
+        kustomize
+        pre-commit
+        prettier
+        sops
+        terraform
+        tflint
+        yamllint
+
+# age: SOP dependency
+# ansible: homelab provisioning
+# cloudflare/cloudflare/cloudflared: Cloudflared tunnel credentials
+# fluxcd/tap/flux: cluster reconciliation
+# go-task/tap/go-task: Task runner
+# helm: Deployment charts
+# kubernetes-cli
+# kustomize: Define k8s manifests
+# pre-commit: Repo helper
+# prettier: Repo helper
+# sops: Secrets encryption
+# terraform: Cloudflare provisioning
+# tflint: Terraform linting
+# yamllint: Yaml linting

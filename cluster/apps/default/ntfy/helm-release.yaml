@@ -1,0 +1,88 @@
+# curl -u user:password -d "Hello, from the CLI" "https://ntfy.example.com/test"
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: ntfy
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/binwiederhier/ntfy
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      # https://ntfy.sh/docs/config/#ios-instant-notifications
+      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
+      NTFY_BEHIND_PROXY: true
+      NTFY_BASE_URL: "https://ntfy.${PUBLIC_DOMAIN}"
+      # https://ntfy.sh/docs/config/#e-mail-notifications
+      # Requires user and pass right now...
+      # NTFY_SMTP_SENDER_ADDR: maddy.default.svc.cluster.local:2525
+      # NTFY_SMTP_SENDER_FROM: "${SMTP_USER}"
+      # https://ntfy.sh/docs/config/#e-mail-publishing
+      # Doesn't support auth: https://github.com/binwiederhier/ntfy/issues/420
+      # DNS: MX  ntfy  ipv4.gardiner.cloud
+      # NTFY_SMTP_SERVER_LISTEN: ":25"
+      # NTFY_SMTP_SERVER_DOMAIN: "ntfy.${PUBLIC_DOMAIN}"
+      # NTFY_SMTP_SERVER_ADDR_PREFIX: "ntfy+"
+      # https://ntfy.sh/docs/config/#example-private-instance
+      # If not ingress basic auth, then use:
+      # NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      # NTFY_AUTH_FILE: /var/lib/ntfy/user.db
+    args: [serve]
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          # - path: ntfy/config
+          #   mountPath: /var/lib/ntfy
+          - path: ntfy/cache
+            mountPath: /var/cache/ntfy
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+      # smtp:
+      #   enabled: true
+      #   ports:
+      #     smtp:
+      #       enabled: true
+      #       port: 25
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          nginx.ingress.kubernetes.io/auth-type: basic
+          nginx.ingress.kubernetes.io/auth-secret: ntfy
+          hajimari.io/enable: "true"
+          hajimari.io/icon: bell-outline
+        hosts:
+          - host: &host "ntfy.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host

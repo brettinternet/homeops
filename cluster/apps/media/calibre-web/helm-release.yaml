@@ -1,0 +1,75 @@
+# https://github.com/janeczku/calibre-web
+# https://github.com/linuxserver/docker-calibre-web
+
+# Autoadd books to calibre-web requires separate functionality from Calibre
+# https://github.com/DobyTang/LazyLibrarian/issues/1052
+# https://github.com/janeczku/calibre-web/issues/344
+# https://github.com/janeczku/calibre-web/issues/412
+
+# Calibre web needs a calibre database `metadata.db` which you can get from a local calibre installation
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: calibre-web
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+    # https://hub.docker.com/r/linuxserver/calibre-web
+      repository: lscr.io/linuxserver/calibre-web
+      tag: latest
+      pullPolicy: IfNotPresent
+    env:
+      TZ: ${TIMEZONE}
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      DOCKER_MODS: linuxserver/calibre-web:calibre
+    service:
+      main:
+        ports:
+          http:
+            port: 8083
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: calibre-web
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data
+        subPath: library/books
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: book-plus-multiple
+        hosts:
+          - host: &host books.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host

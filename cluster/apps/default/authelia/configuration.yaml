@@ -1,0 +1,128 @@
+# https://github.com/authelia/authelia/blob/master/config.template.yml
+---
+theme: light
+
+default_redirection_url: "https://auth.${PUBLIC_DOMAIN}"
+
+log:
+  # info, debug, trace
+  level: trace
+
+server:
+  port: 80
+
+session:
+  domain: "${PUBLIC_DOMAIN}"
+  redis:
+    host: authelia-redis.default.svc.cluster.local
+    port: 6379
+
+storage:
+  postgres:
+    username: authelia
+    host: authelia-postgres.default.svc.cluster.local
+    database: authelia
+    port: 5432
+
+notifier:
+  # filesystem:
+  #   filename: /config/notification.txt
+  smtp:
+    host: maddy.default.svc.cluster.local
+    port: 2525
+    sender: "Authelia <${SMTP_USER}>"
+    disable_require_tls: true
+
+# With LLDAP: https://github.com/nitnelave/lldap/blob/main/example_configs/authelia_config.yml
+authentication_backend:
+  password_reset:
+    disable: false
+  refresh_interval: 1m
+  ldap:
+    implementation: custom
+    url: ldap://lldap.default.svc.cluster.local:3890
+    timeout: 5s
+    start_tls: false
+    base_dn: dc=home,dc=arpa
+    username_attribute: uid
+    additional_users_dn: ou=people
+    users_filter: "(&({username_attribute}={input})(objectClass=person))"
+    additional_groups_dn: ou=groups
+    groups_filter: (member={dn})
+    group_name_attribute: cn
+    display_name_attribute: displayName
+    mail_attribute: mail
+    user: cn=admin,ou=people,dc=home,dc=arpa
+
+duo_api:
+  disable: true
+
+webauthn:
+  disable: true
+
+access_control:
+  # default_policy: two_factor
+  default_policy: one_factor
+  networks:
+    - name: internal
+      networks: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+  rules:
+    - domain:
+        - "grafana.${PUBLIC_DOMAIN}"
+      policy: bypass
+    - domain:
+        - "radarr.${PUBLIC_DOMAIN}"
+        - "sonarr.${PUBLIC_DOMAIN}"
+        - "lidarr.${PUBLIC_DOMAIN}"
+        - "readarr.${PUBLIC_DOMAIN}"
+        - "prowlarr.${PUBLIC_DOMAIN}"
+        - "nzbget.${PUBLIC_DOMAIN}"
+      policy: bypass
+      resources: ["^/api([?/].*)?$"]
+
+identity_providers:
+  oidc:
+    # openssl genrsa -out oidc.key 4096
+    cors:
+      endpoints: ["authorization", "token", "revocation", "introspection"]
+      allowed_origins:
+        - https://${PUBLIC_DOMAIN}
+      # allowed_origins_from_client_redirect_uris: true
+    clients:
+      - id: grafana
+        description: Grafana
+        secret: "${GRAFANA_OAUTH_CLIENT_SECRET}"
+        public: false
+        authorization_policy: one_factor
+        pre_configured_consent_duration: 1y
+        scopes: ["openid", "profile", "groups", "email"]
+        redirect_uris: ["https://grafana.${PUBLIC_DOMAIN}/login/generic_oauth"]
+        userinfo_signing_algorithm: none
+      - id: miniflux
+        description: Miniflux
+        secret: "${MINIFLUX_OAUTH_CLIENT_SECRET}"
+        public: false
+        authorization_policy: one_factor
+        pre_configured_consent_duration: 1y
+        scopes: ["openid", "profile", "groups", "email"]
+        redirect_uris: ["https://rss.${PUBLIC_DOMAIN}/oauth2/oidc/callback"]
+        userinfo_signing_algorithm: none
+      - id: wikijs
+        description: Wiki.js
+        secret: "${WIKIJS_OAUTH_CLIENT_SECRET}"
+        public: false
+        authorization_policy: one_factor
+        pre_configured_consent_duration: 1y
+        scopes: ["openid", "profile", "groups", "email"]
+        redirect_uris: ["https://rss.${PUBLIC_DOMAIN}/login/f3fec479-555f-4594-bdee-b777b6951c52/callback"]
+        userinfo_signing_algorithm: none
+        response_modes: [form_post]
+      - id: thanos-minio
+        description: Thanos Minio S3
+        secret: "${THANOS_MINIO_OAUTH_CLIENT_SECRET}"
+        public: false
+        authorization_policy: one_factor
+        pre_configured_consent_duration: 1y
+        scopes: ["openid", "profile", "email"]
+        redirect_uris: ["https://thanos-s3.${PUBLIC_DOMAIN}/oauth_callback"]
+        userinfo_signing_algorithm: none

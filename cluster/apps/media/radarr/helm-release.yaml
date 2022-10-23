@@ -1,0 +1,68 @@
+# https://github.com/linuxserver/docker-radarr
+# notes on volumes: https://wiki.servarr.com/docker-guide#consistent-and-well-planned-paths
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+    # https://hub.docker.com/r/linuxserver/radarr
+      repository: lscr.io/linuxserver/radarr
+      tag: latest
+      pullPolicy: IfNotPresent
+    env:
+      TZ: ${TIMEZONE}
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 7878
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: radarr
+      # give access to parent of download folder and tv directory destination
+      # https://wiki.servarr.com/docker-guide
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: movie
+        hosts:
+          - host: &host radarr.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host

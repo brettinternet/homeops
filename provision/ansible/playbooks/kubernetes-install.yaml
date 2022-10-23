@@ -1,0 +1,29 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  roles:
+    - kubernetes
+    # - kubecolor
+  post_tasks:
+    - name: Label node
+      ansible.builtin.command:
+        cmd: "kubectl label node {{ inventory_hostname }} {{ item }}"
+      loop: "{{ node_labels }}"
+      when:
+        - node_labels is defined and node_labels | length > 0
+
+    # - name: Alias 'k' with kubectl
+    #   become: false
+    #   ansible.builtin.lineinfile:
+    #     path: "/home/{{ ansible_user }}/.profile"
+    #     line: 'alias k="kubectl"'
+
+    # Commands to run once on a server node
+    - block:
+        - name: Remove default StorageClass
+          ansible.builtin.command: |
+            kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+      when:
+        - inventory_hostname == groups['master'][0]

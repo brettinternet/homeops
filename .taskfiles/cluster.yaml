@@ -1,0 +1,117 @@
+---
+version: "3"
+
+tasks:
+  verify:
+    desc: Verify flux meets the prerequisites
+    cmds:
+      - flux check --pre
+
+  install:
+    desc: Install Flux into your cluster
+    cmds:
+      - kubectl apply --kustomize {{.CLUSTER_DIR}}/bootstrap/
+      - cat {{.SOPS_AGE_KEY_FILE}} | kubectl -n flux-system create secret generic sops-age --from-file=age.agekey=/dev/stdin
+      - kubectl apply --kustomize {{.CLUSTER_DIR}}/flux/flux-system/
+      - task: reconcile
+    preconditions:
+      - sh: test -f {{.SOPS_AGE_KEY_FILE}}
+        msg: |
+          Age key file is not found. Did you forget to create it?
+    vars:
+      SOPS_AGE_KEY_FILE: ~/.config/sops/age/keys.txt
+
+  kubeconfig:
+    desc: Remotely fetch kubeconfig from Kubernetes
+    cmds:
+      - rsync --verbose --progress --partial --rsync-path="sudo rsync" {{.K3S_PRIMARY_MASTER_NODE_USERNAME}}@{{.K3S_PRIMARY_MASTER_NODE_ADDR}}:/etc/rancher/k3s/k3s.yaml "{{.CLUSTER_DIR}}/kubeconfig"
+      - sed -i '' 's/127.0.0.1/{{.K3S_LB_ADDR}}/g' "{{.CLUSTER_DIR}}/kubeconfig"
+      - chmod go-r "{{.CLUSTER_DIR}}/kubeconfig"
+    vars:
+      K3S_PRIMARY_MASTER_NODE_USERNAME: "pi"
+      K3S_PRIMARY_MASTER_NODE_ADDR: "10.1.2.10"
+      K3S_LB_ADDR: "10.1.2.101"
+
+  reconcile:
+    desc: Force update Flux to pull in changes from your Git repository
+    cmds:
+      - flux reconcile -n flux-system source git flux-cluster
+      - flux reconcile -n flux-system kustomization flux-cluster
+
+  errors:
+    desc: List errors from all namespaces
+    cmds:
+      - flux logs -A --level=error
+
+  top:
+    desc: List top metrics
+    cmds:
+      - kubectl top node
+      - kubectl top pod
+
+  delete-tunnel:
+    desc: |
+      Force delete cloudflared tunnel release to stop external ingress
+    cmds:
+      - flux suspend hr -n networking cloudflared
+
+  # https://github.com/fluxcd/helm-controller/issues/454#issuecomment-962208864
+  restart-failed:
+    desc: Restart all failed Helm Releases
+    cmds:
+      - kubectl get hr --all-namespaces | grep False | awk '{print $2, $1}' | xargs -l bash -c 'flux suspend hr $0 -n $1'
+      - kubectl get hr --all-namespaces | grep False | awk '{print $2, $1}' | xargs -l bash -c 'flux resume hr $0 -n $1'
+
+
+  nodes:
+    desc: List all the nodes in your cluster
+    cmds:
+      - kubectl get nodes {{.CLI_ARGS | default "-o wide"}}
+
+  pods:
+    desc: List all the pods in your cluster
+    cmds:
+      - kubectl get pods {{.CLI_ARGS | default "-A"}}
+
+  kustomizations:
+    desc: List all the kustomizations in your cluster
+    cmds:
+      - kubectl get kustomizations {{.CLI_ARGS | default "-A"}}
+
+  helmreleases:
+    desc: List all the helmreleases in your cluster
+    cmds:
+      - kubectl get helmreleases {{.CLI_ARGS | default "-A"}}
+
+  helmrepositories:
+    desc: List all the helmrepositories in your cluster
+    cmds:
+      - kubectl get helmrepositories {{.CLI_ARGS | default "-A"}}
+
+  gitrepositories:
+    desc: List all the gitrepositories in your cluster
+    cmds:
+      - kubectl get gitrepositories {{.CLI_ARGS | default "-A"}}
+
+  certificates:
+    desc: List all the certificates in your cluster
+    cmds:
+      - kubectl get certificates {{.CLI_ARGS | default "-A"}}
+      - kubectl get certificaterequests {{.CLI_ARGS | default "-A"}}
+
+  ingresses:
+    desc: List all the ingresses in your cluster
+    cmds:
+      - kubectl get ingress {{.CLI_ARGS | default "-A"}}
+
+  resources:
+    desc: Gather common resources in your cluster, useful when asking for support
+    cmds:
+      - task: nodes
+      - task: kustomizations
+      - task: helmreleases
+      - task: helmrepositories
+      - task: gitrepositories
+      - task: certificates
+      - task: ingresses
+      - task: pods

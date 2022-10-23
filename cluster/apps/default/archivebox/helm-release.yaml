@@ -1,0 +1,128 @@
+# https://github.com/ArchiveBox/ArchiveBox/blob/master/docker-compose.yml
+# After first setup open shell in pod, become archivebox user with `su -``,
+# then run: `archivebox init --setup` to create admin user
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app archivebox
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: archivebox-sonic
+      namespace: default
+  values:
+    image:
+      repository: docker.io/archivebox/archivebox
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      # ALLOWED_HOSTS: "archive.${PUBLIC_DOMAIN}"
+      ALLOWED_HOSTS: "*"
+      MEDIA_MAX_SIZE: 750m
+      SEARCH_BACKEND_ENGINE: sonic
+      SEARCH_BACKEND_HOST_NAME: archivebox-sonic.default.svc.cluster.local
+    envFrom:
+      - secretRef:
+          name: *app
+    args: [server, --quick-init, 0.0.0.0:8000]
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        existingClaim: appdata
+        subPath: archivebox/data
+    service:
+      main:
+        ports:
+          http:
+            port: 8000
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: archive-arrow-down-outline
+        hosts:
+          - host: &host "archive.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: archivebox-sonic
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/valeriansaliou/sonic
+      tag: v1.3.0
+    env:
+      TZ: "${TIMEZONE}"
+    envFrom:
+      - secretRef:
+          name: archivebox
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          - path: archivebox/sonic/sonic.cfg
+            mountPath: /etc/sonic.cfg
+            readOnly: true
+          - path: archivebox/sonic/store
+            mountPath: /var/lib/sonic/store
+    service:
+      main:
+        ports:
+          http:
+            port: 1491
+    podAnnotations:
+      secret.reloader.stakater.com/reload: archivebox

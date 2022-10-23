@@ -1,5 +1,21 @@
+# Trash
+.DS_Store
+Thumbs.db
+# k8s
+kubeconfig
+# vscode-sops
+.decrypted~*.yaml
+*.agekey
+*.pub
+*.key
+github-deploy-key*
+# Ansible
+xanmanning.k3s*
+# Terraform
 .terraform
+.terraform.tfstate*
 terraform.tfstate*
-*.log
-inventory.yml
-.vscode
+# Output
+megalinter-reports
+# scripts
+node_modules

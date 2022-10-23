@@ -1,0 +1,125 @@
+# https://wiki.archlinux.org/title/NFS
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-fast-tank
+  namespace: networking
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/itsthenetwork/nfs-server-alpine
+      tag: latest
+    # Additional options https://hub.docker.com/r/itsthenetwork/nfs-server-alpine/
+    env:
+      TZ: "${TIMEZONE}"
+      SHARED_DIRECTORY: /data
+    service:
+      main:
+        enabled: true
+        # NFS DNS problems with pod setup
+        # This doesn't seem to work:
+        # https://github.com/kubernetes-csi/csi-driver-nfs/tree/master/deploy/example/nfs-provisioner
+        # DNS for nfs-server.networking.svc.cluster.local does NOT work
+        # https://github.com/k3s-io/k3s/issues/1397#issuecomment-585953302
+        # https://github.com/kubernetes/minikube/issues/3417#issuecomment-493366877
+        # https://github.com/kubernetes/examples/issues/418
+        # https://github.com/kubernetes/examples/issues/390
+        clusterIP: "${NFS_FAST_TANK_CLUSTERIP}"
+        ports:
+          http:
+            port: 2049
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        type: hostPath
+        hostPath: "${NFS_FAST_TANK_DIR}"
+    securityContext:
+      capabilities:
+        add: ["SYS_ADMIN", "SETPCAP"]
+    # https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+    # https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
+    priorityClassName: system-cluster-critical
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+    nodeSelector:
+      kubernetes.io/hostname: archie
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-jbod
+  namespace: networking
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/itsthenetwork/nfs-server-alpine
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      SHARED_DIRECTORY: /data
+    service:
+      main:
+        enabled: true
+        clusterIP: "${NFS_JBOD_CLUSTERIP}"
+        ports:
+          http:
+            port: 2049
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        type: hostPath
+        hostPath: "${NFS_JBOD_DIR}"
+    securityContext:
+      privileged: true
+      # capabilities didn't work on this node
+      # capabilities:
+      #   add: ["SYS_ADMIN", "SETPCAP"]
+    priorityClassName: system-cluster-critical
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+    nodeSelector:
+      kubernetes.io/hostname: harambe

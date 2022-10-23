@@ -1,0 +1,95 @@
+# https://calibre-ebook.com
+# https://github.com/linuxserver/docker-calibre
+# https://manual.calibre-ebook.com/server.html
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: calibre
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+    # https://hub.docker.com/r/linuxserver/calibre
+      repository: lscr.io/linuxserver/calibre
+      # https://github.com/linuxserver/docker-calibre/issues/104#issuecomment-1270904811
+      tag: "6.4.0"
+      pullPolicy: IfNotPresent
+    env:
+      TZ: ${TIMEZONE}
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 8080
+      content-server:
+        enabled: true
+        ports:
+          content-server:
+            enabled: true
+            port: 8081
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: calibre
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: bookshelf
+        hosts:
+          - host: &host calibre.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+      content-server:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: book-open-page-variant
+        hosts:
+          - host: &host2 read.${PUBLIC_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  name: calibre-content-server
+                  port: 8081
+        tls:
+          - hosts:
+              - *host2

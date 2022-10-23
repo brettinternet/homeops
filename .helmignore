@@ -1,0 +1,4 @@
+# exclude all
+/*
+# include local charts
+!/cluster/charts/local
