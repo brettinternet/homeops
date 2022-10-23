@@ -1,6 +1,6 @@
 # Homelab
 
-[![Lint](https://github.com/brettinternet/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/brettinternet/homelab/actions/workflows/lint.yml)
+[![Lint](https://github.com/brettinternet/homelab/actions/workflows/lint.yaml/badge.svg)](https://github.com/brettinternet/homelab/actions/workflows/lint.yaml)
 
 Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks).
 
@@ -189,9 +189,3 @@ Use [Ventoy](https://www.ventoy.net) to bundle bootable ISO and IMG images on a 
 ### Media
 
 For a media server, it's a good idea to [understand digital video](https://github.com/leandromoreira/digital_video_introduction).
-
-### HTTP
-
-Traefik's reverse proxy directs HTTP traffic to the appropriate container based on the service declared by [these frontend configurations](./roles/traefik/templates/).
-
-[Middlewares](./roles/traefik/templates/middleware.yml.j2) configure Traefik in different ways, including security headers. [Scan your site](https://observatory.mozilla.org/) to confirm good practice with some headers.
