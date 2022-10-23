@@ -1,11 +1,14 @@
 ---
 version: "3"
 
+vars:
+  CONFIG_DIR: ".github/linters"
+
 tasks:
   yaml:
     desc: Run yamllint
     cmds:
-      - yamllint .
+      - yamllint -c {{.CONFIG_DIR}}/.yamllint.yaml .
     preconditions:
       - sh: command -v yamllint
         msg: |
