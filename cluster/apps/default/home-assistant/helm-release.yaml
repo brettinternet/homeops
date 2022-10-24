@@ -1,5 +1,7 @@
 # TODO: tag reader - https://www.home-assistant.io/blog/2020/09/15/home-assistant-tags/
 # TODO: floorplan - https://experiencelovelace.github.io/ha-floorplan/docs/quick-start/
+# Resources:
+# - https://github.com/CCOSTAN/Home-AssistantConfig
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

@@ -1,3 +1,4 @@
+# https://kubernetes.github.io/ingress-nginx/deploy/hardening-guide/
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -24,8 +25,6 @@ spec:
       retries: 5
   dependsOn:
     - name: cert-manager
-      namespace: networking
-    - name: cert-manager-issuers
       namespace: networking
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   values:

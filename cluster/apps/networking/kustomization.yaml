@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   # - blocky
-  - cert-manager
+  # - cert-manager
   - cloudflared
   # - cloudflare-ddns
   # - crowdsec

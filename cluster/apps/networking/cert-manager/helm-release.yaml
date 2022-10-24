@@ -23,7 +23,7 @@ spec:
     remediation:
       retries: 5
   values:
-    installCRDs: true
+    installCRDs: false
     webhook:
       enabled: true
     # https://cert-manager.io/docs/configuration/acme/dns01/#setting-nameservers-for-dns01-self-check
@@ -38,71 +38,127 @@ spec:
         - "1.1.1.1"
 
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
 metadata:
-  name: cert-manager-issuers
-  namespace: networking
+  name: letsencrypt-staging
 spec:
-  interval: 15m
-  chart:
-    spec:
-      chart: raw
-      version: v0.3.1
-      sourceRef:
-        kind: HelmRepository
-        name: dysnix
-        namespace: flux-system
-  install:
-    createNamespace: true
-    remediation:
-      retries: 5
-  upgrade:
-    remediation:
-      retries: 5
-  dependsOn:
-    - name: cert-manager
-      namespace: networking
-  values:
-    resources:
-      - apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          name: letsencrypt-production
-        spec:
-          acme:
-            server: https://acme-v02.api.letsencrypt.org/directory
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    email: "${CLOUDFLARE_EMAIL}"
+    privateKeySecretRef:
+      name: letsencrypt-staging
+    solvers:
+      - dns01:
+          cloudflare:
             email: "${CLOUDFLARE_EMAIL}"
-            privateKeySecretRef:
-              name: letsencrypt-production
-            solvers:
-              - dns01:
-                  cloudflare:
-                    email: "${CLOUDFLARE_EMAIL}"
-                    apiKeySecretRef:
-                      name: cloudflare-api-key
-                      key: api-key
-                selector:
-                  dnsZones:
-                    - ${PUBLIC_DOMAIN}
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: token
+        selector:
+          dnsZones:
+            - ${PUBLIC_DOMAIN}
 
-      - apiVersion: cert-manager.io/v1
-        kind: ClusterIssuer
-        metadata:
-          name: letsencrypt-staging
-        spec:
-          acme:
-            server: https://acme-staging-v02.api.letsencrypt.org/directory
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: "${CLOUDFLARE_EMAIL}"
+    privateKeySecretRef:
+      name: letsencrypt-production
+    solvers:
+      - dns01:
+          cloudflare:
             email: "${CLOUDFLARE_EMAIL}"
-            privateKeySecretRef:
-              name: letsencrypt-staging
-            solvers:
-              - dns01:
-                  cloudflare:
-                    email: "${CLOUDFLARE_EMAIL}"
-                    apiKeySecretRef:
-                      name: cloudflare-api-key
-                      key: api-key
-                selector:
-                  dnsZones:
-                    - ${PUBLIC_DOMAIN}
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: token
+        selector:
+          dnsZones:
+            - ${PUBLIC_DOMAIN}
+
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: &name cert-manager-issuers
+#   namespace: networking
+#   labels:
+#     app.kubernetes.io/managed-by: Helm
+#   annotations:
+#     meta.helm.sh/release-name: *name
+#     meta.helm.sh/release-namespace: networking
+# spec:
+#   interval: 15m
+#   chart:
+#     spec:
+#       chart: raw
+#       version: v0.3.1
+#       sourceRef:
+#         kind: HelmRepository
+#         name: dysnix
+#         namespace: flux-system
+#   install:
+#     createNamespace: true
+#     remediation:
+#       retries: 5
+#   upgrade:
+#     remediation:
+#       retries: 5
+#   dependsOn:
+#     - name: cert-manager
+#       namespace: networking
+#   values:
+#     resources:
+#       - apiVersion: cert-manager.io/v1
+#         kind: ClusterIssuer
+#         metadata:
+#           name: letsencrypt-production
+#           namespace: networking
+#         spec:
+#           acme:
+#             server: https://acme-v02.api.letsencrypt.org/directory
+#             email: "${CLOUDFLARE_EMAIL}"
+#             privateKeySecretRef:
+#               name: letsencrypt-production
+#             solvers:
+#               - dns01:
+#                   cloudflare:
+#                     email: "${CLOUDFLARE_EMAIL}"
+#                     apiKeySecretRef:
+#                       name: cloudflare-api-key
+#                       key: api-key
+#                 selector:
+#                   dnsZones:
+#                     - ${PUBLIC_DOMAIN}
+
+#       - apiVersion: cert-manager.io/v1
+#         kind: ClusterIssuer
+#         metadata:
+#           name: letsencrypt-staging
+#           namespace: networking
+#           labels:
+#             app.kubernetes.io/managed-by: Helm
+#           annotations:
+#             meta.helm.sh/release-name: *name
+#             meta.helm.sh/release-namespace: networking
+#         spec:
+#           acme:
+#             server: https://acme-staging-v02.api.letsencrypt.org/directory
+#             email: "${CLOUDFLARE_EMAIL}"
+#             privateKeySecretRef:
+#               name: letsencrypt-staging
+#             solvers:
+#               - dns01:
+#                   cloudflare:
+#                     email: "${CLOUDFLARE_EMAIL}"
+#                     apiKeySecretRef:
+#                       name: cloudflare-api-key
+#                       key: api-key
+#                 selector:
+#                   dnsZones:
+#                     - ${PUBLIC_DOMAIN}

@@ -1,6 +1,8 @@
 # https://github.com/k8s-at-home/charts/tree/master/charts/stable/pod-gateway
 # https://github.com/angelnu/pod-gateway
 # https://github.com/angelnu/gateway-admision-controller
+
+# Alternatively, use service mesh: https://linkerd.io/2.12/features/multicluster/
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

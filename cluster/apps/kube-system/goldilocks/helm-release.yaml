@@ -30,7 +30,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: memory
         hosts:
-          - host: &host goldilocks.${PUBLIC_DOMAIN}
+          - host: &host "goldilocks.${PUBLIC_DOMAIN}"
             paths: ["/"]
         tls:
           - hosts:

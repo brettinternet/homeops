@@ -8,7 +8,7 @@ resources:
   # - apprise
   - archivebox
   - authelia
-  - babybuddy
+  # - babybuddy
   - change-detection
   # - cloudbeaver
   - cyberchef
