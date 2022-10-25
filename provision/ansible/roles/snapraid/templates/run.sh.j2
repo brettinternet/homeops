@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# {{ ansible_managed }}
+
+if [ "$EUID" -ne 0 ]; then
+  echo "Permission denied: SnapRAID requires root access."
+  exit 126
+fi
+
+OUTPUT=$(/usr/bin/python3 {{ snapraid_runner_dir }}/snapraid-runner.py -c {{ snapraid_runner_dir }}/options.conf 2>&1 | tail -10)
+SNAPRAID_RC=$?
+
+{% if snapraid_runner_failed_notification_cmd_fn is defined %}
+
+if [ $SNAPRAID_RC == 0 ]; then
+  {{ snapraid_runner_failed_notification_cmd_fn }}
+  cmd "{{ snapraid_runner_dir }}/run.sh" "$OUTPUT"
+fi
+{% endif %}
+
+echo "Script failed with exit $SNAPRAID_RC"

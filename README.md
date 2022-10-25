@@ -15,7 +15,8 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 - SOPS
 - Renovate bot dependency updates
 - Cloudflared HTTP tunnel
-- WireGuard VPN pod gateway
+- WireGuard VPN pod gateway via paid service
+- WireGuard VPN proxy hosted on VPS
 - K8s gateway and NGINX ingress controller
 - Both internal & external services
 - OIDC authentication
@@ -34,27 +35,23 @@ Setup and usage is inspired heavily by [this homelab gitops template](https://gi
 task init
 ```
 
-Setup env vars in `.env`.
-
-```sh
-task verify
-
-task configure
-```
-
 Then, provision your infrastructure.
 
 ```sh
-task ansible:{list,setup,install,status,nodes}
+task ansible:{list,setup,kubernetes,status}
 ```
 
-Setup DNS.
+Edit `provision/terraform/cloudflare/secret.sops.yaml` with your own values and encrypt with `task sops:encrypt -- <filepath>`.
+
+Setup Cloudflare DNS.
 
 ```sh
-task terraform:{init,plan,apply}
+task terraform:{init,cloudflare-plan,cloudflare-apply}
 ```
 
 ### Deploy
+
+#### Kubernetes
 
 Verify flux can be installed. Then, push changes to remote repo and install.
 
@@ -66,6 +63,22 @@ Push latest to repo - you can use the [wip.sh](./scripts/wip.sh) script for that
 
 ```sh
 task cluster:{reconcile,resources}
+```
+
+#### Bastion server
+
+Edit `provision/terraform/bastion/secret.sops.yaml` with your own values. [Generate WireGuard keys](https://www.wireguard.com/quickstart/).
+
+Deploy the remote bastion VPN server.
+
+```sh
+task terraform:{init,plan,apply}
+```
+
+Then, setup VPN services.
+
+```sh
+task ansible:bastion
 ```
 
 ### Deployments

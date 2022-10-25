@@ -1,3 +1,4 @@
+# When pointing DNS records to home firewall (not via Cloudflared tunnels)
 terraform {
   required_providers {
     cloudflare = {

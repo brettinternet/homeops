@@ -1,0 +1,54 @@
+# https://github.com/kewlfft/ansible-aur
+---
+- name: Check supported distribution
+  ansible.builtin.fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - This role only supports Arch Linux
+  when: ansible_facts['distribution'] | lower != 'archlinux'
+
+- name: "Create {{ aur_user }}"
+  ansible.builtin.user:
+    name: "{{ aur_user }}"
+    create_home: true
+    group: sudo
+
+- name: "Allow {{ aur_user }} to sudo pacman"
+  ansible.builtin.lineinfile:
+    path: "/etc/sudoers.d/11-install-{{ aur_user }}"
+    line: "{{ aur_user }} ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+    create: true
+    validate: "visudo -cf %s"
+    mode: 0644
+
+- name: Check {{ aur_helper }} installation
+  ansible.builtin.shell: '! [ -x "$(command -v yay)" ]'
+  register: aur_helper_command_result
+  failed_when: aur_helper_command_result.stderr != ""
+  changed_when: aur_helper_command_result.rc != 1
+
+- block:
+    - name: Clone yay PKGBUILD
+      ansible.builtin.git:
+        repo: https://aur.archlinux.org/yay.git
+        dest: "{{ ansible_facts['user_dir'] }}/yay"
+
+    - name: Install yay
+      become_user: "{{ aur_user }}"
+      kewlfft.aur.aur:
+        use: makepkg
+        local_pkgbuild: "{{ ansible_facts['user_dir'] }}/yay"
+
+    - name: Remove PKGBUILD directory
+      ansible.builtin.file:
+        path: "{{ ansible_facts['user_dir'] }}/yay"
+        state: absent
+  when: aur_helper_command_result.rc == 0
+
+- name: Install AUR packages (yay)
+  become_user: "{{ aur_user }}"
+  kewlfft.aur.aur:
+    use: "{{ aur_helper }}"
+    aur_only: true
+    name: "{{ packages }}"
+    state: "{{ state }}"

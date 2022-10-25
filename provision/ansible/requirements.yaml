@@ -10,6 +10,8 @@ collections:
     version: 2.6.1
   # https://github.com/kewlfft/ansible-aur
   - name: kewlfft.aur
+  # https://github.com/geerlingguy/ansible-role-docker
+  - name: geerlingguy.docker
 
 roles:
   # Galaxy v3.3.0 not working: https://github.com/PyratLabs/ansible-role-k3s/issues/196

@@ -1,21 +1,71 @@
 ---
 version: "3"
 
+env:
+  # provisioned bastion generated host vars output
+  TF_VAR_BASTION_HOST_VARS_PATH: "{{.PROJECT_DIR}}/provision/ansible/inventory/host_vars/bastion.sops.yaml"
+  TF_VAR_BASTION_MODULE_DIR: "{{.PROJECT_DIR}}/provision/terraform/bastion"
+
 tasks:
   init:
+    cmds:
+      - task: terraform-init
+        vars:
+          TERRAFORM_SUBDIR: cloudflare
+      - task: terraform-init
+        vars:
+          TERRAFORM_SUBDIR: bastion
+
+  cloudflare-init:
+    cmds:
+      - task: terraform-init
+        vars:
+          TERRAFORM_SUBDIR: cloudflare
+
+  cloudflare-plan:
+    cmds:
+      - task: terraform-plan
+        vars:
+          TERRAFORM_SUBDIR: cloudflare
+
+  cloudflare-apply:
+    cmds:
+      - task: terraform-apply
+        vars:
+          TERRAFORM_SUBDIR: cloudflare
+
+  bastion-init:
+    cmds:
+      - task: terraform-init
+        vars:
+          TERRAFORM_SUBDIR: bastion
+
+  bastion-plan:
+    cmds:
+      - task: terraform-plan
+        vars:
+          TERRAFORM_SUBDIR: bastion
+
+  bastion-apply:
+    cmds:
+      - task: terraform-apply
+        vars:
+          TERRAFORM_SUBDIR: bastion
+
+  terraform-init:
     desc: Initialize terraform dependencies
-    dir: provision/terraform/cloudflare
+    dir: provision/terraform/{{.TERRAFORM_SUBDIR}}
     cmds:
       - terraform init {{.CLI_ARGS}}
 
-  plan:
-    desc: Show the changes terraform will make
-    dir: provision/terraform/cloudflare
+  terraform-plan:
+    desc: Show the changes
+    dir: provision/terraform/{{.TERRAFORM_SUBDIR}}
     cmds:
       - terraform plan {{.CLI_ARGS}}
 
-  apply:
-    desc: Apply the changes to Cloudflare
-    dir: provision/terraform/cloudflare
+  terraform-apply:
+    desc: Apply the changes
+    dir: provision/terraform/{{.TERRAFORM_SUBDIR}}
     cmds:
       - terraform apply {{.CLI_ARGS}}

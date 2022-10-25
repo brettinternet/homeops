@@ -1,0 +1,6 @@
+---
+bastion:
+  children:
+    bastion:
+      hosts:
+        bastion:

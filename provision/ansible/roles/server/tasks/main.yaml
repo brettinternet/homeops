@@ -1,0 +1,70 @@
+# TODO: check smart output for disk errors
+# https://wiki.archlinux.org/index.php/S.M.A.R.T.
+# https://github.com/grimmjow8/ansible-smartmontools
+# https://github.com/LibreIT/ansible-smartd
+# https://github.com/stuvusIT/smartd
+
+# TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
+# TODO: detect bitrot with https://blog.cyplo.dev/posts/2022/06/legdur/
+---
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - This role only supports Arch Linux
+  when: ansible_facts['distribution'] | lower != 'archlinux'
+
+- name: Install packages
+  ansible.builtin.package:
+    name:
+      # Setup
+      - base
+      - dhcpcd
+      - dosfstools
+      - efibootmgr
+      - git
+      - grub
+      - vim
+      - linux
+      - linux-headers
+      - linux-firmware
+      - mtools
+      - nano
+      - os-prober
+      # Base
+      - bpytop
+      - curl
+      - etckeeper
+      - intel-ucode
+      - mesa
+      - neofetch
+      - networkmanager
+      - net-tools
+      - openssh
+      - powertop
+      - reflector
+      - rsync
+      - smartmontools
+      - tmux
+      - trash-cli
+      - unzip
+      - usbutils
+      - zsh
+      - wget
+      - w3m
+      # Server
+      - inetutils
+      # - libvirt # Also includes qemu-headless
+      - packagekit
+      - udisks2
+
+- name: Install AUR dependencies
+  ansible.builtin.include_role:
+    name: aur
+  vars:
+    packages:
+      - downgrade
+      - python-fangfrisch
+      - vim-plug
+      - needrestart
+    state: present

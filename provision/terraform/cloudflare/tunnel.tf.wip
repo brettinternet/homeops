@@ -1,67 +1,68 @@
-# terraform {
-#   required_providers {
-#     cloudflare = {
-#       source  = "cloudflare/cloudflare"
-#       version = "3.20.0"
-#     }
-#     sops = {
-#       source  = "carlpett/sops"
-#       version = "0.7.1"
-#     }
-#   }
-# }
+# Usage with Cloudflared tunnels
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "3.20.0"
+    }
+    sops = {
+      source  = "carlpett/sops"
+      version = "0.7.1"
+    }
+  }
+}
 
-# data "sops_file" "cloudflare_secrets" {
-#   source_file = "secret.sops.yaml"
-# }
+data "sops_file" "cloudflare_secrets" {
+  source_file = "secret.sops.yaml"
+}
 
-# provider "cloudflare" {
-#   email   = data.sops_file.cloudflare_secrets.data["cloudflare_email"]
-#   api_key = data.sops_file.cloudflare_secrets.data["cloudflare_apikey"]
-# }
+provider "cloudflare" {
+  email   = data.sops_file.cloudflare_secrets.data["cloudflare_email"]
+  api_key = data.sops_file.cloudflare_secrets.data["cloudflare_apikey"]
+}
 
-# resource "cloudflare_record" "wildcard" {
-#   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
-#   name    = "*"
-#   value   = cloudflare_argo_tunnel.primary.cname
-#   type    = "CNAME"
-#   proxied = true
-# }
+resource "cloudflare_record" "wildcard" {
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  name    = "*"
+  value   = cloudflare_argo_tunnel.primary.cname
+  type    = "CNAME"
+  proxied = true
+}
 
-# resource "cloudflare_argo_tunnel" "primary" {
-#   account_id = local.cloudflare_account_id
-#   name       = terraform.workspace
-#   secret     = random_id.cloudflare_argo_tunnel_secret.b64_std
-# }
+resource "cloudflare_argo_tunnel" "primary" {
+  account_id = local.cloudflare_account_id
+  name       = terraform.workspace
+  secret     = random_id.cloudflare_argo_tunnel_secret.b64_std
+}
 
-# resource "random_id" "cloudflare_argo_tunnel_secret" {
-#   byte_length = 35
-# }
+resource "random_id" "cloudflare_argo_tunnel_secret" {
+  byte_length = 35
+}
 
-# resource "kubernetes_secret" "cloudflare_argo_tunnel_config" {
-#   metadata {
-#     name      = "cloudflare-argo-tunnel-config"
-#     namespace = "cloudflare"
-#   }
+resource "kubernetes_secret" "cloudflare_argo_tunnel_config" {
+  metadata {
+    name      = "cloudflare-argo-tunnel-config"
+    namespace = "cloudflare"
+  }
 
-#   depends_on = [
-#     helm_release.infrastructure
-#   ]
+  depends_on = [
+    helm_release.infrastructure
+  ]
 
-#   data = {
-#     "cert.json"  = <<EOF
-# {
-#   "AccountTag": "${local.cloudflare_account_id}",
-#   "TunnelID": "${cloudflare_argo_tunnel.primary.id}",
-#   "TunnelName": "${cloudflare_argo_tunnel.primary.name}",
-#   "TunnelSecret": "${random_id.cloudflare_argo_tunnel_secret.b64_std}"
-# }
-# EOF
-#     "config.yml" = <<EOF
-# tunnel: ${cloudflare_argo_tunnel.primary.id}
-# credentials-file: /etc/cloudflared/cert.json
-# ingress:
-#   - service: https://ingress-nginx-controller.networking.svc.cluster.local
-# EOF
-#   }
-# }
+  data = {
+    "cert.json"  = <<EOF
+{
+  "AccountTag": "${local.cloudflare_account_id}",
+  "TunnelID": "${cloudflare_argo_tunnel.primary.id}",
+  "TunnelName": "${cloudflare_argo_tunnel.primary.name}",
+  "TunnelSecret": "${random_id.cloudflare_argo_tunnel_secret.b64_std}"
+}
+EOF
+    "config.yml" = <<EOF
+tunnel: ${cloudflare_argo_tunnel.primary.id}
+credentials-file: /etc/cloudflared/cert.json
+ingress:
+  - service: https://ingress-nginx-controller.networking.svc.cluster.local
+EOF
+  }
+}

@@ -1,0 +1,14 @@
+---
+- hosts:
+    - master
+    - worker
+  become: true
+  roles:
+    - kubernetes
+  post_tasks:
+    - name: Label node
+      ansible.builtin.command:
+        cmd: "kubectl label node {{ inventory_hostname }} {{ item }}"
+      loop: "{{ node_labels }}"
+      when:
+        - node_labels is defined and node_labels | length > 0

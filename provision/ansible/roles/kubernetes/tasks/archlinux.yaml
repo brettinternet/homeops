@@ -1,0 +1,32 @@
+---
+- name: Upgrade packages
+  community.general.pacman:
+    update_cache: true
+    upgrade: true
+
+- name: Install dependencies
+  community.general.pacman:
+    state: present
+    name:
+      - nftables
+
+- name: Check if kernel needs upgrade (Archlinux) # noqa no-changed-when
+  # Source: https://bbs.archlinux.org/viewtopic.php?pid=1354255#p1354255
+  # Need to modify to accommodate linux-lts and linux-hardened
+  # Determines if installed kernel version is higher than runtime
+  # Still searching for a more comprehensive way: https://unix.stackexchange.com/q/630626
+  ansible.builtin.shell: |
+    set -o pipefail
+    [[ $(pacman -Q linux | cut -d " " -f 2) > $(uname -r) ]]
+  args:
+    executable: /bin/bash
+  register: upgrade__should_restart_result
+  failed_when: upgrade__should_restart_result.stderr != ""
+
+- name: Print reboot status
+  debug:
+    msg: "Reboot {{ (upgrade__should_restart_result.rc == 0) | ternary('is', 'is not') }} required to complete the upgrade"
+
+- name: Reboot
+  ansible.builtin.reboot:
+  when: upgrade__should_restart_result.rc == 0 and allow_reboot is true

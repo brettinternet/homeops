@@ -1,0 +1,4 @@
+---
+state: present
+aur_helper: yay
+aur_user: aur_builder

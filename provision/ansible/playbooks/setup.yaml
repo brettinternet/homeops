@@ -4,5 +4,17 @@
     - worker
   become: true
   roles:
-    - dependencies
+    # - clamav
+    # - cockpit
     - os
+    # BEFORE: some manual setup with mergerfs and fstab mounts is required
+    - role: snapraid
+      vars:
+        parity_disks: "{{ snapraid_parity_disks }}"
+        data_disks: "{{ snapraid_data_disks }}"
+        file_excludes: "{{ snapraid_file_excludes }}"
+      when:
+        - snapraid_parity_disks is defined
+        - snapraid_data_disks is defined
+    - role: server
+      when: ansible_facts['distribution'] | lower != archlinux

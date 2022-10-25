@@ -1,0 +1,49 @@
+# https://wiki.archlinux.org/index.php/ZFS
+# TODO: create snapshots https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
+# https://wiki.archlinux.org/title/ZFS#Automatic_snapshots
+---
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - This role only supports Arch Linux
+  when: ansible_facts['distribution'] | lower != 'archlinux'
+
+- name: Install dependencies
+  ansible.builtin.include_role:
+    name: aur
+  vars:
+    packages:
+      - zfs-dkms
+      - zfs-utils
+    state: present
+
+# Ignore packages to only upgrade them explicitly
+- name: Ignore ZFS packages
+  ansible.builtin.lineinfile:
+    path: /etc/pacman.conf
+    line: "IgnorePkg = zfs-dkms zfs-utils"
+    insertafter: IgnorePkg
+    state: present
+
+- name: Copy updater script
+  ansible.builtin.template:
+    src: update-zfs.sh.j2
+    dest: "/home/{{ ansible_user }}/update-zfs.sh"
+    mode: 0744
+
+- name: Update dependencies
+  ansible.builtin.command: "/bin/bash /home/{{ ansible_user }}/update-zfs.sh"
+
+# https://wiki.archlinux.org/title/ZFS#Automatic_Start
+- name: Start/enable import service
+  ansible.builtin.systemd:
+    name: zfs-import-cache.service
+    enabled: true
+    state: started
+
+- name: Start/enable mount service
+  ansible.builtin.systemd:
+    name: zfs-mount.service
+    enabled: true
+    state: started

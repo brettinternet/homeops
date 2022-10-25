@@ -1,4 +1,14 @@
+# Security:
+# - https://github.com/konstruktoid/ansible-role-hardening
+# - https://github.com/dev-sec/ansible-collection-hardening
 ---
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - "Supported role distributions are {{ supported_distributions }}"
+  when: ansible_facts['distribution'] | lower not in supported_distributions
+
 - name: Set timezone
   community.general.timezone:
     name: "{{ timezone }}"
@@ -9,14 +19,7 @@
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Check supported distribution
-  fail:
-    msg:
-      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
-      - "Supported role distributions are {{ supported_distributions }}"
-  when: ansible_facts['distribution'] | lower not in supported_distributions
-
-- name: Upgrade packages
+- name: Setup hosts
   include_tasks: "{{ ansible_facts['distribution'] | lower }}.yaml"
 
 - name: Enable forwarding and set other sysctl
@@ -59,28 +62,3 @@
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     line: "AllowUsers {{ ansible_user }}"
-#
-# DNS
-# https://hub.docker.com/r/adguard/adguardhome#resolved-daemon
-# https://wiki.archlinux.org/title/systemd-resolved#DNS
-# - name: Disable Ubuntu's caching DNS resolver on port 53
-#   lineinfile:
-#     dest: /etc/systemd/resolved.conf
-#     line: "DNSStubListener=no"
-#     regexp: "#?DNSStubListener=yes"
-#     state: present
-
-# - name: Create a symlink to resolv.conf
-#   ansible.builtin.file:
-#     src: /run/systemd/resolve/resolv.conf
-#     dest: /etc/resolv.conf
-#     owner: root
-#     group: root
-#     state: link
-#   register: resolv_conf
-
-# - name: restart systemd-resolved
-#   service:
-#     name: systemd-resolved
-#     state: restarted
-#   when: resolv_conf.changed

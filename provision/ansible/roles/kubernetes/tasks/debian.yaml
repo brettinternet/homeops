@@ -1,0 +1,43 @@
+---
+- name: Update
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Upgrade
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    state: present
+    name:
+      - arptables
+      - ebtables
+      - ca-certificates
+      - curl
+      - dnsutils
+      - ebtables
+      - iputils-ping
+      - ipvsadm
+      - lvm2
+      - net-tools
+      - open-iscsi
+      - sudo
+      - unzip
+      - vim
+
+- name: Install RasPi specific packages
+  ansible.builtin.apt:
+    name:
+      - linux-modules-extra-raspi
+  when: "'raspi' in ansible_kernel"
+  notify: reboot
+
+- name: Remove dependencies that are no longer required
+  become: true
+  ansible.builtin.apt:
+    autoremove: true
+
+- name: Restart node if necessary
+  ansible.builtin.meta: flush_handlers

@@ -1,0 +1,45 @@
+---
+- name: Check supported distribution
+  ansible.builtin.fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - "Supported role distributions are {{ supported_distributions }}"
+  when: ansible_facts['distribution'] | lower not in supported_distributions
+
+- name: Install docker
+  ansible.builtin.include_role: geerlingguy.docker
+
+# for ansible docker modules
+- name: Install docker module for python
+  ansible.builtin.pip:
+    name: docker
+
+- name: Create the project directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ project_dir }}"
+    state: directory
+    mode: 0755
+
+- name: Create env file
+  ansible.builtin.template:
+    src: env.j2
+    dest: "{{ project_dir }}/.env"
+    owner: "{{ ansible_user }}"
+    group: sudo
+    mode: 0744
+  when:
+    - env_vars is defined
+    - env_vars | length > 0
+
+- name: Create compose file
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: "{{ project_dir }}/docker-compose.yaml"
+    owner: "{{ ansible_user }}"
+    group: sudo
+    mode: 0744
+
+- name: Start services
+  community.docker.docker_compose:
+    project_src: "{{ project_dir }}"
+    state: "{{ state }}"

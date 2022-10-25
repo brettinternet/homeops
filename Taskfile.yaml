@@ -9,6 +9,7 @@ vars:
   TERRAFORM_DIR: "{{.PROJECT_DIR}}/provision/terraform"
 
 env:
+  ROOT_DIR: "{{.PROJECT_DIR}}"
   KUBECONFIG: "{{.PROJECT_DIR}}/provision/kubeconfig"
 
 includes:
@@ -61,16 +62,6 @@ tasks:
       - "echo 'Source from .profile: \n\nexport SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt'"
     status:
       - test -f $HOME/.config/sops/age/keys.txt
-
-  verify:
-    desc: Verify env settings
-    cmds:
-      - ./configure --verify
-
-  configure:
-    desc: Configure repository from env settings
-    cmds:
-      - ./configure
 
   wip:
     desc: Commit WIP to current branch and reconcile cluster

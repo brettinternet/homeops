@@ -1,0 +1,31 @@
+---
+# https://github.com/geerlingguy/ansible-role-docker/blob/96eaae30e5cfa3f054990af2aea25c7faa568e02/tasks/docker-compose.yml
+- name: Check current docker-compose version
+  ansible.builtin.command: "{{ docker_compose_path }} --version"
+  register: docker_compose_vsn
+  check_mode: false
+  changed_when: false
+  failed_when: false
+
+- ansible.builtin.set_fact:
+    docker_compose_current_version: "{{ docker_compose_vsn.stdout | regex_search('(\\d+(\\.\\d+)+)') }}"
+  when: docker_compose_vsn.stdout is defined
+
+- name: Delete existing docker-compose version if outdated
+  ansible.builtin.file:
+    path: "{{ docker_compose_path }}"
+    state: absent
+  when:
+    - docker_compose_current_version is defined
+    - (docker_compose_version | regex_replace('v', '')) not in docker_compose_current_version
+
+- name: Install docker compose
+  ansible.builtin.get_url:
+    # https://github.com/docker/compose/releases
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ ansible_architecture }}"
+    dest: "{{ docker_compose_path }}"
+    mode: 0755
+  when: >
+    (docker_compose_current_version is not defined)
+    or (docker_compose_current_version|length == 0)
+    or (docker_compose_current_version is version((docker_compose_version | regex_replace('v', '')), '<'))

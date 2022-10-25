@@ -17,6 +17,13 @@
         path: /var/run/reboot-required
       register: reboot_required_result
 
-    - ansible.builtin.debug:
+    - name: Reboot status
+      ansible.builtin.debug:
         msg:
           - "Reboot required: {{ reboot_required_result.stat.exists }}"
+
+    - name: Local env vars
+      ansible.builtin.debug:
+        msg:
+          - "Project root path: {{ lookup('ansible.builtin.env', 'ROOT_DIR') }}"
+      run_once: true

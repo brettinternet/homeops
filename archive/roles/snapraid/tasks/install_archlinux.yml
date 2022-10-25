@@ -1,7 +1,0 @@
----
-- name: Install SnapRAID from AUR (Archlinux)
-  include_role:
-    name: yay
-  vars:
-    yay_packages: snapraid
-    yay_state: present

@@ -1,0 +1,27 @@
+# https://wiki.archlinux.org/title/ClamAV
+---
+- name: Install dependencies
+  ansible.builtin.package:
+    name:
+      - clamav
+
+- name: Enable clamav daemon
+  become: true
+  ansible.builtin.systemd:
+    name: clamav-daemon.service
+    enabled: true
+    state: started
+
+- name: Enable clamav definitions update
+  become: true
+  ansible.builtin.systemd:
+    name: clamav-freshclam.service
+    enabled: true
+    state: started
+
+- name: Test clamav installation # noqa no-changed-when
+  ansible.builtin.shell: |
+    set -o pipefail
+    curl -s https://secure.eicar.org/eicar.com.txt | clamscan -
+  register: clamav__test_result
+  failed_when: "'FOUND' not in clamav__test_result.stdout"
