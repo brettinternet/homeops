@@ -5,6 +5,7 @@ kubernetes:
       hosts:
         archie: # Primary control plane
           ansible_host: 10.1.2.15
+          k3s_primary_control_node: true
         pi-0:
           ansible_host: 10.1.2.10
         pi-1:
