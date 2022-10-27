@@ -8,7 +8,7 @@
   when: ansible_facts['distribution'] | lower not in supported_distributions
 
 - name: Install Snapraid
-  ansible.builtin.include_tasks: "install_{{ ansible_facts['distribution'] | lower }}.yml"
+  ansible.builtin.include_tasks: "install_{{ ansible_facts['distribution'] | lower }}.yaml"
 
 # https://www.snapraid.it/manual
 - name: Create snapraid.conf

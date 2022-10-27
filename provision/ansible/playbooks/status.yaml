@@ -9,21 +9,30 @@
         name: k3s.service
       register: k3s_service_result
 
-    - debug:
-        var: k3s_service_result.status.ActiveState
-
     - name: Find reboot-required file
       ansible.builtin.stat:
         path: /var/run/reboot-required
-      register: reboot_required_result
+      register: debian_reboot_required_result
+      when: ansible_facts['distribution'] | lower == 'debian'
 
-    - name: Reboot status
+    - name: Find reboot-required file
+      ansible.builtin.command: needrestart -q
+      register: archlinux_reboot_required_result
+      when: ansible_facts['distribution'] | lower == 'archlinux'
+
+    - name: Set reboot requirement fact
+      ansible.builtin.set_fact:
+        reboot_required: "{{ archlinux_reboot_required_result.rc != 0 if ansible_facts['distribution'] | lower == 'archlinux' else debian_reboot_required_result.stat.exists }}"
+
+    - name: Host vars
       ansible.builtin.debug:
         msg:
-          - "Reboot required: {{ reboot_required_result.stat.exists }}"
+          - "Distribution: {{ ansible_facts['distribution'] }}"
+          - "k3s.service: {{ k3s_service_result.status.ActiveState }}"
+          - "Reboot required: {{ reboot_required }}"
 
-    - name: Local env vars
+    - name: Local vars
       ansible.builtin.debug:
         msg:
-          - "Project root path: {{ lookup('ansible.builtin.env', 'ROOT_DIR') }}"
+          - "Project root directory: {{ lookup('ansible.builtin.env', 'ROOT_DIR') }}"
       run_once: true

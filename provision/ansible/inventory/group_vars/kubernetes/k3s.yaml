@@ -19,14 +19,17 @@ k3s_etcd_datastore: true
 k3s_use_unsupported_config: true
 # (string) Control Plane registration address
 k3s_registration_address: "{{ kubevip_address }}"
+# Calico quickstart: https://projectcalico.docs.tigera.io/getting-started/kubernetes/quickstart
 # (list) A list of URLs to deploy on the primary control plane. Read notes below.
 k3s_server_manifests_urls:
-  - url: https://docs.projectcalico.org/archive/v3.22/manifests/tigera-operator.yaml
+  # - url: https://docs.projectcalico.org/archive/v3.22/manifests/tigera-operator.yaml
+  - url: https://raw.githubusercontent.com/projectcalico/calico/v3.24.3/manifests/tigera-operator.yaml
     filename: tigera-operator.yaml
   - url: https://kube-vip.io/manifests/rbac.yaml
     filename: kube-vip-rbac.yaml
-# (list) A flat list of templates to deploy on the primary control plane
 # /var/lib/rancher/k3s/server/manifests
+# https://github.com/PyratLabs/ansible-role-k3s/blob/80e4debcd4a7b4c8d596a380743ca1017acad43d/documentation/configuration/use-an-alternate-cni.md
+# (list) A flat list of templates to deploy on the primary control plane
 k3s_server_manifests_templates:
   - "calico-installation.yaml.j2"
   - kube-vip-daemonset.yaml.j2

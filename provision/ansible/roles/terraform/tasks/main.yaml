@@ -22,10 +22,10 @@
   register: terraform
 
 - name: Set remote IPv4 address fact
-  set_fact:
+  ansible.builtin.set_fact:
     terraform_public_ip: "{{ terraform.outputs.ipv4_address.value }}"
 
 - name: Print new provision IP address
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Add host to inventory: {{ terraform_public_ip }}"

@@ -1,5 +1,0 @@
----
-# (string) Timezone for the servers
-timezone: "{{ lookup('ansible.builtin.env', 'TIMEZONE') | default('America/Denver', true) }}"
-# (list) Additional ssh public keys to add to the nodes
-# ssh_authorized_keys:

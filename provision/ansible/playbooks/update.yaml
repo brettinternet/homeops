@@ -4,4 +4,4 @@
     - worker
   become: true
   roles:
-    - dependencies
+    - upgrade

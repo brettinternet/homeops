@@ -26,6 +26,7 @@
   register: aur_helper_command_result
   failed_when: aur_helper_command_result.stderr != ""
   changed_when: aur_helper_command_result.rc != 1
+  when: aur_helper == 'yay'
 
 - block:
     - name: Clone yay PKGBUILD
@@ -43,12 +44,25 @@
       ansible.builtin.file:
         path: "{{ ansible_facts['user_dir'] }}/yay"
         state: absent
-  when: aur_helper_command_result.rc == 0
+  when:
+    - aur_helper == 'yay'
+    - aur_helper_command_result.rc == 0
 
-- name: Install AUR packages (yay)
+- name: Install AUR packages
   become_user: "{{ aur_user }}"
   kewlfft.aur.aur:
     use: "{{ aur_helper }}"
     aur_only: true
     name: "{{ packages }}"
     state: "{{ state }}"
+  when:
+    - packages is defined
+    - packages | length > 0
+
+- name: Upgrade packages
+  become_user: "{{ aur_user }}"
+  kewlfft.aur.aur:
+    use: "{{ aur_helper }}"
+    aur_only: true
+    upgrade: true
+  when: aur_upgrade is true

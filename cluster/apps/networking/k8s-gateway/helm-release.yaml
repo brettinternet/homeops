@@ -41,24 +41,24 @@ spec:
     # Forward upstream DNS
     # https://github.com/ori-edge/k8s_gateway/issues/42
     # https://coredns.io/plugins/forward/
-    # extraZonePlugins:
-    #   - name: log
-    #   - name: errors
-    #   # Serves a /health endpoint on :8080, required for livenessProbe
-    #   - name: health
-    #     configBlock: |-
-    #       lameduck 5s
-    #   # Serves a /ready endpoint on :8181, required for readinessProbe
-    #   - name: ready
-    #   # Serves a /metrics endpoint on :9153, required for serviceMonitor
-    #   # - name: prometheus
-    #   #   parameters: 0.0.0.0:9153
-    #   - name: forward
-    #     # parameters: . /etc/resolv.conf
-    #     parameters: . 1.1.1.1
-    #     # parameters: ". ${METALLB_DNS_ADDR} ${UPSTREAM_DNS_ADDR} 1.1.1.1"
-    #     # configBlock: |-
-    #     #   policy sequential
-    #   - name: loop
-    #   - name: reload
-    #   - name: loadbalance
+    extraZonePlugins:
+      - name: log
+      - name: errors
+      # Serves a /health endpoint on :8080, required for livenessProbe
+      - name: health
+        configBlock: |-
+          lameduck 5s
+      # Serves a /ready endpoint on :8181, required for readinessProbe
+      - name: ready
+      # Serves a /metrics endpoint on :9153, required for serviceMonitor
+      # - name: prometheus
+      #   parameters: 0.0.0.0:9153
+      - name: forward
+        # parameters: . /etc/resolv.conf
+        parameters: . 1.1.1.1
+        # parameters: ". ${METALLB_DNS_ADDR} ${UPSTREAM_DNS_ADDR} 1.1.1.1"
+        # configBlock: |-
+        #   policy sequential
+      - name: loop
+      - name: reload
+      - name: loadbalance

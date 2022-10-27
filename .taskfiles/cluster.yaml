@@ -29,8 +29,8 @@ tasks:
       - chmod go-r "{{.CLUSTER_DIR}}/kubeconfig"
     vars:
       K3S_PRIMARY_MASTER_NODE_USERNAME: "pi"
-      K3S_PRIMARY_MASTER_NODE_ADDR: "10.1.2.10"
-      K3S_LB_ADDR: "10.1.2.101"
+      K3S_PRIMARY_MASTER_NODE_ADDR: "10.1.2.15"
+      K3S_LB_ADDR: "10.1.2.121"
 
   reconcile:
     desc: Force update Flux to pull in changes from your Git repository

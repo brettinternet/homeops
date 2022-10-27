@@ -3,19 +3,19 @@ kubernetes:
   children:
     master:
       hosts:
+        archie: # Primary control plane
+          ansible_host: 10.1.2.15
         pi-0:
           ansible_host: 10.1.2.10
         pi-1:
           ansible_host: 10.1.2.11
-        archie:
-          ansible_host: 10.1.2.15
     worker:
       hosts:
         pi-2:
           ansible_host: 10.1.2.12
         pi-3:
           ansible_host: 10.1.2.13
-        pi-4:
-          ansible_host: 10.1.2.14
+        # pi-4:
+        #   ansible_host: 10.1.2.14
         harambe:
           ansible_host: 10.1.2.16

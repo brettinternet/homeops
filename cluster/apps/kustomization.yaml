@@ -4,13 +4,13 @@ kind: Kustomization
 resources:
   # - backup
   # - debug
-  - default
+  # - default
   - flux-system
   # - games
   - kube-system
-  - media
+  # - media
   # - monitoring
   - networking
   # - system-upgrade
   # - trivy
-  - vpn
+  # - vpn

@@ -14,13 +14,15 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - PUID=1000
-      - PGID=1000
+      # - PUID=1000
+      # - PGID=1000
       - TZ=America/Denver
       - PEERS=1
       - SERVERPORT=51820
       - INTERNAL_SUBNET=10.13.13.0
       - ALLOWEDIPS=0.0.0.0/0
+      - SERVERURL=${WIREGUARD_SERVERURL}
+      - PEERS=${WIREGUARD_PEERS}
     ports:
       # WireGuard server
       - 51820:51820/udp
@@ -29,6 +31,16 @@ services:
       {% endfor %}
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
+
+  dyndns:
+    # https://hub.docker.com/r/oznu/cloudflare-ddns/
+    image: oznu/cloudflare-ddns
+    container_name: dyndns
+    environment:
+      - API_KEY=${CLOUDFLARE_API_KEY}
+      - ZONE=${CLOUDFLARE_ZONE}
+      - SUBDOMAIN=${CLOUDFLARE_SUBDOMAIN}
+      - CRON="@daily"
 
   watchtower:
     image: containrrr/watchtower

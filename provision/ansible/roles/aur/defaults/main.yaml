@@ -1,4 +1,6 @@
 ---
 state: present
+packages: []
 aur_helper: yay
 aur_user: aur_builder
+aur_upgrade: false

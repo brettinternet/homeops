@@ -8,7 +8,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
-- Rancher's K3s
+- Rancher's K3s with an [ansible deployment](https://github.com/PyratLabs/ansible-role-k3s)
 - Flux GitOps
 - Ansible node provisioning
 - Terraform DNS updates

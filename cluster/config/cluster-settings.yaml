@@ -12,6 +12,8 @@ data:
   METALLB_K8S_GATEWAY_ADDR: 10.1.2.101
   METALLB_INGRESS_ADDR: 10.1.2.102
   METALLB_INGRESS_INTERNAL_ADDR: 10.1.2.103
+  # Value also in `provision/ansible/inventory/group_vars/kubernetes/kube-vip.yaml`
+  KUBE_VIP_ADDR: 10.1.2.121
   METALLB_DNS_ADDR: 10.1.2.104
   METALLB_MADDY_ADDR: 10.1.2.105
   METALLB_PLEX_ADDR: 10.1.2.106

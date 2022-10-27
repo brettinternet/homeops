@@ -5,12 +5,6 @@
       - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
       - "Supported role distributions are {{ supported_distributions }}"
   when: ansible_facts['distribution'] | lower not in supported_distributions
-  tags:
-    - upgrade
-    - reboot
 
 - name: Upgrade packages
-  include_tasks: "{{ ansible_facts['distribution'] | lower }}.yml"
-  tags:
-    - upgrade
-    - reboot
+  include_tasks: "upgrade_{{ ansible_facts['distribution'] | lower }}.yaml"

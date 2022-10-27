@@ -34,10 +34,5 @@
   when: "'raspi' in ansible_kernel"
   notify: reboot
 
-- name: Remove dependencies that are no longer required
-  become: true
-  ansible.builtin.apt:
-    autoremove: true
-
 - name: Restart node if necessary
   ansible.builtin.meta: flush_handlers
