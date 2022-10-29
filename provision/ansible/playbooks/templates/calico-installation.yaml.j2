@@ -9,8 +9,12 @@ metadata:
   name: default
 spec:
   calicoNetwork:
-    # https://github.com/projectcalico/calico/issues/4842
-    containerIPForwarding: Enabled
+    # https://projectcalico.docs.tigera.io/networking/ip-autodetection
+    nodeAddressAutodetectionV4:
+      interface: (eth0|enp0s31f6)$
+      #cidrs:
+        #- "{{ (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}"
+      # interface: "enp.*"
     # Note: The ipPools section cannot be modified post-install.
     ipPools:
       - blockSize: 26
@@ -21,11 +25,11 @@ spec:
   nodeMetricsPort: 9091
   typhaMetricsPort: 9093
 
----
+{# ---
 # This section configures the Calico API server.
 # For more information, see: https://projectcalico.docs.tigera.io/master/reference/installation/api#operator.tigera.io/v1.APIServer
 apiVersion: operator.tigera.io/v1
 kind: APIServer
 metadata:
   name: default
-spec: {}
+spec: {} #}

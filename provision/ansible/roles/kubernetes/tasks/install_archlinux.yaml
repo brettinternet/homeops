@@ -1,0 +1,12 @@
+---
+- name: Upgrade packages
+  community.general.pacman:
+    update_cache: true
+    upgrade: true
+
+- name: Install dependencies
+  community.general.pacman:
+    state: present
+    name:
+      - curl
+      - net-tools

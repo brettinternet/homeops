@@ -1,28 +1,24 @@
 ---
 # Docs: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
 
-- name: Update package cache (apt)
+- name: Update package cache
   apt:
     update_cache: true
     cache_valid_time: 3600
-  tags: upgrade
 
-- name: Update packages (apt)
+- name: Update packages
   apt:
     name: "*"
     state: latest
-  tags: upgrade
 
-- name: Remove dependencies that are no longer required (apt)
+- name: Remove dependencies that are no longer required
   apt:
     autoremove: true
-  tags: upgrade
 
-- name: Upgrade the OS (apt)
+- name: Upgrade the OS
   apt:
     upgrade: dist
   when: allow_dist_upgrade is true
-  tags: upgrade
 
 - name: Determine whether to restart (Ubuntu)
   stat:
@@ -32,15 +28,12 @@
     get_checksum: false
     get_mime: false
   register: upgrade__should_restart_stat
-  tags: reboot
 
 - name: Print reboot status
   debug:
     msg: "Reboot {{ (upgrade__should_restart_stat.stat.exists is true) | ternary('is', 'is not') }} required to complete the upgrade"
-  tags: reboot
 
 # See defaults: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/reboot_module.html
 - name: Reboot
   reboot:
   when: upgrade__should_restart_stat.stat.exists is true and allow_reboot is true
-  tags: reboot

@@ -4,4 +4,6 @@
     - worker
   become: true
   roles:
-    - upgrade
+    - role: upgrade
+      vars:
+        allow_reboot: false

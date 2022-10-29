@@ -1,5 +1,7 @@
 # AdGuard does not support HA easily.
 # TODO: Use https://github.com/0xERR0R/blocky or Unbound on OPNsense
+# TODO: add advanced DNS with CoreDNS loadbalancer
+# https://github.com/lkmgr/homelab/blob/3f2603b770df6f052c6acc50043e66734de3e81e/cluster/apps/networking/home-dns/helm-release.yaml
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

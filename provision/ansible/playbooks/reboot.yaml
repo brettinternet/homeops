@@ -9,8 +9,3 @@
       ansible.builtin.reboot:
       retries: 10
       delay: 10
-
-    # - name: Restart k3s
-    #   ansible.builtin.systemd:
-    #     name: k3s.service
-    #     state: restarted

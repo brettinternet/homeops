@@ -9,19 +9,20 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 ## Features
 
 - Rancher's K3s with an [ansible deployment](https://github.com/PyratLabs/ansible-role-k3s)
-- Flux GitOps
+- [Flux](https://toolkit.fluxcd.io/) GitOps with this repo
 - Ansible node provisioning
-- Terraform DNS updates
+- Terraform DNS records
 - SOPS
 - Renovate bot dependency updates
-- Cloudflared HTTP tunnel
 - WireGuard VPN pod gateway via paid service
 - WireGuard VPN proxy hosted on VPS
-- K8s gateway and NGINX ingress controller
+- Cloudflared HTTP tunnel
+- [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
 - Both internal & external services
 - OIDC authentication
 - Automatic Cloudflare DNS updates
 - [MetalLB](https://metallb.universe.tf/) bare metal K8s network loadbalancing
+- [Calico](https://www.tigera.io/project-calico/) CNI
 
 ## Usage
 
@@ -202,3 +203,24 @@ Use [Ventoy](https://www.ventoy.net) to bundle bootable ISO and IMG images on a 
 ### Media
 
 For a media server, it's a good idea to [understand digital video](https://github.com/leandromoreira/digital_video_introduction).
+
+### Troubleshooting
+
+#### Network
+
+Debug DNS issues
+
+```sh
+kubectl run curl --rm=true --stdin=true --tty=true --restart=Never --image=docker.io/curlimages/curl --command -- /bin/sh -
+
+curl -k https://kubernetes:443; echo
+```
+
+[Ensure you're using iptables-legacy](https://github.com/k3s-io/k3s/issues/703#issuecomment-522355829). See also [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Adoption).
+
+```sh
+iptables --version
+# iptables v1.8.7 (legacy)
+```
+
+Flush the iptables in between installs. Also check the CNI installation for issues (such as configuration for hardware with multiple NICs).

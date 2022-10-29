@@ -20,3 +20,8 @@ kubernetes:
         #   ansible_host: 10.1.2.14
         harambe:
           ansible_host: 10.1.2.16
+
+remote:
+  children:
+    hosts:
+      bastion:
