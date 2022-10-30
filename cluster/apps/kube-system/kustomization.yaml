@@ -5,12 +5,11 @@ resources:
   - namespace.yaml
   - csi-driver-nfs
   - descheduler
-  # - goldilocks
+  - goldilocks
   - kube-vip
-  - kyverno
   - metrics-server
   - node-feature-discovery
   - reloader
   # - rook-ceph
   # - smarter-device-manager
-  # - vpa
+  - vpa

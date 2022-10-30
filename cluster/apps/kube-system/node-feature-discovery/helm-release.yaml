@@ -21,7 +21,10 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  # https://github.com/kubernetes-sigs/node-feature-discovery/blob/master/deployment/helm/node-feature-discovery/values.yaml
   values:
+    nodeFeatureRule:
+      createCRD: true
     worker:
       annotations:
         configmap.reloader.stakater.com/reload: node-feature-discovery-worker-conf
@@ -44,6 +47,7 @@ spec:
               - class
               - vendor
               - device
+          # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/overlays/samples/custom-rules
           custom:
             # https://kubernetes-sigs.github.io/node-feature-discovery/v0.11/get-started/features.html?highlight=ssd#storage
             # - feature: storage.device
@@ -52,12 +56,6 @@ spec:
             # - feature: storage.device
             #   matchExpressions:
             #     rotational: {op: In, value: ["0"]}
-            - name: storage-usb
-              matchOn:
-                - usbId:
-                    # Bus 002 Device 002: ID 090c:1000
-                    vendor: ["090c"]
-                    device: ["1000"]
             # https://github.com/walthowd/husbzb-firmware
             # Bus 001 Device 002: ID 10c4:8a2a Silicon Labs HubZ Smart Home Controller
             - name: "zwave"

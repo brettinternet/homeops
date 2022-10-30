@@ -24,8 +24,6 @@ spec:
       retries: 5
   # https://github.com/FairwindsOps/charts/blob/master/stable/vpa/values.yaml
   values:
-    serviceAccount:
-      create: false
     # About the components: https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler#components-of-vpa
     recommender:
       enabled: true

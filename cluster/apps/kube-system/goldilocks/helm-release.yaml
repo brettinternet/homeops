@@ -31,7 +31,9 @@ spec:
           hajimari.io/icon: memory
         hosts:
           - host: &host "goldilocks.${PUBLIC_DOMAIN}"
-            paths: ["/"]
+            paths:
+              - path: /
+                type: ImplementationSpecific
         tls:
           - hosts:
               - *host

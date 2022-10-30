@@ -13,6 +13,7 @@ resources:
   - descheduler.yaml
   - dysnix.yaml
   - external-dns.yaml
+  - fairwinds.yaml
   - goldilocks.yaml
   - grafana.yaml
   - hajimari.yaml

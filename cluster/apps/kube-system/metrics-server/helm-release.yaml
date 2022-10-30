@@ -22,6 +22,7 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  # https://github.com/kubernetes-sigs/metrics-server/tree/master/charts/metrics-server
   values:
     args:
       - --kubelet-insecure-tls
