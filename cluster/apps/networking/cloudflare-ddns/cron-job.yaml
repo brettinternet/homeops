@@ -6,15 +6,15 @@ metadata:
   name: &app cloudflare-ddns
   namespace: networking
 spec:
-  schedule: "0 * * * *"
-  # schedule: "@hourly"
+  # schedule: "0 * * * *"
+  schedule: "@hourly"
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       backoffLimit: 3
-      ttlSecondsAfterFinished: 300
+      ttlSecondsAfterFinished: 3600
       template:
         spec:
           automountServiceAccountToken: false

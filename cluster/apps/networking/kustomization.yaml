@@ -6,10 +6,9 @@ resources:
   # - blocky
   - cert-manager
   - cloudflared
-  # - cloudflare-ddns
+  - cloudflare-ddns
   # - crowdsec
   - external-dns
-  # - gluetun
   - ingress-nginx
   # - ingress-nginx-internal
   - metallb
