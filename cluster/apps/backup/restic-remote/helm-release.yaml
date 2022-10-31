@@ -1,4 +1,4 @@
-# https://github.com/djmaze/resticker
+# https://github.com/djmaze/resticker/blob/master/docker-compose.example.yml
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -30,6 +30,7 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
+      RUN_ON_STARTUP: "true"
       BACKUP_CRON: "0 0 0 * * *"
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#backblaze-b2
@@ -122,7 +123,6 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      RUN_ON_STARTUP: "true"
       PRUNE_CRON: "0 0 2 * * *"
       POST_COMMANDS_FAILURE: |-
         curl -d "The remote restic prune failed" "http://ntfy.default.svc.cluster.local/homelab"
@@ -167,7 +167,6 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      RUN_ON_STARTUP: "true"
       CHECK_CRON: "0 0 4 * * *"
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
