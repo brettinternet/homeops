@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
+  - restored-pvc.yaml
   # - restic-local
   - restic-remote

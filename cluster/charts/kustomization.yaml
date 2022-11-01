@@ -23,10 +23,12 @@ resources:
   - k8s-gateway.yaml
   - kubernetes-dashboard.yaml
   - kyverno.yaml
+  - mailu.yaml
   - metallb.yaml
   - metrics-server.yaml
   - nextcloud.yaml
   - node-feature-discovery.yaml
+  - pod-gateway.yaml
   - prometheus-community.yaml
   # - rook-ceph.yaml
   - stakater.yaml

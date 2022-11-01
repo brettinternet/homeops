@@ -11,6 +11,7 @@ resources:
   # - games
   - kube-system
   - kyverno
+  # - mail
   - media
   # - monitoring
   - networking

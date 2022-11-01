@@ -1,0 +1,11 @@
+# https://github.com/angelnu/helm-charts/tree/main/charts/apps/pod-gateway
+# https://github.com/angelnu/pod-gateway/issues/5
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: pod-gateway
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://angelnu.github.io/helm-charts

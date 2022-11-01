@@ -15,16 +15,16 @@ spec:
     spec:
       interval: 30m
       chart: pod-gateway
-      version: 5.6.2
+      version: 5.8.0
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home
+        name: pod-gateway
         namespace: flux-system
   # https://github.com/k8s-at-home/charts/blob/master/charts/stable/pod-gateway/values.yaml
   values:
     image:
       repository: ghcr.io/angelnu/pod-gateway
-      tag: v1.8.1@sha256:690b6365728fe9012ad4cdfca38334992664596513dca187d1b93d2025205776
+      tag: latest
     DNS: 172.16.1.1
     additionalContainers:
       gluetun:

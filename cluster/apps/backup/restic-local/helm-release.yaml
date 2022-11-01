@@ -1,9 +1,9 @@
-# https://github.com/djmaze/resticker
+# https://github.com/djmaze/resticker/blob/master/docker-compose.example.yml
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: restic-local
+  name: restic-local-backup
   namespace: backup
 spec:
   interval: 15m
@@ -25,16 +25,164 @@ spec:
       retries: 5
   values:
     image:
-      repository: docker.io/lobaro/restic-backup-docker
+      repository: docker.io/mazzolino/restic
       tag: latest
+    # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      BACKUP_CRON: 0 30 0 * * *
-      PRUNE_CRON: 0 30 1 * * *
-      CHECK_CRON: 0 30 2 * * *
+      RUN_ON_STARTUP: "true"
+      BACKUP_CRON: "0 0 0 * * *"
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
-      RESTIC_REPOSITORY:
       RESTIC_BACKUP_SOURCES: /data
+      RESTIC_BACKUP_ARGS: >-
+        --tag ${PUBLIC_DOMAIN}
+        --tag restic
+        --exclude='.Trash*'
+        --verbose
+      RESTIC_FORGET_ARGS: >-
+        --keep-last 10
+        --keep-daily 7
+        --keep-weekly 5
+        --keep-monthly 12
+      POST_COMMANDS_FAILURE: |-
+        curl -d "The local restic backup failed" "http://ntfy.default.svc.cluster.local/homelab"
+    envFrom:
+      - secretRef:
+          name: restic-local
+    service:
+      main:
+        enabled: false
+    securityContext:
+      # privileged: true
+      capabilities:
+        add: ["SYS_ADMIN"]
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          # TODO: target specific subdirectories
+          # - path: rclone/rclone.conf
+          #   mountPath: /run/secrets/rclone.conf
+            # readOnly: true
+          - path: espial
+            mountPath: /data/espial
+            readOnly: true
+          - path: miniflux_db
+            mountPath: /data/miniflux_db
+            readOnly: true
+          - path: nzbget
+            mountPath: /data/nzbget
+            readOnly: true
+          - path: paperless
+            mountPath: /data/paperless
+            readOnly: true
+          - path: paperless_db
+            mountPath: /data/paperless_db
+            readOnly: true
+          - path: valheim/saves
+            mountPath: /data/valheim/saves
+            readOnly: true
+          - path: valheim2/saves
+            mountPath: /data/valheim2/saves
+            readOnly: true
+      # https://github.com/djmaze/resticker#using-restic-mount
+      fuse:
+        enabled: true
+        mountPath: /dev/fuse
+        type: hostPath
+        hostPath: /dev/fuse
+        readOnly: true
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: restic-local-prune
+  namespace: backup
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: restic-local-backup
+      namespace: backup
+  values:
+    image:
+      repository: docker.io/mazzolino/restic
+      tag: latest
+    # https://github.com/djmaze/resticker#configuration-options
+    env:
+      TZ: "${TIMEZONE}"
+      PRUNE_CRON: "0 0 2 * * *"
+      POST_COMMANDS_FAILURE: |-
+        curl -d "The local restic prune failed" "http://ntfy.default.svc.cluster.local/homelab"
+    envFrom:
+      - secretRef:
+          name: restic-local
+    service:
+      main:
+        enabled: false
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: restic-local-check
+  namespace: backup
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: restic-local-backup
+      namespace: backup
+  values:
+    image:
+      repository: docker.io/mazzolino/restic
+      tag: latest
+    # https://github.com/djmaze/resticker#configuration-options
+    env:
+      TZ: "${TIMEZONE}"
+      CHECK_CRON: "0 0 4 * * *"
+      RESTIC_CHECK_ARGS: >-
+        --read-data-subset=10%
+      POST_COMMANDS_FAILURE: |-
+        curl -d "The local restic check failed" "http://ntfy.default.svc.cluster.local/homelab"
+    envFrom:
+      - secretRef:
+          name: restic-local
+    service:
+      main:
+        enabled: false
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -114,7 +262,7 @@ spec:
     #     mountPath: /data
     #     subPath: restic_s3
     podAnnotations:
-      secret.reloader.stakater.com/reload: thanos
+      secret.reloader.stakater.com/reload: restic-local
     # resources:
     #   requests:
     #     cpu: 22m

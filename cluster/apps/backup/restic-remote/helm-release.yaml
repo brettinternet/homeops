@@ -29,6 +29,7 @@ spec:
       repository: docker.io/mazzolino/restic
       tag: latest
     # https://github.com/djmaze/resticker#configuration-options
+    hostname: restic-remote
     env:
       TZ: "${TIMEZONE}"
       RUN_ON_STARTUP: "true"
@@ -185,47 +186,3 @@ spec:
     service:
       main:
         enabled: false
-
-# https://rclone.org/install/
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: rclone-remote
-#   namespace: backup
-# spec:
-#   interval: 15m
-#   chart:
-#     spec:
-#       chart: app-template
-#       version: 0.2.2
-#       sourceRef:
-#         kind: HelmRepository
-#         name: bjw-s
-#         namespace: flux-system
-#       interval: 15m
-#   install:
-#     createNamespace: true
-#     remediation:
-#       retries: 5
-#   upgrade:
-#     remediation:
-#       retries: 5
-#   values:
-#     image:
-#       repository: docker.io/rclone/rclone
-#       tag: latest
-#     env:
-#       TZ: "${TIMEZONE}"
-#     securityContext:
-#       capabilities:
-#         add: [SYS_ADMIN]
-#     podSecurityContext:
-#       runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
-#       runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
-#     persistence:
-#       data:
-#         enabled: true
-#         existingClaim: appdata
-#         mountPath: /config/rclone
-#         subPath: rclone

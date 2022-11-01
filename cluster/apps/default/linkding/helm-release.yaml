@@ -60,7 +60,7 @@ spec:
         ingressClassName: nginx
         annotations:
           auth.home.arpa/enabled: "true"
-          external-dns.home.arpa/enabled: "true"
+          # external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: link
         hosts:

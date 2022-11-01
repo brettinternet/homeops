@@ -1,0 +1,48 @@
+# https://github.com/djmaze/resticker#restoring
+# Or use CronJob (where suspend: true) and trigger from Kubernetes Dashboard manually
+# ---
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: &job restic-remote-restore
+#   namespace: backup
+# spec:
+#   suspend: true
+#   schedule: "@yearly"
+#   concurrencyPolicy: "Forbid"
+#   jobTemplate:
+#     spec:
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: &job restic-remote-restore
+  namespace: backup
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: *job
+          image: docker.io/mazzolino/restic:latest
+          envFrom:
+            - secretRef:
+                name: restic-remote
+          # https://github.com/djmaze/resticker#restoring
+          command:
+            - restic
+            - restore
+            - --include
+            - /data
+            - --target
+            - /data
+            - latest
+          volumeMounts:
+            - name: *job
+              mountPath: /data
+      volumes:
+        - name: *job
+          persistentVolumeClaim:
+            claimName: restored
