@@ -1,3 +1,7 @@
+# Note: policy which patches ingress annotations must be working for CNAME records to be used
+# instead of the external-dns method of using the externalIPs on a LoadBalancer
+# This policy sets `external-dns.alpha.kubernetes.io/target`
+# https://github.com/kubernetes-sigs/external-dns/blob/master/docs/faq.md#are-other-ingress-controllers-supported
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -22,6 +26,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     interval: 5m
     logLevel: debug
@@ -39,10 +46,12 @@ spec:
             key: api-key
     extraArgs:
       - --cloudflare-proxied
+      # https://github.com/kubernetes-sigs/external-dns/blob/master/docs/faq.md
       - --annotation-filter=external-dns.home.arpa/enabled in (true)
     policy: sync
     sources:
       - ingress
+    # txtPrefix: "k8s-${CLUSTER_NAME}."
     txtPrefix: "k8s."
     txtOwnerId: "default"
     domainFilters:

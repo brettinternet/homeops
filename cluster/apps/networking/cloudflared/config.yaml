@@ -1,4 +1,5 @@
-# Add CNAME for ipv4 -> 4f4293d6-424a-4d06-9e4f-83dd262e8756.cfargotunnel.com
+---
+# Add CNAME record -> 4f4293d6-424a-4d06-9e4f-83dd262e8756.cfargotunnel.com
 tunnel: "4f4293d6-424a-4d06-9e4f-83dd262e8756"
 credentials-file: /etc/cloudflared/tunnel.json
 no-autoupdate: true

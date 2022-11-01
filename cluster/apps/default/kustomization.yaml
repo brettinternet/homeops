@@ -12,14 +12,12 @@ resources:
   - change-detection
   # - cloudbeaver
   - cyberchef
-  # - dokuwiki
   - esphome
   - espial
   - frigate
   - ghostfolio
   ## - glauth
   - hajimari
-  # - hajimari-public
   - home-assistant
   - kubernetes-dashboard
   - linkding

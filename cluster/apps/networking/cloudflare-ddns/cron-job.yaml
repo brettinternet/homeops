@@ -1,4 +1,3 @@
-# For usage instead of Cloudflared tunnels when pointing DNS directly to cluster firewall
 ---
 apiVersion: batch/v1
 kind: CronJob

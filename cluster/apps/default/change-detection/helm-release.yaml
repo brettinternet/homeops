@@ -54,8 +54,6 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          external-dns.home.arpa/enabled: "true"
-          auth.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: file-arrow-left-right-outline
         hosts:

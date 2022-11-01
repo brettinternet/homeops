@@ -1,11 +1,10 @@
-# Plugins:
-# https://www.dokuwiki.org/plugin:authldap
+# https://github.com/advplyr/audiobookshelf
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: dokuwiki
-  namespace: default
+  name: podgrab
+  namespace: media
 spec:
   interval: 15m
   chart:
@@ -24,41 +23,45 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
-      repository: lscr.io/linuxserver/dokuwiki
+      repository: docker.io/akhilrex/podgrab
       tag: latest
     env:
-      TZ: "${TIMEZONE}"
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
-    persistence:
-      data:
-        enabled: true
-        mountPath: /config
-        existingClaim: appdata
-        subPath: dokuwiki
+      TZ: ${TIMEZONE}
     service:
       main:
         ports:
           http:
-            port: 80
+            port: 8080
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /config
+        subPath: podgrab
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /assets
+        subPath: library/podcasts
     ingress:
       main:
         enabled: true
-        ingressClassName: nginx
+        ingressClassName: "nginx"
         annotations:
-          external-dns.home.arpa/enabled: "true"
           auth.home.arpa/enabled: "true"
+          external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
-          hajimari.io/icon: file-document-multiple
+          hajimari.io/icon: podcast
         hosts:
-          - host: &host "wiki.${PUBLIC_DOMAIN}"
+          - host: &host podcasts.${PUBLIC_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
         tls:
           - hosts:
               - *host
-    nodeSelector:
-      kubernetes.io/arch: arm64

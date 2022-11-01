@@ -23,6 +23,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
       # https://hub.docker.com/r/privatebin/nginx-fpm-alpine/

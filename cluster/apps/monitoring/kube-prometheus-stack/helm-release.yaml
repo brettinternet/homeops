@@ -134,8 +134,6 @@ spec:
         enabled: true
         pathType: Prefix
         ingressClassName: nginx
-        annotations:
-          external-dns.home.arpa/enabled: "true"
         hosts:
           - &host "prometheus.${PUBLIC_DOMAIN}"
         tls:

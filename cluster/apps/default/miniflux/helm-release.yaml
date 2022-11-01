@@ -14,9 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  dependsOn:
-    - name: miniflux-postgres
-      namespace: default
   install:
     createNamespace: true
     remediation:
@@ -24,6 +21,11 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: miniflux-postgres
+      namespace: default
   values:
     image:
       repository: docker.io/miniflux/miniflux

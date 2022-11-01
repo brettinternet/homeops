@@ -14,7 +14,7 @@ metadata:
       It also ensures that only a single host may be specified in a given manifest.
 spec:
   validationFailureAction: audit
-  background: false
+  mutateExistingOnPolicyUpdate: true
   rules:
     - name: check-single-host
       match:

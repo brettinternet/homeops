@@ -26,6 +26,8 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: kyverno
+      namespace: kyverno
     - name: archivebox-sonic
       namespace: default
   values:

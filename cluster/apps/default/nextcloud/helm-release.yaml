@@ -29,6 +29,8 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: kyverno
+      namespace: kyverno
     - name: nextcloud-postgres
       namespace: default
     - name: nextcloud-redis

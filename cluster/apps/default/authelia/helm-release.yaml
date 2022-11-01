@@ -24,6 +24,8 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: kyverno
+      namespace: kyverno
     - name: lldap
       namespace: default
     - name: authelia-postgres

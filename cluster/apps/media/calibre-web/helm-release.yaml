@@ -31,6 +31,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
     # https://hub.docker.com/r/linuxserver/calibre-web
@@ -63,6 +66,7 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
+          external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: book-plus-multiple
         hosts:

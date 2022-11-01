@@ -13,7 +13,6 @@ resources:
   - openbooks
   - overseerr
   - plex
-  - podgrab
   - prowlarr
   - qbittorrent
   - radarr

@@ -12,6 +12,7 @@ metadata:
       it applies the external-dns annotations for use with external
       application access.
 spec:
+  validationFailureAction: enforce
   mutateExistingOnPolicyUpdate: true
   generateExistingOnPolicyUpdate: true
   rules:
@@ -23,8 +24,14 @@ spec:
               annotations:
                 external-dns.home.arpa/enabled: "true"
       mutate:
+        # https://kyverno.io/docs/writing-policies/mutate/#mutate-existing-resources
+        targets:
+          - apiVersion: networking.k8s.io/v1
+            kind: Ingress
+            name: "{{ request.object.metadata.name }}"
+            namespace: "{{ request.object.metadata.namespace }}"
         patchStrategicMerge:
           metadata:
             annotations:
               +(external-dns.alpha.kubernetes.io/target): |-
-                ipv4.${PUBLIC_DOMAIN}
+                tunnel.${PUBLIC_DOMAIN}

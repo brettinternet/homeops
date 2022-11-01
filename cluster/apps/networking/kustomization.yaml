@@ -10,7 +10,6 @@ resources:
   # - crowdsec
   - external-dns
   - ingress-nginx
-  # - ingress-nginx-internal
   - metallb
   - nfs
   - nfs-shared

@@ -23,6 +23,9 @@ spec:
     remediation:
       retries: 5
   # https://github.com/toboshii/hajimari/blob/main/charts/hajimari/values.yaml
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     env:
       TZ: "${TIMEZONE}"

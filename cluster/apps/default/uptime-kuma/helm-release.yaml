@@ -22,15 +22,21 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
       repository: docker.io/louislam/uptime-kuma
       tag: latest
     env:
       TZ: "${TIMEZONE}"
-    podSecurityContext:
-      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    # Waiting on rootless image first:
+    # https://github.com/louislam/uptime-kuma/issues/2113
+    # https://github.com/louislam/uptime-kuma/pull/2086
+    # podSecurityContext:
+    #   runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+    #   runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     persistence:
       data:
         enabled: true
