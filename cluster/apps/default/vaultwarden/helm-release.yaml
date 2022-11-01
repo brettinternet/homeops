@@ -1,1 +1,6 @@
+# https://github.com/dani-garcia/vaultwarden
+# Tools:
 # Alternative for 2FA: https://github.com/Bubka/2FAuth
+# Backups:
+# https://hub.docker.com/r/bruceforce/vaultwarden-backup
+# https://github.com/dani-garcia/vaultwarden/wiki/Backing-up-your-vault
