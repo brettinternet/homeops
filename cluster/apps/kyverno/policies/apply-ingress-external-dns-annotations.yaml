@@ -25,6 +25,7 @@ spec:
                 external-dns.home.arpa/enabled: "true"
       mutate:
         # https://kyverno.io/docs/writing-policies/mutate/#mutate-existing-resources
+        # Updates on existing resources may produce error: https://github.com/kubernetes/kubernetes/issues/28149
         targets:
           - apiVersion: networking.k8s.io/v1
             kind: Ingress
