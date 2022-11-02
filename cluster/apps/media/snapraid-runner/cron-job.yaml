@@ -28,11 +28,11 @@ spec:
                 - /bin/bash
                 - -c
                 - >-
-                  kubectl -n media scale --replicas=0 deployment/sonarr
-                  kubectl -n media scale --replicas=0 deployment/radarr
-                  kubectl -n media scale --replicas=0 deployment/readarr
-                  kubectl -n media scale --replicas=0 deployment/audiobookshelf
-                  kubectl -n media scale --replicas=0 deployment/youtubedl
+                  kubectl -n media scale --replicas=0 deployment/sonarr &&
+                  kubectl -n media scale --replicas=0 deployment/radarr &&
+                  kubectl -n media scale --replicas=0 deployment/readarr &&
+                  kubectl -n media scale --replicas=0 deployment/audiobookshelf &&
+                  kubectl -n media scale --replicas=0 deployment/youtubedl &&
                   kubectl -n media scale --replicas=0 deployment/bazarr
             # List snapraid devices
             - name: snapraid-list-devices
@@ -90,11 +90,11 @@ spec:
                 - /bin/bash
                 - -c
                 - >-
-                  kubectl -n media scale --replicas=1 deployment/sonarr
-                  kubectl -n media scale --replicas=1 deployment/radarr
-                  kubectl -n media scale --replicas=1 deployment/readarr
-                  kubectl -n media scale --replicas=1 deployment/audiobookshelf
-                  kubectl -n media scale --replicas=1 deployment/youtubedl
+                  kubectl -n media scale --replicas=1 deployment/sonarr &&
+                  kubectl -n media scale --replicas=1 deployment/radarr &&
+                  kubectl -n media scale --replicas=1 deployment/readarr &&
+                  kubectl -n media scale --replicas=1 deployment/audiobookshelf &&
+                  kubectl -n media scale --replicas=1 deployment/youtubedl &&
                   kubectl -n media scale --replicas=1 deployment/bazarr
           volumes:
             - name: *job
