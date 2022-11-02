@@ -12,7 +12,7 @@ SNAPRAID_RC=$?
 
 {% if snapraid_runner_failed_notification_cmd_fn is defined %}
 
-if [ $SNAPRAID_RC == 0 ]; then
+if [ $SNAPRAID_RC != 0 ]; then
   {{ snapraid_runner_failed_notification_cmd_fn }}
   cmd "{{ snapraid_runner_dir }}/run.sh" "$OUTPUT"
 fi

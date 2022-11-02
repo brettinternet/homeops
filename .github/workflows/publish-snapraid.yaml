@@ -1,0 +1,52 @@
+# https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
+name: Build and publish SnapRAID image
+
+on: # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+    paths:
+      - containers/snapraid/*
+      - .github/workflows/publish-snapraid.yaml
+
+defaults:
+  run:
+    working-directory: ./containers/snapraid
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: snapraid
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skipci')"
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./containers/snapraid
+          file: ./containers/snapraid/Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.name=snapraid
+            org.opencontainers.image.source=https://github.com/brettinternet/homelab
+            org.opencontainers.image.description="SnapRAID with runner for containerized jobs"
+            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.version=0.1.0
