@@ -8,21 +8,24 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
-- Rancher's K3s with an [ansible deployment](https://github.com/PyratLabs/ansible-role-k3s)
-- [Flux](https://toolkit.fluxcd.io/) GitOps with this repo
-- Ansible node provisioning
+- Lots of [self-hosted services](./cluster/apps)
+- [Flux](https://toolkit.fluxcd.io/) GitOps with this repository
+- Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s)
 - Terraform DNS records
-- SOPS
-- Renovate bot dependency updates
+- [SOPS](https://github.com/mozilla/sops) secrets stored in Git
+- [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
 - WireGuard VPN pod gateway via paid service
 - WireGuard VPN proxy hosted on VPS
-- Cloudflared HTTP tunnel
+- [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
 - [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
-- Both internal & external services
-- OIDC authentication
+- Both internal & external services with a service [gateway](https://github.com/ori-edge/k8s_gateway/)
+- OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
 - Automatic Cloudflare DNS updates
 - [MetalLB](https://metallb.universe.tf/) bare metal K8s network loadbalancing
 - [Calico](https://www.tigera.io/project-calico/) CNI
+- [ZFS](https://wiki.archlinux.org/index.php/ZFS) NFS
+- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files
+- [Restic](https://restic.net) backups to remote and local buckets
 
 ## Usage
 
