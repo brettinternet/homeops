@@ -17,5 +17,6 @@ resources:
   - qbittorrent
   - radarr
   - readarr
+  - snapraid-runner
   - sonarr
   - youtubedl-material

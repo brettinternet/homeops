@@ -4,4 +4,4 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - harbor
+  - plausible

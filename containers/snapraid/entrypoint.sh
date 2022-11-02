@@ -64,6 +64,6 @@ echo Runner successful
 end=$(date +%s)
 echo Finished SnapRAID runner at $(date +"%Y-%m-%d %H:%M:%S") after $((end-start)) seconds
 
-[ $rc -ne 0 ] && exit $rc
+[ $RC -ne 0 ] && exit $RC
 
 run_commands "${POST_COMMANDS_SUCCESS:-}"

@@ -1,0 +1,119 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: &job snapraid-runner
+  namespace: media
+spec:
+  # schedule: "0 * * * *"
+  schedule: "@daily"
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 259200 # 3 days
+      template:
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: Never
+          initContainers:
+            # Pre-job:
+            # "Pause" pods that are likely to modify the directories that Snapraid will sync
+            - name: scale-down
+              # https://github.com/onedr0p/containers/blob/f1e2e0ad55ee3c114c9f5cd68981850733b64963/apps/kubernetes/Dockerfile
+              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.3@sha256:e1f54416c4f8779f748ba4a8d7d48d489b584e8963ee8b84310e19d6e2f0430e
+              command:
+                - /bin/bash
+                - -c
+                - >-
+                  kubectl -n media scale --replicas=0 deployment/sonarr
+                  kubectl -n media scale --replicas=0 deployment/radarr
+                  kubectl -n media scale --replicas=0 deployment/readarr
+                  kubectl -n media scale --replicas=0 deployment/audiobookshelf
+                  kubectl -n media scale --replicas=0 deployment/youtubedl
+                  kubectl -n media scale --replicas=0 deployment/bazarr
+            # List snapraid devices
+            - name: snapraid-list-devices
+              image: ghcr.io/brettinternet/snapraid:latest
+              command:
+                - snapraid
+                - devices
+              volumeMounts:
+                - name: *job
+                  mountPath: /config/snapraid.conf
+                  subPath: snapraid.conf
+                  readOnly: true
+                - name: *job
+                  mountPath: /config/snapraid-runner.conf
+                  subPath: snapraid-runner.conf
+                  readOnly: true
+                - name: mounts
+                  mountPath: /mnt
+            # Job:
+            # Snapraid runner
+            - name: *job
+              image: ghcr.io/brettinternet/snapraid:latest
+              env:
+                - name: POST_COMMANDS_FAILURE
+                  value: |-
+                    curl \
+                      -d "SnapRAID sync failed" \
+                      -H "Title: SnapRAID" \
+                      -H "Tags: rotating_light" \
+                      "http://ntfy.default.svc.cluster.local/homelab"
+                - name: POST_COMMANDS_SUCCESS
+                  value: |-
+                    curl \
+                      -d "SnapRAID sync succeeded" \
+                      -H "Title: SnapRAID" \
+                      -H "Tags: heavy_check_mark" \
+                      "http://ntfy.default.svc.cluster.local/homelab"
+              volumeMounts:
+                - name: *job
+                  mountPath: /config/snapraid.conf
+                  subPath: snapraid.conf
+                  readOnly: true
+                - name: *job
+                  mountPath: /config/snapraid-runner.conf
+                  subPath: snapraid-runner.conf
+                  readOnly: true
+                - name: mounts
+                  mountPath: /mnt
+          # Post-job:
+          # "Unpause" the pods
+          containers:
+            - name: scale-up
+              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.3@sha256:e1f54416c4f8779f748ba4a8d7d48d489b584e8963ee8b84310e19d6e2f0430e
+              command:
+                - /bin/bash
+                - -c
+                - >-
+                  kubectl -n media scale --replicas=1 deployment/sonarr
+                  kubectl -n media scale --replicas=1 deployment/radarr
+                  kubectl -n media scale --replicas=1 deployment/readarr
+                  kubectl -n media scale --replicas=1 deployment/audiobookshelf
+                  kubectl -n media scale --replicas=1 deployment/youtubedl
+                  kubectl -n media scale --replicas=1 deployment/bazarr
+          volumes:
+            - name: *job
+              projected:
+                defaultMode: 0775
+                sources:
+                  - configMap:
+                      name: snapraid
+                      items:
+                        - key: snapraid.conf
+                          path: snapraid.conf
+                  - configMap:
+                      name: snapraid-runner
+                      items:
+                        - key: snapraid-runner.conf
+                          path: snapraid-runner.conf
+            - name: mounts
+              hostPath:
+                path: /mnt
+                type: Directory
+          nodeSelector:
+            kubernetes.io/hostname: "${MEDIA_HOSTNAME}"

@@ -35,6 +35,10 @@ data:
   # https://github.com/walthowd/husbzb-firmware
   DEVICE_ID_ZWAVE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0
   DEVICE_ID_ZIGBEE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if01-port0
-  # NET_POD_CIDR: "10.42.0.0/16"
-  # NET_SVC_CIDR: "10.43.0.0/16"
-  # NET_NODE_CIDR: "10.1.2.0/24"
+  MEDIA_HOSTNAME: harambe
+  APPDATA_HOSTNAME: archie
+
+  NET_NODE_CIDR: "10.1.2.0/24"
+  # Also defined in k3s provisioning setup
+  NET_POD_CIDR: "10.42.0.0/16"
+  NET_SVC_CIDR: "10.43.0.0/16"
