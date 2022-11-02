@@ -1,0 +1,124 @@
+# https://plausible.io/docs/self-hosting
+# https://github.com/plausible/hosting/blob/master/docker-compose.yml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app plausible
+  namespace: dev
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: plausible_db
+      namespace: dev
+    - name: plausible_events_db
+      namespace: dev
+  values:
+    image:
+      # https://hub.docker.com/r/plausible/analytics
+      repository: docker.io/plausible/analytics
+      tag: latest
+    # https://plausible.io/docs/self-hosting-configuration
+    env:
+      TZ: ${TIMEZONE}
+      BASE_URL: "https://analytics.${PUBLIC_DOMAIN}"
+      DISABLE_REGISTRATION: true
+      CLICKHOUSE_DATABASE_URL: http://plausible_events_db.svc.cluster.local:8123/plausible
+    command:
+      - sh
+      - -c
+      - >-
+        sleep 10 &&
+        /entrypoint.sh db createdb &&
+        /entrypoint.sh db migrate &&
+        /entrypoint.sh db init-admin &&
+        /entrypoint.sh run
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: 8000
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:poll
+        hosts:
+          - host: &host "analytics.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: plausible_events_db
+  namespace: dev
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/clickhouse/clickhouse-server
+      tag: 22.6-alpine
+    env:
+      TZ: ${TIMEZONE}
+    service:
+      # HTTP interface
+      main:
+        ports:
+          http:
+            port: 8123
+      # native client
+      client:
+        enabled: false
+        ports:
+          client:
+            enabled: true
+            port: 9000
+            protocol: TCP
+
+# TODO: add postgres and finish https://plausible.io/docs/self-hosting-configuration
