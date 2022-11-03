@@ -11,6 +11,10 @@ configMapGenerator:
   - name: snapraid-runner
     files:
       - snapraid-runner.conf
+secretGenerator:
+  - name: kubeconfig
+    files:
+      - kubeconfig=kubeconfig.sops.yaml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:

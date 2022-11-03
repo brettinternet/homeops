@@ -16,7 +16,6 @@ resources:
   - espial
   - frigate
   - ghostfolio
-  ## - glauth
   - hajimari
   - home-assistant
   - kubernetes-dashboard
