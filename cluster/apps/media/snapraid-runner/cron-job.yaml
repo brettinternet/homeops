@@ -22,6 +22,8 @@ spec:
             - name: *job
               image: ghcr.io/brettinternet/snapraid:latest
               env:
+                - name: KUBECONFIG
+                  value: /config/kubeconfig
                 - name: PRE_COMMANDS
                   value: |-
                     kubectl -n media scale --replicas=0 deployment/sonarr && \
@@ -60,6 +62,10 @@ spec:
                   mountPath: /config/snapraid-runner.conf
                   subPath: snapraid-runner.conf
                   readOnly: true
+                - name: kubeconfig
+                  mountPath: /config/kubeconfig
+                  subPath: kubeconfig
+                  readOnly: true
                 - name: mounts
                   mountPath: /mnt
           volumes:
@@ -77,6 +83,13 @@ spec:
                       items:
                         - key: snapraid-runner.conf
                           path: snapraid-runner.conf
+            - name: kubeconfig
+              secret:
+                secretName: kubeconfig
+                defaultMode: 0775
+                items:
+                  - key: kubeconfig
+                    path: kubeconfig
             - name: mounts
               hostPath:
                 path: /mnt
