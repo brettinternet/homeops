@@ -1,0 +1,107 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: tdarr
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      # https://hub.docker.com/r/haveagitgat/tdarr_node
+      repository: docker.io/haveagitgat/tdarr
+      tag: latest
+    env:
+      TZ: ${TIMEZONE}
+      webUIPort: "{{ .Values.service.main.ports.http.port }}"
+      serverIP: 0.0.0.0
+      serverPort: "{{ .Values.service.main.ports.server.port }}"
+      ffmpegPath: ""
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 8265
+          server:
+            enabled: true
+            protocol: TCP
+            port: 8266
+    persistence:
+      config:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          - path: tdarr/config
+            mountPath: /app/configs
+          - path: tdarr/data
+            mountPath: /app/server
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /media
+        subPath: library
+      # Transcode dir
+      shared:
+        enabled: true
+        type: emptyDir
+        mountPath: /shared
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: material-symbols:switch-video-outline
+        hosts:
+          - host: &host "tdarr.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    # additionalContainers:
+    #   node:
+    #     name: node
+    #     image: docker.io/haveagitgat/tdarr_node:latest
+    #     env:
+    #       - name: TZ
+    #         value: "${TIMEZONE}"
+    #       - name: nodeID
+    #         value: node
+    #       - name: serverIP
+    #         value: localhost
+    #       - name: serverPort
+    #         value: "{{ .Values.service.main.ports.server.port }}"
+    #       - name: ffmpegPath
+    #         value: ""
+    #       - name: PUID
+    #         value: "${SECURITY_CONTEXT_RUN_AS_USER}"
+    #       - name: PGID
+    #         value: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    #     volumeMounts:
+    #       - name: config
+    #         mountPath: /app/configs
+    #       - name: media
+    #         mountPath: {{ .Values.persistence.media.mountPath }}
+    #       - name: shared
+    #         mountPath: /shared
+    #     # resources: {}

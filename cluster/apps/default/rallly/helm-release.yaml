@@ -1,0 +1,124 @@
+# https://github.com/AnalogJ/scrutiny/blob/master/docker/example.hubspoke.docker-compose.yml
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app rallly
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: rallly-postgres
+      namespace: default
+  values:
+    image:
+      repository: ghcr.io/brettinternet/rallly
+      tag: latest
+    # https://github.com/lukevella/rallly#%EF%B8%8F-configuration
+    env:
+      TZ: "${TIMEZONE}"
+      NEXT_PUBLIC_BASE_URL: "https://when.${PUBLIC_DOMAIN}"
+      SUPPORT_EMAIL: "${SMTP_USER}"
+      SMTP_HOST: maddy.default.svc.cluster.local
+      SMTP_PORT: 2525
+      SMTP_SECURE: false
+      SMTP_USER: "${SMTP_USER}"
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: material-symbols:calendar-add-on
+        hosts:
+          - host: &host "when.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: rallly-postgres
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: library/postgres
+      tag: "14"
+    env:
+      - name: POSTGRES_USER
+        value: rallly
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: rallly
+            key: POSTGRES_PASSWORD
+      - name: POSTGRES_DB
+        value: rallly
+      - name: PGDATA
+        value: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 5432
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: rallly_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: rallly
