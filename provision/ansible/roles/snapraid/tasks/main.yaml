@@ -1,3 +1,5 @@
+### NOTE: Deprecated in favor of Kubernetes CronJob with containerized Snapraid
+
 # https://github.com/IronicBadger/ansible-role-snapraid
 ---
 - name: Check supported distribution
