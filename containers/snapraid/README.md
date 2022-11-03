@@ -1,6 +1,6 @@
 # SnapRAID
 
-This SnapRAID image uses [the runner](https://github.com/Chronial/snapraid-runner) to automate the backup syncs.
+This SnapRAID image uses [the runner](https://github.com/Chronial/snapraid-runner) to automate the backup syncs. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) and curl are also available.
 
 ```sh
 docker create -d \
@@ -18,16 +18,16 @@ Also available in the `entrypoint.sh` are slots for pre and post commands:
 
 ```yaml
 PRE_COMMANDS: |-
-  curl -d "Starting..." ntfy.sh/mytopic
+  kubectl --scale=0 deployment/my_deployment
 
 POST_COMMANDS_SUCCESS: |-
   curl -d "Backup successful 😀" ntfy.sh/mytopic
 
 POST_COMMANDS_FAILURE: |-
-  /my/scripts/mail-failure.sh
+  /config/mail-failure.sh
 
 POST_COMMANDS_INCOMPLETE: |-
-  /my/scripts/mail-incomplete.sh
+  /config/uh-oh.sh
 
 POST_COMMANDS_EXIT: |-
   docker start my_container
