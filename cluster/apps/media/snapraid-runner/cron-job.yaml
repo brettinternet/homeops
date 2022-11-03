@@ -23,7 +23,7 @@ spec:
               image: ghcr.io/brettinternet/snapraid:latest
               env:
                 - name: KUBECONFIG
-                  value: /config/kubeconfig
+                  value: /config/kubeconfig.yaml
                 - name: PRE_COMMANDS
                   value: |-
                     kubectl -n media scale --replicas=0 deployment/sonarr
@@ -64,7 +64,7 @@ spec:
                   readOnly: true
                 - name: kubeconfig
                   mountPath: /config/kubeconfig
-                  subPath: kubeconfig
+                  subPath: kubeconfig.yaml
                   readOnly: true
                 - name: mounts
                   mountPath: /mnt
@@ -90,8 +90,8 @@ spec:
                 secretName: kubeconfig
                 defaultMode: 0775
                 items:
-                  - key: kubeconfig
-                    path: kubeconfig
+                  - key: kubeconfig.yaml
+                    path: kubeconfig.yaml
             - name: mounts
               hostPath:
                 path: /mnt
