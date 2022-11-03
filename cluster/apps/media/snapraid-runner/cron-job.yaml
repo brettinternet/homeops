@@ -26,12 +26,12 @@ spec:
                   value: /config/kubeconfig
                 - name: PRE_COMMANDS
                   value: |-
-                    kubectl -n media scale --replicas=0 deployment/sonarr && \
-                    kubectl -n media scale --replicas=0 deployment/radarr && \
-                    kubectl -n media scale --replicas=0 deployment/readarr && \
-                    kubectl -n media scale --replicas=0 deployment/audiobookshelf && \
-                    kubectl -n media scale --replicas=0 deployment/youtubedl && \
-                    kubectl -n media scale --replicas=0 deployment/bazarr && \
+                    kubectl -n media scale --replicas=0 deployment/sonarr
+                    kubectl -n media scale --replicas=0 deployment/radarr
+                    kubectl -n media scale --replicas=0 deployment/readarr
+                    kubectl -n media scale --replicas=0 deployment/audiobookshelf
+                    kubectl -n media scale --replicas=0 deployment/youtubedl
+                    kubectl -n media scale --replicas=0 deployment/bazarr
                     snapraid devices
                 - name: POST_COMMANDS_FAILURE
                   value: |-
@@ -42,12 +42,12 @@ spec:
                       "http://ntfy.default.svc.cluster.local/homelab"
                 - name: POST_COMMANDS_SUCCESS
                   value: |-
-                    kubectl -n media scale --replicas=1 deployment/sonarr && \
-                    kubectl -n media scale --replicas=1 deployment/radarr && \
-                    kubectl -n media scale --replicas=1 deployment/readarr && \
-                    kubectl -n media scale --replicas=1 deployment/audiobookshelf && \
-                    kubectl -n media scale --replicas=1 deployment/youtubedl && \
-                    kubectl -n media scale --replicas=1 deployment/bazarr && \
+                    kubectl -n media scale --replicas=1 deployment/sonarr
+                    kubectl -n media scale --replicas=1 deployment/radarr
+                    kubectl -n media scale --replicas=1 deployment/readarr
+                    kubectl -n media scale --replicas=1 deployment/audiobookshelf
+                    kubectl -n media scale --replicas=1 deployment/youtubedl
+                    kubectl -n media scale --replicas=1 deployment/bazarr
                     curl \
                       -d "SnapRAID sync succeeded" \
                       -H "Title: SnapRAID" \
@@ -68,6 +68,8 @@ spec:
                   readOnly: true
                 - name: mounts
                   mountPath: /mnt
+                - name: content
+                  mountPath: /var/snapraid
           volumes:
             - name: *job
               projected:
@@ -93,6 +95,10 @@ spec:
             - name: mounts
               hostPath:
                 path: /mnt
+                type: Directory
+            - name: content
+              hostPath:
+                path: /var/snapraid
                 type: Directory
           nodeSelector:
             kubernetes.io/hostname: "${MEDIA_HOSTNAME}"
