@@ -18,44 +18,19 @@ spec:
         spec:
           automountServiceAccountToken: false
           restartPolicy: Never
-          initContainers:
-            # Pre-job:
-            # "Pause" pods that are likely to modify the directories that Snapraid will sync
-            - name: scale-down
-              # https://github.com/onedr0p/containers/blob/f1e2e0ad55ee3c114c9f5cd68981850733b64963/apps/kubernetes/Dockerfile
-              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.3@sha256:e1f54416c4f8779f748ba4a8d7d48d489b584e8963ee8b84310e19d6e2f0430e
-              command:
-                - /bin/bash
-                - -c
-                - >-
-                  kubectl -n media scale --replicas=0 deployment/sonarr &&
-                  kubectl -n media scale --replicas=0 deployment/radarr &&
-                  kubectl -n media scale --replicas=0 deployment/readarr &&
-                  kubectl -n media scale --replicas=0 deployment/audiobookshelf &&
-                  kubectl -n media scale --replicas=0 deployment/youtubedl &&
-                  kubectl -n media scale --replicas=0 deployment/bazarr
-            # List snapraid devices
-            - name: snapraid-list-devices
-              image: ghcr.io/brettinternet/snapraid:latest
-              command:
-                - snapraid
-                - devices
-              volumeMounts:
-                - name: *job
-                  mountPath: /config/snapraid.conf
-                  subPath: snapraid.conf
-                  readOnly: true
-                - name: *job
-                  mountPath: /config/snapraid-runner.conf
-                  subPath: snapraid-runner.conf
-                  readOnly: true
-                - name: mounts
-                  mountPath: /mnt
-            # Job:
-            # Snapraid runner
+          containers:
             - name: *job
               image: ghcr.io/brettinternet/snapraid:latest
               env:
+                - name: PRE_COMMANDS
+                  value: |-
+                    kubectl -n media scale --replicas=0 deployment/sonarr && \
+                    kubectl -n media scale --replicas=0 deployment/radarr && \
+                    kubectl -n media scale --replicas=0 deployment/readarr && \
+                    kubectl -n media scale --replicas=0 deployment/audiobookshelf && \
+                    kubectl -n media scale --replicas=0 deployment/youtubedl && \
+                    kubectl -n media scale --replicas=0 deployment/bazarr && \
+                    snapraid devices
                 - name: POST_COMMANDS_FAILURE
                   value: |-
                     curl \
@@ -65,6 +40,12 @@ spec:
                       "http://ntfy.default.svc.cluster.local/homelab"
                 - name: POST_COMMANDS_SUCCESS
                   value: |-
+                    kubectl -n media scale --replicas=1 deployment/sonarr && \
+                    kubectl -n media scale --replicas=1 deployment/radarr && \
+                    kubectl -n media scale --replicas=1 deployment/readarr && \
+                    kubectl -n media scale --replicas=1 deployment/audiobookshelf && \
+                    kubectl -n media scale --replicas=1 deployment/youtubedl && \
+                    kubectl -n media scale --replicas=1 deployment/bazarr && \
                     curl \
                       -d "SnapRAID sync succeeded" \
                       -H "Title: SnapRAID" \
@@ -81,21 +62,6 @@ spec:
                   readOnly: true
                 - name: mounts
                   mountPath: /mnt
-          # Post-job:
-          # "Unpause" the pods
-          containers:
-            - name: scale-up
-              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.3@sha256:e1f54416c4f8779f748ba4a8d7d48d489b584e8963ee8b84310e19d6e2f0430e
-              command:
-                - /bin/bash
-                - -c
-                - >-
-                  kubectl -n media scale --replicas=1 deployment/sonarr &&
-                  kubectl -n media scale --replicas=1 deployment/radarr &&
-                  kubectl -n media scale --replicas=1 deployment/readarr &&
-                  kubectl -n media scale --replicas=1 deployment/audiobookshelf &&
-                  kubectl -n media scale --replicas=1 deployment/youtubedl &&
-                  kubectl -n media scale --replicas=1 deployment/bazarr
           volumes:
             - name: *job
               projected:
