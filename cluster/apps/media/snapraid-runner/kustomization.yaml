@@ -14,7 +14,7 @@ configMapGenerator:
 secretGenerator:
   - name: kubeconfig
     files:
-      - kubeconfig=kubeconfig.sops.yaml
+      - kubeconfig.yaml=kubeconfig.sops.yaml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
