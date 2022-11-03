@@ -32,6 +32,7 @@ resources:
   - pinry
   - privatebin
   - privatebin-public
+  - rallly
   # - scrutiny
   - unifi
   - uptime-kuma
