@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  - earthwalker
   # - valheim
 
 # https://github.com/awesome-selfhosted/awesome-selfhosted#games
