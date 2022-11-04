@@ -50,6 +50,9 @@ spec:
         ports:
           http:
             port: 8083
+    securityContext:
+      seccompProfile:
+        type: Unconfined
     persistence:
       config:
         enabled: true
