@@ -36,7 +36,7 @@ spec:
                 - name: POST_COMMANDS_FAILURE
                   value: |-
                     curl \
-                      -d "SnapRAID sync failed" \
+                      -d "Sync failed" \
                       -H "Title: SnapRAID" \
                       -H "Tags: rotating_light" \
                       "http://ntfy.default.svc.cluster.local/homelab"
@@ -49,7 +49,7 @@ spec:
                     kubectl -n media scale --replicas=1 deployment/youtubedl
                     kubectl -n media scale --replicas=1 deployment/bazarr
                     curl \
-                      -d "SnapRAID sync succeeded" \
+                      -d "Sync succeeded" \
                       -H "Title: SnapRAID" \
                       -H "Tags: heavy_check_mark" \
                       "http://ntfy.default.svc.cluster.local/homelab"
@@ -63,11 +63,13 @@ spec:
                   subPath: snapraid-runner.conf
                   readOnly: true
                 - name: kubeconfig
-                  mountPath: /config/kubeconfig
+                  mountPath: /config/kubeconfig.yaml
                   subPath: kubeconfig.yaml
                   readOnly: true
                 - name: mounts
                   mountPath: /mnt
+                - name: devices
+                  mountPath: /dev
                 - name: content
                   mountPath: /var/snapraid
           volumes:
@@ -95,6 +97,10 @@ spec:
             - name: mounts
               hostPath:
                 path: /mnt
+                type: Directory
+            - name: devices
+              hostPath:
+                path: /dev
                 type: Directory
             - name: content
               hostPath:

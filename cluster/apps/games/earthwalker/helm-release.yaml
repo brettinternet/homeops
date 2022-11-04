@@ -53,3 +53,5 @@ spec:
         tls:
           - hosts:
               - *host
+    nodeSelector:
+      kubernetes.io/arch: amd64
