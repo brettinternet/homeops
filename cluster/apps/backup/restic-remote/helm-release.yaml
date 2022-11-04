@@ -58,20 +58,24 @@ spec:
       main:
         enabled: false
     securityContext:
-      # privileged: true
       capabilities:
-        add: ["SYS_ADMIN"]
+        add: [SYS_ADMIN]
     persistence:
       data:
         enabled: true
         existingClaim: appdata
         subPath:
-          # TODO: target specific subdirectories
-          # - path: rclone/rclone.conf
-          #   mountPath: /run/secrets/rclone.conf
-            # readOnly: true
           - path: espial
             mountPath: /data/espial
+            readOnly: true
+          - path: homeassistant
+            mountPath: /data/homeassistant
+            readOnly: true
+          - path: lldap
+            mountPath: /data/lldap
+            readOnly: true
+          - path: mealie
+            mountPath: /data/mealie
             readOnly: true
           - path: miniflux_db
             mountPath: /data/miniflux_db
@@ -84,6 +88,9 @@ spec:
             readOnly: true
           - path: paperless_db
             mountPath: /data/paperless_db
+            readOnly: true
+          - path: unifi/data/backup/autobackup
+            mountPath: /data/unifi-autobackups
             readOnly: true
           - path: valheim/saves
             mountPath: /data/valheim/saves

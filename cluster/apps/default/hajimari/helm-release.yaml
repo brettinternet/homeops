@@ -43,6 +43,7 @@ spec:
           - networking
           - kube-system
           - monitoring
+          - mail
       title: Homelab
       name: Brett
       lightTheme: gazette

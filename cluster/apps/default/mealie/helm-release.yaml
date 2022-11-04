@@ -27,7 +27,7 @@ spec:
   values:
     image:
       repository: docker.io/hkotel/mealie
-      tag: frontend-v1.0.0beta-4
+      tag: frontend-v1.0.0beta-5
     env:
       TZ: "${TIMEZONE}"
       API_URL: "http://mealie-api.default.svc.cluster.local:9000"
@@ -101,7 +101,7 @@ spec:
   values:
     image:
       repository: docker.io/hkotel/mealie
-      tag: api-v1.0.0beta-4
+      tag: api-v1.0.0beta-5
     env:
       TZ: "${TIMEZONE}"
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
