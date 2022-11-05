@@ -6,7 +6,6 @@ RUN apt update && apt install git && \
 
 USER node:node
 WORKDIR /usr/src/app
-COPY --chown=node:node . .
 RUN npm ci
 
 # defaults
