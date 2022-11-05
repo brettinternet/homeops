@@ -1,6 +1,6 @@
 FROM node:16-stretch
 
-RUN apt update && apt install git && \
+RUN apt update && apt install -y git && \
     git clone https://github.com/toptal/haste-server /usr/src/app && \
     chown -R node:node /usr/src/app
 

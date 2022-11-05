@@ -9,13 +9,13 @@ on: # yamllint disable-line rule:truthy
       - containers/snapraid/*
       - .github/workflows/publish-snapraid.yaml
 
-defaults:
-  run:
-    working-directory: ./containers/snapraid
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: snapraid
+
+defaults:
+  run:
+    working-directory: ./containers/snapraid
 
 jobs:
   build-and-push-image:
@@ -39,14 +39,14 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./containers/snapraid
-          file: ./containers/snapraid/Dockerfile
+          context: ./containers/${{ env.IMAGE_NAME }}
+          file: ./containers/${{ env.IMAGE_NAME }}/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           labels: |
-            org.opencontainers.image.name=snapraid
-            org.opencontainers.image.source=https://github.com/brettinternet/homelab
+            org.opencontainers.image.name=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.source=https://github.com/brettinternet/homelab/tree/main/containers/${{ env.IMAGE_NAME }}
             org.opencontainers.image.description="SnapRAID with runner for containerized jobs"
             org.opencontainers.image.licenses=MIT
             org.opencontainers.image.version=0.1.0

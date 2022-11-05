@@ -8,13 +8,13 @@ on: # yamllint disable-line rule:truthy
       - containers/rallly/*
       - .github/workflows/publish-rallly.yaml
 
-defaults:
-  run:
-    working-directory: ./containers/rallly
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: rallly
+
+defaults:
+  run:
+    working-directory: ./containers/rallly
 
 jobs:
   build-and-push-image:
@@ -38,14 +38,14 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./containers/rallly
-          file: ./containers/rallly/Dockerfile
+          context: ./containers/${{ env.IMAGE_NAME }}
+          file: ./containers/${{ env.IMAGE_NAME }}/Dockerfile
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           labels: |
-            org.opencontainers.image.name=rallly
-            org.opencontainers.image.source=https://github.com/brettinternet/homelab
-            org.opencontainers.image.description="Rallly"
+            org.opencontainers.image.name=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.source=https://github.com/brettinternet/homelab/tree/main/containers/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description="${{ env.IMAGE_NAME }}"
             org.opencontainers.image.licenses=MIT
             org.opencontainers.image.version=0.1.0

@@ -1,0 +1,62 @@
+# https://github.com/clearlinux/dockerfiles/tree/master/cgit
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app cgit-homelab
+  namespace: dev
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+  values:
+    image:
+      # https://hub.docker.com/r/clearlinux/cgit
+      repository: docker.io/clearlinux/cgit
+      tag: latest
+    env:
+      TZ: ${TIMEZONE}
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        mountPath: /var/www/cgit
+        subPath: cgit-homelab
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: git
+        hosts:
+          - host: &host "homelab.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
