@@ -8,13 +8,13 @@ on: # yamllint disable-line rule:truthy
       - containers/hastebin/*
       - .github/workflows/publish-hastebin.yaml
 
-defaults:
-  run:
-    working-directory: ./containers/hastebin
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: hastebin
+
+defaults:
+  run:
+    working-directory: ./containers/hastebin
 
 jobs:
   build-and-push-image:
@@ -28,6 +28,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # https://github.com/docker/setup-qemu-action
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      # https://github.com/docker/setup-buildx-action
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
@@ -35,17 +44,33 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Docker meta
+        id: metadata
+        uses: docker/metadata-action@v3
+        with:
+          # list of Docker images to use as base name for tags
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          # Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          context: ./containers/hastebin
-          file: ./containers/hastebin/Dockerfile
-          push: true
-          tags: |
-            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          context: ./containers/${{ env.IMAGE_NAME }}
+          file: ./containers/${{ env.IMAGE_NAME }}/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          # ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
           labels: |
-            org.opencontainers.image.name=hastebin
+            org.opencontainers.image.name=${{ env.IMAGE_NAME }}
             org.opencontainers.image.source=https://github.com/brettinternet/homelab
-            org.opencontainers.image.description="hastebin"
+            org.opencontainers.image.description="${{ env.IMAGE_NAME }}"
             org.opencontainers.image.licenses=MIT
             org.opencontainers.image.version=0.1.0
