@@ -17,6 +17,7 @@ resources:
   - frigate
   - ghostfolio
   - hajimari
+  - hastebin
   - home-assistant
   - kubernetes-dashboard
   - linkding
@@ -30,8 +31,6 @@ resources:
   - ntfy
   - paperless-ngx
   - pinry
-  - privatebin
-  - privatebin-public
   - rallly
   # - scrutiny
   - unifi

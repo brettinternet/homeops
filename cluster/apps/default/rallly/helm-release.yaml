@@ -58,12 +58,12 @@ spec:
         hosts:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:
-              - path: /admin/.*
-                pathType: Prefix
               - path: /p/.*
                 pathType: Prefix
-              - path: /new
+              - path: /_next/.*
                 pathType: Prefix
+              - path: /site.webmanifest
+                pathType: Exact
         tls:
           - hosts:
               - *host
@@ -81,12 +81,22 @@ spec:
               - path: /
                 pathType: Exact
                 service:
-                  name: http
+                  name: rallly
+                  port: 3000
+              - path: /new
+                pathType: Exact
+                service:
+                  name: rallly
+                  port: 3000
+              - path: /admin/.*
+                pathType: Prefix
+                service:
+                  name: rallly
                   port: 3000
               - path: /demo
                 pathType: Exact
                 service:
-                  name: http
+                  name: rallly
                   port: 3000
         tls:
           - hosts:

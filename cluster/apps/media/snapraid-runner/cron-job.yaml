@@ -35,7 +35,7 @@ spec:
                     snapraid devices
                 - name: POST_COMMANDS_FAILURE
                   value: |-
-                    curl \
+                    curl -s \
                       -d "Sync failed" \
                       -H "Title: SnapRAID" \
                       -H "Tags: rotating_light" \
@@ -48,7 +48,7 @@ spec:
                     kubectl -n media scale --replicas=1 deployment/audiobookshelf
                     kubectl -n media scale --replicas=1 deployment/youtubedl
                     kubectl -n media scale --replicas=1 deployment/bazarr
-                    curl \
+                    curl -s \
                       -d "Sync succeeded" \
                       -H "Title: SnapRAID" \
                       -H "Tags: heavy_check_mark" \
