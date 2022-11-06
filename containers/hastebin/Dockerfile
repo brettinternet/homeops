@@ -6,7 +6,8 @@ RUN apt update && apt install -y git && \
 
 USER node:node
 WORKDIR /usr/src/app
-RUN npm ci
+RUN npm ci && \
+    npm install redis@0.8.1
 
 # defaults
 ENV STORAGE_EXPIRE_SECONDS=2592000
