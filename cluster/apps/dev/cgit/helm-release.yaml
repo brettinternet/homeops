@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app cgit-homelab
+  name: &app cgit
   namespace: dev
 spec:
   interval: 15m
@@ -43,7 +43,7 @@ spec:
         enabled: true
         existingClaim: appdata
         mountPath: /var/www/cgit
-        subPath: cgit-homelab
+        subPath: git
     ingress:
       main:
         enabled: true
@@ -53,7 +53,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: git
         hosts:
-          - host: &host "homelab.${PUBLIC_DOMAIN}"
+          - host: &host "git.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
