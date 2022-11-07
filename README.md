@@ -29,7 +29,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Usage
 
-Setup and usage is inspired heavily by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. Historical revisions of this repository had rootless Podman containers deployed with ansible as systemd units.
+Setup and usage is inspired heavily by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/). Historical revisions of this repository had rootless Podman containers deployed with ansible as systemd units.
 
 ### Setup
 
