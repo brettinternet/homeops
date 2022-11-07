@@ -17,7 +17,6 @@ resources:
   - frigate
   - ghostfolio
   - hajimari
-  - hastebin
   - home-assistant
   - kubernetes-dashboard
   - linkding
