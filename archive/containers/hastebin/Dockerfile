@@ -1,4 +1,4 @@
-FROM node:16-stretch
+FROM node:17-stretch
 
 RUN apt update && apt install -y git && \
     git clone https://github.com/toptal/haste-server /usr/src/app && \
