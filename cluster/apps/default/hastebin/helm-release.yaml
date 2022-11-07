@@ -30,7 +30,7 @@ spec:
     # https://github.com/toptal/haste-server#docker
     env:
       TZ: "${TIMEZONE}"
-      STORAGE_TYPE: redis-server
+      STORAGE_TYPE: redis
       STORAGE_PORT: 6379
       STORAGE_HOST: hastebin-redis.default.svc.cluster.local
       STORAGE_PASSWORD:
