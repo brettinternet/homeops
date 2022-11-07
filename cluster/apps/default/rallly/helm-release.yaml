@@ -62,6 +62,8 @@ spec:
                 pathType: Prefix
               - path: /_next/
                 pathType: Prefix
+              - path: /api/
+                pathType: Prefix
               - path: /site.webmanifest
                 pathType: Exact
         tls:
@@ -79,22 +81,7 @@ spec:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:
               - path: /
-                pathType: Exact
-                service:
-                  name: rallly
-                  port: 3000
-              - path: /new
-                pathType: Exact
-                service:
-                  name: rallly
-                  port: 3000
-              - path: /admin/
                 pathType: Prefix
-                service:
-                  name: rallly
-                  port: 3000
-              - path: /demo
-                pathType: Exact
                 service:
                   name: rallly
                   port: 3000
