@@ -1,3 +1,5 @@
+# https://github.com/toptal/haste-server#docker
+
 # Watch for new version: https://github.com/toptal/haste-server/issues/429
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -27,7 +29,7 @@ spec:
     image:
       repository: ghcr.io/brettinternet/hastebin
       tag: latest
-    # https://github.com/toptal/haste-server#docker
+    # https://github.com/toptal/haste-server#configuration
     env:
       TZ: "${TIMEZONE}"
       STORAGE_TYPE: redis
@@ -38,9 +40,9 @@ spec:
           secretKeyRef:
             name: *app
             key: REDIS_PASSWORD
-      STORAGE_DB: hastebin
       KEYGENERATOR_TYPE: phonetic
-      DOCUMENTS: ""
+      # DOCUMENTS: ""
+      STORAGE_EXPIRE_SECONDS: 604800 # 7 days
     service:
       main:
         ports:
