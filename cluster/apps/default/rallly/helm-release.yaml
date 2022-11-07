@@ -58,6 +58,8 @@ spec:
         hosts:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:
+              - path: /
+                pathType: Prefix
               - path: /p/.*
                 pathType: Prefix
               - path: /_next/.*
@@ -78,11 +80,11 @@ spec:
         hosts:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:
-              - path: /
-                pathType: Exact
-                service:
-                  name: rallly
-                  port: 3000
+              # - path: /
+              #   pathType: Exact
+              #   service:
+              #     name: rallly
+              #     port: 3000
               - path: /new
                 pathType: Exact
                 service:
