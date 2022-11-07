@@ -227,3 +227,7 @@ iptables --version
 ```
 
 Flush the iptables in between installs. Also check the CNI installation for issues (such as configuration for hardware with multiple NICs).
+
+#### Services
+
+- [Determine the Reason for Pod Failure](https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/)
