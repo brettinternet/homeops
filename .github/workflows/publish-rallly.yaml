@@ -46,6 +46,6 @@ jobs:
           labels: |
             org.opencontainers.image.name=${{ env.IMAGE_NAME }}
             org.opencontainers.image.source=https://github.com/brettinternet/homelab/tree/main/containers/${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description="${{ env.IMAGE_NAME }}"
+            org.opencontainers.image.description=${{ env.IMAGE_NAME }}
             org.opencontainers.image.licenses=MIT
             org.opencontainers.image.version=0.1.0
