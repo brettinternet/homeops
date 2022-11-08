@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - cgit
+  # - cgit
+  - update-mirrors
   # - plausible
