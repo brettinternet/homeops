@@ -1,0 +1,49 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: &job update-mirrors
+  namespace: dev
+spec:
+  schedule: "*/10 * * * *"
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 1200 # 20 minutes
+      template:
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: Never
+          env:
+            - name: WORKING_DIRECTORY
+              value: /repos
+            - name: GIT_REMOTE_1
+              value: https://github.com/brettinternet/homelab
+          containers:
+            - name: *job
+              image: ghcr.io/brettinternet/zx:latest
+              volumeMounts:
+                - name: *job
+                  mountPath: /opt/update-mirrors.js
+                  subPath: update-mirrors
+                  readOnly: true
+                - name: repos
+                  mountPath: /repos
+                  subPath: git
+          volumes:
+            - name: *job
+              projected:
+                defaultMode: 0775
+                sources:
+                  - configMap:
+                      name: *job
+                      items:
+                        - key: *job
+                          path: *job
+            - name: repos
+              nfs:
+                server: "${NFS_FAST_TANK_CLUSTERIP}"
+                path: /appdata
