@@ -30,6 +30,8 @@ jobs:
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64,amd64
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
@@ -43,6 +45,7 @@ jobs:
         with:
           context: ./containers/${{ env.IMAGE_NAME }}
           file: ./containers/${{ env.IMAGE_NAME }}/Dockerfile
+          platforms: arm64,amd64
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
