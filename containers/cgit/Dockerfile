@@ -8,7 +8,7 @@ ARG PGID=1000
 RUN set -xe && \
     apk add --no-cache --purge -uU \
     ca-certificates curl cgit openssh-server git highlight \
-    fcgiwrap spawn-fcgi nginx envsubst dumb-init && \
+    fcgiwrap spawn-fcgi nginx gettext dumb-init && \
     adduser -u ${PUID} -h /home/git -D -s /usr/bin/git-shell git users && \
     passwd -d -u git && \
     rm -rf /var/cache/apk/* /tmp/* && \
