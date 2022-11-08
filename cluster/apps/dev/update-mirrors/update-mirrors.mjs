@@ -1,9 +1,18 @@
-#!/usr/bin/env zx
+import { stat } from "node:fs/promises"
+import { existsSync } from "node:fs"
+import { dirname, parse as pathParse, join as pathJoin } from "node:path"
+import { parse as urlParse, fileURLToPath } from "node:url"
+import { promisify } from "node:util"
+import { exec as execSync } from "node:child_process"
 
-import { stat } from "fs/promises"
-import { existsSync } from "fs"
-import { parse as urlParse } from "url"
-import { exec } from "child_process/promises"
+const exec = promisify(execSync)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
+const WORKDIR = process.env.WORKING_DIRECTORY || __dirname
+if (WORKDIR !== __dirname) {
+  process.chdir(WORKDIR)
+}
 
 const urls = Object.keys(process.env).reduce(
   (acc, key) =>
@@ -21,9 +30,21 @@ const isDirectory = async (pathname) => {
   }
 }
 
-const WORKDIR = process.env.WORKING_DIRECTORY || __dirname
-if (WORKDIR !== __dirname) {
-  process.chdir(WORKDIR)
+const removeFalsy = (obj) => {
+  const filteredObj = {}
+  Object.keys(obj).forEach((key) => {
+    if (obj[key]) {
+      filteredObj[key] = obj[key]
+    }
+  })
+  return filteredObj
+}
+
+const logResult = (result) => {
+  const logs = removeFalsy(result)
+  if (Object.keys(logs).length !== 0) {
+    console.debug(logs)
+  }
 }
 
 for (const url of urls) {
@@ -31,30 +52,28 @@ for (const url of urls) {
   const [ownerName, repoNameWithPossibleExtension] = fullPathname
     .substring(1)
     .split("/")
-  const repoName = path.parse(repoNameWithPossibleExtension).name
-  const repoPath = path.join(WORKDIR, ownerName, repoName)
+  const repoName = pathParse(repoNameWithPossibleExtension).name
+  const repoPath = pathJoin(WORKDIR, ownerName, repoName)
   if (existsSync(repoPath)) {
     if (isDirectory(repoPath)) {
       console.debug(`git -C ${repoPath} remote update -p`)
-      await exec("git", ["-C", repoPath, "remote", "update", "-p"])
+      const gitResult = await exec(`git -C ${repoPath} remote update -p`)
+      logResult(gitResult)
     } else {
       throw Error(`${repoPath} exists but is not a directory.`)
     }
   } else {
-    const parentDirectory = path.join(WORKDIR, ownerName)
+    const parentDirectory = pathJoin(WORKDIR, ownerName)
+    console.debug(`mkdir -p ${parentDirectory}`)
+    const mkdirResult = await exec(`mkdir -p ${parentDirectory}`)
+    logResult(mkdirResult)
     console.debug(
-      `mkdir -p ${parentDirectory}`,
       `git -C ${parentDirectory} clone --mirror ${href} ${repoName}`
     )
-    await exec("mkdir", ["-p", parentDirectory])
-    await exec("git", [
-      "-C",
-      parentDirectory,
-      "clone",
-      "--mirror",
-      href,
-      repoName,
-    ])
+    const gitResult = await exec(
+      `git -C ${parentDirectory} clone --mirror ${href} ${repoName}`
+    )
+    logResult(gitResult)
   }
 }
 
