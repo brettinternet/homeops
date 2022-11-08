@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: *job
-              image: docker.io/library/node:19-alpine
+              image: ghcr.io/brettinternet/node-git
               env:
                 - name: WORKING_DIRECTORY
                   value: /repos
