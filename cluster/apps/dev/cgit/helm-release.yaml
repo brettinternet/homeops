@@ -28,8 +28,7 @@ spec:
       namespace: kyverno
   values:
     image:
-      # https://hub.docker.com/r/clearlinux/cgit
-      repository: docker.io/clearlinux/cgit
+      repository: ghcr.io/brettinternet/cgit
       tag: latest
     env:
       TZ: ${TIMEZONE}
