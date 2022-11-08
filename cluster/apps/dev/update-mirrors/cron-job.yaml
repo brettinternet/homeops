@@ -17,14 +17,14 @@ spec:
         spec:
           automountServiceAccountToken: false
           restartPolicy: Never
-          env:
-            - name: WORKING_DIRECTORY
-              value: /repos
-            - name: GIT_REMOTE_1
-              value: https://github.com/brettinternet/homelab
           containers:
             - name: *job
               image: ghcr.io/brettinternet/zx:latest
+              env:
+                - name: WORKING_DIRECTORY
+                  value: /repos
+                - name: GIT_REMOTE_1
+                  value: https://github.com/brettinternet/homelab
               volumeMounts:
                 - name: *job
                   mountPath: /opt/update-mirrors.js

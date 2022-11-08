@@ -1,20 +1,20 @@
-name: Build and publish rallly image
+name: Build and publish cgit image
 
 on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
     paths:
-      - containers/rallly/*
-      - .github/workflows/publish-rallly.yaml
+      - containers/cgit/*
+      - .github/workflows/publish-cgit.yaml
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: rallly
+  IMAGE_NAME: cgit
 
 defaults:
   run:
-    working-directory: ./containers/rallly
+    working-directory: ./containers/cgit
 
 jobs:
   build-and-push-image:
