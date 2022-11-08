@@ -15,7 +15,7 @@ RUN set -xe \
     mkdir /srv/git && \
     chown ${PUID}:${PGID} /srv/git
 
-ENV ROOT_TITLE="Git" ROOT_DESC="My git repositories" SECTION_FROM_STARTPATH=0 MAX_REPO_COUNT=100
+ENV ROOT_TITLE="Git" ROOT_DESC="My git repositories" SECTION_FROM_STARTPATH=0 MAX_REPO_COUNT=50
 COPY cgitrc.template /etc/
 COPY syntax-highlighting.sh /usr/lib/cgit/filters/
 COPY default.conf /etc/nginx/sites-available/default
