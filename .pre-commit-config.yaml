@@ -49,3 +49,7 @@ repos:
       - id: terraform-fmt
       - id: terraform-validate
       - id: tflint
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.15.0
+    hooks:
+      - id: gitleaks
