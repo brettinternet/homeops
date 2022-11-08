@@ -1,9 +1,8 @@
-# https://github.com/clearlinux/dockerfiles/tree/master/cgit
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app cgit
+  name: cgit
   namespace: dev
 spec:
   interval: 15m
@@ -32,6 +31,9 @@ spec:
       tag: latest
     env:
       TZ: ${TIMEZONE}
+      ROOT_TITLE: git.gardiner.cloud
+      ROOT_DESC: Source code of various projects
+      ROOT_README: /srv/git/README.md
     service:
       main:
         ports:
@@ -41,7 +43,7 @@ spec:
       data:
         enabled: true
         existingClaim: appdata
-        mountPath: /var/www/cgit
+        mountPath: /srv/git
         subPath: git
     ingress:
       main:

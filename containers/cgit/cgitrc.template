@@ -1,17 +1,17 @@
-#
+# https://git.zx2c4.com/cgit/tree/cgitrc.5.txt
+
 # cgit config
 # see cgitrc(5) for details
 
 root-title=$ROOT_TITLE
 root-desc=$ROOT_DESC
+root-readme=$ROOT_README
 
 source-filter=/usr/lib/cgit/filters/syntax-highlighting.sh
 about-filter=/usr/lib/cgit/filters/about-formatting.sh
 
-##
-## Search for these files in the root of the default branch of repositories
-## for coming up with the about page:
-##
+# Search for these files in the root of the default branch of repositories
+# for coming up with the about page:
 readme=:README.md
 readme=:readme.md
 readme=:README.mkd
@@ -40,10 +40,6 @@ readme=:INSTALL.txt
 readme=:install.txt
 readme=:INSTALL
 readme=:install
-
-# Default Theme
-css=/cgit-css/cgit.css
-logo=/cgit-css/cgit.png
 
 # Cache
 cache-root=/var/cache/cgit
