@@ -4,11 +4,11 @@ FROM alpine:latest
 ARG PUID=1000
 ARG PGID=1000
 
-RUN set -xe \
+# install? python3 py-markdown py3-pygments markdown
+RUN set -xe && \
     apk add --no-cache --purge -uU \
-      ca-certificates curl cgit openssh-server git highlight \
+    ca-certificates curl cgit openssh-server git highlight \
     fcgiwrap spawn-fcgi nginx envsubst dumb-init && \
-    # python3 py-markdown py3-pygments markdown
     adduser -u ${PUID} -h /home/git -D -s /usr/bin/git-shell git users && \
     passwd -d -u git && \
     rm -rf /var/cache/apk/* /tmp/* && \
