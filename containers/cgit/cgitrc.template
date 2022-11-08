@@ -1,0 +1,67 @@
+#
+# cgit config
+# see cgitrc(5) for details
+
+root-title=$ROOT_TITLE
+root-desc=$ROOT_DESC
+
+source-filter=/usr/lib/cgit/filters/syntax-highlighting.sh
+about-filter=/usr/lib/cgit/filters/about-formatting.sh
+
+##
+## Search for these files in the root of the default branch of repositories
+## for coming up with the about page:
+##
+readme=:README.md
+readme=:readme.md
+readme=:README.mkd
+readme=:readme.mkd
+readme=:README.rst
+readme=:readme.rst
+readme=:README.html
+readme=:readme.html
+readme=:README.htm
+readme=:readme.htm
+readme=:README.txt
+readme=:readme.txt
+readme=:README
+readme=:readme
+readme=:INSTALL.md
+readme=:install.md
+readme=:INSTALL.mkd
+readme=:install.mkd
+readme=:INSTALL.rst
+readme=:install.rst
+readme=:INSTALL.html
+readme=:install.html
+readme=:INSTALL.htm
+readme=:install.htm
+readme=:INSTALL.txt
+readme=:install.txt
+readme=:INSTALL
+readme=:install
+
+# Default Theme
+css=/cgit-css/cgit.css
+logo=/cgit-css/cgit.png
+
+# Cache
+cache-root=/var/cache/cgit
+cache-size=1000
+
+enable-index-links=1
+enable-index-owner=0
+enable-remote-branches=1
+enable-log-filecount=1
+enable-log-linecount=1
+enable-git-config=1
+snapshots=tar.gz tar.bz2 zip
+
+robots=noindex, nofollow
+
+section-from-path=$SECTION_FROM_STARTPATH
+
+# per page
+max-repo-count=$MAX_REPO_COUNT
+
+scan-path=/srv/git/

@@ -1,4 +1,4 @@
-name: Build and publish Rallly image
+name: Build and publish zx image
 
 on: # yamllint disable-line rule:truthy
   push:
