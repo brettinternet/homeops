@@ -1,0 +1,19 @@
+AllowTcpForwarding no
+AllowUsers git
+AuthorizedKeysFile      .ssh/authorized_keys
+ChallengeResponseAuthentication no
+GatewayPorts no
+HostbasedAuthentication no
+IgnoreRhosts yes
+PasswordAuthentication no
+PermitEmptyPasswords no
+PermitRootLogin no
+PermitTunnel no
+Port 22
+PrintMotd no # pam does that
+Protocol 2
+PubkeyAuthentication yes
+StrictModes yes
+# Subsystem       sftp    /usr/lib/ssh/sftp-server
+UsePAM no
+X11Forwarding no
