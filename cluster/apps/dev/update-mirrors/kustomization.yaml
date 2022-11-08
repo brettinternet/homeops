@@ -7,7 +7,7 @@ namespace: dev
 configMapGenerator:
   - name: update-mirrors
     files:
-      - update-mirrors.js
+      - update-mirrors.mjs
 generatorOptions:
   disableNameSuffixHash: true
   annotations:

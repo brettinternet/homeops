@@ -19,16 +19,17 @@ spec:
           restartPolicy: Never
           containers:
             - name: *job
-              image: ghcr.io/brettinternet/zx:latest
+              image: docker.io/library/node:19-alpine
               env:
                 - name: WORKING_DIRECTORY
                   value: /repos
                 - name: GIT_REMOTE_1
                   value: https://github.com/brettinternet/homelab
+              command: [node, &path /app/update-mirrors.mjs]
               volumeMounts:
                 - name: *job
-                  mountPath: /opt/update-mirrors.js
-                  subPath: update-mirrors
+                  mountPath: *path
+                  subPath: &script update-mirrors.mjs
                   readOnly: true
                 - name: repos
                   mountPath: /repos
@@ -41,9 +42,11 @@ spec:
                   - configMap:
                       name: *job
                       items:
-                        - key: *job
-                          path: *job
+                        - key: *script
+                          path: *script
             - name: repos
               nfs:
                 server: "${NFS_FAST_TANK_CLUSTERIP}"
                 path: /appdata
+          nodeSelector:
+            kubernetes.io/arch: amd64
