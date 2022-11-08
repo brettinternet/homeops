@@ -1,3 +1,5 @@
+# https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
+# https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(snapraid).md
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -5,7 +7,6 @@ metadata:
   name: &job snapraid-runner
   namespace: media
 spec:
-  # schedule: "0 * * * *"
   schedule: "@daily"
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 3
