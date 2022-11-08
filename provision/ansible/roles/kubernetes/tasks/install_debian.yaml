@@ -26,3 +26,5 @@
       - sudo
       - unzip
       - vim
+      # For volume mounts not via csi-driver-nfs
+      - nfs-common
