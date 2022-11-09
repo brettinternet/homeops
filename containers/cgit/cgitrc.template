@@ -53,6 +53,8 @@ enable-log-linecount=1
 enable-git-config=1
 snapshots=tar.gz tar.bz2 zip
 
+virtual-root=/
+
 robots=noindex, nofollow
 
 section-from-path=$SECTION_FROM_STARTPATH
