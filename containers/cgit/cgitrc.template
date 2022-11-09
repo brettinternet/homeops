@@ -7,11 +7,47 @@ root-title=$ROOT_TITLE
 root-desc=$ROOT_DESC
 root-readme=$ROOT_README
 
-source-filter=/usr/lib/cgit/filters/syntax-highlighting.sh
+source-filter=/usr/lib/cgit/filters/syntax-highlighting.py
 about-filter=/usr/lib/cgit/filters/about-formatting.sh
+formatter = HtmlFormatter(encoding='utf-8', style='native')
 
-# Search for these files in the root of the default branch of repositories
-# for coming up with the about page:
+# Cache
+cache-root=/var/cache/cgit
+cache-size=1000
+
+# Features
+noplainemail=$NOPLAINEMAIL
+enable-blame=1
+enable-index-links=1
+enable-index-owner=0
+enable-remote-branches=1
+enable-log-filecount=1
+enable-log-linecount=1
+enable-git-config=1
+enable-commit-graph=1
+enable-http-clone=0
+remove-suffix=1
+snapshots=tar.gz tar.bz2 zip
+max-stats=quarter
+
+virtual-root=/
+section-from-path=$SECTION_FROM_STARTPATH
+robots=noindex, nofollow
+
+# per page
+max-repo-count=$MAX_REPO_COUNT
+
+scan-path=/srv/git
+
+mimetype.gif=image/gif
+mimetype.html=text/html
+mimetype.jpg=image/jpeg
+mimetype.jpeg=image/jpeg
+mimetype.pdf=application/pdf
+mimetype.png=image/png
+mimetype.svg=image/svg+xml
+
+# About page
 readme=:README.md
 readme=:readme.md
 readme=:README.mkd
@@ -40,27 +76,3 @@ readme=:INSTALL.txt
 readme=:install.txt
 readme=:INSTALL
 readme=:install
-
-# Cache
-cache-root=/var/cache/cgit
-cache-size=1000
-
-# Features
-enable-index-links=1
-enable-index-owner=0
-enable-remote-branches=1
-enable-log-filecount=1
-enable-log-linecount=1
-enable-git-config=1
-enable-commit-graph=1
-snapshots=tar.gz tar.bz2 zip
-max-stats=quarter
-
-virtual-root=/
-section-from-path=$SECTION_FROM_STARTPATH
-robots=noindex, nofollow
-
-# per page
-max-repo-count=$MAX_REPO_COUNT
-
-scan-path=/srv/git
