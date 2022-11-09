@@ -3,10 +3,10 @@ FROM alpine:latest
 
 RUN set -xe && \
     apk add --no-cache --purge -uU \
-    ca-certificates curl cgit openssh git highlight python3 py-markdown \
+    ca-certificates curl git cgit highlight python3 py3-markdown \
     fcgiwrap spawn-fcgi nginx gettext dumb-init && \
     rm -rf /var/cache/apk/* /tmp/* && \
-    mkdir /srv/git
+    mkdir -p /srv/git
 
 ENV ROOT_TITLE="Git" ROOT_DESC="My git repositories" SECTION_FROM_STARTPATH=0 MAX_REPO_COUNT=50
 COPY --chown=nginx cgit.png /usr/share/webapps/cgit/
@@ -16,7 +16,7 @@ COPY nginx.conf /etc/nginx/
 COPY syntax-highlighting.sh /usr/lib/cgit/filters/
 COPY start.sh /start.sh
 
-VOLUME /srv/git /var/cache/cgit
-EXPOSE 80 22
+VOLUME /var/lib/git /var/cache/cgit
+EXPOSE 80
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/start.sh"]

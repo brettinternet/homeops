@@ -45,21 +45,22 @@ readme=:install
 cache-root=/var/cache/cgit
 cache-size=1000
 
+# Features
 enable-index-links=1
 enable-index-owner=0
 enable-remote-branches=1
 enable-log-filecount=1
 enable-log-linecount=1
 enable-git-config=1
+enable-commit-graph=1
 snapshots=tar.gz tar.bz2 zip
+max-stats=quarter
 
 virtual-root=/
-
-robots=noindex, nofollow
-
 section-from-path=$SECTION_FROM_STARTPATH
+robots=noindex, nofollow
 
 # per page
 max-repo-count=$MAX_REPO_COUNT
 
-scan-path=/srv/git/
+scan-path=/srv/git
