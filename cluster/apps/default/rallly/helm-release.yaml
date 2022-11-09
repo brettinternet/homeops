@@ -28,7 +28,8 @@ spec:
       namespace: default
   values:
     image:
-      repository: ghcr.io/brettinternet/rallly
+      # https://github.com/lukevella/rallly/discussions/268
+      repository: docker.io/lukevella/rallly
       tag: latest
     # https://github.com/lukevella/rallly#%EF%B8%8F-configuration
     env:
@@ -65,6 +66,7 @@ spec:
               - path: /site.webmanifest
                 pathType: Exact
               # https://github.com/lukevella/rallly/discussions/352
+              # https://github.com/lukevella/rallly/tree/main/src/server/routers
               - path: /api/
                 pathType: Prefix
         tls:
