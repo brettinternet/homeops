@@ -1,4 +1,5 @@
 # https://wiki.alpinelinux.org/wiki/Cgit
+# Alternate option: https://git.causal.agency/cgit-pink/tree/cgit.css
 FROM alpine:latest
 
 RUN set -xe && \
