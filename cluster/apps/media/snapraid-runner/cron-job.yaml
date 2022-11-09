@@ -1,5 +1,5 @@
-# https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
-# https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(snapraid).md
+# MergerFS: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
+# Snapraid: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(snapraid).md
 ---
 apiVersion: batch/v1
 kind: CronJob
