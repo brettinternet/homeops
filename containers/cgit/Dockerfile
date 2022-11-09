@@ -3,7 +3,7 @@ FROM alpine:latest
 
 RUN set -xe && \
     apk add --no-cache --purge -uU \
-    ca-certificates curl git cgit highlight python3 py3-markdown \
+    curl git cgit highlight python3 py3-markdown markdown \
     fcgiwrap spawn-fcgi nginx gettext dumb-init && \
     rm -rf /var/cache/apk/* /tmp/* && \
     mkdir -p /srv/git
