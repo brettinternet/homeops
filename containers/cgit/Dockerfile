@@ -1,10 +1,9 @@
 # https://wiki.alpinelinux.org/wiki/Cgit
 FROM alpine:latest
 
-# install? python3 py-markdown py3-pygments markdown
 RUN set -xe && \
     apk add --no-cache --purge -uU \
-    ca-certificates curl cgit openssh git highlight \
+    ca-certificates curl cgit openssh git highlight python3 py-markdown \
     fcgiwrap spawn-fcgi nginx gettext dumb-init && \
     rm -rf /var/cache/apk/* /tmp/* && \
     mkdir /srv/git
