@@ -35,6 +35,7 @@ spec:
       ROOT_DESC: Source code of various projects
       ROOT_README: /srv/git/README.md
       SECTION_FROM_STARTPATH: 1
+      NOPLAINEMAIL: 1
     service:
       main:
         ports:
