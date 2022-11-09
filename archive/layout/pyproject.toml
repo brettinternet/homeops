@@ -6,7 +6,7 @@ authors = ["brett <brettinternet@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-diagrams = "^0.20.0"
+diagrams = "^0.23.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.6b0"
