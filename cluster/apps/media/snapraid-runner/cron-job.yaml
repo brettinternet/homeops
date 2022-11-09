@@ -35,24 +35,24 @@ spec:
                     kubectl -n media scale --replicas=0 deployment/bazarr
                     snapraid devices
                 - name: POST_COMMANDS_FAILURE
-                  value: |-
-                    curl -s \
-                      -d "Sync failed" \
-                      -H "Title: SnapRAID" \
-                      -H "Tags: rotating_light" \
+                  value: >-
+                    curl -s
+                      -d "Sync failed"
+                      -H "Title: SnapRAID"
+                      -H "Tags: rotating_light"
                       "http://ntfy.default.svc.cluster.local/homelab"
                 - name: POST_COMMANDS_SUCCESS
-                  value: |-
-                    kubectl -n media scale --replicas=1 deployment/sonarr
-                    kubectl -n media scale --replicas=1 deployment/radarr
-                    kubectl -n media scale --replicas=1 deployment/readarr
-                    kubectl -n media scale --replicas=1 deployment/audiobookshelf
-                    kubectl -n media scale --replicas=1 deployment/youtubedl
-                    kubectl -n media scale --replicas=1 deployment/bazarr
-                    curl -s \
-                      -d "Sync succeeded" \
-                      -H "Title: SnapRAID" \
-                      -H "Tags: heavy_check_mark" \
+                  value: >-
+                    kubectl -n media scale --replicas=1 deployment/sonarr;
+                    kubectl -n media scale --replicas=1 deployment/radarr;
+                    kubectl -n media scale --replicas=1 deployment/readarr;
+                    kubectl -n media scale --replicas=1 deployment/audiobookshelf;
+                    kubectl -n media scale --replicas=1 deployment/youtubedl;
+                    kubectl -n media scale --replicas=1 deployment/bazarr;
+                    curl -s
+                      -d "Sync succeeded"
+                      -H "Title: SnapRAID"
+                      -H "Tags: heavy_check_mark"
                       "http://ntfy.default.svc.cluster.local/homelab"
               volumeMounts:
                 - name: *job
