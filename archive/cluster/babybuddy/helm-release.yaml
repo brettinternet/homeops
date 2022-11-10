@@ -1,12 +1,9 @@
-# https://github.com/linuxserver/docker-nzbget
-# provider map: https://upload.wikimedia.org/wikipedia/commons/7/7d/Usenet_Providers_and_Backbones.svg
-# provider wiki: https://www.reddit.com/r/usenet/wiki/providers#wiki_provider_map
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: nzbget
-  namespace: media
+  name: babybuddy
+  namespace: default
 spec:
   interval: 15m
   chart:
@@ -17,7 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-      interval: 15m
   install:
     createNamespace: true
     remediation:
@@ -25,41 +21,39 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
-      # https://hub.docker.com/r/linuxserver/nzbget
-      repository: lscr.io/linuxserver/nzbget
+      repository: lscr.io/linuxserver/babybuddy
       tag: latest
-      pullPolicy: IfNotPresent
     env:
-      TZ: ${TIMEZONE}
+      TZ: "${TIMEZONE}"
+      CSRF_TRUSTED_ORIGINS: "https://baby.${PUBLIC_DOMAIN}"
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
       PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     service:
       main:
         ports:
           http:
-            port: 6789
+            port: 8000
     persistence:
       config:
         enabled: true
-        existingClaim: appdata
         mountPath: /config
-        subPath: nzbget
-      media:
-        enabled: true
-        existingClaim: media
-        mountPath: /data/usenet
-        subPath: usenet
+        existingClaim: appdata
+        subPath: babybuddy
     ingress:
       main:
         enabled: true
         ingressClassName: nginx
         annotations:
+          external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
-          hajimari.io/icon: download-circle
+          hajimari.io/icon: baby
         hosts:
-          - host: &host nzbget.${PUBLIC_DOMAIN}
+          - host: &host "baby.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix

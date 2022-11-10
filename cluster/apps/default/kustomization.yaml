@@ -4,21 +4,22 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - adguard
+  # - adguard
   # - apprise
-  - archivebox
+  # - archivebox
   - authelia
   # - babybuddy
   - change-detection
   # - cloudbeaver
-  - cyberchef
+  # - cyberchef
   - esphome
   - espial
   - frigate
-  - ghostfolio
+  # - ghostfolio
   - hajimari
   - home-assistant
   - kubernetes-dashboard
+  # - libreoffice
   - linkding
   - lldap
   - maddy
@@ -29,14 +30,16 @@ resources:
   # - nextcloud
   - ntfy
   - paperless-ngx
-  - pinry
-  - rallly
+  # - pinry
+  - projectsend
+  # - rallly
   # - scrutiny
   - unifi
   - uptime-kuma
+  # - webtop
   # - wger
   - whoogle
-  - wikijs
+  # - wikijs
   - zwavejs2mqtt
 
 # Add:
