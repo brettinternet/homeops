@@ -1,12 +1,9 @@
-# https://github.com/linuxserver/docker-nzbget
-# provider map: https://upload.wikimedia.org/wikipedia/commons/7/7d/Usenet_Providers_and_Backbones.svg
-# provider wiki: https://www.reddit.com/r/usenet/wiki/providers#wiki_provider_map
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: nzbget
-  namespace: media
+  name: &app projectsend
+  namespace: default
 spec:
   interval: 15m
   chart:
@@ -17,7 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-      interval: 15m
   install:
     createNamespace: true
     remediation:
@@ -25,41 +21,44 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
   values:
     image:
-      # https://hub.docker.com/r/linuxserver/nzbget
-      repository: lscr.io/linuxserver/nzbget
+      repository: lscr.io/linuxserver/projectsend
       tag: latest
-      pullPolicy: IfNotPresent
     env:
-      TZ: ${TIMEZONE}
+      TZ: "${TIMEZONE}"
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
       PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      MAX_UPLOAD: 5000
     service:
       main:
         ports:
           http:
-            port: 6789
+            port: 80
     persistence:
       config:
         enabled: true
-        existingClaim: appdata
         mountPath: /config
-        subPath: nzbget
-      media:
+        existingClaim: appdata
+        subPath: *app
+      data:
         enabled: true
-        existingClaim: media
-        mountPath: /data/usenet
-        subPath: usenet
+        mountPath: /data
+        existingClaim: appdata
+        subPath: *app
     ingress:
       main:
         enabled: true
         ingressClassName: nginx
         annotations:
+          # external-dns.home.arpa/enabled: s"true"
           hajimari.io/enable: "true"
-          hajimari.io/icon: download-circle
+          hajimari.io/icon: mdi:email-fast-outline
         hosts:
-          - host: &host nzbget.${PUBLIC_DOMAIN}
+          - host: &host "send.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
