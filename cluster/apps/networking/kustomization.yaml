@@ -16,3 +16,4 @@ resources:
   - smb-shared
   - smokeping
   - k8s-gateway
+  - wireshark

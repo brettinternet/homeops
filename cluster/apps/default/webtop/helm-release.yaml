@@ -1,0 +1,81 @@
+# Alternatively: https://hub.docker.com/r/linuxserver/rdesktop
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: webtop
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 0.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+  values:
+    image:
+      repository: lscr.io/linuxserver/webtop
+      # https://github.com/linuxserver/docker-webtop#version-tags
+      tag: arch-xfce
+    # https://github.com/linuxserver/docker-webtop
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      SUBFOLDER: /
+      KEYBOARD: en-us-qwerty
+      TITLE: desktop
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        existingClaim: appdata
+        subPath: webtop
+      shm:
+        enabled: true
+        type: emptyDir
+        medium: Memory
+        sizeLimit: 2Gi
+        mountPath: /dev/shm
+      dri:
+        enabled: true
+        type: hostPath
+        mountPath: /dev/dri
+        hostPath: /dev/dri
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          # external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: desktop
+        hosts:
+          - host: &host "desktop.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
