@@ -1,11 +1,11 @@
 ---
 - hosts:
-    # - master
-    # - worker
-    - pi-2
-    - pi-3
-    - harambe
-    - archie
+    - master
+    - worker
+    # - pi-2
+    # - pi-3
+    # - harambe
+    # - archie
   gather_facts: false
   become: true
   tasks:
