@@ -1,0 +1,32 @@
+---
+- name: Get keys from URL
+  ansible.builtin.uri:
+    url: "{{ ssh_keys_url }}"
+    method: GET
+    return_content: true
+  register: keys_result
+  failed_when: keys_result.content is not defined or 'ssh-rsa' not in keys_result.content
+
+- name: Filter key
+  ansible.builtin.shell: "echo '{{ keys_result['content'] }}' | sed '{{ ssh_keys_sed_arg }}'"
+  register: keys_sed_result
+  when:
+    - ssh_keys_sed_arg is defined
+    - ssh_keys_sed_arg | length > 0
+  changed_when: keys_result['content'] != keys_sed_result['stdout']
+
+- name: Set filtered key fact
+  ansible.builtin.set_fact:
+    ssh_keys: "{{ keys_sed_result['stdout'] }}"
+  when: keys_sed_result.stdout is defined
+
+- name: Set keys fact
+  ansible.builtin.set_fact:
+    ssh_keys: "{{ keys_result['content'] }}"
+  when: keys_sed_result.stdout is not defined
+
+- name: Add key to authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ ssh_keys }}"

@@ -1,0 +1,26 @@
+# https://wiki.archlinux.org/title/etckeeper
+---
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - This role only supports Arch Linux
+  when: ansible_facts['distribution'] | lower != 'archlinux'
+
+- name: Install etckeeper
+  ansible.builtin.package:
+    name:
+      - etckeeper
+
+- name: Check /etc/.git exists
+  ansible.builtin.stat:
+    path: /etc/.git
+  register: etc_git_result
+
+- block:
+    - name: Initialize etckeeper
+      ansible.builtin.command: etckeeper init
+
+    - name: Initialize etckeeper
+      ansible.builtin.command: etckeeper commit "initial commit"
+  when: not etc_git_result.stat.exists

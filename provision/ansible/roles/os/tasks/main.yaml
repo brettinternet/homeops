@@ -20,24 +20,4 @@
     name: "{{ inventory_hostname }}"
 
 - name: Setup hosts
-  include_tasks: "{{ ansible_facts['distribution'] | lower }}.yaml"
-
-- name: Copy sudoers defaults
-  become: true
-  ansible.builtin.copy:
-    src: sudoers-defaults
-    dest: /etc/sudoers.d/defaults
-    validate: "visudo -cf %s"
-    mode: 0644
-
-- name: Disable SSH password tunneling
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    line: PasswordAuthentication no
-
-- name: Only allow SSH from current user
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/ssh/sshd_config
-    line: "AllowUsers {{ ansible_user }}"
+  ansible.builtin.include_tasks: "{{ ansible_facts['distribution'] | lower }}.yaml"

@@ -1,0 +1,51 @@
+---
+# TODO: secure `authorized_keys` https://wiki.archlinux.org/index.php/OpenSSH#Securing_the_authorized_keys_file
+
+- name: Setup ssh keys
+  ansible.builtin.include_tasks: keys.yaml
+  when: ssh_keys_url is defined
+
+- name: Copy sudoers defaults
+  become: true
+  ansible.builtin.copy:
+    src: sudoers-defaults
+    dest: /etc/sudoers.d/defaults
+    validate: "visudo -cf %s"
+    mode: 0644
+
+- name: Disable password tunneling
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: PasswordAuthentication no
+
+- name: Disable SSH password tunneling
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: PasswordAuthentication no
+
+- name: Ensure group 'ssh' exists
+  become: true
+  ansible.builtin.group:
+    name: ssh
+    state: present
+
+- name: Add user to ssh group
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups:
+      - ssh
+    append: true
+
+- name: Only allow SSH from group
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "AllowGroups ssh"
+
+- name: Only allow SSH from current user
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "AllowUsers {{ ansible_user }}"

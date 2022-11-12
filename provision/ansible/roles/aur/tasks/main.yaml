@@ -37,8 +37,10 @@
     - name: Install yay
       become_user: "{{ aur_user }}"
       kewlfft.aur.aur:
+        name: yay
         use: makepkg
-        local_pkgbuild: "{{ ansible_facts['user_dir'] }}/yay"
+        state: present
+        # local_pkgbuild: "{{ ansible_facts['user_dir'] }}/yay"
 
     - name: Remove PKGBUILD directory
       ansible.builtin.file:

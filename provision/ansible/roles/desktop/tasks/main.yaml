@@ -1,0 +1,13 @@
+---
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}."
+      - This role only supports Arch Linux.
+      - "'x11_enabled' must be enabled on the host"
+  when:
+    - ansible_facts['distribution'] | lower != 'archlinux'
+    - x11_enabled
+
+- name: Set user X11 settings
+  ansible.builtin.include_tasks: x11_settings.yml
