@@ -7,5 +7,9 @@
     - role: upgrade
       vars:
         allow_reboot: false
-    - role: zfs
-      when: inventory_hostname == 'archie'
+
+- hosts:
+    - archie
+  become: true
+  roles:
+    - zfs

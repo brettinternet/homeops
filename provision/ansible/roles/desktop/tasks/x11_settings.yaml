@@ -1,0 +1,40 @@
+---
+# https://wiki.archlinux.org/index.php/Xdg-utils#xdg-settings
+- name: Set default browser # noqa no-changed-when
+  ansible.builtin.command: xdg-settings set default-web-browser chromium.desktop
+
+# https://wiki.archlinux.org/index.php/Nemo#Set_Nemo_as_default_file_browser
+- name: Set default file browser # noqa no-changed-when
+  ansible.builtin.command: xdg-mime default nemo.desktop inode/directory application/x-gnome-saved-search
+
+# https://wiki.archlinux.org/index.php/Nemo#Show_/_hide_desktop_icons
+- name: Hide desktop icons # noqa no-changed-when
+  ansible.builtin.command: |
+    gsettings set org.nemo.desktop show-desktop-icons false
+    gsettings set org.nemo.preferences desktop-is-home-dir false
+
+# https://github.com/snwh/paper-icon-theme#installing--using
+- name: Set icon themes # noqa no-changed-when
+  ansible.builtin.command: |
+    gsettings set org.gnome.desktop.interface icon-theme "Paper"
+    gsettings set org.gnome.desktop.interface cursor-theme "Paper"
+
+# https://wiki.archlinux.org/index.php/Nemo#Change_the_default_terminal_emulator_for_Nemo
+- name: Set default terminal # noqa no-changed-when
+  ansible.builtin.command: gsettings set org.cinnamon.desktop.default-applications.terminal exec i3-sensible-terminal
+
+# Use with Gnome-Keyring with Git credentials
+# https://wiki.archlinux.org/index.php/GNOME/Keyring#Git_integration
+- name: Set git credential helper # noqa no-changed-when command-instead-of-module
+  ansible.builtin.command: git config --global credential.helper /usr/lib/git-core/git-credential-libsecret
+
+# https://aur.archlinux.org/packages/zoom-firejail/
+- name: Set zoom defaults # noqa no-changed-when
+  ansible.builtin.command: |
+    for scheme in zoommtg zoomus tel callto zoomphonecall; do
+        xdg-mime default zoom-firejail.desktop x-scheme-handler/$scheme
+    done
+
+# https://wiki.archlinux.org/title/Blueman#Disable_auto_power-on
+- name: Disable bluetooth's auto power-on # noqa no-changed-when
+  ansible.builtin.command: gsettings set org.blueman.plugins.powermanager auto-power-on false

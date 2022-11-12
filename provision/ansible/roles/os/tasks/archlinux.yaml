@@ -1,1 +1,15 @@
 ---
+# https://wiki.archlinux.org/title/reflector
+- name: Set custom reflector
+  ansible.builtin.copy:
+    src: reflector.conf
+    dest: /etc/xdg/reflector/reflector.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Start reflector timer
+  ansible.builtin.systemd:
+    name: reflector.timer
+    enabled: true
+    state: started

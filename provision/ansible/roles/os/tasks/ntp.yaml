@@ -1,0 +1,8 @@
+---
+# https://wiki.archlinux.org/title/systemd-timesyncd
+- name: Start/enable systemd-timesyncd.service
+  ansible.builtin.systemd:
+    name: systemd-timesyncd.service
+    scope: system
+    enabled: true
+    state: started

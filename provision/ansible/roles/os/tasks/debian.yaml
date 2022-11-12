@@ -1,4 +1,10 @@
 ---
+- name: Hush login
+  ansible.builtin.file:
+    path: "{{ ansible_facts['user_dir'] }}/.hushlogin"
+    state: touch
+    mode: 0777
+
 # https://serverfault.com/a/363098
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=316099
 - name: Update /etc/hosts to include inventory hostname

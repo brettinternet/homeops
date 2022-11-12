@@ -1,0 +1,32 @@
+---
+- name: Set git pull strategy to rebase
+  community.general.git_config:
+    name: pull.rebase
+    scope: system
+    value: true
+
+- name: Set git user
+  community.general.git_config:
+    name: user.name
+    scope: system
+    value: "{{ ansible_user }}"
+
+- name: Ensure group 'sudo' exists
+  ansible.builtin.group:
+    name: sudo
+    state: present
+
+- name: Ensure group 'ssh' exists
+  ansible.builtin.group:
+    name: ssh
+    state: present
+
+- name: "Setup user groups, set user shell to {{ shell }}"
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: "{{ shell }}"
+    groups:
+      - wheel
+      - sudo
+      - ssh

@@ -1,0 +1,5 @@
+---
+shell: /usr/bin/zsh
+dotfiles_dir: "$HOME/.dotfiles"
+dotfiles_install_cmd: ./install
+default_direnv_file: "$HOME/.envrc"
