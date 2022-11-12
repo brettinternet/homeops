@@ -27,6 +27,15 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 - JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files
 - [Restic](https://restic.net) backups to remote and local buckets
 
+## Repo
+
+- [Ansible roles](./provision/ansible/roles)
+- [Playbooks](./provision/ansible)
+- [Terraform provisions](./provision/terraform)
+- [go-task commands](./.taskfiles)
+- [Cluster GitOps](./cluster)
+- [Cluster services by namespaces](./cluster/apps)
+
 ## Usage
 
 Setup and usage is inspired heavily by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/). Historical revisions of this repository had rootless Podman containers deployed with ansible as systemd units.
