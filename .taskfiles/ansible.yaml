@@ -45,12 +45,12 @@ tasks:
     cmds:
       - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/status.yaml
 
-  destroy:
+  uninstall-kubernetes:
     desc: Uninstall Kubernetes on the nodes
     dir: provision/ansible
     interactive: true
     cmds:
-      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/destroy.yaml
+      - ansible-playbook -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml {{.ANSIBLE_PLAYBOOK_DIR}}/uninstall-kubernetes.yaml
 
   ping:
     desc: Ping all the hosts
