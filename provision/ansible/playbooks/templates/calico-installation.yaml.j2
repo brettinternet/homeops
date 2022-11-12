@@ -11,7 +11,7 @@ spec:
   calicoNetwork:
     # https://projectcalico.docs.tigera.io/networking/ip-autodetection
     nodeAddressAutodetectionV4:
-      interface: (eth0|enp0s31f6)$
+      interface: (eth0|enp0s31f6|eno1)$
       #cidrs:
         #- "{{ (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}"
       # interface: "enp.*"
