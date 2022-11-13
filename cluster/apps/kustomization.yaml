@@ -6,7 +6,7 @@ kind: Kustomization
 resources:
   - backup
   # - debug
-  - default
+  # - default
   - dev
   - flux-system
   # - games
