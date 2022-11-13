@@ -1,6 +1,6 @@
-# Critical cluster setup prior to install apps
+# Preconditions before the cluster apps are deployed
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - kyverno-crds.yaml
+  - crds

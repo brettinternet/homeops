@@ -160,7 +160,6 @@ spec:
         # using intel-gpu-plugin (https://github.com/intel/intel-device-plugins-for-kubernetes)
         cpu: 12
         memory: 10000Mi
-        resources:
         # gpu.intel.com/i915: 1
     nodeSelector:
       feature.node.kubernetes.io/custom-tuner: "true"

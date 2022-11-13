@@ -14,6 +14,8 @@
       - vim
       - tmux
       - zsh
+      - bat
+      - lsd
 
 - name: Install AUR dependencies
   ansible.builtin.include_role:

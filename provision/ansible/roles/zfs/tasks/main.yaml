@@ -10,6 +10,14 @@
   when: ansible_facts['distribution'] | lower != 'archlinux'
 
 - name: Install dependencies
+  community.general.pacman:
+    state: present
+    name:
+      # https://unix.stackexchange.com/a/723723
+      # https://github.com/archzfs/archzfs/issues/464
+      - openssl-1.1
+
+- name: Install dependencies
   ansible.builtin.include_role:
     name: aur
   vars:
