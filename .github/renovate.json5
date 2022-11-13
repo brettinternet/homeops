@@ -12,6 +12,7 @@
   "pre-commit": {
     "enabled": true,
   },
+  "ignorePaths": ["archive/**"],
   "flux": {
     "fileMatch": ["cluster/.+\\.ya?ml$"],
   },
