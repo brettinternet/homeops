@@ -1,13 +1,13 @@
 ---
 collections:
   - name: community.general
-    version: 5.7.0
+    version: 6.0.0
   - name: community.sops
     version: 1.4.1
   - name: ansible.posix
     version: 1.4.0
   - name: ansible.utils
-    version: 2.6.1
+    version: 2.7.0
   # https://github.com/kewlfft/ansible-aur
   - name: kewlfft.aur
   # https://github.com/geerlingguy/ansible-role-docker

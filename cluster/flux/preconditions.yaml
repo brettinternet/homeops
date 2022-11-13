@@ -2,11 +2,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta2
 kind: Kustomization
 metadata:
-  name: setup
+  name: preconditions
   namespace: flux-system
 spec:
   interval: 30m
-  path: ./cluster/setup
+  path: ./cluster/preconditions
   prune: true
   sourceRef:
     kind: GitRepository
