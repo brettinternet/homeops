@@ -36,9 +36,16 @@
   ansible.builtin.command: "/bin/bash /home/{{ ansible_user }}/update-zfs.sh"
 
 # https://wiki.archlinux.org/title/ZFS#Automatic_Start
+
 - name: Start/enable import service
   ansible.builtin.systemd:
     name: zfs-import-cache.service
+    enabled: true
+    state: started
+
+- name: Start/enable import target
+  ansible.builtin.systemd:
+    name: zfs-import.target
     enabled: true
     state: started
 
@@ -47,3 +54,11 @@
     name: zfs-mount.service
     enabled: true
     state: started
+
+- name: Start/enable zfs target
+  ansible.builtin.systemd:
+    name: zfs.target
+    enabled: true
+    state: started
+#
+# `zpool import -a` ?
