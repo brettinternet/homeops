@@ -14,6 +14,7 @@ spec:
   dependsOn:
     - name: config
     - name: charts
+    - name: setup
   decryption:
     provider: sops
     secretRef:
