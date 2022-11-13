@@ -23,6 +23,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: csi-driver-nfs
+      namespace: kube-system
   values:
     image:
       # repository: docker.io/erichough/nfs-server # amd64 only

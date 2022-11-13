@@ -21,3 +21,4 @@ terraform.tfstate*
 megalinter-reports
 # scripts
 node_modules
+*.log
