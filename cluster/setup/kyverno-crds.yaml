@@ -25,7 +25,7 @@ metadata:
 spec:
   interval: 30m
   prune: false
-  wait: true
+  wait: false
   sourceRef:
     kind: GitRepository
     name: kyverno
