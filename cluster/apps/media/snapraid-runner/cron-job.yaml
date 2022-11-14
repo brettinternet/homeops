@@ -91,6 +91,8 @@ spec:
                       items:
                         - key: snapraid-runner.conf
                           path: snapraid-runner.conf
+            # Use kubeconfig proxy to achieve access
+            # https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
             - name: kubeconfig
               secret:
                 secretName: kubeconfig
