@@ -54,6 +54,7 @@
     chdir: "{{ dotfiles_dir }}"
     cmd: "{{ dotfiles_install_cmd }}"
   register: dotbot_setup_result
+  failed_when: dotbot_setup_result.stderr != ""
 
 - name: Debug dotfile setup log
   ansible.builtin.debug:
@@ -63,6 +64,12 @@
   ansible.builtin.debug:
     msg: "{{ dotbot_setup_result.stderr.split('\n') }}"
   when: dotbot_setup_result.stderr | length > 0
+
+- name: Install/update vim plugins
+  become_user: "{{ ansible_user }}"
+  ansible.builtin.shell: vim +PlugUpdate +qall
+  register: plugupdate_result
+  failed_when: plugupdate_result.stderr != ""
 
 - block:
     - name: Add private environment values
