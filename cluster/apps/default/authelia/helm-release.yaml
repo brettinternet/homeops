@@ -26,6 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: lldap
       namespace: default
     - name: authelia-postgres

@@ -45,7 +45,7 @@ spec:
         --keep-weekly 5
         --keep-monthly 12
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic backup failed" "http://ntfy.default.svc.cluster.local/homelab"
+        curl -d "The local restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
@@ -93,6 +93,8 @@ spec:
         type: hostPath
         hostPath: /dev/fuse
         readOnly: true
+    podAnnotations:
+      secret.reloader.stakater.com/reload: restic-local
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -130,13 +132,15 @@ spec:
       TZ: "${TIMEZONE}"
       PRUNE_CRON: "0 0 2 * * *"
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic prune failed" "http://ntfy.default.svc.cluster.local/homelab"
+        curl -d "The local restic prune failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
     service:
       main:
         enabled: false
+    podAnnotations:
+      secret.reloader.stakater.com/reload: restic-local
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -176,13 +180,15 @@ spec:
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic check failed" "http://ntfy.default.svc.cluster.local/homelab"
+        curl -d "The local restic check failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
     service:
       main:
         enabled: false
+    podAnnotations:
+      secret.reloader.stakater.com/reload: restic-local
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1

@@ -9,6 +9,7 @@ resources:
   - bazarr
   - calibre
   - calibre-web
+  # - jellyfin
   - nzbget
   - openbooks
   - overseerr
@@ -20,4 +21,5 @@ resources:
   - snapraid-runner
   - sonarr
   - tdarr
+  # - tautulli
   - youtubedl-material

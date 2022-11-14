@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: kubernetes-dashboard
-  namespace: default
+  namespace: monitoring
 spec:
   interval: 15m
   chart:
@@ -22,6 +22,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: networking
   values:
     env:
       TZ: "${TIMEZONE}"

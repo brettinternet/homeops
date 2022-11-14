@@ -24,6 +24,10 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: rallly-postgres
       namespace: default
   values:
@@ -36,7 +40,7 @@ spec:
       TZ: "${TIMEZONE}"
       NEXT_PUBLIC_BASE_URL: "https://when.${PUBLIC_DOMAIN}"
       SUPPORT_EMAIL: "${SMTP_USER}"
-      SMTP_HOST: maddy.default.svc.cluster.local
+      SMTP_HOST: maddy.comms.svc.cluster.local
       SMTP_PORT: 2525
       SMTP_SECURE: false
       SMTP_USER: "${SMTP_USER}"

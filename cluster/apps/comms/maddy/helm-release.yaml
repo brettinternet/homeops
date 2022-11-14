@@ -4,13 +4,13 @@
 # - https://anonaddy.com/self-hosting/
 
 # Right now, maddy only works as a relay to the SMTP values defined in the secret
-# maddy.default.svc.cluster.local:2525
+# maddy.comms.svc.cluster.local:2525
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: &app maddy
-  namespace: default
+  namespace: comms
 spec:
   interval: 15m
   chart:

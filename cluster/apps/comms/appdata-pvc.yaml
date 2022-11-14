@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: appdata-comms
+spec:
+  capacity:
+    storage: 400G
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Delete
+  mountOptions:
+    - nfsvers=4.2
+    - nconnect=16
+    - hard
+    - noatime
+  csi:
+    driver: nfs.csi.k8s.io
+    readOnly: false
+    volumeHandle: appdata-nfs-storage-comms
+    volumeAttributes:
+      server: "${NFS_FAST_TANK_CLUSTERIP}"
+      share: /appdata
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: appdata
+  namespace: comms
+spec:
+  accessModes:
+    - ReadWriteMany
+  volumeName: appdata-comms
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 400G

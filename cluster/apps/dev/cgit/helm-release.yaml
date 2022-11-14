@@ -25,13 +25,15 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       repository: ghcr.io/brettinternet/cgit
       tag: latest
     env:
-      TZ: ${TIMEZONE}
-      ROOT_TITLE: git.gardiner.cloud
+      TZ: "${TIMEZONE}"
+      ROOT_TITLE: "git.${PUBLIC_DOMAIN}"
       ROOT_DESC: Source code of various projects
       ROOT_README: /srv/git/README.md
       SECTION_FROM_STARTPATH: 1

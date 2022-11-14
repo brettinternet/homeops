@@ -28,6 +28,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: archivebox-sonic
       namespace: default
   values:

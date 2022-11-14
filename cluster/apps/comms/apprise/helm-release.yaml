@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: apprise
-  namespace: default
+  namespace: comms
 spec:
   interval: 15m
   chart:
@@ -21,6 +21,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       # https://hub.docker.com/r/caronc/apprise

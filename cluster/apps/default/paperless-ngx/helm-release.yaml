@@ -16,6 +16,10 @@ spec:
         name: bjw-s
         namespace: flux-system
   dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: paperless-postgres
       namespace: default
     - name: paperless-redis

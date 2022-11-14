@@ -27,6 +27,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: plausible_db
       namespace: dev
     - name: plausible_events_db

@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: ntfy
-  namespace: default
+  namespace: comms
 spec:
   interval: 15m
   chart:
@@ -26,6 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       repository: docker.io/binwiederhier/ntfy
@@ -38,7 +40,7 @@ spec:
       NTFY_BASE_URL: "https://ntfy.${PUBLIC_DOMAIN}"
       # https://ntfy.sh/docs/config/#e-mail-notifications
       # Requires user and pass right now...
-      # NTFY_SMTP_SENDER_ADDR: maddy.default.svc.cluster.local:2525
+      # NTFY_SMTP_SENDER_ADDR: maddy.comms.svc.cluster.local:2525
       # NTFY_SMTP_SENDER_FROM: "${SMTP_USER}"
       # https://ntfy.sh/docs/config/#e-mail-publishing
       # Doesn't support auth: https://github.com/binwiederhier/ntfy/issues/420

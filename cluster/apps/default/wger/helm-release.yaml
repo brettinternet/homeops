@@ -26,6 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       # https://hub.docker.com/r/wger/server
@@ -41,7 +43,7 @@ spec:
       DJANGO_DB_PORT: 5432
       FROM_EMAIL: "${SMTP_USER}"
       SITE_URL: "workout.${PUBLIC_DOMAIN}"
-      EMAIL_HOST: maddy.default.svc.cluster.local
+      EMAIL_HOST: maddy.comms.svc.cluster.local
       EMAIL_PORT: 2525
       # DJANGO_CACHE_BACKEND: django_redis.cache.RedisCache
       # DJANGO_CACHE_TIMEOUT: 1296000 # 60*60*24*15, 15 Days

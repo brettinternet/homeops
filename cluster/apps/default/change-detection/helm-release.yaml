@@ -25,6 +25,8 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: ingress-nginx
+      namespace: networking
     - name: change-detection-browser
       namespace: default
   values:

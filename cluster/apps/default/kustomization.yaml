@@ -5,7 +5,6 @@ resources:
   - appdata-pvc.yaml
   - namespace.yaml
   # - adguard
-  # - apprise
   # - archivebox
   - authelia
   - change-detection
@@ -17,24 +16,20 @@ resources:
   # - ghostfolio
   - hajimari
   - home-assistant
-  - kubernetes-dashboard
   # - libreoffice
   - linkding
   - lldap
-  - maddy
   - mealie
   - miniflux
   - mosquitto
   # - neko
   # - nextcloud
-  - ntfy
   - paperless-ngx
+  - picoshare
   # - pinry
   - projectsend
   # - rallly
-  # - scrutiny
   - unifi
-  - uptime-kuma
   # - webtop
   # - wger
   - whoogle

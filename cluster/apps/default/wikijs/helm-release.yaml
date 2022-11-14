@@ -26,6 +26,10 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
+    - name: authelia
+      namespace: default
     - name: wikijs-postgres
       namespace: default
   values:

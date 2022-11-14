@@ -24,6 +24,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     # https://github.com/linuxserver/docker-libreoffice
     image:

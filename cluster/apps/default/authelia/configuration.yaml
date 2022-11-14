@@ -28,7 +28,7 @@ notifier:
   # filesystem:
   #   filename: /config/notification.txt
   smtp:
-    host: maddy.default.svc.cluster.local
+    host: maddy.comms.svc.cluster.local
     port: 2525
     sender: "Authelia <${SMTP_USER}>"
     disable_require_tls: true

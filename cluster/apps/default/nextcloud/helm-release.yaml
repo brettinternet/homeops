@@ -31,6 +31,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
     - name: nextcloud-postgres
       namespace: default
     - name: nextcloud-redis
@@ -53,7 +55,7 @@ spec:
             name: nextcloud
             key: ADMIN_PASSWORD
       NEXTCLOUD_TRUSTED_DOMAINS: "cloud.${PUBLIC_DOMAIN}"
-      SMTP_HOST: maddy.default.svc.cluster.local
+      SMTP_HOST: maddy.comms.svc.cluster.local
       SMTP_PORT: 2525
       SMTP_AUTHTYPE: PLAIN
       MAIL_FROM_ADDRESS: "${SMTP_USER}"

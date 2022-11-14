@@ -3,29 +3,29 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kubernetes-dashboard
-  namespace: default
+  namespace: monitoring
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
     meta.helm.sh/release-name: kubernetes-dashboard
-    meta.helm.sh/release-namespace: default
+    meta.helm.sh/release-namespace: monitoring
 secrets:
   - name: kubernetes-dashboard
 
 ---
 # For dashboard sign in token:
-# kubectl -n default describe secret kubernetes-dashboard | grep '^token'
+# kubectl -n monitoring describe secret kubernetes-dashboard | grep '^token'
 apiVersion: v1
 kind: Secret
 type: kubernetes.io/service-account-token
 metadata:
   name: kubernetes-dashboard
-  namespace: default
+  namespace: monitoring
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
     meta.helm.sh/release-name: kubernetes-dashboard
-    meta.helm.sh/release-namespace: default
+    meta.helm.sh/release-namespace: monitoring
     kubernetes.io/service-account.name: kubernetes-dashboard
 
 ---
@@ -40,4 +40,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: kubernetes-dashboard
-    namespace: default
+    namespace: monitoring

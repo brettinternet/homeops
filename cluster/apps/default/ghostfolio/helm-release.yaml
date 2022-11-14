@@ -18,11 +18,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  dependsOn:
-    - name: ghostfolio-postgres
-      namespace: default
-    - name: ghostfolio-redis
-      namespace: default
   install:
     createNamespace: true
     remediation:
@@ -30,6 +25,13 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  dependsOn:
+    - name: ingress-nginx
+      namespace: networking
+    - name: ghostfolio-postgres
+      namespace: default
+    - name: ghostfolio-redis
+      namespace: default
   values:
     image:
       repository: docker.io/ghostfolio/ghostfolio

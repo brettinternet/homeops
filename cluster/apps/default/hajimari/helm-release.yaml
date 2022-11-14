@@ -26,6 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     env:
       TZ: "${TIMEZONE}"
@@ -63,8 +65,8 @@ spec:
         - name: Whoogle
           token: s
           icon: ci:search
-          searchUrl: https://search.gardiner.cloud/search?q={query}
-          url: https://search.gardiner.cloud
+          searchUrl: https://search.${PUBLIC_DOMAIN}/search?q={query}
+          url: https://search.${PUBLIC_DOMAIN}
         - name: Google
           token: g
           icon: simple-icons:google

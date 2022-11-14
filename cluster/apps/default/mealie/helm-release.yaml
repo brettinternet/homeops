@@ -24,6 +24,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       repository: docker.io/hkotel/mealie
@@ -110,7 +112,7 @@ spec:
       BASE_URL: "https://recipes.${PUBLIC_DOMAIN}"
       AUTO_BACKUP_ENABLED: true
       ALLOW_SIGNUP: false
-      SMTP_HOST: maddy.default.svc.cluster.local
+      SMTP_HOST: maddy.comms.svc.cluster.local
       SMTP_PORT: 2525
       SMTP_AUTH_STRATEGY: NONE
       SMTP_FROM_NAME: Recipes

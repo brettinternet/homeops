@@ -5,16 +5,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - backup
-  # - debug
+  - comms
+  - debug
   - default
   - dev
   - flux-system
-  # - games
+  - games
   - kube-system
   - kyverno
   # - mail
   - media
-  # - monitoring
+  - monitoring
   - networking
   # - system-upgrade
   # - trivy

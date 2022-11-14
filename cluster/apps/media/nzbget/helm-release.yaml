@@ -25,6 +25,9 @@ spec:
   upgrade:
     remediation:
       retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       # https://hub.docker.com/r/linuxserver/nzbget

@@ -26,6 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
       repository: docker.io/m1k1o/neko

@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: scrutiny
-  namespace: default
+  namespace: monitoring
 spec:
   interval: 15m
   chart:
@@ -24,8 +24,10 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: ingress-nginx
+      namespace: networking
     - name: scrutiny-influxdb
-      namespace: default
+      namespace: monitoring
   values:
     image:
       repository: ghcr.io/analogj/scrutiny
@@ -91,7 +93,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: scrutiny-collector
-  namespace: default
+  namespace: monitoring
 spec:
   interval: 15m
   chart:
@@ -111,7 +113,7 @@ spec:
       retries: 3
   dependsOn:
     - name: scrutiny
-      namespace: default
+      namespace: monitoring
   values:
     image:
       repository: ghcr.io/analogj/scrutiny
@@ -146,7 +148,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: scrutiny-influxdb
-  namespace: default
+  namespace: monitoring
 spec:
   interval: 15m
   chart:

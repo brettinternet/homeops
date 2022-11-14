@@ -2,8 +2,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: uptime-kuma
-  namespace: default
+  name: wireshark
+  namespace: monitoring
 spec:
   interval: 15m
   chart:
@@ -14,7 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-      interval: 15m
   install:
     createNamespace: true
     remediation:
@@ -25,39 +24,42 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
   values:
     image:
-      repository: docker.io/louislam/uptime-kuma
+      repository: lscr.io/linuxserver/wireshark
       tag: latest
+    # https://github.com/linuxserver/docker-wireshark
     env:
       TZ: "${TIMEZONE}"
-    # Waiting on rootless image first:
-    # https://github.com/louislam/uptime-kuma/issues/2113
-    # https://github.com/louislam/uptime-kuma/pull/2086
-    # podSecurityContext:
-    #   runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
-    #   runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
-    persistence:
-      data:
-        enabled: true
-        mountPath: /app/data
-        existingClaim: appdata
-        subPath: uptime-kuma
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     service:
       main:
         ports:
           http:
-            port: 3001
+            port: 3000
+    securityContext:
+      seccompProfile:
+        type: Unconfined
+      capabilities:
+        add: [NET_ADMIN]
+    persistence:
+      config:
+        enabled: true
+        mountPath: /config
+        existingClaim: appdata
+        subPath: wireshark
     ingress:
       main:
         enabled: true
         ingressClassName: nginx
         annotations:
-          external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
-          hajimari.io/icon: web-check
+          hajimari.io/icon: shark
         hosts:
-          - host: &host "status.${PUBLIC_DOMAIN}"
+          - host: &host "wireshark.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix

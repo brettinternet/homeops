@@ -29,7 +29,7 @@ spec:
   # https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
   values:
     controller:
-      replicaCount: 1
+      replicaCount: 2
       extraEnvs:
         - name: TZ
           value: "${TIMEZONE}"

@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app projectsend
+  name: projectsend
   namespace: default
 spec:
   interval: 15m
@@ -24,6 +24,10 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
+    - name: projectsend-mariadb
+      namespace: default
   values:
     image:
       repository: lscr.io/linuxserver/projectsend
@@ -39,16 +43,14 @@ spec:
           http:
             port: 80
     persistence:
-      config:
-        enabled: true
-        mountPath: /config
-        existingClaim: appdata
-        subPath: *app
       data:
         enabled: true
-        mountPath: /data
         existingClaim: appdata
-        subPath: *app
+        subPath:
+          - path: projectsend/config
+            mountPath: /config
+          - path: projectsend/data
+            mountPath: /data
     ingress:
       main:
         enabled: true
@@ -65,3 +67,58 @@ spec:
         tls:
           - hosts:
               - *host
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: projectsend-mariadb
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      # https://hub.docker.com/_/mariadb
+      repository: docker.io/library/mariadb
+      tag: "10"
+    env:
+      MARIADB_USER: projectsend
+      MARIADB_DATABASE: projectsend
+      MARIADB_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: projectsend
+            key: MARIADB_PASSWORD
+      MARIADB_RANDOM_ROOT_PASSWORD: true
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 3306
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/mysql
+        existingClaim: appdata
+        subPath: projectsend_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: projectsend

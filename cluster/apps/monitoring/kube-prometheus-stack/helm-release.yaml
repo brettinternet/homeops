@@ -33,7 +33,7 @@ spec:
               send_resolved: false
               to: "${NOTIFY_EMAIL}"
               from: "AlertManager <${SMTP_USER}>"
-              smarthost: maddy.default.svc.cluster.local:2525
+              smarthost: maddy.comms.svc.cluster.local:2525
               require_tls: false
         route:
           group_by: [alertname, job]

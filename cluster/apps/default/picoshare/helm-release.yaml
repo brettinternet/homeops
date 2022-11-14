@@ -1,0 +1,68 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app picoshare
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
+  values:
+    image:
+      # https://github.com/mtlynch/picoshare
+      repository: docker.io/mtlynch/picoshare
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      PORT: 3001
+    envFrom:
+      - secretRef:
+          name: *app
+    service:
+      main:
+        ports:
+          http:
+            port: 3001
+    persistence:
+      config:
+        enabled: true
+        mountPath: /data
+        existingClaim: appdata
+        subPath: picoshare
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:share-variant
+        hosts:
+          - host: &host "share.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      secret.reloader.stakater.com/reload: *app
