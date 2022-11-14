@@ -1,0 +1,44 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: &job api-query
+  namespace: debug
+spec:
+  # To manually trigger in dashboard
+  schedule: "@yearly"
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: OnFailure
+          containers:
+            - name: *job
+              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.4@sha256:ba26842ad0ad09b368cf5f747a6052b7d5f99d7638462b4ab08288c529866049
+              envFrom:
+                - secretRef:
+                    name: *job
+              command:
+                - "/bin/bash"
+                - &path "/app/api-query.sh"
+              volumeMounts:
+                - name: *job
+                  mountPath: *path
+                  subPath: &script api-query.sh
+                  readOnly: true
+          volumes:
+            - name: *job
+              projected:
+                defaultMode: 0775
+                sources:
+                  - configMap:
+                      name: *job
+                      items:
+                        - key: *script
+                          path: *script
