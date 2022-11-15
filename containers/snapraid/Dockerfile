@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk --update add bash python3 git smartmontools tzdata curl dumb-init && \
+RUN apk --update add bash python3 git smartmontools tzdata curl jq dumb-init && \
     apk add snapraid --update-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing --allow-untrusted && \
     git clone https://github.com/Chronial/snapraid-runner.git /app/snapraid-runner && \
     chmod +x /app/snapraid-runner/snapraid-runner.py && \
