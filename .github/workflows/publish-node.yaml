@@ -1,20 +1,21 @@
-name: Build and publish node-git image
+name: Build and publish node image
 
 on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
     paths:
-      - containers/node-git/*
-      - .github/workflows/publish-node-git.yaml
+      - containers/node/*
+      - .github/workflows/publish-node.yaml
 
 env:
   DOCKER_USERNAME: brettinternet
-  IMAGE_NAME: node-git
+  IMAGE_NAME: node
+  DESCRIPTION: An Alpine image for scripting with node and git using a dumb-init entrypoint
 
 defaults:
   run:
-    working-directory: ./containers/node-git
+    working-directory: ./containers/node
 
 jobs:
   build-and-push-image:
@@ -70,6 +71,12 @@ jobs:
           labels: |
             org.opencontainers.image.name=${{ env.IMAGE_NAME }}
             org.opencontainers.image.source=https://github.com/brettinternet/homelab/tree/main/containers/${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=${{ env.DESCRIPTION }}
             org.opencontainers.image.licenses=MIT
-            org.opencontainers.image.version=0.1.0
+
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PAT }}
+          short-description: ${{ env.DESCRIPTION }}

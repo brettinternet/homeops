@@ -11,6 +11,7 @@ on: # yamllint disable-line rule:truthy
 env:
   DOCKER_USERNAME: brettinternet
   IMAGE_NAME: cgit
+  DESCRIPTION: A git web frontend
 
 defaults:
   run:
@@ -70,6 +71,12 @@ jobs:
           labels: |
             org.opencontainers.image.name=${{ env.IMAGE_NAME }}
             org.opencontainers.image.source=https://github.com/brettinternet/homelab/tree/main/containers/${{ env.IMAGE_NAME }}
-            org.opencontainers.image.description=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=${{ env.DESCRIPTION }}
             org.opencontainers.image.licenses=MIT
-            org.opencontainers.image.version=0.1.0
+
+      - name: Update Docker Hub Description
+        uses: peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PAT }}
+          short-description: ${{ env.DESCRIPTION }}
