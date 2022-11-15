@@ -32,7 +32,6 @@ spec:
     hostname: restic-remote
     env:
       TZ: "${TIMEZONE}"
-      RUN_ON_STARTUP: "true"
       BACKUP_CRON: "0 0 0 * * *"
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#backblaze-b2
