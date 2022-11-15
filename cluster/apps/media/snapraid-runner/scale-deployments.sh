@@ -15,13 +15,15 @@ PAYLOAD="{\"spec\":{\"replicas\":$NUMBER_OF_REPLICAS}}"
 IFS=', ' read -r -a DEPLOYMENTS_ARRAY <<< "$DEPLOYMENTS"
 for DEPLOYMENT_NAME in "${DEPLOYMENTS_ARRAY[@]}"; do
   if [ ! -z "$DEPLOYMENT_NAME" ]; then
-    curl -s \
+    RESULT=$(curl -s \
       --cacert "$CACERT" \
       -X PATCH \
       -H "Content-Type: application/strategic-merge-patch+json" \
       -H "Authorization: Bearer $TOKEN" \
       -d "$PAYLOAD" \
-      "$API_SERVER/apis/apps/v1/namespaces/$NAMESPACE/deployments/$DEPLOYMENT_NAME" \
-    | jq '.status'
+      "$API_SERVER/apis/apps/v1/namespaces/$NAMESPACE/deployments/$DEPLOYMENT_NAME")
+    RESULT_REPLICAS=$(echo "$RESULT" | jq '.spec.replicas')
+    # RESULT_MESSAGES=$(echo "$RESULT" | jq '.status.conditions.[] | .message')
+    echo "$DEPLOYMENT_NAME replicas: $RESULT_REPLICAS"
   fi
 done
