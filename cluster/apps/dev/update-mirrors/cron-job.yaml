@@ -19,7 +19,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: *job
-              image: ghcr.io/brettinternet/node-git
+              image: ghcr.io/brettinternet/node
               env:
                 - name: WORKING_DIRECTORY
                   value: /repos
