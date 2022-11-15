@@ -21,6 +21,7 @@ for DEPLOYMENT_NAME in "${DEPLOYMENTS_ARRAY[@]}"; do
       -H "Content-Type: application/strategic-merge-patch+json" \
       -H "Authorization: Bearer $TOKEN" \
       -d "$PAYLOAD" \
-      "$API_SERVER/apis/apps/v1/namespaces/$NAMESPACE/deployments/$DEPLOYMENT_NAME"
+      "$API_SERVER/apis/apps/v1/namespaces/$NAMESPACE/deployments/$DEPLOYMENT_NAME" \
+    | jq '.status'
   fi
 done
