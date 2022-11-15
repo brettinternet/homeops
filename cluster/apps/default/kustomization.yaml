@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  # - adguard
+  - adguard
   # - archivebox
   - authelia
   - change-detection

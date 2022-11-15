@@ -43,6 +43,13 @@ spec:
     securityContext:
       seccompProfile:
         type: Unconfined
+    # Maybe? https://github.com/kubernetes/kubernetes/issues/55006
+    # Forbidden sysctl: "net.ipv6.conf.all.disable_ipv6" not allowlisted
+    # https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/#enabling-unsafe-sysctls
+    # podSecurityContext:
+    #   sysctls:
+    #     - name: net.ipv6.conf.all.disable_ipv6
+    #       value: "1"
     persistence:
       config:
         enabled: true
