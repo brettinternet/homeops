@@ -46,6 +46,7 @@ spec:
     # Maybe? https://github.com/kubernetes/kubernetes/issues/55006
     # Forbidden sysctl: "net.ipv6.conf.all.disable_ipv6" not allowlisted
     # https://kubernetes.io/docs/tasks/administer-cluster/sysctl-cluster/#enabling-unsafe-sysctls
+    # https://github.com/linuxserver/docker-calibre/issues/104#issuecomment-1272408225 (possibly similar issue with calibre)
     # podSecurityContext:
     #   sysctls:
     #     - name: net.ipv6.conf.all.disable_ipv6
