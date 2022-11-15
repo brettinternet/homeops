@@ -1,6 +1,6 @@
 # SnapRAID
 
-This [SnapRAID](https://www.snapraid.it/) image uses a python [runner](https://github.com/Chronial/snapraid-runner) to automate the backup syncs. Curl and dumb-init entrypoint are also available.
+This [SnapRAID](https://www.snapraid.it/) image uses a python [runner](https://github.com/Chronial/snapraid-runner) to automate the backup syncs. Bash, curl and dumb-init entrypoint are also available.
 
 ```sh
 docker create -d \

@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/sh
 
 ### Validation and Setup
 
