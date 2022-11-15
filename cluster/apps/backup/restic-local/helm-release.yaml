@@ -45,7 +45,7 @@ spec:
         --keep-weekly 5
         --keep-monthly 12
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
@@ -132,7 +132,7 @@ spec:
       TZ: "${TIMEZONE}"
       PRUNE_CRON: "0 0 2 * * *"
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic prune failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic prune failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
@@ -180,7 +180,7 @@ spec:
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
       POST_COMMANDS_FAILURE: |-
-        curl -d "The local restic check failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic check failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-local
