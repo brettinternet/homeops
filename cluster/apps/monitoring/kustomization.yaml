@@ -17,4 +17,4 @@ resources:
   # - thanos-query
   - uptime-kuma
   # - vector
-  - wireshark
+  # - wireshark

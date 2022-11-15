@@ -25,26 +25,18 @@ spec:
               env:
                 - name: PRE_COMMANDS
                   value: |-
-                    /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "0"
+                    bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "0"
                     snapraid devices
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/start"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/${HEALTHCHECKS_SNAPRAID_ID}/start"
                 - name: POST_COMMANDS_FAILURE
-                  value: >-
-                    curl -s
-                      -d "Sync failed"
-                      -H "Title: SnapRAID"
-                      -H "Tags: rotating_light"
-                      "http://ntfy.comms.svc.cluster.local/homelab";
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/fail"
+                  value: |-
+                    curl -s -d "Sync failed" -H "Title: SnapRAID" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/${HEALTHCHECKS_SNAPRAID_ID}/fail"
                 - name: POST_COMMANDS_SUCCESS
-                  value: >-
-                    /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1";
-                    curl -s
-                      -d "Sync succeeded"
-                      -H "Title: SnapRAID"
-                      -H "Tags: heavy_check_mark"
-                      "http://ntfy.comms.svc.cluster.local/homelab";
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}"
+                  value: |-
+                    bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1"
+                    curl -s -d "Sync succeeded" -H "Title: SnapRAID" -H "Tags: heavy_check_mark" "http://ntfy.comms.svc.cluster.local/homelab"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/${HEALTHCHECKS_SNAPRAID_ID}"
               volumeMounts:
                 - name: *job
                   mountPath: /config/snapraid.conf

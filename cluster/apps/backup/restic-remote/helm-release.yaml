@@ -48,9 +48,7 @@ spec:
         --keep-weekly 5
         --keep-monthly 12
       POST_COMMANDS_FAILURE: |-
-        curl \
-          -d "The remote restic backup failed" \
-          "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -d "The remote restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
     envFrom:
       - secretRef:
           name: restic-remote
