@@ -16,14 +16,10 @@ spec:
       ttlSecondsAfterFinished: 3600
       template:
         spec:
-          automountServiceAccountToken: false
           restartPolicy: OnFailure
           containers:
             - name: *job
               image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.4@sha256:ba26842ad0ad09b368cf5f747a6052b7d5f99d7638462b4ab08288c529866049
-              envFrom:
-                - secretRef:
-                    name: *job
               command:
                 - "/bin/bash"
                 - &path "/app/api-query.sh"

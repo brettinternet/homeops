@@ -17,24 +17,17 @@ spec:
       ttlSecondsAfterFinished: 259200 # 3 days
       template:
         spec:
-          automountServiceAccountToken: false
+          serviceAccount: snapraid-runner-service-account
           restartPolicy: Never
           containers:
             - name: *job
               image: ghcr.io/brettinternet/snapraid:latest
               env:
-                - name: KUBECONFIG
-                  value: /config/kubeconfig.yaml
                 - name: PRE_COMMANDS
                   value: |-
-                    kubectl -n media scale --replicas=0 deployment/sonarr
-                    kubectl -n media scale --replicas=0 deployment/radarr
-                    kubectl -n media scale --replicas=0 deployment/readarr
-                    kubectl -n media scale --replicas=0 deployment/audiobookshelf
-                    kubectl -n media scale --replicas=0 deployment/youtubedl
-                    kubectl -n media scale --replicas=0 deployment/bazarr
+                    /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "0"
                     snapraid devices
-                    curl -fsS -m 10 --retry 5 -o /dev/null healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_ID}/start
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/start"
                 - name: POST_COMMANDS_FAILURE
                   value: >-
                     curl -s
@@ -42,21 +35,16 @@ spec:
                       -H "Title: SnapRAID"
                       -H "Tags: rotating_light"
                       "http://ntfy.comms.svc.cluster.local/homelab";
-                    curl -fsS -m 10 --retry 5 -o /dev/null healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_ID}/fail
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/fail"
                 - name: POST_COMMANDS_SUCCESS
                   value: >-
-                    kubectl -n media scale --replicas=1 deployment/sonarr;
-                    kubectl -n media scale --replicas=1 deployment/radarr;
-                    kubectl -n media scale --replicas=1 deployment/readarr;
-                    kubectl -n media scale --replicas=1 deployment/audiobookshelf;
-                    kubectl -n media scale --replicas=1 deployment/youtubedl;
-                    kubectl -n media scale --replicas=1 deployment/bazarr;
+                    /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1";
                     curl -s
                       -d "Sync succeeded"
                       -H "Title: SnapRAID"
                       -H "Tags: heavy_check_mark"
                       "http://ntfy.comms.svc.cluster.local/homelab";
-                    curl -fsS -m 10 --retry 5 -o /dev/null healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_ID}
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}"
               volumeMounts:
                 - name: *job
                   mountPath: /config/snapraid.conf
@@ -66,10 +54,9 @@ spec:
                   mountPath: /config/snapraid-runner.conf
                   subPath: snapraid-runner.conf
                   readOnly: true
-                - name: kubeconfig
-                  mountPath: /config/kubeconfig.yaml
-                  subPath: kubeconfig.yaml
-                  readOnly: true
+                - name: *job
+                  mountPath: /config/scale-deployments.sh
+                  subPath: scale-deployments.sh
                 - name: mounts
                   mountPath: /mnt
                 - name: devices
@@ -91,15 +78,11 @@ spec:
                       items:
                         - key: snapraid-runner.conf
                           path: snapraid-runner.conf
-            # Use kubeconfig proxy to achieve access
-            # https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
-            - name: kubeconfig
-              secret:
-                secretName: kubeconfig
-                defaultMode: 0775
-                items:
-                  - key: kubeconfig.yaml
-                    path: kubeconfig.yaml
+                  - configMap:
+                      name: scale-deployments
+                      items:
+                        - key: scale-deployments.sh
+                          path: scale-deployments.sh
             - name: mounts
               hostPath:
                 path: /mnt
