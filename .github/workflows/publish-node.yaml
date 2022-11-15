@@ -81,3 +81,4 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PAT }}
           repository: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
           short-description: ${{ env.DESCRIPTION }}
+          readme-filepath: ./containers/${{ env.IMAGE_NAME }}/README.md
