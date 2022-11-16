@@ -57,7 +57,8 @@ spec:
       main:
         ports:
           http:
-            port: 8000
+            port: 80
+            targetPort: 8000
     ingress:
       main:
         enabled: true

@@ -46,8 +46,13 @@ spec:
         --keep-daily 7
         --keep-weekly 5
         --keep-monthly 12
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
       POST_COMMANDS_FAILURE: |-
         curl -s -d "The remote restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
     envFrom:
       - secretRef:
           name: restic-remote

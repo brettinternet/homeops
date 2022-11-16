@@ -27,16 +27,16 @@ spec:
                   value: |-
                     bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "0"
                     snapraid devices
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/start"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}/start"
                 - name: POST_COMMANDS_FAILURE
                   value: |-
                     curl -s -o /dev/null -d "Sync failed" -H "Title: SnapRAID" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}/fail"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}/fail"
                 - name: POST_COMMANDS_SUCCESS
                   value: |-
                     bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1"
                     curl -s -o /dev/null -d "Sync succeeded" -H "Title: SnapRAID" -H "Tags: heavy_check_mark" "http://ntfy.comms.svc.cluster.local/homelab"
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local:8000/ping/${HEALTHCHECKS_SNAPRAID_ID}"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}"
               volumeMounts:
                 - name: *job
                   mountPath: /config/snapraid.conf
