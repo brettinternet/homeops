@@ -35,7 +35,6 @@ spec:
                 - name: POST_COMMANDS_SUCCESS
                   value: |-
                     bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1"
-                    curl -s -o /dev/null -d "Sync succeeded" -H "Title: SnapRAID" -H "Tags: heavy_check_mark" "http://ntfy.comms.svc.cluster.local/homelab"
                     curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}"
               volumeMounts:
                 - name: *job
