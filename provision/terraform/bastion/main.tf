@@ -51,13 +51,15 @@ resource "digitalocean_droplet" "bastion" {
 }
 
 resource "local_file" "host_vars" {
-  filename = file(var.BASTION_HOST_VARS_PATH)
+  filename = var.BASTION_HOST_VARS_PATH
   content = templatefile(
-    file("${var.TF_VAR_BASTION_MODULE_DIR}/host_vars.tpl"),
+    "host_vars.tpl",
     {
-      ipv4_address = digitalocean_droplet.bastion.ipv4_address
-      dns_address  = data.sops_file.digitalocean_secrets.data["dns_address"]
-      peers        = data.sops_file.digitalocean_secrets.data["peers"]
+      ipv4_address       = digitalocean_droplet.bastion.ipv4_address
+      dns_address        = data.sops_file.digitalocean_secrets.data["dns_address"]
+      peers              = data.sops_file.digitalocean_secrets.data["peers"]
+      cloudflare_api_key = data.sops_file.digitalocean_secrets.data["cloudflare_api_key"]
+      cloudflare_zone    = data.sops_file.digitalocean_secrets.data["cloudflare_zone"]
     }
   )
 

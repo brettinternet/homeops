@@ -1,0 +1,22 @@
+---
+- name: Set remote IPv4 address fact
+  ansible.builtin.set_fact:
+    root_dir: "{{ lookup('ansible.builtin.env', 'ROOT_DIR') }}"
+    peer_filename: "peer_{{ peer_name }}"
+
+- name: Copy peer WireGuard config
+  ansible.builtin.fetch:
+    # https://github.com/linuxserver/docker-wireguard#server-mode
+    src: "{{ project_dir }}/config/{{ peer_filename }}/{{ item }}"
+    dest: "{{ root_dir }}/tmp/{{ peer_name }}/"
+    flat: true
+  loop:
+    - "{{ peer_filename }}.conf"
+    - "{{ peer_filename }}.png"
+    - "presharedkey-{{ peer_filename }}"
+    - "privatekey-{{ peer_filename }}"
+    - "publickey-{{ peer_filename }}"
+
+- ansible.builtin.debug:
+    msg:
+      - "Use WireGuard peer values in {{ root_dir }}/tmp/{{ peer_filename }} for the bastion-gateway secrets."

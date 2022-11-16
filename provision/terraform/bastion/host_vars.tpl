@@ -1,7 +1,8 @@
 # Managed by Terraform
 kind: Secret
 ansible_host: ${ipv4_address}
-wg_peers: "{{ '${peers}'.split(',') }}"
+ansible_user: root
+wg_peers: ${peers}
 compose_env_vars:
   - WIREGUARD_SERVERURL=${dns_address}
   - WIREGUARD_PEERS=${peers}

@@ -4,7 +4,6 @@ version: "3"
 env:
   # provisioned bastion generated host vars output
   TF_VAR_BASTION_HOST_VARS_PATH: "{{.PROJECT_DIR}}/provision/ansible/inventory/host_vars/bastion.sops.yaml"
-  TF_VAR_BASTION_MODULE_DIR: "{{.PROJECT_DIR}}/provision/terraform/bastion"
 
 tasks:
   init:

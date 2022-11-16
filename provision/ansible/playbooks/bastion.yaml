@@ -2,8 +2,6 @@
 - hosts:
     - bastion
   become: true
-  vars:
-    project_dir: "{{ ansible_user }}/wireguard-server"
   roles:
     - role: wireguard-server
       vars:
@@ -14,23 +12,4 @@
           - 443:443/tcp
         env_vars: "{{ compose_env_vars }}"
         docker_users: "{{ [ansible_user] if ansible_user != 'root' else [] }}"
-  post_tasks:
-    - block:
-        - name: Set remote IPv4 address fact
-          ansible.builtin.set_fact:
-            root_dir: "{{ lookup('ansible.builtin.env', 'ROOT_DIR') }}"
-            peer_filename: "peer_{{ item }}"
-
-        - name: Copy peer WireGuard config
-          ansible.builtin.fetch:
-            # https://github.com/linuxserver/docker-wireguard#server-mode
-            src: "{{ project_dir }}/config/{{ peer_filename }}"
-            dest: "{{ root_dir }}/tmp/"
-
-        - ansible.builtin.debug:
-            msg:
-              - "Use WireGuard peer values in {{ root_dir }}/{{ peer_filename }} for the bastion-gateway secrets."
-      loop: "{{ wg_peers }}"
-      when:
-        - wg_peers is defined
-        - wg_peers | length > 0
+        project_dir: "/app/wireguard-server"

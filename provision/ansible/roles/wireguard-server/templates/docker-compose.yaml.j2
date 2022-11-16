@@ -26,11 +26,9 @@ services:
     ports:
       # WireGuard server
       - 51820:51820/udp
-      {% for ports in forward_ports %}
+      {% for ports in forward_ports -%}
       - {{ ports }}
       {% endfor %}
-    sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1
 
   dyndns:
     # https://hub.docker.com/r/oznu/cloudflare-ddns/

@@ -1,5 +1,5 @@
 ---
-kubernetes:
+all:
   children:
     master:
       hosts:
@@ -23,7 +23,6 @@ kubernetes:
         harambe:
           ansible_host: 10.1.2.16
 
-remote:
-  children:
-    hosts:
-      bastion:
+    remote:
+      hosts:
+        bastion:

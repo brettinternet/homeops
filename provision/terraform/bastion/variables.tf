@@ -14,7 +14,7 @@ variable "ssh_key_name" {
 # Get image slug by selecting a distribution on https://cloud.digitalocean.com/droplets/new
 variable "droplet_image" {
   type    = string
-  default = "debian-10-x64"
+  default = "debian-11-x64"
 }
 
 variable "droplet_region" {
@@ -26,11 +26,6 @@ variable "droplet_region" {
 variable "droplet_size" {
   type    = string
   default = "s-1vcpu-512mb-10gb"
-}
-
-variable "TF_VAR_BASTION_MODULE_DIR" {
-  type    = string
-  default = ""
 }
 
 variable "BASTION_HOST_VARS_PATH" {
