@@ -7,7 +7,7 @@ metadata:
   name: &job snapraid-runner
   namespace: media
 spec:
-  schedule: "@daily"
+  schedule: "0 1 * * *"
   concurrencyPolicy: "Forbid"
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 5
