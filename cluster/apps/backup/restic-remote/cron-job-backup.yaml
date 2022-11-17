@@ -1,0 +1,66 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: &job restic-remote-backup
+  namespace: backup
+spec:
+  schedule: "0 0 0 * * *"
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          automountServiceAccountToken: false
+          restartPolicy: OnFailure
+          containers:
+            - name: *job
+              image: docker.io/mazzolino/restic:latest
+              env:
+                - name: TZ
+                  value: "${TIMEZONE}"
+                - name: RUN_ON_STARTUP
+                  value: "true"
+                - name: RESTIC_BACKUP_SOURCES
+                  value: /data
+                - name: RESTIC_BACKUP_ARGS
+                  value: >-
+                    --tag ${PUBLIC_DOMAIN}
+                    --tag restic
+                    --exclude='.Trash*'
+                    --verbose
+                - name: RESTIC_FORGET_ARGS
+                  value: >-
+                    --keep-last 10
+                    --keep-daily 7
+                    --keep-weekly 5
+                    --keep-monthly 12
+                - name: PRE_COMMANDS
+                  value: |-
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
+                - name: POST_COMMANDS_FAILURE
+                  value: |-
+                    curl -s -d "The remote restic backup failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
+                - name: POST_COMMANDS_SUCCESS
+                  value: |-
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
+              envFrom:
+                - secretRef:
+                    name: restic-remote
+              command: [/usr/local/bin/backup]
+              securityContext:
+                capabilities:
+                  add: [SYS_ADMIN]
+              volumeMounts:
+                - name: *job
+                  mountPath: /data
+                  readOnly: true
+          volumes:
+            - name: *job
+              persistentVolumeClaim:
+                claimName: appdata
