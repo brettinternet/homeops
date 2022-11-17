@@ -1,3 +1,6 @@
+# https://gitolite.com/gitolite/basic-admin#appendix-1-bringing-existing-repos-into-gitolite
+# https://stackoverflow.com/questions/5767850/git-on-custom-ssh-port
+
 #!/bin/sh
 
 set -- /usr/sbin/sshd -D
