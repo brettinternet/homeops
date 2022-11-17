@@ -20,25 +20,20 @@ spec:
           containers:
             - name: *job
               image: ghcr.io/brettinternet/bash:latest
-              env:
-                - name: PRE_COMMANDS
-                  value: |-
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/start"
-                - name: POST_COMMANDS_FAILURE
-                  value: |-
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/fail"
-                - name: POST_COMMANDS_SUCCESS
-                  value: |-
-                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}"
               envFrom:
                 - secretRef:
                     name: *job
               command:
-                - "/bin/bash"
-                - &path "/job/cloudflare-ddns.sh"
+                - bash
+                - -c
+                - >-
+                  curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/start" &&
+                  /job/cloudflare-ddns.sh &&
+                  curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}" ||
+                  curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/fail"
               volumeMounts:
                 - name: *job
-                  mountPath: *path
+                  mountPath: /job/cloudflare-ddns.sh
                   subPath: &script cloudflare-ddns.sh
                   readOnly: true
           volumes:
