@@ -9,6 +9,6 @@ RUN apk --update add bash python3 git smartmontools tzdata curl jq dumb-init && 
 VOLUME /config
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-COPY start.sh  /start.sh
+COPY start.sh /start.sh
 RUN chmod 755 /start.sh
 CMD ["/start.sh"]

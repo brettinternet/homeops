@@ -1,4 +1,4 @@
-#!/usr/bin/dumb-init /bin/bash
+#!/usr/bin/dumb-init /bin/sh
 
 function run_commands {
   COMMANDS=$1
@@ -19,7 +19,7 @@ start=$(date +%s)
 echo Starting job at $(date +"%Y-%m-%d %H:%M:%S")
 
 set +e
-exec "$@"
+$@
 RC=$?
 set -e
 
