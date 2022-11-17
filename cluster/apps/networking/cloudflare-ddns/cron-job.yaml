@@ -19,7 +19,17 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: *job
-              image: ghcr.io/onedr0p/kubernetes-kubectl:1.25.4@sha256:ba26842ad0ad09b368cf5f747a6052b7d5f99d7638462b4ab08288c529866049
+              image: ghcr.io/brettinternet/bash:latest
+              env:
+                - name: PRE_COMMANDS
+                  value: |-
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/start"
+                - name: POST_COMMANDS_FAILURE
+                  value: |-
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}/fail"
+                - name: POST_COMMANDS_SUCCESS
+                  value: |-
+                    curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_CLOUDFLARE_DDNS_UUID}"
               envFrom:
                 - secretRef:
                     name: *job

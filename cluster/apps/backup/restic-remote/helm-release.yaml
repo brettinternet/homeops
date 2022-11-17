@@ -49,7 +49,7 @@ spec:
       PRE_COMMANDS: |-
         curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The remote restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The remote restic backup failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
         curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
         curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
@@ -145,8 +145,13 @@ spec:
     env:
       TZ: "${TIMEZONE}"
       PRUNE_CRON: "0 0 2 * * *"
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The remote restic prune failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The remote restic prune failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}"
     envFrom:
       - secretRef:
           name: restic-remote
@@ -193,8 +198,13 @@ spec:
       CHECK_CRON: "0 0 4 * * *"
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The remote restic check failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The remote restic check failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}"
     envFrom:
       - secretRef:
           name: restic-remote
