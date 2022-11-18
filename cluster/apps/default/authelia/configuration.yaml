@@ -60,6 +60,7 @@ duo_api:
 webauthn:
   disable: true
 
+# https://www.authelia.com/configuration/security/access-control/
 access_control:
   # default_policy: two_factor
   default_policy: one_factor
@@ -67,8 +68,7 @@ access_control:
     - name: internal
       networks: ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   rules:
-    - domain:
-        - "grafana.${PUBLIC_DOMAIN}"
+    - domain: "grafana.${PUBLIC_DOMAIN}"
       policy: bypass
     - domain:
         - "radarr.${PUBLIC_DOMAIN}"
@@ -79,6 +79,13 @@ access_control:
         - "nzbget.${PUBLIC_DOMAIN}"
       policy: bypass
       resources: ["^/api([?/].*)?$"]
+    # - domain: "search.${PUBLIC_DOMAIN}"
+    #   policy: deny
+    # - domain: "search.${PUBLIC_DOMAIN}"
+    #   policy: one_factor
+    #   subject:
+    #     - ['group:home']
+
 
 identity_providers:
   oidc:
