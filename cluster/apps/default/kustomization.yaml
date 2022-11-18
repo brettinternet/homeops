@@ -30,6 +30,7 @@ resources:
   # - pinry
   - projectsend
   # - rallly
+  - shlink
   - unifi
   # - webtop
   # - wger

@@ -1,0 +1,239 @@
+# https://shlink.io/documentation/install-docker-image/
+# ---
+# apiVersion: helm.toolkit.fluxcd.io/v2beta1
+# kind: HelmRelease
+# metadata:
+#   name: shlink-web
+#   namespace: default
+# spec:
+#   interval: 15m
+#   chart:
+#     spec:
+#       chart: app-template
+#       version: 1.0.1
+#       sourceRef:
+#         kind: HelmRepository
+#         name: bjw-s-charts
+#         namespace: flux-system
+#   install:
+#     createNamespace: true
+#     remediation:
+#       retries: 5
+#   upgrade:
+#     remediation:
+#       retries: 5
+#   values:
+#     image:
+#       repository: ghcr.io/shlinkio/shlink-web-client
+#       tag: latest
+#     # https://github.com/shlinkio/shlink-web-client/pkgs/container/shlink-web-client
+#     env:
+#       SHLINK_SERVER_URL: "https://go.${PUBLIC_DOMAIN}"
+#     envFrom:
+#       - secretRef:
+#           name: shlink
+#     service:
+#       main:
+#         ports:
+#           http:
+#             port: 80
+#     ingress:
+#       main:
+#         enabled: true
+#         ingressClassName: nginx
+#         annotations:
+#           hajimari.io/enable: "true"
+#           hajimari.io/icon: mdi:link
+#         hosts:
+#           - host: &host "shlink.${PUBLIC_DOMAIN}"
+#             paths:
+#               - path: /
+#                 pathType: Prefix
+#         tls:
+#           - hosts:
+#               - *host
+#     resources:
+#       requests:
+#         cpu: 10m
+#         memory: 100Mi
+#       limits:
+#         memory: 250Mi
+#     podAnnotations:
+#       secret.reloader.stakater.com/reload: shlink
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: shlink-api
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: shlink-postgres
+      namespace: default
+    - name: shlink-redis
+      namespace: default
+  values:
+    image:
+      repository: ghcr.io/shlinkio/shlink
+      tag: latest
+    # GeoLite2 License in secrets: https://shlink.io/documentation/geolite-license-key/
+    env:
+      TIMEZONE: "${TIMEZONE}"
+      DB_DRIVER: postgres
+      DB_HOST: shlink-postgres.default.svc.cluster.local
+      DB_NAME: shlink
+      DB_USER: shlink
+      DEFAULT_DOMAIN: &host "go.${PUBLIC_DOMAIN}"
+      DISABLE_TRACKING_FROM: 10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+      ENABLE_PERIODIC_VISIT_LOCATE: "true"
+      IS_HTTPS_ENABLED: "true"
+      PORT: &port 80
+      REDIS_PUB_SUB_ENABLED: "true"
+    envFrom:
+      - secretRef:
+          name: shlink
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:external-link
+        hosts:
+          - host: *host
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 500Mi
+    podAnnotations:
+      secret.reloader.stakater.com/reload: shlink
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: shlink-postgres
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: library/postgres
+      tag: "14"
+    env:
+      POSTGRES_USER: shlink
+      POSTGRES_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: shlink
+            key: DB_PASSWORD
+      POSTGRES_DB: shlink
+      PGDATA: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
+    service:
+      main:
+        ports:
+          http:
+            port: 5432
+    persistence:
+      data:
+        enabled: true
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: shlink_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: shlink
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: shlink-redis
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      interval: 15m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controller:
+      strategy: RollingUpdate
+    image:
+      repository: docker.io/library/redis
+      tag: "7"
+    command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+    env:
+      REDIS_REPLICATION_MODE: master
+      REDIS_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: shlink
+            key: REDIS_PASSWORD
+    persistence:
+      data:
+        enabled: true
+        path: /data
+        existingClaim: appdata
+        subPath: shlink_redis
+    service:
+      main:
+        ports:
+          http:
+            port: 6379
+    podAnnotations:
+      secret.reloader.stakater.com/reload: shlink
