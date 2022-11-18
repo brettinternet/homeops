@@ -21,6 +21,7 @@ resources:
   - jetstack.yaml
   - k8s-at-home.yaml
   - k8s-gateway.yaml
+  - kubereboot.yaml
   - kubernetes-dashboard.yaml
   - kyverno.yaml
   - mailu.yaml
@@ -32,4 +33,3 @@ resources:
   - prometheus-community.yaml
   # - rook-ceph.yaml
   - stakater.yaml
-  - weaveworks-kured.yaml
