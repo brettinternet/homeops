@@ -1,0 +1,90 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: filebrowser
+  namespace: media
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  dependsOn:
+    - name: ingress-nginx
+      namespace: networking
+  values:
+    image:
+      repository: docker.io/filebrowser/filebrowser
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      FB_DATABASE: "/config/filebrowser.db"
+      FB_ROOT: "/data"
+      FB_LOG: "stdout"
+      FB_NOAUTH: "true"
+    service:
+      main:
+        ports:
+          http:
+            port: &port 80
+    probes:
+      liveness: &probes
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /health
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness: *probes
+      startup:
+        enabled: false
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          - path: filebrowser
+            mountPath: /config
+          - path: /
+            mountPath: /data/appdata
+            readOnly: true
+      shared:
+        enabled: true
+        existingClaim: shared
+        mountPath: /data/shared
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:files
+        hosts:
+          - host: &host "files.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host

@@ -5,10 +5,12 @@ resources:
   - namespace.yaml
   - appdata-pvc.yaml
   - media-pvc.yaml
+  - shared-pvc.yaml
   - audiobookshelf
   - bazarr
   - calibre
   - calibre-web
+  - filebrowser
   # - jellyfin
   - nzbget
   - openbooks
