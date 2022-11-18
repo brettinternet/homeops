@@ -36,9 +36,9 @@ spec:
     # however, no ARM support.
     env:
       TZ: "${TIMEZONE}"
-      SHARED_DIRECTORY: /nfsshare
+      SHARED_DIRECTORY: /data
       # with alt image
-      # NFS_EXPORT_0: "/nfsshare *(rw,fsid=0,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
+      # NFS_EXPORT_0: "/data *(rw,fsid=0,no_subtree_check,no_auth_nlm,insecure,no_root_squash)"
     service:
       main:
         type: LoadBalancer
@@ -51,7 +51,7 @@ spec:
     persistence:
       data:
         enabled: true
-        mountPath: /nfsshare
+        mountPath: /data
         type: hostPath
         hostPath: "${NFS_SHARED_DIR}"
     securityContext:
