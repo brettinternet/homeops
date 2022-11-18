@@ -1,65 +1,65 @@
 # https://shlink.io/documentation/install-docker-image/
-# ---
-# apiVersion: helm.toolkit.fluxcd.io/v2beta1
-# kind: HelmRelease
-# metadata:
-#   name: shlink-web
-#   namespace: default
-# spec:
-#   interval: 15m
-#   chart:
-#     spec:
-#       chart: app-template
-#       version: 1.0.1
-#       sourceRef:
-#         kind: HelmRepository
-#         name: bjw-s-charts
-#         namespace: flux-system
-#   install:
-#     createNamespace: true
-#     remediation:
-#       retries: 5
-#   upgrade:
-#     remediation:
-#       retries: 5
-#   values:
-#     image:
-#       repository: ghcr.io/shlinkio/shlink-web-client
-#       tag: latest
-#     # https://github.com/shlinkio/shlink-web-client/pkgs/container/shlink-web-client
-#     env:
-#       SHLINK_SERVER_URL: "https://go.${PUBLIC_DOMAIN}"
-#     envFrom:
-#       - secretRef:
-#           name: shlink
-#     service:
-#       main:
-#         ports:
-#           http:
-#             port: 80
-#     ingress:
-#       main:
-#         enabled: true
-#         ingressClassName: nginx
-#         annotations:
-#           hajimari.io/enable: "true"
-#           hajimari.io/icon: mdi:link
-#         hosts:
-#           - host: &host "shlink.${PUBLIC_DOMAIN}"
-#             paths:
-#               - path: /
-#                 pathType: Prefix
-#         tls:
-#           - hosts:
-#               - *host
-#     resources:
-#       requests:
-#         cpu: 10m
-#         memory: 100Mi
-#       limits:
-#         memory: 250Mi
-#     podAnnotations:
-#       secret.reloader.stakater.com/reload: shlink
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: shlink-web
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: ghcr.io/shlinkio/shlink-web-client
+      tag: latest
+    # https://github.com/shlinkio/shlink-web-client/pkgs/container/shlink-web-client
+    env:
+      SHLINK_SERVER_URL: "https://go.${PUBLIC_DOMAIN}"
+    envFrom:
+      - secretRef:
+          name: shlink
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: mdi:link
+        hosts:
+          - host: &host "redirects.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 250Mi
+    podAnnotations:
+      secret.reloader.stakater.com/reload: shlink
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -75,7 +75,7 @@ spec:
       version: 1.0.1
       sourceRef:
         kind: HelmRepository
-        name: bjw-s-charts
+        name: bjw-s
         namespace: flux-system
   install:
     createNamespace: true
@@ -85,12 +85,15 @@ spec:
     remediation:
       retries: 5
   dependsOn:
+    - name: ingress-nginx
+      namespace: networking
     - name: shlink-postgres
       namespace: default
     - name: shlink-redis
       namespace: default
   values:
     image:
+      # https://hub.docker.com/r/shlinkio/shlink/
       repository: ghcr.io/shlinkio/shlink
       tag: latest
     # GeoLite2 License in secrets: https://shlink.io/documentation/geolite-license-key/
@@ -130,12 +133,12 @@ spec:
         tls:
           - hosts:
               - *host
-    resources:
-      requests:
-        cpu: 10m
-        memory: 100Mi
-      limits:
-        memory: 500Mi
+    # resources:
+    #   requests:
+    #     cpu: 10m
+    #     memory: 100Mi
+    #   limits:
+    #     memory: 500Mi
     podAnnotations:
       secret.reloader.stakater.com/reload: shlink
 
