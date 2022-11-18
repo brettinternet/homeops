@@ -1,3 +1,4 @@
+# https://filebrowser.org/installation
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -31,7 +32,7 @@ spec:
       tag: latest
     env:
       TZ: "${TIMEZONE}"
-      FB_DATABASE: "/config/filebrowser.db"
+      FB_DATABASE: "/data/appdata/filebrowser/filebrowser.db"
       FB_ROOT: "/data"
       FB_LOG: "stdout"
       FB_NOAUTH: "true"
@@ -62,12 +63,7 @@ spec:
       data:
         enabled: true
         existingClaim: appdata
-        subPath:
-          - path: filebrowser
-            mountPath: /config
-          - path: /
-            mountPath: /data/appdata
-            readOnly: true
+        mountPath: /data/appdata
       shared:
         enabled: true
         existingClaim: shared
