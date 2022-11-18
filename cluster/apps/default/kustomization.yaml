@@ -23,6 +23,7 @@ resources:
   - miniflux
   - mosquitto
   # - neko
+  # - netbox
   # - nextcloud
   - paperless-ngx
   - picoshare

@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: netbox
+  namespace: default
+data:
+  TIME_ZONE: "${TIMEZONE}"
+  # ALLOWED_HOSTS: "netbox.${PUBLIC_DOMAIN}"
+  CORS_ORIGIN_ALLOW_ALL: "true"
+  DB_HOST: netbox-postgres.default.svc.cluster.local
+  DB_NAME: netbox
+  DB_USER: netbox
+  EMAIL_FROM: "${SMTP_USER}"
+  EMAIL_USERNAME: "${SMTP_USER}"
+  EMAIL_SERVER: maddy.comms.svc.cluster.local
+  EMAIL_PORT: "2525"
+  EMAIL_USE_SSL: "false"
+  EMAIL_USE_TLS: "false"
+  METRICS_ENABLED: "false"
+  REDIS_SSL: "false"
+  REDIS_HOST: netbox-redis.default.svc.cluster.local
+  SKIP_SUPERUSER: "false"
+  WEBHOOKS_ENABLED: "true"
