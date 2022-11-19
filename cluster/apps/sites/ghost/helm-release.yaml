@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: &app strapi
+  name: &app ghost
   namespace: sites
 spec:
   interval: 15m
@@ -24,51 +24,49 @@ spec:
   dependsOn:
     - name: ingress-nginx
       namespace: networking
-    - name: strapi-postgres
-      namespace: default
+    - name: ghost-mariadb
+      namespace: sites
   values:
-    controller:
-      replicas: 1
-      strategy: RollingUpdate
     image:
-      # https://hub.docker.com/r/strapi/strapi
-      repository: docker.io/strapi/strapi
+      # https://hub.docker.com/_/ghost
+      repository: docker.io/library/ghost
       tag: latest
+    # https://ghost.org/docs/config/#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      DATABASE_CLIENT: postgres
-      DATABASE_NAME: strapi
-      DATABASE_HOST: strapi-postgres.sites.svc.cluster.local
-      DATABASE_PORT: 5432
-      DATABASE_USERNAME: strapi
-      DATABASE_SSL: false
+      database__client: mysql
+      database__connection__host: ghost-mariadb.sites.svc.cluster.local
+      database__connection__user: ghost
+      database__connection__password:
+        valueFrom:
+          secretKeyRef:
+            name: ghost
+            key: MARIADB_PASSWORD
+      database__connection__database: ghost
+      mail__from: "${SMTP_USER}"
+      mail__transport: SMTP
+      mail__options__host: maddy.comms.svc.cluster.local
+      mail__options__port: 2525
+      mail__options__secure: false
+      url: https://cms.${PUBLIC_DOMAIN}
+      NODE_ENV: development
     envFrom:
       - secretRef:
           name: *app
-    persistence:
-      data:
-        enabled: true
-        existingClaim: appdata
-        mountPath: /srv/app
-        subPath: strapi
     service:
       main:
-        type: LoadBalancer
-        externalTrafficPolicy: Local
-        annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_STRAPI_ADDR}"
         ports:
           http:
-            port: 1337
+            port: 2368
     ingress:
       main:
         enabled: true
         ingressClassName: nginx
         annotations:
           hajimari.io/enable: "true"
-          hajimari.io/icon: logos:strapi
+          hajimari.io/icon: logos:ghost
         hosts:
-          - host: &host "strapi.${PUBLIC_DOMAIN}"
+          - host: &host "cms.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
@@ -82,7 +80,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: strapi-postgres
+  name: ghost-mariadb
   namespace: sites
 spec:
   interval: 15m
@@ -103,20 +101,18 @@ spec:
       retries: 3
   values:
     image:
-      repository: library/postgres
-      tag: "14"
+      # https://hub.docker.com/_/mariadb
+      repository: docker.io/library/mariadb
+      tag: "10"
     env:
-      - name: POSTGRES_USER
-        value: strapi
-      - name: POSTGRES_PASSWORD
+      MARIADB_USER: ghost
+      MARIADB_DATABASE: ghost
+      MARIADB_PASSWORD:
         valueFrom:
           secretKeyRef:
-            name: strapi
-            key: DATABASE_PASSWORD
-      - name: POSTGRES_DB
-        value: strapi
-      - name: PGDATA
-        value: /var/lib/postgresql/data
+            name: ghost
+            key: MARIADB_PASSWORD
+      MARIADB_RANDOM_ROOT_PASSWORD: true
     podSecurityContext:
       runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
       runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
@@ -125,13 +121,12 @@ spec:
       main:
         ports:
           http:
-            port: 5432
-            protocol: TCP
+            port: 3306
     persistence:
       data:
         enabled: true
-        mountPath: /var/lib/postgresql/data
+        mountPath: /var/lib/mysql
         existingClaim: appdata
-        subPath: strapi_db
+        subPath: ghost_db
     podAnnotations:
-      secret.reloader.stakater.com/reload: strapi
+      secret.reloader.stakater.com/reload: ghost
