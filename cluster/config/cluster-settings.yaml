@@ -23,6 +23,7 @@ data:
   NFS_SHARED_DIR: /mnt/tank/shared
   SMB_SHARED_DIR: /mnt/tank/shared
   METALLB_JELLYFIN_ADDR: 10.1.2.110
+  METALLB_STRAPI_ADDR: 10.1.2.111
   UPSTREAM_DNS_ADDR: 10.1.2.1:4053 # fallback/alternate
   NFS_FAST_TANK_CLUSTERIP: 10.43.1.10
   NFS_FAST_TANK_DIR: /mnt/tank

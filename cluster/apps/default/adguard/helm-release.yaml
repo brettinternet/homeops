@@ -55,7 +55,6 @@ spec:
         externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/loadBalancerIPs: "${METALLB_DNS_ADDR}"
-          metallb.universe.tf/allow-shared-ip: adguard-svc
         ports:
           dns-tcp:
             enabled: true

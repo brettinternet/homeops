@@ -133,12 +133,12 @@ spec:
         tls:
           - hosts:
               - *host
-    # resources:
-    #   requests:
-    #     cpu: 10m
-    #     memory: 100Mi
-    #   limits:
-    #     memory: 500Mi
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 500Mi
     podAnnotations:
       secret.reloader.stakater.com/reload: shlink
 
