@@ -47,18 +47,21 @@ spec:
         enabled: true
     podAnnotations:
       # network policy and generated config
-      configmap.reloader.stakater.com/reload: pod-gateway,bastion-gateway-pod-gateway
+      configmap.reloader.stakater.com/reload: pod-gateway-bastion,bastion-gateway-pod-gateway
       secret.reloader.stakater.com/reload: *app
     publicPorts:
       - IP: 10
         hostname: smtp
         ports:
-          - port: "${MAIL_SMTP_LOCALHOST_PORT}"
-            type: udp
-          - port: "${MAIL_SMTP_LOCALHOST_PORT}"
+          - port: "80"
             type: tcp
+          # - port: "${MAIL_SMTP_LOCALHOST_PORT}"
+          #   type: udp
+          # - port: "${MAIL_SMTP_LOCALHOST_PORT}"
+          #   type: tcp
     # Add label to namespace: `routed-gateway: "true"`
-    routed_namespaces: [mail]
+    # routed_namespaces: [mail]
+    routed_namespaces: [debug]
     settings:
       NOT_ROUTED_TO_GATEWAY_CIDRS: 10.0.0.0/8 192.168.0.0/16
       VPN_BLOCK_OTHER_TRAFFIC: true

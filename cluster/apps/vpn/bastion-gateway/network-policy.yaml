@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: pod-gateway
+  name: pod-gateway-bastion
   namespace: vpn
   labels:
     app.kubernetes.io/name: pod-gateway

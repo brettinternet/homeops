@@ -6,5 +6,5 @@ resources:
   - network-policy.yaml
   - helm-release.yaml
 commonLabels:
-  app.kubernetes.io/name: pod-gateway
+  app.kubernetes.io/name: pod-gateway-downloads
   app.kubernetes.io/instance: downloads-gateway

@@ -34,11 +34,13 @@ spec:
     image:
       repository: docker.io/jmalloc/echo-server
       tag: 0.3.3
+    env:
+      PORT: 80
     service:
       main:
         ports:
           http:
-            port: &port 8080
+            port: &port 80
     probes:
       liveness:
         enabled: true
@@ -92,3 +94,5 @@ spec:
     #     memory: 64Mi
     #   limits:
     #     memory: 96Mi
+    podAnnotations:
+      set-bastion-gateway: "true"

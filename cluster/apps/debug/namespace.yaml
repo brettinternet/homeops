@@ -5,3 +5,4 @@ metadata:
   name: debug
   labels:
     kustomize.toolkit.fluxcd.io/prune: disabled
+    routed-gateway: "true"
