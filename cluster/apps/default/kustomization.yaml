@@ -28,7 +28,6 @@ resources:
   - paperless-ngx
   - picoshare
   # - pinry
-  - projectsend
   # - rallly
   - shlink
   - unifi
