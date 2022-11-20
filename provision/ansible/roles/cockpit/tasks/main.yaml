@@ -8,18 +8,20 @@
 
 - name: Install dependencies
   ansible.builtin.package:
+    state: latest
     name:
       - cockpit
-      - cockpit-machines
       # https://cockpit-project.org/blog/pcp-grafana.html
       - cockpit-pcp
+      # Virtual machines
+      # - cockpit-machines
       # - udisks2
 
-- name: Install ZFS plugin
-  ansible.builtin.include_role:
-    name: aur
-  vars:
-    packages: cockpit-zfs-manager
+# - name: Install ZFS plugin
+#   ansible.builtin.include_role:
+#     name: aur
+#   vars:
+#     packages: cockpit-zfs-manager
 
 - name: Remove Cockpit motd
   ansible.builtin.file:

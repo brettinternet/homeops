@@ -3,5 +3,5 @@
   ansible.builtin.include_role:
     name: aur
   vars:
+    state: latest
     packages: snapraid
-    state: present

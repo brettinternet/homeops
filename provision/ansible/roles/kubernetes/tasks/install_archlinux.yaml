@@ -6,7 +6,7 @@
 
 - name: Install dependencies
   community.general.pacman:
-    state: present
+    state: latest
     name:
       - curl
       - net-tools

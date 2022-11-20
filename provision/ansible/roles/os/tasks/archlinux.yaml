@@ -1,4 +1,10 @@
 ---
+- name: Install packages
+  ansible.builtin.package:
+    state: present
+    name:
+      - reflector
+
 # https://wiki.archlinux.org/title/reflector
 - name: Set custom reflector
   ansible.builtin.copy:

@@ -3,8 +3,8 @@
   ansible.builtin.include_role:
     name: aur
   vars:
+    state: latest
     packages: needrestart
-    state: present
 
 - name: Upgrade official packages
   community.general.pacman:

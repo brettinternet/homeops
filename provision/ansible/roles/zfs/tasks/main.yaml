@@ -21,10 +21,11 @@
   ansible.builtin.include_role:
     name: aur
   vars:
+    # Upgrade with script instead of role directly since both packages must be updated together
+    state: present
     packages:
       - zfs-dkms
       - zfs-utils
-    state: present
 
 # Ignore packages to only upgrade them explicitly
 - name: Ignore ZFS packages

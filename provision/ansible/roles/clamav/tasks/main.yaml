@@ -2,22 +2,46 @@
 ---
 - name: Install dependencies
   ansible.builtin.package:
+    state: latest
     name:
       - clamav
 
 - name: Enable clamav daemon
-  become: true
   ansible.builtin.systemd:
     name: clamav-daemon.service
     enabled: true
     state: started
 
 - name: Enable clamav definitions update
-  become: true
   ansible.builtin.systemd:
     name: clamav-freshclam.service
     enabled: true
     state: started
+
+- name: Check Fangfrisch exists
+  ansible.builtin.stat:
+    path: /etc/fangfrisch/fangfrisch.conf
+  register: fangfrisch_result
+
+- block:
+    - name: Install fangfrisch database repo
+      ansible.builtin.include_role:
+        name: aur
+      vars:
+        state: latest
+        packages:
+          - python-fangfrisch
+
+    - name: Create database structure
+      become_user: clamav
+      ansible.builtin.command: |-
+        /usr/bin/fangfrisch --conf /etc/fangfrisch/fangfrisch.conf initdb
+  when: not fangfrisch_result.stat.exists
+
+- name: Enable clamav fangfrisch timer update
+  ansible.builtin.systemd:
+    name: fangfrisch.timer
+    enabled: true
 
 - name: Test clamav installation # noqa no-changed-when
   ansible.builtin.shell: |

@@ -10,7 +10,7 @@
 
 - name: Install dependencies
   ansible.builtin.apt:
-    state: present
+    state: latest
     name:
       - arptables
       - ebtables

@@ -8,7 +8,7 @@
 
 - name: Install dependencies
   ansible.builtin.apt:
-    state: present
+    state: latest
     name:
       # module required for kernel versions < 5.6
       - wireguard

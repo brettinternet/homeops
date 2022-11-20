@@ -5,11 +5,15 @@
   become: true
   roles:
     - os
+    - role: upgrade
+      vars:
+        allow_reboot: false
 
 - hosts:
     - tars
     - harambe
     - archie
+    - baja
   become: true
   # TODO: check smart output for disk errors
   # https://wiki.archlinux.org/index.php/S.M.A.R.T.
@@ -29,7 +33,7 @@
 
     - name: Install packages
       ansible.builtin.package:
-        state: present
+        state: latest
         name:
           - base
           - dhcpcd
@@ -60,21 +64,21 @@
           - usbutils
           - zsh
           - wget
+          - man-db
+          - less
 
     - name: Install AUR dependencies
       ansible.builtin.include_role:
         name: aur
       vars:
+        state: latest
         packages:
           - downgrade
-          - python-fangfrisch
           - vim-plug
           - needrestart
-        state: present
 
   roles:
-    # - clamav
-    # - cockpit
+    - clamav
     - ssh
     - etckeeper
     - user
@@ -83,6 +87,7 @@
         dotfiles_repo: https://github.com/brettinternet/dotfiles
         default_direnv_lines:
           - export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
+    - cockpit
 
 - hosts:
     - archie

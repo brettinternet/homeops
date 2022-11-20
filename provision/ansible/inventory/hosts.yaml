@@ -6,6 +6,8 @@ all:
         tars:
           ansible_host: 10.1.2.17
           k3s_primary_control_node: true
+        baja:
+          ansible_host: 10.1.2.18
         archie:
           ansible_host: 10.1.2.15
         pi-0:
