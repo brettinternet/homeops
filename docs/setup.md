@@ -125,6 +125,10 @@ grep -r . /sys/devices/system/cpu/vulnerabilities/
 
 [Setup usbguard rules](https://wiki.archlinux.org/index.php/USBGuard). Use [lsusb](https://wiki.debian.org/HowToIdentifyADevice/USB) to view USB devices and `usbguard generate-policy` to view a rule snapshot of current devices.
 
+### Sensors
+
+If `lm_sensors` cannot find your fan sensors, you may need to [add the kernel parameter](https://bugzilla.kernel.org/show_bug.cgi?id=204807) `acpi_enforce_resources=lax`.
+
 ### Applications
 
 See additional [security applications](https://wiki.archlinux.org/index.php/List_of_applications/Security).

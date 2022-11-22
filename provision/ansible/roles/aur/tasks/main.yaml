@@ -29,6 +29,12 @@
   when: aur_helper == 'yay'
 
 - block:
+    - name: Install git
+      ansible.builtin.package:
+        state: present
+        name:
+          - git
+
     - name: Clone yay PKGBUILD
       ansible.builtin.git:
         repo: https://aur.archlinux.org/yay.git

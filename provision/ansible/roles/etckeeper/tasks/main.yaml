@@ -21,6 +21,12 @@
     - name: Initialize etckeeper
       ansible.builtin.command: etckeeper init
 
+    - name: Configure git email
+      ansible.builtin.command: etckeeper vcs config user.email $HOSTNAME@home.arpa
+
+    - name: Configure git name
+      ansible.builtin.command: etckeeper vcs config user.name $HOSTNAME
+
     - name: Initialize etckeeper
       ansible.builtin.command: etckeeper commit "initial commit"
   when: not etc_git_result.stat.exists

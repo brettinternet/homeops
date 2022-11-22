@@ -48,7 +48,7 @@
           - mtools
           - nano
           - os-prober
-          - bpytop
+          - btop
           - curl
           - intel-ucode
           - mesa
@@ -94,3 +94,15 @@
   become: true
   roles:
     - zfs
+
+- hosts:
+    - harambe
+  become: true
+  tasks:
+    - name: Install AUR dependencies
+      ansible.builtin.include_role:
+        name: aur
+      vars:
+        state: latest
+        packages:
+          - mergerfs
