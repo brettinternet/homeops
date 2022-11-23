@@ -3,10 +3,11 @@
 .github/
 .taskfiles/
 .vscode/
+archive/
+containers/
+docs/
 provision/
-tmpl/
-example.env
-.env
+scripts/
 .envrc
 .gitattributes
 .gitignore
@@ -16,4 +17,5 @@ ansible.cfg
 configure
 LICENSE
 README.md
+requirements.txt
 Taskfile.yaml

@@ -4,7 +4,7 @@
 
 Don't be fooled, having a home server is really just hundreds of hours of [badblocks](https://wiki.archlinux.org/index.php/Badblocks).
 
-![sudo badblocks -wsv -b 4096 /dev/sda output](./files/badblocks.png)
+![sudo badblocks -wsv -b 4096 /dev/sda output](./docs/badblocks.png)
 
 ## Features
 
@@ -96,7 +96,7 @@ The Renovate bot will help find updates for charts and images. [Install Renovate
 
 ## Hardware
 
-![book cover: Mommy, Why is There a Server is the House?](./files/stay_at_home_server.jpg)
+![book cover: Mommy, Why is There a Server is the House?](./docs/stay_at_home_server.jpg)
 
 ### Resources
 
