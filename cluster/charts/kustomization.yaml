@@ -29,6 +29,7 @@ resources:
   - metrics-server.yaml
   - nextcloud.yaml
   - node-feature-discovery.yaml
+  - nvidia-device-plugin.yaml
   - pod-gateway.yaml
   - prometheus-community.yaml
   # - rook-ceph.yaml

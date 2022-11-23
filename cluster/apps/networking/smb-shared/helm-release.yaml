@@ -52,4 +52,4 @@ spec:
         type: hostPath
         hostPath: "${SMB_SHARED_DIR}"
     nodeSelector:
-      kubernetes.io/hostname: archie
+      kubernetes.io/hostname: "${FAST_TANK_HOSTNAME}"

@@ -63,4 +63,4 @@ spec:
       - effect: NoExecute
         operator: Exists
     nodeSelector:
-      kubernetes.io/hostname: archie
+      kubernetes.io/hostname: "${FAST_TANK_HOSTNAME}"

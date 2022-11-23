@@ -9,6 +9,7 @@ resources:
   - kube-vip
   - metrics-server
   - node-feature-discovery
+  - nvidia-device-plugin
   - reloader
   # - rook-ceph
   # - smarter-device-manager

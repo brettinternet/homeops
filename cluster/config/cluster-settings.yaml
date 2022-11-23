@@ -37,7 +37,7 @@ data:
   DEVICE_ID_ZWAVE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0
   DEVICE_ID_ZIGBEE: usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if01-port0
   MEDIA_HOSTNAME: harambe
-  APPDATA_HOSTNAME: archie
+  FAST_TANK_HOSTNAME: tars
 
   NET_NODE_CIDR: "10.1.2.0/24"
   # Also defined in k3s provisioning setup

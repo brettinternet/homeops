@@ -49,6 +49,11 @@ spec:
               - device
           # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/overlays/samples/custom-rules
           custom:
+            - name: "fast-gpu"
+              matchOn:
+                - pciId:
+                    vendor: ["10de"]
+                    device: ["1c03"]
             # https://kubernetes-sigs.github.io/node-feature-discovery/v0.11/get-started/features.html?highlight=ssd#storage
             # - feature: storage.device
             #   matchExpressions:
