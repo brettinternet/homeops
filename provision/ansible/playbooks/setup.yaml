@@ -107,17 +107,5 @@
 - hosts:
     - baja
   become: true
-  tasks:
-    - name: Install nvidia packages
-      ansible.builtin.package:
-        state: latest
-        name:
-          - nvidia
-
-    - name: Install AUR nvidia container dependencies
-      ansible.builtin.include_role:
-        name: aur
-      vars:
-        state: latest
-        packages:
-          - nvidia-container-toolkit
+  roles:
+    - nvidia-k8s
