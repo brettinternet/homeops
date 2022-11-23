@@ -14,7 +14,7 @@ resources:
   - kube-system
   - kyverno
   # - mail
-  # - media
+  - media
   - monitoring
   - networking
   # - sites

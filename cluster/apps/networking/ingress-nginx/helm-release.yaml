@@ -109,9 +109,9 @@ spec:
       resources:
         requests:
           cpu: 10m
-          memory: 250Mi
+          memory: 400Mi
         limits:
-          memory: 500Mi
+          memory: 800Mi
     # tcp:
     #   "32469": media/plex:32469
     # udp:
