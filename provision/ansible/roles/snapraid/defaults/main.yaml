@@ -12,7 +12,7 @@ file_includes: []
 # exclude hidden files (nohidden)
 file_exclude_hidden: false
 
-snapraid_runner_dir: /opt/snapraid-runner
+snapraid_runner_dir: /usr/local/snapraid-runner
 # Write fn to run when runner failed with args:
 # 1 - path to runner
 # 2 - error output

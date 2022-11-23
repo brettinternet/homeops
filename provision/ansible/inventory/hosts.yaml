@@ -10,22 +10,27 @@ all:
               k3s_primary_control_node: true
             baja:
               ansible_host: 10.1.2.18
-            archie:
-              ansible_host: 10.1.2.15
-            pi-0:
-              ansible_host: 10.1.2.10
         worker:
           hosts:
-            pi-1:
-              ansible_host: 10.1.2.11
-            pi-2:
-              ansible_host: 10.1.2.12
-            pi-3:
-              ansible_host: 10.1.2.13
-            # pi-4:
-            #   ansible_host: 10.1.2.14
             harambe:
               ansible_host: 10.1.2.16
+
+    # pi-cluster:
+    #   children:
+    #     master:
+    #       hosts:
+    #         pi-0:
+    #           ansible_host: 10.1.2.10
+    #         pi-1:
+    #           ansible_host: 10.1.2.11
+    #     worker:
+    #       hosts:
+    #         pi-2:
+    #           ansible_host: 10.1.2.12
+    #         pi-3:
+    #           ansible_host: 10.1.2.13
+    #         pi-4:
+    #           ansible_host: 10.1.2.14
 
     remote:
       hosts:

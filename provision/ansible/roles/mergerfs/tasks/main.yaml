@@ -1,5 +1,8 @@
 # https://github.com/trapexit/mergerfs
 # https://aur.archlinux.org/packages/mergerfs
+
+# Maintenance: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
+# Recovery: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/recovery_(mergerfs,snapraid).md
 ---
 - name: Install mergerfs dependencies
   ansible.builtin.include_role:
@@ -15,6 +18,7 @@
     name:
       - fuse2
 
+# https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/setup_(fstab).md
 - name: Add mergerfs to fstab for /mnt/storage
   ansible.builtin.lineinfile:
     state: present

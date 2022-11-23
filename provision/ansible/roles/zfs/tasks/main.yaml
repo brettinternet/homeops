@@ -1,6 +1,9 @@
 # https://wiki.archlinux.org/index.php/ZFS
 # TODO: create snapshots https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
 # https://wiki.archlinux.org/title/ZFS#Automatic_snapshots
+
+# Manual steps:
+# 1. import ZFS pool
 ---
 - name: Check supported distribution
   fail:
@@ -9,7 +12,7 @@
       - This role only supports Arch Linux
   when: ansible_facts['distribution'] | lower != 'archlinux'
 
-- name: Install dependencies
+- name: Install ZFS dependencies
   community.general.pacman:
     state: present
     name:
@@ -17,7 +20,7 @@
       # https://github.com/archzfs/archzfs/issues/464
       - openssl-1.1
 
-- name: Install ZFS dependencies
+- name: Install AUR ZFS dependencies
   ansible.builtin.include_role:
     name: aur
   vars:
@@ -26,6 +29,14 @@
     packages:
       - zfs-dkms
       - zfs-utils
+
+- name: Install latest ZFS automatic snapshot dependencies
+  ansible.builtin.include_role:
+    name: aur
+  vars:
+    state: latest
+    packages:
+      - zfs-auto-snapshot-git
 
 # Ignore packages to only upgrade them explicitly
 - name: Ignore ZFS packages
@@ -43,6 +54,11 @@
 
 - name: Update dependencies
   ansible.builtin.command: "/bin/bash /home/{{ ansible_user }}/update-zfs.sh"
+
+- name: Load 'zfs' kernel module
+  community.general.modprobe:
+    name: zfs
+    state: present
 
 # https://wiki.archlinux.org/title/ZFS#Automatic_Start
 
@@ -69,5 +85,8 @@
     name: zfs.target
     enabled: true
     state: started
-#
-# `zpool import -a` ?
+
+- name: Start/enable weekly snapshot timer
+  ansible.builtin.systemd:
+    name: zfs-auto-snapshot-weekly.timer
+    enabled: true

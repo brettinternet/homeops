@@ -9,7 +9,7 @@
         allow_reboot: false
 
 - hosts:
-    - archie
+    - tars
   become: true
   roles:
     - zfs

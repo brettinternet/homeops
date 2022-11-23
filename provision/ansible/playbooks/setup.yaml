@@ -12,8 +12,8 @@
 - hosts:
     - tars
     - harambe
-    - archie
     - baja
+    # - archie
   become: true
   # TODO: check smart output for disk errors
   # https://wiki.archlinux.org/index.php/S.M.A.R.T.
@@ -88,9 +88,10 @@
         default_direnv_lines:
           - export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
     - cockpit
+    - kubecolor
 
 - hosts:
-    - archie
+    - tars
   become: true
   roles:
     - zfs
@@ -99,4 +100,24 @@
     - harambe
   become: true
   roles:
+    # Manual setup steps required, see role for details
+    - fancontrol
     - mergerfs
+
+- hosts:
+    - baja
+  become: true
+  tasks:
+    - name: Install nvidia packages
+      ansible.builtin.package:
+        state: latest
+        name:
+          - nvidia
+
+    - name: Install AUR nvidia container dependencies
+      ansible.builtin.include_role:
+        name: aur
+      vars:
+        state: latest
+        packages:
+          - nvidia-container-toolkit

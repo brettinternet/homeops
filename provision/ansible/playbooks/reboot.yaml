@@ -1,15 +1,14 @@
 ---
 - hosts:
-    - master
-    - worker
+    # - all
     # - pi-0
     # - pi-1
     # - pi-2
     # - pi-3
     # - pi-4
-    # - archie
     # - harambe
     # - tars
+    # - baja
   gather_facts: false
   become: true
   tasks:

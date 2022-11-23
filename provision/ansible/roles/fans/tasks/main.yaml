@@ -1,0 +1,57 @@
+---
+# Manual steps to take:
+# 1. Add kernel param `acpi_enforce_resources=lax` if necessary, add kernel module `drivetemp`
+#   - https://wiki.archlinux.org/title/lm_sensors#Asus_H97/Z97/Z170/Z370i/X570/B550_motherboards
+#   - https://bugzilla.kernel.org/show_bug.cgi?id=204807
+#   - https://wiki.archlinux.org/title/lm_sensors#S.M.A.R.T._drive_temperature
+# 2. Run `sensors-detect`
+# 3. Run `pwmconfig` for initial setup if necessary for initial config
+# 4. View results with `sensors` and start `fancontrol` service
+
+# TODO: enable absolute paths via scripts
+# https://wiki.archlinux.org/title/Fan_speed_control#Device_paths_have_changed_in_/etc/fancontrol
+
+# TODO: try https://github.com/markusressel/fan2go
+
+- name: Install lm_sensors packages
+  ansible.builtin.package:
+    state: latest
+    name:
+      - lm_sensors
+      - hddtemp
+
+- name: Get disk temperatures
+  ansible.builtin.include_tasks: temp.yaml
+  loop: "{{ disks }}"
+  loop_control:
+    loop_var: disk_path
+  when:
+    - disks is defined
+    - disks | length > 0
+
+- name: Load 'drivetemp' kernel module
+  community.general.modprobe:
+    name: drivetemp
+    state: present
+
+# https://wiki.archlinux.org/title/Kernel_module#systemd
+- name: Load 'drivetemp' kernel module at startup
+  ansible.builtin.lineinfile:
+    path: /etc/modules-load.d/sensors.conf
+    line: drivetemp
+    create: true
+
+# Generate initial config with `pwmconfig`
+# To modify <temp1_input>, explore '/sys/class/hwmon'
+# e.g. cat /sys/class/hwmon/hwmon{0,1,2,3,4}/name
+- name: Write fancontrol config
+  ansible.builtin.copy:
+    content: "{{ fancontrol_content }}"
+    dest: /etc/fancontrol
+  when: fancontrol_content is defined
+
+# https://wiki.archlinux.org/title/Fan_speed_control
+- name: Enable fancontrol.service
+  ansible.builtin.systemd:
+    name: fancontrol.service
+    enabled: true
