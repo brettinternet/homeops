@@ -1,0 +1,98 @@
+# https://kopia.io/docs/installation/#docker-images
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: &app kopia
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.1.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      image: docker.io/kopia/kopia
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      KOPIA_PASSWORD: "none"
+    command: kopia
+    args:
+      - server
+      - --insecure
+      - --address
+      - 0.0.0.0:80
+      # - --metrics-listen-addr
+      # - 0.0.0.0:8080
+      - --without-password
+      - --log-level
+      - debug
+    service:
+      main:
+        ports:
+          http:
+            port: 80
+          # metrics:
+          #   enabled: true
+          #   port: 8080
+    # serviceMonitor:
+    #   main:
+    #     enabled: true
+    #     endpoints:
+    #       - port: metrics
+    #         scheme: http
+    #         path: /metrics
+    #         interval: 1m
+    #         scrapeTimeout: 10s
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: *app
+        subPath:
+          - path: repository.config
+            mountPath: /config/repository.config
+            readOnly: true
+          - path: kopai/snapshots
+      snapshots:
+        enabled: true
+        type: nfs
+        server: "${NFS_BACKUP_ADDR}"
+        path: kopai/snapshots
+        mountPath: /snapshots
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 500Mi
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "nginx"
+        annotations:
+          hajimari.io/enable: "true"
+          hajimari.io/icon: carbon:data-backup
+        hosts:
+          - host: &host "kopia.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    podAnnotations:
+      configmap.reloader.stakater.com/reload: *app

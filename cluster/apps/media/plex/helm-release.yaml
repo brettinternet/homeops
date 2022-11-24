@@ -40,6 +40,11 @@ spec:
     # NOTE: Plex preference options are camelCase and CASE SENSITIVE
     env:
       TZ: ${TIMEZONE}
+      # PLEX_CLAIM:
+      #   valueFrom:
+      #     secretKeyRef:
+      #       name: plex
+      #       key: PLEX_CLAIM
       PLEX_UID: "${SECURITY_CONTEXT_RUN_AS_USER}"
       PLEX_GID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
       # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
@@ -47,13 +52,11 @@ spec:
       # The local IP is also required for direct play with some apps (such as the Apple TV apparently)
       ADVERTISE_IP: "https://plex.${PUBLIC_DOMAIN},http://${METALLB_PLEX_ADDR}:32400"
       ALLOWED_NETWORKS: "10.1.1.0/24,10.1.2.0/24,10.42.0.0/16,10.43.0.0/16"
-      # PLEX_CLAIM:
-      #   valueFrom:
-      #     secretKeyRef:
-      #       name: plex
-      #       key: PLEX_CLAIM
       # Transcoding:
+      # https://github.com/NVIDIA/nvidia-container-runtime#nvidia_visible_devices
       NVIDIA_VISIBLE_DEVICES: all
+      # https://github.com/NVIDIA/nvidia-container-runtime#nvidia_driver_capabilities
+      NVIDIA_DRIVER_CAPABILITIES: all
     # Ports: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
     service:
       main:
@@ -122,8 +125,6 @@ spec:
       transcode:
         enabled: true
         type: emptyDir
-        medium: Memory
-        # sizeLimit: 20Gi
         mountPath: /transcode
       tuner:
         enabled: true
@@ -144,7 +145,6 @@ spec:
           external-dns.home.arpa/enabled: "true"
           # redirect to /web since the plex server doesn't handle this and just returns 401 at root 🤔
           nginx.ingress.kubernetes.io/app-root: /web
-          nginx.ingress.kubernetes.io/backend-protocol: HTTPS
           hajimari.io/enable: "true"
           hajimari.io/icon: plex
         hosts:
@@ -158,15 +158,14 @@ spec:
     runtimeClassName: nvidia
     resources:
       requests:
-        cpu: 4
+        cpu: 2000m
         memory: 2000Mi
         # intel: https://github.com/intel/intel-device-plugins-for-kubernetes
         # nvidia: https://github.com/NVIDIA/k8s-device-plugin
-        nvidia.com/gpu: 1
+        # nvidia.com/gpu: 1
       limits:
-        cpu: 12
         memory: 10000Mi
-        nvidia.com/gpu: 1
+        # nvidia.com/gpu: 1
     nodeSelector:
       feature.node.kubernetes.io/custom-tuner: "true"
       feature.node.kubernetes.io/custom-fast-gpu: "true"

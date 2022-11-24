@@ -23,5 +23,6 @@ resources:
   - snapraid-runner
   - sonarr
   - tdarr
-  # - tautulli
+  - tautulli
+  - xteve
   - youtubedl-material
