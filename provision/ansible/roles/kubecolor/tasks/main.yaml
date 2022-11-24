@@ -1,12 +1,5 @@
 ---
-- name: Create install directory
-  ansible.builtin.file:
-    path: "{{ install_bin_dir }}"
-    state: directory
-    mode: "0755"
-
 - name: Download and unarchive kubecolor
-  become: false
   ansible.builtin.unarchive:
     # https://github.com/hidetatz/kubecolor/releases
     src: "https://github.com/hidetatz/kubecolor/releases/download/v{{ kubecolor_version }}/kubecolor_{{ kubecolor_version }}_Linux_arm64.tar.gz"
@@ -15,14 +8,8 @@
     include:
       - kubecolor
 
-- name: "Add {{ install_bin_dir }} to path"
-  become: false
-  ansible.builtin.lineinfile:
-    path: "/home/{{ ansible_user }}/.profile"
-    line: 'export PATH="$PATH:{{ install_bin_dir }}"'
-
 - name: Alias kubectl with kubecolor
   become: false
   ansible.builtin.lineinfile:
-    path: "/home/{{ ansible_user }}/.profile"
+    path: "/home/{{ ansible_user }}/.envrc"
     line: 'alias kubectl="kubecolor"'

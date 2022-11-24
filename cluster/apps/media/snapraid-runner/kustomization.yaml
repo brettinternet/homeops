@@ -6,9 +6,6 @@ resources:
   - rbac.yaml
 namespace: media
 configMapGenerator:
-  - name: snapraid
-    files:
-      - snapraid.conf
   - name: snapraid-runner
     files:
       - snapraid-runner.conf

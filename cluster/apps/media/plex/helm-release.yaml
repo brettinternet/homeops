@@ -142,6 +142,7 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
+          # nginx.ingress.kubernetes.io/backend-protocol: HTTPS
           external-dns.home.arpa/enabled: "true"
           # redirect to /web since the plex server doesn't handle this and just returns 401 at root 🤔
           nginx.ingress.kubernetes.io/app-root: /web

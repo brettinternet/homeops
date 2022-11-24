@@ -1,3 +1,5 @@
+# Expects snapraid.conf on host at /etc/snapraid.conf (Not defined in configmap anymore so commands work on host with intervention)
+# Also expects `.snapraid.content` file on host at `/var/snapraid/.snapraid.content`
 # MergerFS: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
 # Snapraid: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(snapraid).md
 ---
@@ -38,16 +40,14 @@ spec:
                     curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}"
               volumeMounts:
                 - name: *job
-                  mountPath: /config/snapraid.conf
-                  subPath: snapraid.conf
-                  readOnly: true
-                - name: *job
                   mountPath: /config/snapraid-runner.conf
                   subPath: snapraid-runner.conf
                   readOnly: true
                 - name: *job
                   mountPath: /config/scale-deployments.sh
                   subPath: scale-deployments.sh
+                - name: config
+                  mountPath: /config/snapraid.conf
                 - name: mounts
                   mountPath: /mnt
                 - name: devices
@@ -60,11 +60,6 @@ spec:
                 defaultMode: 0775
                 sources:
                   - configMap:
-                      name: snapraid
-                      items:
-                        - key: snapraid.conf
-                          path: snapraid.conf
-                  - configMap:
                       name: snapraid-runner
                       items:
                         - key: snapraid-runner.conf
@@ -74,6 +69,10 @@ spec:
                       items:
                         - key: scale-deployments.sh
                           path: scale-deployments.sh
+            - name: config
+              hostPath:
+                path: /etc/snapraid.conf
+                type: File
             - name: mounts
               hostPath:
                 path: /mnt
