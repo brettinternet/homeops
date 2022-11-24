@@ -23,5 +23,7 @@ spec:
       repository: nvcr.io/nvidia/k8s-device-plugin
       tag: v0.12.3
     runtimeClassName: nvidia
+    securityContext:
+      privileged: true
     nodeSelector:
       feature.node.kubernetes.io/custom-fast-gpu: "true"
