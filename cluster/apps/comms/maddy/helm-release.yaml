@@ -36,7 +36,7 @@ spec:
       tag: 0.6.2
     env:
       DEBUG: "false"
-      SMTP_PORT: "587"
+      SMTP_PORT: "465"
     envFrom:
       - secretRef:
           name: *app
