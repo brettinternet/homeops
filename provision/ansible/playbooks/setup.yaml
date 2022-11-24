@@ -66,6 +66,7 @@
           - wget
           - man-db
           - less
+          - fd
 
     - name: Install AUR dependencies
       ansible.builtin.include_role:
