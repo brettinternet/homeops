@@ -11,7 +11,7 @@
 - name: Install Snapraid
   ansible.builtin.include_tasks: "install_{{ ansible_facts['distribution'] | lower }}.yaml"
 
-- name: Create host snapraid content directory for '.snapraid.content'
+- name: Create host snapraid content directory for 'snapraid.content'
   ansible.builtin.file:
     path: /var/snapraid
     state: directory

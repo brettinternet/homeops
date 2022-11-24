@@ -1,5 +1,5 @@
 # Expects snapraid.conf on host at /etc/snapraid.conf (Not defined in configmap anymore so commands work on host with intervention)
-# Also expects `.snapraid.content` file on host at `/var/snapraid/.snapraid.content`
+# Also expects `snapraid.content` file on host at `/var/snapraid/snapraid.content`
 # MergerFS: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(mergerfs).md
 # Snapraid: https://github.com/trapexit/backup-and-recovery-howtos/blob/master/docs/maintenance_(snapraid).md
 ---

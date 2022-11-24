@@ -5,6 +5,6 @@ resources:
   - namespace.yaml
   # - api-query
   # - busybox
-  - cuda
+  # - cuda
   # - dnsutils
   # - echo-server
