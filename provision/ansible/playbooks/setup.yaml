@@ -110,4 +110,4 @@
     - baja
   become: true
   roles:
-    - nvidia-k8s
+    - gpu-k8s

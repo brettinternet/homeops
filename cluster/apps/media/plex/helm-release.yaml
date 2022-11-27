@@ -30,7 +30,9 @@ spec:
       namespace: kyverno
     - name: ingress-nginx
       namespace: networking
-    - name: nvidia-device-plugin
+    # - name: nvidia-device-plugin
+    #   namespace: kube-system
+    - name: intel-gpu-plugin
       namespace: kube-system
   values:
     image:
@@ -56,9 +58,9 @@ spec:
       ALLOWED_NETWORKS: "10.1.1.0/24,10.1.2.0/24,10.42.0.0/16,10.43.0.0/16"
       # Transcoding:
       # https://github.com/NVIDIA/nvidia-container-runtime#nvidia_visible_devices
-      NVIDIA_VISIBLE_DEVICES: all
+      # NVIDIA_VISIBLE_DEVICES: all
       # https://github.com/NVIDIA/nvidia-container-runtime#nvidia_driver_capabilities
-      NVIDIA_DRIVER_CAPABILITIES: all
+      # NVIDIA_DRIVER_CAPABILITIES: all
     # Ports: https://support.plex.tv/articles/201543147-what-network-ports-do-i-need-to-allow-through-my-firewall/
     service:
       main:
@@ -158,7 +160,7 @@ spec:
         tls:
           - hosts:
               - *host
-    runtimeClassName: nvidia
+    # runtimeClassName: nvidia
     resources:
       requests:
         cpu: 2000m
@@ -166,10 +168,22 @@ spec:
         # Transcoding: https://support.plex.tv/articles/115002178853-using-hardware-accelerated-streaming/
         # intel: https://github.com/intel/intel-device-plugins-for-kubernetes
         # nvidia: https://github.com/NVIDIA/k8s-device-plugin
+        # gpu.intel.com/i915: 1
         # nvidia.com/gpu: 1
       limits:
         memory: 10000Mi
+        # gpu.intel.com/i915: 1
         # nvidia.com/gpu: 1
-    nodeSelector:
-      feature.node.kubernetes.io/custom-tuner: "true"
-      feature.node.kubernetes.io/custom-nvidia-gpu: "true"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: feature.node.kubernetes.io/custom-tuner
+                  operator: In
+                  values:
+                    - "true"
+                - key: feature.node.kubernetes.io/custom-intel-gpu
+                  operator: In
+                  values:
+                    - "true"

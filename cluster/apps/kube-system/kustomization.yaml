@@ -6,11 +6,11 @@ resources:
   - csi-driver-nfs
   - descheduler
   - goldilocks
-  # - intel-gpu-plugin
+  - intel-gpu-plugin
   - kube-vip
   - metrics-server
   - node-feature-discovery
-  - nvidia-device-plugin
+  # - nvidia-device-plugin
   - reloader
   # - rook-ceph
   # - smarter-device-manager

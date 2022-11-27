@@ -1,7 +1,15 @@
+# https://wiki.archlinux.org/title/intel_graphics
 ---
-- name: Install nvidia packages
+- name: Install intel packages
   ansible.builtin.package:
     state: latest
+    name:
+      - mesa
+
+### DEPRECATE nvidia ###
+- name: Install nvidia packages
+  ansible.builtin.package:
+    state: absent
     name:
       - nvidia
 
@@ -9,7 +17,7 @@
   ansible.builtin.include_role:
     name: aur
   vars:
-    state: latest
+    state: absent
     packages:
       - nvidia-container-toolkit
       - nvidia-container-runtime
@@ -18,6 +26,7 @@
 # https://github.com/k3s-io/k3s/issues/4391
 - name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config
   ansible.builtin.blockinfile:
+    state: absent
     path: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
     block: |
 
