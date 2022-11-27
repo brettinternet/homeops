@@ -18,10 +18,13 @@ spec:
         name: nvidia-device-plugin
         namespace: flux-system
       interval: 15m
+  # https://github.com/NVIDIA/k8s-device-plugin/blob/main/deployments/helm/nvidia-device-plugin/values.yaml
   values:
     image:
       repository: nvcr.io/nvidia/k8s-device-plugin
       tag: v0.12.3
     runtimeClassName: nvidia
+    # securityContext:
+    #   privileged: true
     nodeSelector:
-      feature.node.kubernetes.io/custom-fast-gpu: "true"
+      feature.node.kubernetes.io/custom-nvidia-gpu: "true"

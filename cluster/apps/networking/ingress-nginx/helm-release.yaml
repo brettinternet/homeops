@@ -127,8 +127,9 @@ spec:
         tag: latest
       replicaCount: 1
       extraEnvs:
+        # https://github.com/tarampampam/error-pages#-templates
         - name: TEMPLATE_NAME
-          value: lost-in-space
+          value: connection
         - name: SHOW_DETAILS
           value: "false"
   valuesFrom:

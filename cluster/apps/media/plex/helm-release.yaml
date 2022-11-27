@@ -1,4 +1,6 @@
 # Transcoding: https://support.plex.tv/articles/115002178853-using-hardware-accelerated-streaming/
+# Transcoding problems: strange VAAPI errors which shouldn't occur for nvidia transcodes...
+# `Failed to initialise VAAPI connection: -1 (unknown libva error)`
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -161,6 +163,7 @@ spec:
       requests:
         cpu: 2000m
         memory: 2000Mi
+        # Transcoding: https://support.plex.tv/articles/115002178853-using-hardware-accelerated-streaming/
         # intel: https://github.com/intel/intel-device-plugins-for-kubernetes
         # nvidia: https://github.com/NVIDIA/k8s-device-plugin
         # nvidia.com/gpu: 1
@@ -169,4 +172,4 @@ spec:
         # nvidia.com/gpu: 1
     nodeSelector:
       feature.node.kubernetes.io/custom-tuner: "true"
-      feature.node.kubernetes.io/custom-fast-gpu: "true"
+      feature.node.kubernetes.io/custom-nvidia-gpu: "true"

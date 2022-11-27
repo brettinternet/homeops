@@ -6,6 +6,7 @@ resources:
   - csi-driver-nfs
   - descheduler
   - goldilocks
+  # - intel-gpu-plugin
   - kube-vip
   - metrics-server
   - node-feature-discovery

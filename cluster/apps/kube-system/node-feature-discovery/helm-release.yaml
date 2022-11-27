@@ -49,11 +49,19 @@ spec:
               - device
           # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/overlays/samples/custom-rules
           custom:
-            - name: "fast-gpu"
+            ### GPUs ###
+            # lspci | grep VGA`
+            - name: "nvidia-gpu"
               matchOn:
                 - pciId:
                     vendor: ["10de"]
                     device: ["1c03"]
+            # - name: "intel-gpu"
+            #   matchOn:
+            #     - pciId:
+            #         vendor: ["8086"]
+            #         device: [""]
+            ### Storage ###
             # https://kubernetes-sigs.github.io/node-feature-discovery/v0.11/get-started/features.html?highlight=ssd#storage
             # - feature: storage.device
             #   matchExpressions:
@@ -61,6 +69,7 @@ spec:
             # - feature: storage.device
             #   matchExpressions:
             #     rotational: {op: In, value: ["0"]}
+            ### Devices ###
             # https://github.com/walthowd/husbzb-firmware
             # Bus 001 Device 002: ID 10c4:8a2a Silicon Labs HubZ Smart Home Controller
             - name: "zwave"
