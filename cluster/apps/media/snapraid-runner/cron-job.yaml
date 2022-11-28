@@ -86,4 +86,4 @@ spec:
                 path: /var/snapraid
                 type: Directory
           nodeSelector:
-            kubernetes.io/hostname: "${MEDIA_HOSTNAME}"
+            kubernetes.io/hostname: "${MEDIA_STORAGE_HOSTNAME}"
