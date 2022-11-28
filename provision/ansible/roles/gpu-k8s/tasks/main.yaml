@@ -1,44 +1,60 @@
 # https://wiki.archlinux.org/title/intel_graphics
 ---
-- name: Install intel packages
-  ansible.builtin.package:
-    state: latest
-    name:
-      - mesa
+- name: Check supported distribution
+  fail:
+    msg:
+      - "Unsupported distribution: {{ ansible_facts['distribution'] | lower }}"
+      - This role only supports Arch Linux
+  when: ansible_facts['distribution'] | lower != 'archlinux'
 
-### DEPRECATE nvidia ###
-- name: Install nvidia packages
-  ansible.builtin.package:
-    state: absent
-    name:
-      - nvidia
+- name: Look for nvidia GPU
+  ansible.builtin.command: lspci | grep -i nvidia
+  register: lspci_nvidia_result
 
-- name: Install AUR nvidia container dependencies
-  ansible.builtin.include_role:
-    name: aur
-  vars:
-    state: absent
-    packages:
-      - nvidia-container-toolkit
-      - nvidia-container-runtime
+- block:
+    - name: Install intel packages
+      ansible.builtin.package:
+        state: latest
+        name:
+          - mesa
+  when:
+    - "'intel' in ansible_processor | select('match', '.*CPU.*') | list | unique | first | lower"
+    - lspci_nvidia_result.rc == 1
 
-# https://github.com/NVIDIA/k8s-device-plugin#configure-containerd
-# https://github.com/k3s-io/k3s/issues/4391
-- name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config
-  ansible.builtin.blockinfile:
-    state: absent
-    path: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
-    block: |
+- block:
+    - name: Install nvidia packages
+      ansible.builtin.package:
+        state: latest
+        name:
+          - nvidia
 
-      [plugins."io.containerd.grpc.v1.cri"]
-        [plugins."io.containerd.grpc.v1.cri".containerd]
-          default_runtime_name = "nvidia"
+    - name: Install AUR nvidia container dependencies
+      ansible.builtin.include_role:
+        name: aur
+      vars:
+        state: latest
+        packages:
+          - nvidia-container-toolkit
+          - nvidia-container-runtime
 
-          [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
-            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
-              privileged_without_host_devices = false
-              runtime_engine = ""
-              runtime_root = ""
-              runtime_type = "io.containerd.runc.v2"
-              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
-                BinaryName = "/usr/bin/nvidia-container-runtime"
+    # https://github.com/NVIDIA/k8s-device-plugin#configure-containerd
+    # https://github.com/k3s-io/k3s/issues/4391
+    - name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config
+      ansible.builtin.blockinfile:
+        path: /var/lib/rancher/k3s/agent/etc/containerd/config.toml
+        block: |
+
+          [plugins."io.containerd.grpc.v1.cri"]
+            [plugins."io.containerd.grpc.v1.cri".containerd]
+              default_runtime_name = "nvidia"
+
+              [plugins."io.containerd.grpc.v1.cri".containerd.runtimes]
+                [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia]
+                  privileged_without_host_devices = false
+                  runtime_engine = ""
+                  runtime_root = ""
+                  runtime_type = "io.containerd.runc.v2"
+                  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
+                    BinaryName = "/usr/bin/nvidia-container-runtime"
+  when:
+    - lspci_nvidia_result.rc == 0

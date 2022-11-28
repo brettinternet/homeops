@@ -67,7 +67,7 @@ spec:
       - effect: NoExecute
         operator: Exists
     nodeSelector:
-      kubernetes.io/hostname: "${FAST_TANK_HOSTNAME}"
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -125,4 +125,61 @@ spec:
       - effect: NoExecute
         operator: Exists
     nodeSelector:
-      kubernetes.io/hostname: harambe
+      kubernetes.io/hostname: "${MEDIA_STORAGE_HOSTNAME}"
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nfs-pond
+  namespace: networking
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.0.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    image:
+      repository: docker.io/itsthenetwork/nfs-server-alpine
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      SHARED_DIRECTORY: /data
+    service:
+      main:
+        enabled: true
+        clusterIP: "${NFS_POND_CLUSTERIP}"
+        ports:
+          http:
+            port: 2049
+    persistence:
+      data:
+        enabled: true
+        mountPath: /data
+        type: hostPath
+        hostPath: "${NFS_POND_DIR}"
+    securityContext:
+      # capabilities didn't work on this node
+      capabilities:
+        add: ["SYS_ADMIN", "SETPCAP"]
+    priorityClassName: system-cluster-critical
+    tolerations:
+      - effect: NoSchedule
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+    nodeSelector:
+      kubernetes.io/hostname: "${POND_STORAGE_HOSTNAME}"

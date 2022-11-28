@@ -30,8 +30,7 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      RUN_ON_STARTUP: "true"
-      BACKUP_CRON: "0 0 0 * * *"
+      BACKUP_CRON: "0 0 1 * * *"
       # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
       RESTIC_BACKUP_SOURCES: /data
       RESTIC_BACKUP_ARGS: >-
@@ -44,49 +43,34 @@ spec:
         --keep-daily 7
         --keep-weekly 5
         --keep-monthly 12
+      RESTIC_REPOSITORY: /backup
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The local restic backup failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic backup failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}"
     envFrom:
       - secretRef:
-          name: restic-local
+          name: &secret restic-local
     service:
       main:
         enabled: false
     securityContext:
-      # privileged: true
       capabilities:
         add: ["SYS_ADMIN"]
     persistence:
       data:
         enabled: true
         existingClaim: appdata
-        subPath:
-          # TODO: target specific subdirectories
-          # - path: rclone/rclone.conf
-          #   mountPath: /run/secrets/rclone.conf
-            # readOnly: true
-          - path: espial
-            mountPath: /data/espial
-            readOnly: true
-          - path: miniflux_db
-            mountPath: /data/miniflux_db
-            readOnly: true
-          - path: nzbget
-            mountPath: /data/nzbget
-            readOnly: true
-          - path: paperless
-            mountPath: /data/paperless
-            readOnly: true
-          - path: paperless_db
-            mountPath: /data/paperless_db
-            readOnly: true
-          - path: valheim/saves
-            mountPath: /data/valheim/saves
-            readOnly: true
-          - path: valheim2/saves
-            mountPath: /data/valheim2/saves
-            readOnly: true
+        mountPath: /data/appdata
       # https://github.com/djmaze/resticker#using-restic-mount
+      backup:
+        enabled: true
+        existingClaim: backup
+        subPath: cluster-restic
+        mountPath: /backup
       fuse:
         enabled: true
         mountPath: /dev/fuse
@@ -94,7 +78,7 @@ spec:
         hostPath: /dev/fuse
         readOnly: true
     podAnnotations:
-      secret.reloader.stakater.com/reload: restic-local
+      secret.reloader.stakater.com/reload: *secret
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -130,17 +114,29 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      PRUNE_CRON: "0 0 2 * * *"
+      PRUNE_CRON: "0 0 3 * * *"
+      RESTIC_REPOSITORY: /backup
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The local restic prune failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic prune failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}"
     envFrom:
       - secretRef:
-          name: restic-local
+          name: &secret restic-local
+    persistence:
+      backup:
+        enabled: true
+        existingClaim: backup
+        subPath: cluster-restic
+        mountPath: /backup
     service:
       main:
         enabled: false
     podAnnotations:
-      secret.reloader.stakater.com/reload: restic-local
+      secret.reloader.stakater.com/reload: *secret
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -176,103 +172,28 @@ spec:
     # https://github.com/djmaze/resticker#configuration-options
     env:
       TZ: "${TIMEZONE}"
-      CHECK_CRON: "0 0 4 * * *"
+      CHECK_CRON: "0 0 5 * * *"
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
+      RESTIC_REPOSITORY: /backup
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -s -d "The local restic check failed" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -s -d "The local restic check failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy.comms.svc.cluster.local/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}"
     envFrom:
       - secretRef:
-          name: restic-local
+          name: &secret restic-local
+    persistence:
+      backup:
+        enabled: true
+        existingClaim: backup
+        subPath: cluster-restic
+        mountPath: /backup
     service:
       main:
         enabled: false
     podAnnotations:
-      secret.reloader.stakater.com/reload: restic-local
-
----
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: restic-minio
-  namespace: backup
-spec:
-  interval: 15m
-  chart:
-    spec:
-      chart: app-template
-      version: 1.0.1
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
-  values:
-    image:
-      repository: quay.io/minio/minio
-      tag: RELEASE.2022-09-07T22-25-02Z
-    env:
-      TZ: "${TIMEZONE}"
-      MINIO_UPDATE: "off"
-      MINIO_SERVER_URL: "https://restic-s3.${PUBLIC_DOMAIN}"
-      # MINIO_PROMETHEUS_URL: http://prometheus-prometheus.monitoring.svc.cluster.local:9090
-      # MINIO_PROMETHEUS_JOB_ID: minio
-      # MINIO_BROWSER_REDIRECT_URL: "https://restic-s3.${PUBLIC_DOMAIN}"
-      # MINIO_IDENTITY_OPENID_CONFIG_URL: "https://auth.${PUBLIC_DOMAIN}/.well-known/openid-configuration"
-      # MINIO_IDENTITY_OPENID_CLIENT_ID: thanos-minio
-      # MINIO_IDENTITY_OPENID_CLIENT_SECRET: "${THANOS_MINIO_OAUTH_CLIENT_SECRET}"
-      # MINIO_IDENTITY_OPENID_SCOPES: "openid,profile,email"
-      # MINIO_IDENTITY_OPENID_REDIRECT_URI: "https://thanos-s3.${PUBLIC_DOMAIN}/oauth_callback"
-    envFrom:
-      - secretRef:
-          name: thanos-minio
-    args:
-      - server
-      - /data
-      - --address
-      - :9000
-      - --console-address
-      - :9001
-    service:
-      main:
-        enabled: true
-        ports:
-          http:
-            enabled: true
-            port: 9001
-          api:
-            enabled: true
-            port: 9000
-    ingress:
-      main:
-        enabled: true
-        ingressClassName: nginx
-        annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: pail
-        hosts:
-          - host: &host "restic-s3.${PUBLIC_DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - *host
-    podSecurityContext:
-      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
-      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
-    # persistence:
-    #   data:
-    #     enabled: true
-    #     existingClaim: appdata
-    #     mountPath: /data
-    #     subPath: restic_s3
-    podAnnotations:
-      secret.reloader.stakater.com/reload: restic-local
-    # resources:
-    #   requests:
-    #     cpu: 22m
-    #     memory: 1500M
-    #   limits:
-    #     # cpu: 49m
-    #     memory: 2000M
+      secret.reloader.stakater.com/reload: *secret

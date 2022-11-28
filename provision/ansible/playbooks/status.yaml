@@ -30,6 +30,7 @@
           - "Distribution version: {{ ansible_distribution_version }}"
           - "Host network CIDR: {{ (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}"
           - "Distribution: {{ ansible_facts['distribution'] }}"
+          - "Processor: {{ ansible_processor | select('match', '.*CPU.*') | list | unique | first }}"
           - "k3s.service: {{ k3s_service_result.status.ActiveState }}"
           - "Reboot required: {{ reboot_required }}"
 

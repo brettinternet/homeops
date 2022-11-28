@@ -93,6 +93,7 @@
 
 - hosts:
     - tars
+    - baja
   become: true
   roles:
     - zfs
