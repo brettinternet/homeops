@@ -108,8 +108,8 @@ The Renovate bot will help find updates for charts and images. [Install Renovate
 ### Memory
 
 - [Why use ECC](https://danluu.com/why-ecc/) ([discussion](https://news.ycombinator.com/item?id=14206635))
-- > [If you love your data, use ECC RAM.](https://arstechnica.com/civis/viewtopic.php?f=2&t=1235679&p=26303271#p26303271)
-- > [Error rates increase rapidly with rising altitude.](https://en.wikipedia.org/wiki/ECC_memory#Description)
+- [If you love your data, use ECC RAM.](https://arstechnica.com/civis/viewtopic.php?f=2&t=1235679&p=26303271#p26303271)
+- [Error rates increase rapidly with rising altitude.](https://en.wikipedia.org/wiki/ECC_memory#Description)
 
 ### Storage
 
@@ -185,16 +185,6 @@ You must also include an entry for the MergerFS union, such as:
 See also [perfectmediaserver: MergerFS](https://perfectmediaserver.com/installation/manual-install/#mergerfs)
 
 Remember, for data that's irreplaceable [RAID is _not_ a backup](https://www.raidisnotabackup.com/).
-
-#### mkinitcpio
-
-Be sure to add `zfs` and `resume`.
-
-```
-HOOKS=(base udev autodetect modconf block filesystems keyboard zfs resume fsck)
-```
-
-Then, [regenerate the image](https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation).
 
 #### ZFS
 
