@@ -12,6 +12,7 @@ resources:
   # - cyberchef
   - esphome
   - espial
+  # - foldingathome
   - frigate
   # - ghostfolio
   - hajimari
