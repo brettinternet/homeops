@@ -61,5 +61,5 @@ spec:
         tls:
           - hosts:
               - *host
-    podAnnotations:
-      set-downloads-gateway: "true"
+    # podAnnotations:
+    #   set-downloads-gateway: "true"
