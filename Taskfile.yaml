@@ -34,7 +34,6 @@ tasks:
       - task: precommit:init
       - task: precommit:update
       - task: setup-age
-      - task: create-env
       - echo "Next, install python dependencies with 'task python'"
 
   python:
@@ -46,13 +45,6 @@ tasks:
             echo "You may want to activate a python virtual environment before installing the python dependencies.
         Pass 'force' as argument to continue anyway (e.g. task python -- force)."
     silent: true
-
-  create-env:
-    cmds:
-      - cp example.env .env
-      - printf "\x1B[01;93m✔ .env created\n\x1B[0m"
-    status:
-      - test -f .env
 
   setup-age:
     cmds:
