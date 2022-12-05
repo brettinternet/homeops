@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: tautulli
+  name: &app tautulli
   namespace: media
 spec:
   interval: 15m
@@ -34,6 +34,7 @@ spec:
       TZ: "${TIMEZONE}"
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
       PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+    hostname: *app
     service:
       main:
         ports:
