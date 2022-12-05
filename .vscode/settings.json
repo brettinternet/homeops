@@ -4,8 +4,6 @@
     "*.json5": "jsonc",
     "**/provision/ansible/**/*.yaml": "ansible",
     "**/provision/terraform/**/*.tf": "terraform",
-    ".env": "shellscript",
-    "example.env": "shellscript",
     "**/cluster/**/*.sops.toml": "plaintext"
   },
   "prettier.configPath": ".github/linters/.prettierrc.yaml",
