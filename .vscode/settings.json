@@ -12,5 +12,6 @@
     "Kubernetes": "cluster/*.yaml"
   },
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": "active"
+  "editor.guides.bracketPairs": "active",
+  "ansible.ansibleLint.path": "$HOME/.virtualenvs/linux/bin/ansible-lint"
 }
