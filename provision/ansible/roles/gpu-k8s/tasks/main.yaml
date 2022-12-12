@@ -9,6 +9,7 @@
 
 - name: Look for nvidia GPU
   ansible.builtin.command: lspci | grep -i nvidia
+  ignore_errors: true
   register: lspci_nvidia_result
 
 - block:
