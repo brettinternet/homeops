@@ -120,3 +120,8 @@ tasks:
       - task: certificates
       - task: ingresses
       - task: pods
+
+  scale:
+    desc: Scale down an entire namespace
+    cmds:
+      - kubectl scale deployment --replicas ${REPLICAS:-0} --all -n ${NAMESPACE:-default}
