@@ -20,6 +20,7 @@ resources:
   - qbittorrent
   - radarr
   - readarr
+  - sabnzbd
   - snapraid-runner
   - sonarr
   - tdarr

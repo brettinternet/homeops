@@ -1,11 +1,11 @@
-# ABDANDONWARE: GOOD NIGHT SWEET PRINCE
-
-# https://github.com/linuxserver/docker-nzbget
+# https://github.com/linuxserver/docker-sabnzbd
+# provider map: https://upload.wikimedia.org/wikipedia/commons/7/7d/Usenet_Providers_and_Backbones.svg
+# provider wiki: https://www.reddit.com/r/usenet/wiki/providers#wiki_provider_map
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: nzbget
+  name: sabnzbd
   namespace: media
 spec:
   interval: 15m
@@ -25,13 +25,10 @@ spec:
   upgrade:
     remediation:
       retries: 5
-  dependsOn:
-    - name: ingress-nginx
-      namespace: networking
   values:
     image:
-      # https://hub.docker.com/r/linuxserver/nzbget
-      repository: lscr.io/linuxserver/nzbget
+      # https://hub.docker.com/r/linuxserver/sabnzbd
+      repository: lscr.io/linuxserver/sabnzbd
       tag: latest
       pullPolicy: IfNotPresent
     env:
@@ -42,18 +39,22 @@ spec:
       main:
         ports:
           http:
-            port: 6789
+            port: 8080
     persistence:
       config:
         enabled: true
         existingClaim: appdata
         mountPath: /config
-        subPath: nzbget
+        subPath: sabnzbd
       media:
         enabled: true
         existingClaim: media
-        mountPath: /data/usenet
-        subPath: usenet
+        subPath:
+          # TODO: archive nzbget and move usenet_sab -> usenet
+          - path: usenet_sab/downloads
+            mountPath: /downloads
+          - path: usenet_sab/incomplete
+            mountPath: /incomplete-downloads
     ingress:
       main:
         enabled: true
@@ -62,7 +63,7 @@ spec:
           hajimari.io/enable: "true"
           hajimari.io/icon: download-circle
         hosts:
-          - host: &host nzbget.${PUBLIC_DOMAIN}
+          - host: &host nzb.${PUBLIC_DOMAIN}
             paths:
               - path: /
                 pathType: Prefix
