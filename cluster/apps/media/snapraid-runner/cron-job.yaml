@@ -36,8 +36,10 @@ spec:
                     curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}/fail"
                 - name: POST_COMMANDS_SUCCESS
                   value: |-
-                    bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1"
                     curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks.monitoring.svc.cluster.local/ping/${HEALTHCHECKS_SNAPRAID_RUNNER_UUID}"
+                - name: POST_COMMANDS_EXIT
+                  value: |-
+                    bash /config/scale-deployments.sh "sonarr,radarr,readarr,audiobookshelf,youtubedl,bazarr" "1"
               volumeMounts:
                 - name: *job
                   mountPath: /config/snapraid-runner.conf
