@@ -17,6 +17,7 @@ resources:
   # - ghostfolio
   - hajimari
   - home-assistant
+  - homebox
   # - libreoffice
   - linkding
   - lldap
