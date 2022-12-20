@@ -12,7 +12,6 @@ resources:
   - calibre-web
   - filebrowser
   # - jellyfin
-  # - nzbget
   - openbooks
   - overseerr
   - plex

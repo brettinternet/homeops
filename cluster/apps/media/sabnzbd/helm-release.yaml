@@ -46,12 +46,11 @@ spec:
         existingClaim: appdata
         mountPath: /config
         subPath: sabnzbd
-      # TODO: archive nzbget and move usenet_sab -> usenet
       media:
         enabled: true
         existingClaim: media
         mountPath: /data/usenet
-        subPath: usenet_sab
+        subPath: usenet
     ingress:
       main:
         enabled: true
