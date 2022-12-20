@@ -12,7 +12,7 @@ spec:
     spec:
       # renovate: registryUrl=https://nvidia.github.io/k8s-device-plugin
       chart: nvidia-device-plugin
-      version: 0.12.3
+      version: 0.13.0
       sourceRef:
         kind: HelmRepository
         name: nvidia-device-plugin
@@ -22,7 +22,7 @@ spec:
   values:
     image:
       repository: nvcr.io/nvidia/k8s-device-plugin
-      tag: v0.12.3
+      tag: v0.13.0
     runtimeClassName: nvidia
     nodeSelector:
       feature.node.kubernetes.io/custom-nvidia-gpu: "true"
