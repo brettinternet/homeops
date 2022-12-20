@@ -12,7 +12,7 @@ resources:
   - calibre-web
   - filebrowser
   # - jellyfin
-  - nzbget
+  # - nzbget
   - openbooks
   - overseerr
   - plex
