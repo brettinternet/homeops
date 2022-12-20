@@ -68,6 +68,10 @@ spec:
         enabled: true
         existingClaim: shared
         mountPath: /data/shared
+      media:
+        enabled: true
+        existingClaim: media
+        mountPath: /data/media
     ingress:
       main:
         enabled: true
