@@ -67,7 +67,8 @@
           - man-db
           - less
           - fd
-          - ncdu
+          - gdu
+          - bottom
 
     - name: Install AUR dependencies
       ansible.builtin.include_role:
