@@ -7,10 +7,10 @@
       - This role only supports Arch Linux
   when: ansible_facts['distribution'] | lower != 'archlinux'
 
-- name: Look for nvidia GPU
-  ansible.builtin.command: lspci | grep -i nvidia
-  ignore_errors: true
-  register: lspci_nvidia_result
+# - name: Look for nvidia GPU
+#   ansible.builtin.command: lspci | grep -i nvidia
+#   ignore_errors: true
+#   register: lspci_nvidia_result
 
 - block:
     - name: Install intel packages
@@ -20,7 +20,7 @@
           - mesa
   when:
     - "'intel' in ansible_processor | select('match', '.*CPU.*') | list | unique | first | lower"
-    - lspci_nvidia_result.rc == 1
+    # - lspci_nvidia_result.rc == 1
 
 - block:
     - name: Install nvidia packages
@@ -58,4 +58,5 @@
                   [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.nvidia.options]
                     BinaryName = "/usr/bin/nvidia-container-runtime"
   when:
-    - lspci_nvidia_result.rc == 0
+    - false
+    # - lspci_nvidia_result.rc == 0
