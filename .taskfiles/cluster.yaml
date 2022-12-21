@@ -124,4 +124,4 @@ tasks:
   scale:
     desc: Scale down an entire namespace
     cmds:
-      - kubectl scale deployment --replicas ${REPLICAS:-0} --all -n ${NAMESPACE:-default}
+      - kubectl scale deployment --replicas ${REPLICAS:-1} --all -n ${NAMESPACE:-default}
