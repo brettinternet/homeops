@@ -108,6 +108,7 @@
     - fans
     - snapraid
     - mergerfs
+    - smart
 
 - hosts:
     - baja
