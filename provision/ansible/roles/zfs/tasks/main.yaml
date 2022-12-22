@@ -117,7 +117,7 @@
     enabled: true
     state: started
 
-- name: Get zpool status
+- name: Get zpool status with trim progress
   ansible.builtin.command: "zpool status -t {{ zpool }}"
   register: status_result
 
