@@ -1,0 +1,11 @@
+[Unit]
+Description=zpool trim on %i
+
+[Service]
+Nice=19
+IOSchedulingClass=idle
+KillSignal=SIGINT
+ExecStart=/usr/bin/zpool trim %i
+
+[Install]
+WantedBy=multi-user.target

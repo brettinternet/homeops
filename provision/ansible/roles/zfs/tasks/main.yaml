@@ -80,6 +80,8 @@
     enabled: true
     state: started
 
+# Maintenance jobs
+
 - name: Start/enable zfs target
   ansible.builtin.systemd:
     name: zfs.target
@@ -90,3 +92,36 @@
   ansible.builtin.systemd:
     name: zfs-auto-snapshot-weekly.timer
     enabled: true
+
+# Source: https://wiki.archlinux.org/title/ZFS#Start_with_a_service_or_timer
+- name: Copy scrub timer and service unit files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: "0755"
+  with_items:
+    - zfs-scrub@.timer
+    - zfs-scrub@.service
+
+- name: Start/enable zfs scrub timer
+  ansible.builtin.systemd:
+    name: "zfs-scrub@{{ zpool }}.timer"
+    enabled: true
+    state: started
+
+- name: Start/enable zfs trim timer
+  ansible.builtin.systemd:
+    name: "zfs-trim@{{ zpool }}.timer"
+    enabled: true
+    state: started
+
+- name: Get zpool status
+  ansible.builtin.command: "zpool status -t {{ zpool }}"
+  register: status_result
+
+- name: Log zpool status result
+  ansible.builtin.debug:
+    msg:
+      - "{{ status_result.stdout }}"
