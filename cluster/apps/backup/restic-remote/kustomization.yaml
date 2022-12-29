@@ -6,3 +6,6 @@ resources:
   - helm-release.yaml
   ### JOB: ###
   # - restore-job.yaml
+
+# TODO: backup with snapshots
+# https://wiki.archlinux.org/title/ZFS#Automatic_snapshots
