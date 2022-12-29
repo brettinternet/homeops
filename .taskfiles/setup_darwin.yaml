@@ -16,6 +16,7 @@ tasks:
         cloudflare/cloudflare/cloudflared
         fluxcd/tap/flux
         go-task/tap/go-task
+        kubescape/tap/kubescape-cli
         helm
         kubernetes-cli
         kustomize
@@ -31,6 +32,7 @@ tasks:
 # cloudflare/cloudflare/cloudflared: Cloudflared tunnel credentials
 # fluxcd/tap/flux: cluster reconciliation
 # go-task/tap/go-task: Task runner
+# kubescape https://github.com/kubescape/kubescape
 # helm: Deployment charts
 # kubernetes-cli
 # kustomize: Define k8s manifests
