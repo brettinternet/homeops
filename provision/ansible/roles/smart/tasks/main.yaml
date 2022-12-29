@@ -8,16 +8,15 @@
   # source: https://gist.github.com/tommybutler/7592005
   ansible.builtin.shell: |
     #!/bin/bash
-    if sudo true
-    then
+
+    if sudo true; then
       true
     else
       echo 'Root privileges required'
       exit 1
     fi
 
-    for drive in /dev/sd[a-z] /dev/sd[a-z][a-z]
-    do
+    for drive in /dev/sd[a-z] /dev/sd[a-z][a-z]; do
       if [[ ! -e $drive ]]; then continue; fi
       echo -n "$drive "
       smart=$(
