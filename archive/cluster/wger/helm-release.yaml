@@ -72,13 +72,13 @@ spec:
         annotations:
           hajimari.io/enable: "true"
           hajimari.io/icon: weight-lifter
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            location /static/ {
-              alias /wger/static/;
-            }
-            location /media/ {
-              alias /wger/media/;
-            }
+          # nginx.ingress.kubernetes.io/configuration-snippet: |
+          #   location /static/ {
+          #     alias /wger/static/;
+          #   }
+          #   location /media/ {
+          #     alias /wger/media/;
+          #   }
         hosts:
           - host: &host "workout.${PUBLIC_DOMAIN}"
             paths:
