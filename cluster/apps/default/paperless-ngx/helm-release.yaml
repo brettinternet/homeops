@@ -10,7 +10,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.0.1
+      version: 1.2.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -110,7 +110,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.0.1
+      version: 1.2.0
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -167,7 +167,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.0.1
+      version: 1.2.0
       interval: 15m
       sourceRef:
         kind: HelmRepository
@@ -210,7 +210,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.0.1
+      version: 1.2.0
       interval: 15m
       sourceRef:
         kind: HelmRepository
@@ -242,7 +242,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 1.0.1
+      version: 1.2.0
       interval: 15m
       sourceRef:
         kind: HelmRepository
