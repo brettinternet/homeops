@@ -34,7 +34,7 @@ resources:
   - shlink
   - unifi
   # - webtop
-  # - wger
+  - wger
   - whoogle
   # - wikijs
   - zwavejs2mqtt

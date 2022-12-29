@@ -39,7 +39,7 @@ spec:
       DJANGO_DB_ENGINE: django.db.backends.postgresql
       DJANGO_DB_DATABASE: wger
       DJANGO_DB_USER: wger
-      DJANGO_DB_HOST: wger
+      DJANGO_DB_HOST: wger-postgres.default.svc.cluster.local
       DJANGO_DB_PORT: 5432
       FROM_EMAIL: "${SMTP_USER}"
       SITE_URL: "workout.${PUBLIC_DOMAIN}"
