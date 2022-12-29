@@ -1,6 +1,6 @@
 # https://wiki.archlinux.org/index.php/ZFS
-# TODO: create snapshots https://docs.ansible.com/ansible/latest/collections/community/general/zfs_module.html
-# https://wiki.archlinux.org/title/ZFS#Automatic_snapshots
+
+# TODO: add zed alert https://github.com/openzfs/zfs/blob/master/cmd/zed/zed.d/zed.rc
 
 # Manual steps:
 # 1. import ZFS pool
