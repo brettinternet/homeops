@@ -10,3 +10,5 @@ resources:
   - restic-local
   - restic-remote
   # - restored-pvc.yaml
+
+# TODO: backup email - https://spiderd.io/docs/install-docker.html
