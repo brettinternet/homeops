@@ -26,8 +26,8 @@ spec:
   dependsOn:
     - name: kyverno
       namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
+    - name: wger-postgres
+      namespace: default
   values:
     image:
       # https://hub.docker.com/r/wger/server
@@ -70,9 +70,15 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          external-dns.home.arpa/enabled: "true"
           hajimari.io/enable: "true"
           hajimari.io/icon: weight-lifter
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            location /static/ {
+              alias /wger/static/;
+            }
+            location /media/ {
+              alias /wger/media/;
+            }
         hosts:
           - host: &host "workout.${PUBLIC_DOMAIN}"
             paths:
@@ -113,12 +119,12 @@ spec:
       tag: "14"
     env:
       POSTGRES_USER: wger
+      POSTGRES_DB: wger
       POSTGRES_PASSWORD:
         valueFrom:
           secretKeyRef:
             name: wger
             key: DJANGO_DB_PASSWORD
-      POSTGRES_DB: wger
       PGDATA: /var/lib/postgresql/data
     podSecurityContext:
       runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
@@ -129,13 +135,12 @@ spec:
         ports:
           http:
             port: 5432
-            protocol: TCP
     persistence:
       data:
         enabled: true
         mountPath: /var/lib/postgresql/data
         existingClaim: appdata
         subPath: wger_db
-    # healthcheck: pg_isready -U wger
     podAnnotations:
       secret.reloader.stakater.com/reload: wger
+    # healthcheck: pg_isready -U wger
