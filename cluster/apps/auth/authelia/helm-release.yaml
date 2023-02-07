@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: &app authelia
-  namespace: default
+  namespace: auth
 spec:
   interval: 15m
   chart:
@@ -29,11 +29,11 @@ spec:
     - name: ingress-nginx
       namespace: networking
     - name: lldap
-      namespace: default
+      namespace: auth
     - name: authelia-postgres
-      namespace: default
+      namespace: auth
     - name: authelia-redis
-      namespace: default
+      namespace: auth
   values:
     controller:
       replicas: 1
@@ -175,7 +175,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: authelia-postgres
-  namespace: default
+  namespace: auth
 spec:
   interval: 15m
   chart:
@@ -237,7 +237,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: authelia-redis
-  namespace: default
+  namespace: auth
 spec:
   interval: 15m
   chart:

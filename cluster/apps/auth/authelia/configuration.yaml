@@ -14,13 +14,13 @@ server:
 session:
   domain: "${PUBLIC_DOMAIN}"
   redis:
-    host: authelia-redis.default.svc.cluster.local
+    host: authelia-redis.auth.svc.cluster.local
     port: 6379
 
 storage:
   postgres:
     username: authelia
-    host: authelia-postgres.default.svc.cluster.local
+    host: authelia-postgres.auth.svc.cluster.local
     database: authelia
     port: 5432
 
@@ -40,7 +40,7 @@ authentication_backend:
   refresh_interval: 1m
   ldap:
     implementation: custom
-    url: ldap://lldap.default.svc.cluster.local:3890
+    url: ldap://lldap.auth.svc.cluster.local:3890
     timeout: 5s
     start_tls: false
     base_dn: dc=home,dc=arpa
