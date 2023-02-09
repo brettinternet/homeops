@@ -118,7 +118,7 @@ spec:
       SMTP_FROM_NAME: Recipes
       SMTP_FROM_EMAIL: "${SMTP_USER}"
       LDAP_AUTH_ENABLED: true
-      LDAP_SERVER_URL: "ldap://lldap.default.svc.cluster.local:3890"
+      LDAP_SERVER_URL: "ldap://lldap.auth.svc.cluster.local:3890"
       LDAP_TLS_INSECURE: true
       LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
       LDAP_BASE_DN: dc=home,dc=arpa
