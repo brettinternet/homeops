@@ -36,6 +36,7 @@ spec:
       - --persist
       - --no-browser-downloads
       - -d /books
+      - --name FX4yiyyZEjNoMg3wHPLZkqfpfTe2
     service:
       main:
         ports:
