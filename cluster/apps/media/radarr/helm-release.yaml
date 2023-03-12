@@ -39,7 +39,7 @@ spec:
       main:
         ports:
           http:
-            port: 7878
+            port: &port 7878
     probes:
       liveness: &probes
         enabled: true
