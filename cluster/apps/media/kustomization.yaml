@@ -16,7 +16,7 @@ resources:
   - overseerr
   - plex
   - prowlarr
-  - qbittorrent
+  # - qbittorrent
   - radarr
   - readarr
   - sabnzbd

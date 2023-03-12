@@ -20,4 +20,4 @@ resources:
   - sites
   - system-upgrade
   # - trivy
-  - vpn
+  # - vpn
