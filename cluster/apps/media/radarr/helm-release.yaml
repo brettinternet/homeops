@@ -30,18 +30,31 @@ spec:
   values:
     image:
     # https://hub.docker.com/r/linuxserver/radarr
-      repository: lscr.io/linuxserver/radarr
-      tag: latest
+      repository: ghcr.io/onedr0p/radarr-develop
+      tag: rolling
       pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     service:
       main:
         ports:
           http:
             port: 7878
+    probes:
+      liveness: &probes
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /ping
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness: *probes
+      startup:
+        enabled: false
     persistence:
       config:
         enabled: true
@@ -69,3 +82,9 @@ spec:
         tls:
           - hosts:
               - *host
+    resources:
+      requests:
+        memory: 250Mi
+        cpu: 50m
+      limits:
+        memory: 2Gi
