@@ -29,7 +29,7 @@ spec:
       namespace: networking
   values:
     image:
-    # https://hub.docker.com/r/linuxserver/radarr
+      # https://github.com/onedr0p/containers/tree/main/apps/radarr
       repository: ghcr.io/onedr0p/radarr-develop
       tag: rolling
       pullPolicy: IfNotPresent

@@ -29,19 +29,35 @@ spec:
       namespace: networking
   values:
     image:
-    # https://hub.docker.com/r/linuxserver/sonarr
-      repository: lscr.io/linuxserver/sonarr
-      tag: latest
+      # https://github.com/onedr0p/containers/tree/main/apps/sonarr
+      repository: ghcr.io/onedr0p/sonarr-develop
+      tag: rolling
       pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     service:
       main:
         ports:
           http:
-            port: 8989
+            port: &port 8989
+    probes:
+      liveness: &probes
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /ping
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness: *probes
+      startup:
+        enabled: false
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     persistence:
       config:
         enabled: true
@@ -69,3 +85,9 @@ spec:
         tls:
           - hosts:
               - *host
+    resources:
+      requests:
+        cpu: 10m
+        memory: 250Mi
+      limits:
+        memory: 2000Mi
