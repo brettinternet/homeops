@@ -17,7 +17,7 @@ resources:
   - media
   - monitoring
   - networking
-  # - sites
+  - sites
   - system-upgrade
   # - trivy
   - vpn

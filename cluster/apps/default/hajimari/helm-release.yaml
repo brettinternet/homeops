@@ -45,7 +45,6 @@ spec:
           - networking
           - kube-system
           - monitoring
-          - mail
           - dev
       title: Homelab
       name: Brett
