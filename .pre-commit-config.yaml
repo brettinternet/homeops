@@ -44,7 +44,7 @@ repos:
       - id: forbid-secrets
         exclude: rbac.yaml
   - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.17
+    rev: v0.1.19
     hooks:
       - id: terraform-fmt
       - id: terraform-validate
