@@ -33,8 +33,6 @@ spec:
       pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
-      AUDIOBOOKSHELF_UID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      AUDIOBOOKSHELF_GID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     service:
       main:
         ports:
