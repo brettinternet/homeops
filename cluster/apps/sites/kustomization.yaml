@@ -5,4 +5,5 @@ resources:
   - namespace.yaml
   - appdata-pvc.yaml
   - landing
+  # - wordgram
   # - strapi
