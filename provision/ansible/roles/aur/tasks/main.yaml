@@ -63,6 +63,7 @@
     aur_only: true
     name: "{{ packages }}"
     state: "{{ state }}"
+    extra_args: "{{ extra_args }}"
   when:
     - packages is defined
     - packages | length > 0

@@ -46,14 +46,17 @@
     insertafter: IgnorePkg
     state: present
 
-- name: Copy updater script
-  ansible.builtin.template:
-    src: update-zfs.sh.j2
-    dest: "/home/{{ ansible_user }}/update-zfs.sh"
-    mode: 0744
-
-- name: Update dependencies
-  ansible.builtin.command: "/bin/bash /home/{{ ansible_user }}/update-zfs.sh"
+# https://github.com/Jguer/yay/issues/1736
+- name: Update ZFS dependencies
+  ansible.builtin.include_role:
+    name: aur
+  vars:
+    # Upgrade with script instead of role directly since both packages must be updated together
+    state: latest
+    packages:
+      - zfs-dkms
+      - zfs-utils
+    extra_args: --batchinstall
 
 - name: Load 'zfs' kernel module
   community.general.modprobe:
