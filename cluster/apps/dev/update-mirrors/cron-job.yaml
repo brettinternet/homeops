@@ -41,6 +41,8 @@ spec:
                   value: https://github.com/brettinternet/mic-mute
                 - name: GIT_REMOTE_9
                   value: https://github.com/brettinternet/provision
+                - name: GIT_REMOTE_10
+                  value: https://github.com/brettinternet/brettinternet.github.io
               command: [node, &path /app/update-mirrors.mjs]
               volumeMounts:
                 - name: *job
