@@ -1,4 +1,3 @@
-# https://github.com/linuxserver/docker-sabnzbd
 # provider map: https://upload.wikimedia.org/wikipedia/commons/7/7d/Usenet_Providers_and_Backbones.svg
 # provider wiki: https://www.reddit.com/r/usenet/wiki/providers#wiki_provider_map
 ---
@@ -27,19 +26,33 @@ spec:
       retries: 5
   values:
     image:
-      # https://hub.docker.com/r/linuxserver/sabnzbd
-      repository: lscr.io/linuxserver/sabnzbd
-      tag: latest
+      # https://github.com/onedr0p/containers/tree/main/apps/sabnzbd
+      repository: ghcr.io/onedr0p/sabnzbd
+      tag: rolling
       pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      SABNZBD__PORT: &port 8080
     service:
       main:
         ports:
           http:
-            port: 8080
+            port: *port
+    probes:
+      liveness: &probes
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /api?mode=version
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness: *probes
+      startup:
+        enabled: false
     persistence:
       config:
         enabled: true
