@@ -31,7 +31,7 @@ spec:
     DNS: 172.16.1.1
     additionalContainers:
       gluetun:
-        image: qmcgaw/gluetun:v3.32.0@sha256:70e2b9fe66941d6de31419c3207b525293f2e6a92a3788869bb337a17e0e5ec8
+        image: qmcgaw/gluetun:v3.33.0@sha256:cadc352ebed5988c9fbc750f2759ea703dc7587f969d70342cc5eff05282024b
         env:
           # https://github.com/qdm12/gluetun/wiki
           VPN_TYPE: wireguard
