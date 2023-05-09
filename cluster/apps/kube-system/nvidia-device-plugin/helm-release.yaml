@@ -12,7 +12,7 @@ spec:
     spec:
       # renovate: registryUrl=https://nvidia.github.io/k8s-device-plugin
       chart: nvidia-device-plugin
-      version: 0.13.0
+      version: 0.14.0
       sourceRef:
         kind: HelmRepository
         name: nvidia-device-plugin
