@@ -15,7 +15,7 @@ spec:
     spec:
       interval: 30m
       chart: pod-gateway
-      version: 6.5.0
+      version: 6.5.1
       sourceRef:
         kind: HelmRepository
         name: pod-gateway
