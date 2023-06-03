@@ -33,7 +33,7 @@ spec:
       strategy: RollingUpdate
     image:
       repository: ghcr.io/foxcpp/maddy
-      tag: 0.6.3
+      tag: 0.7.0
     env:
       DEBUG: "false"
       SMTP_PORT: "465"
