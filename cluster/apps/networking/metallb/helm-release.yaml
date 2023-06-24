@@ -38,7 +38,7 @@ spec:
   chart:
     spec:
       chart: raw
-      version: v0.3.1
+      version: v0.3.2
       sourceRef:
         kind: HelmRepository
         name: dysnix
