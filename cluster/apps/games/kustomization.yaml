@@ -4,6 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  # - valheim
+  - valheim
 
 # https://github.com/awesome-selfhosted/awesome-selfhosted#games
