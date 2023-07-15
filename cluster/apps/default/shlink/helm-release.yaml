@@ -99,6 +99,7 @@ spec:
     # GeoLite2 License in secrets: https://shlink.io/documentation/geolite-license-key/
     env:
       TIMEZONE: "${TIMEZONE}"
+      SHELL_VERBOSITY: 3
       DB_DRIVER: postgres
       DB_HOST: shlink-postgres.default.svc.cluster.local
       DB_NAME: shlink
