@@ -82,8 +82,8 @@ spec:
         annotations:
           auth.home.arpa/enabled: "true"
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: "shield-check"
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: "shield-check"
         hosts:
           - host: &host adguard.${PUBLIC_DOMAIN}
             paths:

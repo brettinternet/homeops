@@ -150,8 +150,8 @@ spec:
           external-dns.home.arpa/enabled: "true"
           # redirect to /web since the plex server doesn't handle this and just returns 401 at root 🤔
           nginx.ingress.kubernetes.io/app-root: /web
-          hajimari.io/enable: "true"
-          hajimari.io/icon: plex
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: plex
         hosts:
           - host: &host plex.${PUBLIC_DOMAIN}
             paths:

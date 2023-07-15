@@ -86,8 +86,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: mdi:television
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: mdi:television
         hosts:
           - host: &host "jellyfin.${PUBLIC_DOMAIN}"
             paths:

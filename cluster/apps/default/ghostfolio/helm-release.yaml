@@ -53,8 +53,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: cash-multiple
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: cash-multiple
         hosts:
           - host: &host "portfolio.${PUBLIC_DOMAIN}"
             paths:

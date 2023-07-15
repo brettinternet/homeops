@@ -81,8 +81,8 @@ spec:
           external-dns.home.arpa/enabled: "true"
           nginx.ingress.kubernetes.io/auth-type: basic
           nginx.ingress.kubernetes.io/auth-secret: ntfy
-          hajimari.io/enable: "true"
-          hajimari.io/icon: bell-outline
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: bell-outline
         hosts:
           - host: &host "ntfy.${PUBLIC_DOMAIN}"
             paths:

@@ -95,8 +95,8 @@ spec:
         ingressClassName: nginx
         annotations:
           nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-          hajimari.io/enable: "true"
-          hajimari.io/icon: lan-pending
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: lan-pending
         hosts:
           - host: &host "unifi.${PUBLIC_DOMAIN}"
             paths:

@@ -64,8 +64,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: healthcheck
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: healthcheck
         hosts:
           - host: &host "healthchecks.${PUBLIC_DOMAIN}"
             paths:

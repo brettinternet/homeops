@@ -78,8 +78,8 @@ spec:
         ingressClassName: "nginx"
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: mdi:files
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: mdi:files
         hosts:
           - host: &host "files.${PUBLIC_DOMAIN}"
             paths:

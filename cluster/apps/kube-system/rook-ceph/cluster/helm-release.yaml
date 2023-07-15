@@ -33,7 +33,7 @@ spec:
       dashboard:
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/icon: "chess-rook"
+          forecastle.stakater.com/icon: "chess-rook"
         host:
           name: &host "rook.${PUBLIC_DOMAIN}"
           path: /

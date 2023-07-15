@@ -75,8 +75,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: movie
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: movie
         hosts:
           - host: &host radarr.${PUBLIC_DOMAIN}
             paths:

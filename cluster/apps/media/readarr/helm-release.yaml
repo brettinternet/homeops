@@ -55,8 +55,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: book-open-variant
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: book-open-variant
         hosts:
           - host: &host readarr.${PUBLIC_DOMAIN}
             paths:

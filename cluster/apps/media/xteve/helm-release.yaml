@@ -87,8 +87,8 @@ spec:
         annotations:
           auth.home.arpa/enabled: "true"
           nginx.ingress.kubernetes.io/app-root: /web
-          hajimari.io/enable: "true"
-          hajimari.io/icon: sports
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: sports
         hosts:
           - host: &host xteve.${PUBLIC_DOMAIN}
             paths:

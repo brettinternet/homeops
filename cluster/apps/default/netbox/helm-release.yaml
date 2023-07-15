@@ -74,8 +74,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: mdi:lan
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: mdi:lan
         hosts:
           - host: &host "netbox.${PUBLIC_DOMAIN}"
             paths:

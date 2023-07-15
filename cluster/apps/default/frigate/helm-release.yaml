@@ -101,8 +101,8 @@ spec:
         ingressClassName: nginx
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: cctv
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: cctv
         hosts:
           - host: &host "video.${PUBLIC_DOMAIN}"
             paths:

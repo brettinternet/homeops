@@ -69,8 +69,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: youtube
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: youtube
         hosts:
           - host: &host "youtube.${PUBLIC_DOMAIN}"
             paths:

@@ -52,8 +52,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: pin
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: pin
         hosts:
           - host: &host "pin.${PUBLIC_DOMAIN}"
             paths:

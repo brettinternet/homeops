@@ -206,8 +206,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: pail
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: pail
         hosts:
           - host: &host "loki-s3.${PUBLIC_DOMAIN}"
             paths:

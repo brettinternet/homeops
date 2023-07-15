@@ -56,8 +56,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: shark
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: shark
         hosts:
           - host: &host "wireshark.${PUBLIC_DOMAIN}"
             paths:

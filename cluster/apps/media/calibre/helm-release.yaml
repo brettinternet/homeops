@@ -71,8 +71,8 @@ spec:
         ingressClassName: "nginx"
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: bookshelf
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: bookshelf
         hosts:
           - host: &host calibre.${PUBLIC_DOMAIN}
             paths:
@@ -85,8 +85,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: book-open-page-variant
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: book-open-page-variant
         hosts:
           - host: &host2 read.${PUBLIC_DOMAIN}
             paths:

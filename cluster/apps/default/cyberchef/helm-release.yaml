@@ -43,8 +43,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: hammer-wrench
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: hammer-wrench
         hosts:
           - host: &host "utils.${PUBLIC_DOMAIN}"
             paths:
