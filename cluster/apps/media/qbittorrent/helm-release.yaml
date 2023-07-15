@@ -66,8 +66,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: download-network
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: download-network
         hosts:
           - host: &host torrent.${PUBLIC_DOMAIN}
             paths:

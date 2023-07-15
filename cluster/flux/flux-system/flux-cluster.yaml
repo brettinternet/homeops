@@ -9,6 +9,11 @@ spec:
   ref:
     branch: main
   url: https://github.com/brettinternet/homelab
+  ignore: |
+    # exclude all
+    /*
+    # include cluster directory
+    !/cluster
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1

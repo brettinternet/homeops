@@ -51,8 +51,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: view-dashboard-edit
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: view-dashboard-edit
         hosts:
           - host: &host prowlarr.${PUBLIC_DOMAIN}
             paths:

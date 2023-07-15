@@ -52,8 +52,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: chip
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: chip
         hosts:
           - host: &host "esphome.${PUBLIC_DOMAIN}"
             paths:

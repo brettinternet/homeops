@@ -56,8 +56,8 @@ spec:
         ingressClassName: nginx
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: network-ping
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: network-ping
         hosts:
           - host: &host "ping.${PUBLIC_DOMAIN}"
             paths:

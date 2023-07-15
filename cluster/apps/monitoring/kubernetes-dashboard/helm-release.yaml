@@ -40,7 +40,7 @@ spec:
       className: nginx
       annotations:
         auth.home.arpa/enabled: "true"
-        hajimari.io/icon: "kubernetes"
+        forecastle.stakater.com/icon: "kubernetes"
       hosts:
         - &host "kubernetes.${PUBLIC_DOMAIN}"
       tls:

@@ -56,8 +56,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: web-check
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: web-check
         hosts:
           - host: &host "status.${PUBLIC_DOMAIN}"
             paths:

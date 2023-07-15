@@ -64,8 +64,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: logos:strapi
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: logos:strapi
         hosts:
           - host: &host "strapi.${PUBLIC_DOMAIN}"
             paths:

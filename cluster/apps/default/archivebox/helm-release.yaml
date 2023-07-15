@@ -67,8 +67,8 @@ spec:
         annotations:
           external-dns.home.arpa/enabled: "true"
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: archive-arrow-down-outline
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: archive-arrow-down-outline
         hosts:
           - host: &host "archive.${PUBLIC_DOMAIN}"
             paths:

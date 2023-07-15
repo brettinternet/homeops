@@ -58,8 +58,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: material-symbols:calendar-add-on
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: material-symbols:calendar-add-on
         hosts:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:
@@ -82,8 +82,8 @@ spec:
         annotations:
           external-dns.home.arpa/enabled: "true"
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: material-symbols:calendar-add-on
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: material-symbols:calendar-add-on
         hosts:
           - host: &host "when.${PUBLIC_DOMAIN}"
             paths:

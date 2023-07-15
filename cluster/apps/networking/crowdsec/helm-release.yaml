@@ -43,8 +43,8 @@ spec:
           annotations:
             # metabase only supports http
             nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
-            hajimari.io/enable: "true"
-            hajimari.io/icon: shield-lock
+            forecastle.stakater.com/expose: "true"
+            forecastle.stakater.com/icon: shield-lock
           ingressClassName: nginx
           host: "crowdsec.${PUBLIC_DOMAIN}"
       persistentVolume:

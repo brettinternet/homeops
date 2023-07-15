@@ -51,8 +51,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: folder-key-network-outline
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: folder-key-network-outline
         hosts:
           - host: &host "ldap.${PUBLIC_DOMAIN}"
             paths:

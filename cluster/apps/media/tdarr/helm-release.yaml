@@ -71,8 +71,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: material-symbols:switch-video-outline
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: material-symbols:switch-video-outline
         hosts:
           - host: &host "tdarr.${PUBLIC_DOMAIN}"
             paths:

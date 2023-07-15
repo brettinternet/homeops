@@ -63,8 +63,8 @@ spec:
         annotations:
           auth.home.arpa/enabled: "true"
           # external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: link
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: link
         hosts:
           - host: &host "link.${PUBLIC_DOMAIN}"
             paths:

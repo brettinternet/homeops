@@ -55,8 +55,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: mdi:share-variant
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: mdi:share-variant
         hosts:
           - host: &host "share.${PUBLIC_DOMAIN}"
             paths:

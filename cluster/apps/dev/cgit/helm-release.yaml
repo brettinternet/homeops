@@ -55,8 +55,8 @@ spec:
         ingressClassName: "nginx"
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: git
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: git
         hosts:
           - host: &host "git.${PUBLIC_DOMAIN}"
             paths:

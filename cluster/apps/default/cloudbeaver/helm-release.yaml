@@ -49,8 +49,8 @@ spec:
         enabled: true
         ingressClassName: nginx
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: database
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: database
         hosts:
           - host: &host "db.${PUBLIC_DOMAIN}"
             paths:

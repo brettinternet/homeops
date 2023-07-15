@@ -67,8 +67,8 @@ spec:
         ingressClassName: "nginx"
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: mdi:poll
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: mdi:poll
         hosts:
           - host: &host "analytics.${PUBLIC_DOMAIN}"
             paths:

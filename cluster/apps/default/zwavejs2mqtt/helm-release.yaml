@@ -75,8 +75,8 @@ spec:
         ingressClassName: nginx
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: z-wave
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: z-wave
         hosts:
           - host: &host "zwavejs2mqtt.${PUBLIC_DOMAIN}"
             paths:

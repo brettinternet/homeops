@@ -55,8 +55,8 @@ spec:
         enabled: true
         ingressClassName: "nginx"
         annotations:
-          hajimari.io/enable: "true"
-          hajimari.io/icon: subtitles
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: subtitles
         hosts:
           - host: &host subtitles.${PUBLIC_DOMAIN}
             paths:

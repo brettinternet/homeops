@@ -38,8 +38,8 @@ spec:
         ingressClassName: nginx
         annotations:
           external-dns.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: web
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: web
         hosts:
           - host: &host "wordgram.${PUBLIC_DOMAIN}"
             paths:

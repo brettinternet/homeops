@@ -76,8 +76,8 @@ spec:
         ingressClassName: nginx
         annotations:
           auth.home.arpa/enabled: "true"
-          hajimari.io/enable: "true"
-          hajimari.io/icon: harddisk
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: harddisk
         hosts:
           - host: &host "disks.${PUBLIC_DOMAIN}"
             paths:
