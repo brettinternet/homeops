@@ -33,7 +33,6 @@ spec:
     # https://hub.docker.com/r/sctx/overseerr
       repository: docker.io/sctx/overseerr
       tag: latest
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       LOG_LEVEL: debug

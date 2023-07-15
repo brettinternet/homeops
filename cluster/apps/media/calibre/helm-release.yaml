@@ -36,7 +36,6 @@ spec:
       repository: lscr.io/linuxserver/calibre
       # https://github.com/linuxserver/docker-calibre/issues/104#issuecomment-1270904811
       tag: "6.4.0"
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"

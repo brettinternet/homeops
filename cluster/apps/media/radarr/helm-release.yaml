@@ -32,7 +32,6 @@ spec:
       # https://github.com/onedr0p/containers/tree/main/apps/radarr
       repository: ghcr.io/onedr0p/radarr-develop
       tag: "4.4.4.7068"
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
     service:

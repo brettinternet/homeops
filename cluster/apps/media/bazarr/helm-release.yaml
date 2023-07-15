@@ -30,7 +30,6 @@ spec:
     # https://hub.docker.com/r/linuxserver/bazarr
       repository: lscr.io/linuxserver/bazarr
       tag: latest
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
