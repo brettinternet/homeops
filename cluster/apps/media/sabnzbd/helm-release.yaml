@@ -29,7 +29,6 @@ spec:
       # https://github.com/onedr0p/containers/tree/main/apps/sabnzbd
       repository: ghcr.io/onedr0p/sabnzbd
       tag: rolling
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       SABNZBD__PORT: &port 8080

@@ -41,7 +41,6 @@ spec:
     # https://hub.docker.com/r/linuxserver/calibre-web
       repository: lscr.io/linuxserver/calibre-web
       tag: latest
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"

@@ -32,7 +32,6 @@ spec:
     # https://hub.docker.com/r/taylorbourne/xteve_lazystream
       repository: docker.io/taylorbourne/xteve_lazystream
       tag: latest
-      pullPolicy: IfNotPresent
     # https://github.com/taylorbourne/xteve_lazystream/blob/master/sample.env
     env:
       TZ: ${TIMEZONE}

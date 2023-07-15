@@ -30,7 +30,6 @@ spec:
     # https://hub.docker.com/r/linuxserver/prowlarr
       repository: lscr.io/linuxserver/prowlarr
       tag: nightly
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"

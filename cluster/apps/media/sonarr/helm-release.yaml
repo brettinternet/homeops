@@ -32,7 +32,6 @@ spec:
       # https://github.com/onedr0p/containers/tree/main/apps/sonarr
       repository: ghcr.io/onedr0p/sonarr-develop
       tag: rolling
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
     service:

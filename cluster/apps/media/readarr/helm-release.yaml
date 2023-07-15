@@ -30,7 +30,6 @@ spec:
     # https://hub.docker.com/r/linuxserver/readarr
       repository: lscr.io/linuxserver/readarr
       tag: nightly
-      pullPolicy: IfNotPresent
     env:
       TZ: ${TIMEZONE}
       PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"

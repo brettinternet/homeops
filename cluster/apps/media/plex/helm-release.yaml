@@ -39,7 +39,6 @@ spec:
       # https://hub.docker.com/r/plexinc/pms-docker/
       repository: docker.io/plexinc/pms-docker
       tag: plexpass
-      pullPolicy: IfNotPresent
     # See https://support.plex.tv/articles/201105343-advanced-hidden-server-settings/
     # NOTE: Plex preference options are camelCase and CASE SENSITIVE
     env:
