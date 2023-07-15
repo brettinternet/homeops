@@ -38,12 +38,12 @@ spec:
         valueFrom:
           secretKeyRef:
             name: *app
-            key: SERVER_1_NAME
+            key: SERVER_KNELL_NAME
       SERVER_PASS:
         valueFrom:
           secretKeyRef:
             name: *app
-            key: SERVER_1_PASSWORD
+            key: SERVER_KNELL_PASSWORD
       SERVER_PORT: 2456
       SERVER_PUBLIC: false
       BACKUPS: true
@@ -53,17 +53,14 @@ spec:
         enabled: true
         existingClaim: appdata
         subPath:
-          - path: valheim/saves
+          - path: valheim-knell/saves
             mountPath: /home/steam/.config/unity3d/IronGate/Valheim
-          - path: valheim/server
+          - path: valheim-knell/server
             mountPath: /home/steam/valheim
-          - path: valheim/backups
+          - path: valheim-knell/backups
             mountPath: /home/steam/backups
     service:
       main:
-        # type: LoadBalancer
-        # externalTrafficPolicy: Cluster
-        # loadBalancerIP:
         ports:
           http:
             enabled: false
@@ -90,7 +87,7 @@ spec:
           forecastle.stakater.com/expose: "true"
           forecastle.stakater.com/icon: bell-outline
         hosts:
-          - host: &host "valheim.${PUBLIC_DOMAIN}"
+          - host: &host "knellheim.${PUBLIC_DOMAIN}"
             paths:
               - path: /
                 pathType: Prefix
