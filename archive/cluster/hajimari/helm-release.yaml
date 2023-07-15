@@ -1,0 +1,151 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: hajimari
+  namespace: default
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: hajimari
+      version: 2.0.2
+      sourceRef:
+        kind: HelmRepository
+        name: hajimari
+        namespace: flux-system
+      interval: 15m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  # https://github.com/toboshii/hajimari/blob/main/charts/hajimari/values.yaml
+  dependsOn:
+    - name: kyverno
+      namespace: kyverno
+    - name: ingress-nginx
+      namespace: networking
+  values:
+    env:
+      TZ: "${TIMEZONE}"
+    # https://hajimari.io/charts/hajimari/
+    hajimari:
+      # https://github.com/toboshii/hajimari#ingresses
+      # Use with hajimari.io/instance
+      # instanceName: personal # family
+      defaultEnable: true
+      namespaceSelector:
+        matchNames:
+          - default
+          - media
+          - games
+          - networking
+          - kube-system
+          - monitoring
+          - dev
+      title: Homelab
+      name: Brett
+      lightTheme: gazette
+      darkTheme: chalk
+      showGreeting: true
+      showAppGroups: true
+      showAppUrls: true
+      showAppInfo: false
+      showAppStatus: true
+      defaultAppIcon: mdi:application
+      showBookmarkGroups: true
+      showGlobalBookmarks: false
+      alwaysTargetBlank: false
+      defaultSearchProvider: Whoogle
+      searchProviders:
+        - name: Whoogle
+          token: s
+          icon: ci:search
+          searchUrl: https://search.${PUBLIC_DOMAIN}/search?q={query}
+          url: https://search.${PUBLIC_DOMAIN}
+        - name: Google
+          token: g
+          icon: simple-icons:google
+          searchUrl: https://www.google.com/search?q={query}
+          url: https://www.google.com
+        - name: DuckDuckGo
+          token: d
+          icon: simple-icons:duckduckgo
+          searchUrl: https://duckduckgo.com/?q={query}
+          url: https://duckduckgo.com
+        - name: IMDB
+          token: i
+          icon: simple-icons:imdb
+          searchUrl: https://www.imdb.com/find?q={query}
+          url: https://www.imdb.com
+        - name: Reddit
+          token: r
+          icon: simple-icons:reddit
+          searchUrl: https://www.reddit.com/search?q={query}
+          url: https://www.reddit.com
+        - name: YouTube
+          token: 'y'
+          icon: simple-icons:youtube
+          searchUrl: https://www.youtube.com/results?search_query={query}
+          url: https://www.youtube.com
+        - name: Spotify
+          token: s
+          icon: simple-icons:spotify
+          searchUrl: hhttps://open.spotify.com/search/{query}
+          url: https://open.spotify.com
+      customApps:
+        - group: networking
+          apps:
+            - name: OPNsense
+              url: "https://opnsense.${PRIVATE_DOMAIN}"
+              icon: wall-fire
+              info: Firewall
+      globalBookmarks:
+        - group: Mail
+          bookmarks:
+            - name: Gmail
+              url: "https://gmail.com"
+        - group: Dev
+          bookmarks:
+            - name: GitHub
+              url: "https://github.com"
+            - name: Awwwards
+              url: "https://awwwards.com"
+            - name: Dribbble
+              url: "https://dribbble.com"
+        - group: Media
+          bookmarks:
+            - name: YouTube
+              url: "https://youtube.com/feed/subscriptions"
+        - group: Tech
+          bookmarks:
+            - name: Hacker News
+              url: "https://hn.algolia.com"
+            - name: PC Sales
+              url: "https://www.reddit.com/r/buildapcsales"
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          external-dns.home.arpa/enabled: "true"
+          auth.home.arpa/enabled: "true"
+          hajimari.io/enable: "true"
+          hajimari.io/icon: weather-sunset
+        hosts:
+          - host: &host "apps.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
+    # resources:
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   limits:
+    #     memory: 256Mi
