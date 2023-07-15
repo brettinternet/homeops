@@ -4,16 +4,16 @@ version: "3"
 tasks:
   verify:
     desc: Verify flux meets the prerequisites
-    cmds:
-      - flux check --pre
+    cmd: flux check --pre
 
   install:
     desc: Install Flux into your cluster
     cmds:
-      - kubectl apply --kustomize {{.CLUSTER_DIR}}/bootstrap/
+      - kubectl apply --kustomize {{.CLUSTER_DIR}}/bootstrap
       - cat {{.SOPS_AGE_KEY_FILE}} | kubectl -n flux-system create secret generic sops-age --from-file=age.agekey=/dev/stdin
-      - kubectl apply --kustomize {{.CLUSTER_DIR}}/flux/flux-system/
-      - task: reconcile
+      - sops --decrypt {{.KUBERNETES_DIR}}/flux/vars/cluster-secrets.sops.yaml | kubectl apply -f -
+      - kubectl apply -f {{.KUBERNETES_DIR}}/flux/vars/cluster-settings.yaml
+      - kubectl apply --kustomize {{.KUBERNETES_DIR}}/flux/config
     preconditions:
       - sh: test -f {{.SOPS_AGE_KEY_FILE}}
         msg: |
@@ -34,14 +34,11 @@ tasks:
 
   reconcile:
     desc: Force update Flux to pull in changes from your Git repository
-    cmds:
-      - flux reconcile -n flux-system source git flux-cluster
-      - flux reconcile -n flux-system kustomization flux-cluster
+    cmd: flux reconcile -n flux-system kustomization cluster --with-source
 
   errors:
     desc: List errors from all namespaces
-    cmds:
-      - flux logs -A --level=error
+    cmd: flux logs -A --level=error
 
   top:
     desc: List top metrics
@@ -52,8 +49,7 @@ tasks:
   delete-tunnel:
     desc: |
       Force delete cloudflared tunnel release to stop external ingress
-    cmds:
-      - flux suspend hr -n networking cloudflared
+    cmd: flux suspend hr -n networking cloudflared
 
   redo:
     desc: Force reset drift in HelmRelease
@@ -70,33 +66,27 @@ tasks:
 
   nodes:
     desc: List all the nodes in your cluster
-    cmds:
-      - kubectl get nodes {{.CLI_ARGS | default "-o wide"}}
+    cmd: kubectl get nodes {{.CLI_ARGS | default "-o wide"}}
 
   pods:
     desc: List all the pods in your cluster
-    cmds:
-      - kubectl get pods {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get pods {{.CLI_ARGS | default "-A"}}
 
   kustomizations:
     desc: List all the kustomizations in your cluster
-    cmds:
-      - kubectl get kustomizations {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get kustomizations {{.CLI_ARGS | default "-A"}}
 
   helmreleases:
     desc: List all the helmreleases in your cluster
-    cmds:
-      - kubectl get helmreleases {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get helmreleases {{.CLI_ARGS | default "-A"}}
 
   helmrepositories:
     desc: List all the helmrepositories in your cluster
-    cmds:
-      - kubectl get helmrepositories {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get helmrepositories {{.CLI_ARGS | default "-A"}}
 
   gitrepositories:
     desc: List all the gitrepositories in your cluster
-    cmds:
-      - kubectl get gitrepositories {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get gitrepositories {{.CLI_ARGS | default "-A"}}
 
   certificates:
     desc: List all the certificates in your cluster
@@ -106,8 +96,7 @@ tasks:
 
   ingresses:
     desc: List all the ingresses in your cluster
-    cmds:
-      - kubectl get ingress {{.CLI_ARGS | default "-A"}}
+    cmd: kubectl get ingress {{.CLI_ARGS | default "-A"}}
 
   resources:
     desc: Gather common resources in your cluster, useful when asking for support
@@ -123,5 +112,4 @@ tasks:
 
   scale:
     desc: Scale down an entire namespace
-    cmds:
-      - kubectl scale deployment --replicas ${REPLICAS:-1} --all -n ${NAMESPACE:-default}
+    cmd: kubectl scale deployment --replicas ${REPLICAS:-1} --all -n ${NAMESPACE:-default}
