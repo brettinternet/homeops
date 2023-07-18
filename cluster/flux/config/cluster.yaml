@@ -1,14 +1,14 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
+apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
-  name: flux-cluster
+  name: homelab
   namespace: flux-system
 spec:
   interval: 10m
   ref:
     branch: main
-  url: https://github.com/brettinternet/homelab
+  url: https://github.com/brettinternet/homelab.git
   ignore: |
     # exclude all
     /*
@@ -19,7 +19,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: flux-cluster
+  name: cluster
   namespace: flux-system
 spec:
   interval: 10m
@@ -28,4 +28,14 @@ spec:
   wait: false
   sourceRef:
     kind: GitRepository
-    name: flux-cluster
+    name: homelab
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-settings
+      - kind: Secret
+        name: cluster-secrets

@@ -20,10 +20,6 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces:
-                - calico-system
-                - tigera-operator
-          - resources:
               kinds: [Pod]
               selector:
                 matchLabels:

@@ -7,6 +7,7 @@ resources:
   - bjw-s.yaml
   - brettinternet.yaml
   # - cloudnative-pg.yaml
+  - coredns.yaml
   - crowdsec.yaml
   - csi-driver-nfs.yaml
   - deliveryhero.yaml
@@ -34,3 +35,4 @@ resources:
   - prometheus-community.yaml
   # - rook-ceph.yaml
   - stakater.yaml
+  - weave-gitops.yaml
