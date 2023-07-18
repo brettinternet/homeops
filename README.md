@@ -22,7 +22,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 - OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
 - Automatic Cloudflare DNS updates ([ddns cronjob](./cluster/apps/networking/cloudflare-ddns))
 - [MetalLB](https://metallb.universe.tf/) bare metal K8s network loadbalancing
-- [Calico](https://www.tigera.io/project-calico/) CNI
+- [Cilium](https://cilium.io/) container networking interface (CNI)
 - [ZFS](https://wiki.archlinux.org/index.php/ZFS)
 - JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files ([snapraid-runner cluster cronjob](./cluster/apps/media/snapraid-runner))
 - [Restic](https://restic.net) backups to remote and local buckets ([backup namespace](./cluster/apps/backup))

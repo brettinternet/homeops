@@ -77,6 +77,7 @@ tasks:
       - ansible kubernetes -i {{.ANSIBLE_INVENTORY_DIR}}/hosts.yaml -a '/usr/bin/systemctl poweroff' --become
 
   update:
+    aliases: [upgrade]
     desc: Update dependencies
     dir: provision/ansible
     cmds:
