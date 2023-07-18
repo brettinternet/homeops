@@ -13,7 +13,7 @@ spec:
     # exclude all
     /*
     # include cluster directory
-    !/cluster
+    !/kubernetes
 
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
@@ -23,7 +23,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./cluster/flux
+  path: ./kubernetes/flux
   prune: true
   wait: false
   sourceRef:

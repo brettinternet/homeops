@@ -8,8 +8,8 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
-- Lots of [self-hosted services](./cluster/apps)
-- [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([cluster directory](./cluster))
+- Lots of [self-hosted services](./kubernetes/apps)
+- [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([kubernetes directory](./kubernetes))
 - Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./provision/ansible/roles) and [playbooks](./provision/ansible))
 - Terraform DNS records ([terraform](./provision/terraform))
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
@@ -17,15 +17,15 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 - WireGuard VPN pod gateway via paid service
 - WireGuard VPN proxy hosted on VPS
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
-- [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
+- [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to the cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
 - Both internal & external services with a service [gateway](https://github.com/ori-edge/k8s_gateway/)
 - OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
-- Automatic Cloudflare DNS updates ([ddns cronjob](./cluster/apps/networking/cloudflare-ddns))
+- Automatic Cloudflare DNS updates ([ddns cronjob](./kubernetes/apps/networking/cloudflare-ddns))
 - [MetalLB](https://metallb.universe.tf/) bare metal K8s network loadbalancing
 - [Cilium](https://cilium.io/) container networking interface (CNI)
 - [ZFS](https://wiki.archlinux.org/index.php/ZFS)
-- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files ([snapraid-runner cluster cronjob](./cluster/apps/media/snapraid-runner))
-- [Restic](https://restic.net) backups to remote and local buckets ([backup namespace](./cluster/apps/backup))
+- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files ([snapraid-runner kubernetes cronjob](./kubernetes/apps/media/snapraid-runner))
+- [Restic](https://restic.net) backups to remote and local buckets ([backup namespace](./kubernetes/apps/backup))
 - [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles))
 
 ## Usage

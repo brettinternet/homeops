@@ -4,12 +4,12 @@
     "*.json5": "jsonc",
     "**/provision/ansible/**/*.yaml": "ansible",
     "**/provision/terraform/**/*.tf": "terraform",
-    "**/cluster/**/*.sops.toml": "plaintext"
+    "**/kubernetes/**/*.sops.toml": "plaintext"
   },
   "prettier.configPath": ".github/linters/.prettierrc.yaml",
   "prettier.ignorePath": ".github/linters/.prettierignore",
   "yaml.schemas": {
-    "Kubernetes": "cluster/*.yaml"
+    "Kubernetes": "kubernetes/*.yaml"
   },
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": "active",

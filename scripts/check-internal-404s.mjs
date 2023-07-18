@@ -11,7 +11,7 @@ import _ from "lodash"
 
 const isDev = process.env.NODE_ENV === "development"
 
-const searchFilesGlob = ["../cluster/**/helm-release.yaml"]
+const searchFilesGlob = ["../kubernetes/**/helm-release.yaml"]
 const subdomainRegex =
   /\ \"(?<subdomain>[A-Za-z0-9\-]+)*\.\$\{PUBLIC_DOMAIN\}/gi
 const externalDnsAnnotationRegex =
