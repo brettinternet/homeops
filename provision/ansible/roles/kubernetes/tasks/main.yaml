@@ -45,5 +45,18 @@
     # Reboot only if initial setup
     allow_reboot: "{{ false if k3s_service_result.status.ActiveState == 'active' else true }}"
 
+# https://github.com/cilium/cilium/issues/18706
+- name: Cilium routing 1
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/networkd.conf
+    regexp: ManageForeignRoutingPolicyRules
+    line: ManageForeignRoutingPolicyRules=no
+
+- name: Cilium routing 2
+  ansible.builtin.lineinfile:
+    dest: /etc/systemd/networkd.conf
+    regexp: ManageForeignRoutes
+    line: ManageForeignRoutes=no
+
 - name: Install k3s
   ansible.builtin.include_tasks: k3s.yaml

@@ -12,3 +12,4 @@
       - net-tools
       # For volume mounts not via csi-driver-nfs
       - nfs-utils
+      - python-kubernetes

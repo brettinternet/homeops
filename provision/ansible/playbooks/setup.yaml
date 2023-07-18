@@ -107,7 +107,7 @@
     # Manual setup steps required, see roles for details
     - fans
     - snapraid
-    - mergerfs
+    # - mergerfs - fix fstab devices first
     - smart
 
 - hosts:

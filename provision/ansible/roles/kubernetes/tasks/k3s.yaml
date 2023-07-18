@@ -19,59 +19,53 @@
     # Additional vars defined in inventory dir
     k3s_state: installed
 
-- name: Get absolute path to this Git repository
-  delegate_to: localhost
-  become: false
-  run_once: true
-  check_mode: false
-  ansible.builtin.command: |-
-    git rev-parse --show-toplevel
-  register: repo_abs_path
+- name: Kubeconfig
+  ansible.builtin.include_tasks: kubeconfig.yaml
 
-- name: Copy kubeconfig to provision folder
-  run_once: true
-  ansible.builtin.fetch:
-    src: "/etc/rancher/k3s/k3s.yaml"
-    dest: "{{ repo_abs_path.stdout }}/provision/kubeconfig"
-    flat: true
+- name: Wait for custom manifests to rollout
   when:
-    - k3s_control_node is defined
-    - k3s_control_node
+    - k3s_primary_control_node
+    - (k3s_server_manifests_templates | length > 0
+      or k3s_server_manifests_urls | length > 0)
+  kubernetes.core.k8s_info:
+    kubeconfig: /etc/rancher/k3s/k3s.yaml
+    kind: "{{ item.kind }}"
+    name: "{{ item.name }}"
+    namespace: "{{ item.namespace | default('') }}"
+    wait: true
+    wait_sleep: 10
+    wait_timeout: 360
+  loop:
+    - name: cilium
+      kind: HelmChart
+      namespace: kube-system
+    - name: coredns
+      kind: HelmChart
+      namespace: kube-system
+    - name: policy
+      kind: CiliumL2AnnouncementPolicy
+    - name: pool
+      kind: CiliumLoadBalancerIPPool
+    - name: podmonitors.monitoring.coreos.com
+      kind: CustomResourceDefinition
+    - name: prometheusrules.monitoring.coreos.com
+      kind: CustomResourceDefinition
+    - name: servicemonitors.monitoring.coreos.com
+      kind: CustomResourceDefinition
 
-- name: Update kubeconfig with the correct IPv4 address
-  delegate_to: localhost
-  become: false
-  run_once: true
-  ansible.builtin.replace:
-    path: "{{ repo_abs_path.stdout }}/provision/kubeconfig"
-    regexp: "https://127.0.0.1:6443"
-    replace: "https://{{ k3s_registration_address }}:6443"
+- name: Coredns
+  when: k3s_primary_control_node
+  ansible.builtin.include_tasks: coredns.yaml
 
-# Cleaning up the manifests from the /var/lib/rancher/k3s/server/manifests
-# directory is needed because k3s has an awesome
-# "feature" to always deploy these on restarting
-# the k3s systemd service. Removing them does
-# not uninstall the manifests.
+- name: Cilium
+  when: k3s_primary_control_node
+  ansible.builtin.include_tasks: cilium.yaml
 
-# Removing them means we can manage the lifecycle
-# of these components outside of the
-# /var/lib/rancher/k3s/server/manifests directory
+- name: Clean
+  when: k3s_primary_control_node
+  ansible.builtin.include_tasks: clean.yaml
 
-# FIXME(ansible): Check for deployments to be happy rather than waiting
-- name: Wait for k3s to finish installing the deployed manifests
-  ansible.builtin.wait_for:
-    timeout: 15
-  when: k3s_server_manifests_templates | length > 0
-    or k3s_server_manifests_dir | length > 0
-
-- name: Remove deployed manifest templates
-  ansible.builtin.file:
-    path: "{{ k3s_server_manifests_dir }}/{{ item | basename | regex_replace('\\.j2$', '') }}"
-    state: absent
-  loop: "{{ k3s_server_manifests_templates | default([]) }}"
-
-- name: Remove deployed manifest urls
-  ansible.builtin.file:
-    path: "{{ k3s_server_manifests_dir }}/{{ item.filename }}"
-    state: absent
-  loop: "{{ k3s_server_manifests_urls | default([]) }}"
+- name: Stale Containers
+  ansible.builtin.include_tasks: stale_containers.yaml
+  vars:
+    stale_containers_state: enabled

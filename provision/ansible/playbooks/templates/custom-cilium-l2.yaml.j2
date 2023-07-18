@@ -1,0 +1,24 @@
+---
+# https://docs.cilium.io/en/latest/network/l2-announcements
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: policy
+spec:
+  loadBalancerIPs: true
+  interfaces:
+    - eth0
+    - enp0s31f6
+    - eno1
+  nodeSelector:
+    matchLabels:
+      kubernetes.io/os: linux
+
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: pool
+spec:
+  cidrs:
+    - cidr: "{{ k3s_server['cluster-cidr'] | ansible.utils.ipaddr('network/prefix') }}"

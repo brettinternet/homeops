@@ -4,6 +4,8 @@ supported_distributions:
   - debian
 
 allow_reboot: false
+stale_containers_state: enabled
+k3s_primary_control_node: false
 
 # debian
 allow_dist_upgrade: true

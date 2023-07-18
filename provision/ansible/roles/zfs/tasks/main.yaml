@@ -107,6 +107,8 @@
   with_items:
     - zfs-scrub@.timer
     - zfs-scrub@.service
+    - zfs-trim@.timer
+    - zfs-trim@.service
 
 - name: Start/enable zfs scrub timer
   ansible.builtin.systemd:
