@@ -5,7 +5,6 @@ resources:
   - namespace.yaml
   - appdata-pvc.yaml
   # - blocky
-  - cert-manager
   - cloudflared
   - cloudflare-ddns
   # - crowdsec
