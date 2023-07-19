@@ -1,0 +1,42 @@
+# Issues:
+# OOMKilled? https://github.com/fluxcd/helm-controller/issues/349
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: goldilocks
+  namespace: kube-system
+spec:
+  interval: 15m
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.fairwinds.com/stable
+      chart: goldilocks
+      version: 6.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: fairwinds
+        namespace: flux-system
+      interval: 15m
+  # https://github.com/FairwindsOps/charts/blob/master/stable/goldilocks/values.yaml
+  values:
+    # VPA is required
+    vpa:
+      # Created in separate deployment
+      enabled: false
+    dashboard:
+      replicaCount: 1
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations:
+          forecastle.stakater.com/expose: "true"
+          forecastle.stakater.com/icon: memory
+        hosts:
+          - host: &host "goldilocks.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                type: ImplementationSpecific
+        tls:
+          - hosts:
+              - *host
