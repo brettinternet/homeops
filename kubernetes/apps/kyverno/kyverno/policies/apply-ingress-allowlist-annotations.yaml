@@ -2,9 +2,9 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: apply-ingress-whitelist-annotations
+  name: apply-ingress-allowlist-annotations
   annotations:
-    policies.kyverno.io/title: Apply Ingress Whitelist Annotations
+    policies.kyverno.io/title: Apply Ingress Allowlist Annotations
     policies.kyverno.io/subject: Ingress
     policies.kyverno.io/description: >-
       This policy creates annotations on ingresses. When
@@ -16,7 +16,7 @@ spec:
   mutateExistingOnPolicyUpdate: true
   generateExistingOnPolicyUpdate: true
   rules:
-    - name: whitelist
+    - name: allowlist
       match:
         any:
           - resources:

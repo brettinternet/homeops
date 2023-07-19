@@ -30,9 +30,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
   values:
     fullnameOverride: *app
     logLevel: debug

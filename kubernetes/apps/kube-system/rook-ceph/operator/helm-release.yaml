@@ -14,13 +14,17 @@ spec:
         kind: HelmRepository
         name: rook-ceph
         namespace: flux-system
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   # https://github.com/rook/rook/blob/master/deploy/charts/rook-ceph/values.yaml
   values:
     crds:

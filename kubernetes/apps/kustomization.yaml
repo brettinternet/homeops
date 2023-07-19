@@ -6,7 +6,7 @@ kind: Kustomization
 resources:
   # - auth
   # - backup
-  # - cert-manager
+  - cert-manager
   # # - comms
   # # - debug
   # # - default
@@ -14,10 +14,10 @@ resources:
   # - flux-system
   # # - games
   - kube-system
-  # - kyverno
+  - kyverno
   # # - media
   # - monitoring
-  # - networking
+  - networking
   # # - sites
   # - system-upgrade
   # - trivy

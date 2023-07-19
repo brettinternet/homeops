@@ -14,13 +14,17 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   # https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
   values:
     loki:

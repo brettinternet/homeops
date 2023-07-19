@@ -4,12 +4,13 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  - cloudflared
-  - cloudflare-ddns
+  - ./adguard/ks.yaml
+  - ./cloudflare-ddns/ks.yaml
+  - ./cloudflared/ks.yaml
   # - crowdsec
-  - external-dns
-  - ingress-nginx
-  - nfs
-  - nfs-shared
-  - smb-shared
-  - k8s-gateway
+  - ./external-dns/ks.yaml
+  - ./ingress-nginx/ks.yaml
+  - ./k8s-gateway/ks.yaml
+  - ./nfs/ks.yaml
+  - ./nfs-shared/ks.yaml
+  - ./smb-shared/ks.yaml

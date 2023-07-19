@@ -17,13 +17,17 @@ spec:
         name: bjw-s
         namespace: flux-system
       interval: 15m
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   values:
     image:
       repository: docker.io/mazzolino/restic
@@ -127,13 +131,17 @@ spec:
         name: bjw-s
         namespace: flux-system
       interval: 15m
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   dependsOn:
     - name: restic-remote-backup
       namespace: backup
@@ -178,13 +186,17 @@ spec:
         name: bjw-s
         namespace: flux-system
       interval: 15m
+  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 5
+      retries: 3
   upgrade:
+    cleanupOnFail: true
     remediation:
-      retries: 5
+      retries: 3
+  uninstall:
+    keepHistory: false
   dependsOn:
     - name: restic-remote-backup
       namespace: backup
