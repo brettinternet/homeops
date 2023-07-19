@@ -5,6 +5,8 @@ metadata:
   name: apps-intel-gpu-plugin
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: apps-node-feature-discovery
   path: ./kubernetes/apps/kube-system/intel-gpu-plugin/app
   prune: true
   sourceRef:
