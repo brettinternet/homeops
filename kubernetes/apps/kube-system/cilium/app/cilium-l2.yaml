@@ -22,4 +22,4 @@ metadata:
   name: pool
 spec:
   cidrs:
-    - cidr: "${NET_POD_CIDR}"
+    - cidr: "${NET_NODE_CIDR}"

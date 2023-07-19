@@ -15,7 +15,6 @@ resources:
   - dysnix.yaml
   - external-dns.yaml
   - fairwinds.yaml
-  - goldilocks.yaml
   - grafana.yaml
   - ingress-nginx.yaml
   - jetstack.yaml

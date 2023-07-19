@@ -21,4 +21,4 @@ metadata:
   name: pool
 spec:
   cidrs:
-    - cidr: "{{ k3s_server['cluster-cidr'] | ansible.utils.ipaddr('network/prefix') }}"
+    - cidr: "{{ (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | ansible.utils.ipaddr('network/prefix') }}"
