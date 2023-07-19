@@ -3,7 +3,7 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-resources: []
+resources:
   # - auth
   # - backup
   # - cert-manager
@@ -13,7 +13,7 @@ resources: []
   # # - dev
   # - flux-system
   # # - games
-  # - kube-system
+  - kube-system
   # - kyverno
   # # - media
   # - monitoring
