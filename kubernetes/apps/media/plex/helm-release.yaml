@@ -64,9 +64,9 @@ spec:
     service:
       main:
         type: LoadBalancer
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_PLEX_ADDR}"
+          io.cilium/lb-ipam-ips: "${LB_PLEX_ADDR}"
         ports:
           # primary
           http:

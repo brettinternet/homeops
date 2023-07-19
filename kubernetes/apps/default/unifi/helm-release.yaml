@@ -43,9 +43,9 @@ spec:
     service:
       main:
         type: LoadBalancer
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_UNIFI_ADDR}"
+          io.cilium/lb-ipam-ips: "${LB_UNIFI_ADDR}"
         ports:
           # Web admin
           http:

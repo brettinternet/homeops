@@ -9,6 +9,7 @@ spec:
   url: oci://ghcr.io/fluxcd/flux-manifests
   ref:
     tag: v2.0.1
+
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

@@ -4,13 +4,11 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  # - blocky
   - cloudflared
   - cloudflare-ddns
   # - crowdsec
   - external-dns
   - ingress-nginx
-  - metallb
   - nfs
   - nfs-shared
   - smb-shared

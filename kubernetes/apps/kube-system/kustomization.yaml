@@ -2,16 +2,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - namespace.yaml
-  - csi-driver-nfs
-  - descheduler
-  - goldilocks
-  - intel-gpu-plugin
-  - kube-vip
-  - metrics-server
-  - node-feature-discovery
-  # - nvidia-device-plugin
-  - reloader
-  # - rook-ceph
-  # - smarter-device-manager
-  - vpa
+  - ./namespace.yaml
+  - ./cilium/ks.yaml
+  - ./coredns/ks.yaml
+  - ./csi-driver-nfs/ks.yaml
+  - ./descheduler/ks.yaml
+  - ./intel-gpu-plugin/ks.yaml
+  - ./local-path-provisioner/ks.yaml
+  - ./metrics-server/ks.yaml
+  - ./node-feature-discovery/ks.yaml
+  # - ./nvidia-device-plugin/ks.yaml
+  - ./reloader/ks.yaml
+  # - ./rook-ceph/ks.yaml TODO:
+  # - ./smarter-device-manager/ks.yaml
+  - ./vpa/ks.yaml

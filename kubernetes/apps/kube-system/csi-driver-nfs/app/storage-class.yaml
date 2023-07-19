@@ -1,0 +1,19 @@
+# Remove default storage class:
+# kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+
+# Set as default storage class:
+# kubectl patch storageclass appdata-nfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-fast-tank
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: "${NFS_TANK_CLUSTERIP}"
+  share: /pvc
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+mountOptions:
+  - hard
+  - noatime

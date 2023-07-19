@@ -38,9 +38,9 @@ spec:
     service:
       main:
         type: LoadBalancer
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         annotations:
-          metallb.universe.tf/loadBalancerIPs: "${METALLB_JELLYFIN_ADDR}"
+          io.cilium/lb-ipam-ips: "${LB_JELLYFIN_ADDR}"
         ports:
           http:
             port: 8096
