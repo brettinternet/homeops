@@ -12,7 +12,6 @@ metadata:
       applies the nginx auth annotations for use with Authelia.
 spec:
   validationFailureAction: enforce
-  mutateExistingOnPolicyUpdate: true
   generateExistingOnPolicyUpdate: true
   rules:
     - name: auth

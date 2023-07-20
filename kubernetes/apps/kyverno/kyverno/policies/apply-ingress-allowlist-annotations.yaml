@@ -13,14 +13,13 @@ metadata:
       internal application access.
 spec:
   validationFailureAction: enforce
-  mutateExistingOnPolicyUpdate: true
   generateExistingOnPolicyUpdate: true
   rules:
     - name: allowlist
       match:
         any:
           - resources:
-              kinds: ["Ingress"]
+              kinds: [Ingress]
       exclude:
         any:
           - resources:
