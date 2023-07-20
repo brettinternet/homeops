@@ -5,7 +5,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - auth
-  # - backup
+  - backup
   - cert-manager
   - comms
   # # - debug

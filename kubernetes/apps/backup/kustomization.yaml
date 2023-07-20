@@ -1,4 +1,5 @@
 # https://github.com/trapexit/backup-and-recovery-howtos
+# TODO: backup email - https://spiderd.io/docs/install-docker.html
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -6,9 +7,6 @@ resources:
   - namespace.yaml
   - appdata-pvc.yaml
   - backup-pvc.yaml
-  # - kopai
-  - restic-local
-  - restic-remote
+  - restic-local/ks.yaml
+  - restic-remote/ks.yaml
   # - restored-pvc.yaml
-
-# TODO: backup email - https://spiderd.io/docs/install-docker.html
