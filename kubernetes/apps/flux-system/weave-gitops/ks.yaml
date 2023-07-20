@@ -5,8 +5,6 @@ metadata:
   name: apps-weave-gitops
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: apps-external-secrets-stores
   path: ./kubernetes/apps/flux-system/weave-gitops/app
   prune: true
   sourceRef:

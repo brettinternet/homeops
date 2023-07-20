@@ -11,7 +11,7 @@ resources:
   # # - debug
   # # - default
   # # - dev
-  # - flux-system
+  - flux-system
   # # - games
   - kube-system
   - kyverno
