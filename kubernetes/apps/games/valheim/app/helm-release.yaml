@@ -42,12 +42,12 @@ spec:
         valueFrom:
           secretKeyRef:
             name: *app
-            key: SERVER_KNELL_NAME
+            key: SERVER_3_NAME
       SERVER_PASS:
         valueFrom:
           secretKeyRef:
             name: *app
-            key: SERVER_KNELL_PASSWORD
+            key: SERVER_3_PASSWORD
       SERVER_PORT: 2456
       SERVER_PUBLIC: false
       BACKUPS: true
