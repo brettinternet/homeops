@@ -59,6 +59,12 @@ spec:
       BACKUPS_CRON: "*/20 * * * *"
       BACKUPS_MAX_COUNT: 30
       BACKUPS_IF_IDLE: false
+      SUPERVISOR_HTTP: true
+      SUPERVISOR_HTTP_PASS:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: SUPERVISOR_HTTP_PASS
     persistence:
       data:
         enabled: true
