@@ -1,4 +1,4 @@
-# https://github.com/mbround18/valheim-docker
+# alternative: https://github.com/mbround18/valheim-docker
 # DNS: create A record `valheim` pointed to IP, don't proxy IP
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -57,12 +57,10 @@ spec:
         enabled: true
         existingClaim: appdata
         subPath:
-          - path: valheim-knell/saves
-            mountPath: /home/steam/.config/unity3d/IronGate/Valheim
+          - path: valheim-knell/config
+            mountPath: /config
           - path: valheim-knell/server
-            mountPath: /home/steam/valheim
-          - path: valheim-knell/backups
-            mountPath: /home/steam/backups
+            mountPath: /opt/valheim
     service:
       main:
         ports:
