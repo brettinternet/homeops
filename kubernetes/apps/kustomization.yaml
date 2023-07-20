@@ -12,7 +12,7 @@ resources:
   # # - default
   # # - dev
   - flux-system
-  # # - games
+  - games
   - kube-system
   - kyverno
   # # - media
