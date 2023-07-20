@@ -4,7 +4,5 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  - apprise
-  - maddy
-  # - mattermost
-  - ntfy
+  - maddy/ks.yaml
+  - ntfy/ks.yaml
