@@ -8,5 +8,5 @@ resources:
   - appdata-pvc.yaml
   - backup-pvc.yaml
   - restic-local/ks.yaml
-  - restic-remote/ks.yaml
+  # - restic-remote/ks.yaml
   # - restored-pvc.yaml
