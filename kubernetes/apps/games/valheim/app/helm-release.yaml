@@ -48,10 +48,17 @@ spec:
           secretKeyRef:
             name: valheim
             key: SERVER_3_PASSWORD
+      ADMINLIST_IDS:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: ADMINLIST_IDS
       SERVER_PORT: 2456
       SERVER_PUBLIC: false
       BACKUPS: true
-      BACKUPS_CRON: "*/15 * * * *"
+      BACKUPS_CRON: "*/20 * * * *"
+      BACKUPS_MAX_COUNT: 30
+      BACKUPS_IF_IDLE: false
     persistence:
       data:
         enabled: true
@@ -63,9 +70,15 @@ spec:
             mountPath: /opt/valheim
     service:
       main:
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        annotations:
+          io.cilium/lb-ipam-ips: "${LB_VALHEIM_1_ADDR}"
         ports:
           http:
-            enabled: false
+            enabled: true
+            port: 9001
+            protocol: TCP
           valheim-1:
             enabled: true
             port: 2456
@@ -85,9 +98,6 @@ spec:
       main:
         enabled: true
         ingressClassName: nginx
-        annotations:
-          forecastle.stakater.com/expose: "true"
-          forecastle.stakater.com/icon: bell-outline
         hosts:
           - host: &host "knellheim.${PUBLIC_DOMAIN}"
             paths:
