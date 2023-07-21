@@ -5,12 +5,8 @@ resources:
   - appdata-pvc.yaml
   - namespace.yaml
   - change-detection
-  - esphome
   - espial
   - forecastle
-  - frigate
-  - home-assistant
-  - homebox
   - mealie
   - miniflux
   - mosquitto
@@ -18,7 +14,6 @@ resources:
   - picoshare
   - shlink
   - whoogle
-  - zwavejs2mqtt
 
 # Add:
 
@@ -29,30 +24,8 @@ resources:
 
 # https://github.com/bemasher/rtlamr
 # https://flightaware.com/adsb/piaware/build/
-# https://github.com/akhilrex/podgrab
 # https://github.com/seanap/Plex-Audiobook-Guide#create-audiobook-library-in-plex
-# https://github.com/advplyr/audiobookshelf
-
-# authentication:
-# https://github.com/authelia/authelia
-# OR https://github.com/goauthentik/authentik
-# https://github.com/nitnelave/lldap
-
-# email backup:
-# http://www.offlineimap.org/screenshots/
-# https://blog.wikichoon.com/2017/05/configuring-offlineimap-dovecot.html
-# alias: https://github.com/simple-login/app
-
-# system backup:
-# https://github.com/restic/restic, https://github.com/Lobaro/restic-backup-docker
-# https://github.com/minio/minio
-
-# system:
-# https://github.com/tiredofit/docker-traefik-cloudflare-companion
 
 # security:
 # https://github.com/stamparm/maltrail
 # https://hub.docker.com/r/tomdesinto/maltrail/
-
-# plausible analytics:
-# https://plausible.io/docs/self-hosting, https://hub.docker.com/r/plausible/analytics, https://github.com/plausible/hosting

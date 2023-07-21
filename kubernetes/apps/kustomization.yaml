@@ -9,13 +9,14 @@ resources:
   - cert-manager
   - comms
   # - debug
-  # # - default
+  # - default
   - dev
   - flux-system
   - games
+  - home
   - kube-system
   - kyverno
-  # # - media
+  # - media
   # - monitoring
   - networking
   - sites

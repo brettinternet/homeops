@@ -1,5 +1,9 @@
 # https://github.com/trapexit/backup-and-recovery-howtos
+
 # TODO: backup email - https://spiderd.io/docs/install-docker.html
+# http://www.offlineimap.org/screenshots/
+# https://blog.wikichoon.com/2017/05/configuring-offlineimap-dovecot.html
+# alias: https://github.com/simple-login/app
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
