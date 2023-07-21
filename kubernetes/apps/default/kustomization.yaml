@@ -4,20 +4,17 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - change-detection
-  - espial
-  - forecastle
-  - mealie
-  - miniflux
-  - mosquitto
-  - paperless-ngx
-  - picoshare
-  - shlink
-  - whoogle
+  - change-detection/ks.yaml
+  - espial/ks.yaml
+  - forecastle/ks.yaml
+  - mealie/ks.yaml
+  - miniflux/ks.yaml
+  - paperless-ngx/ks.yaml
+  - picoshare/ks.yaml
+  - shlink/ks.yaml
+  - whoogle/ks.yaml
 
-# Add:
-
-# - Photos: https://github.com/photoprism/photoprism/blob/develop/docker/examples/docker-compose.yml
+# Photos: https://github.com/photoprism/photoprism/blob/develop/docker/examples/docker-compose.yml
 # If necessary for mobile: https://www.photosync-app.com/premium.html
 # also may consider: https://photoview.github.io/, https://github.com/webreaper/damselfly, https://github.com/photostructure
 # https://github.com/immich-app/immich (has mobile backup!)

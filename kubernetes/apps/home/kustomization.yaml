@@ -8,4 +8,5 @@ resources:
   - frigate/ks.yaml
   - home-assistant/ks.yaml
   - homebox/ks.yaml
+  - mosquitto/ks.yaml
   - zwavejs2mqtt/ks.yaml
