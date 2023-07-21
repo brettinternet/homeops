@@ -4,36 +4,20 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - adguard
-  # - archivebox
   - change-detection
-  # - cloudbeaver
-  # - cyberchef
   - esphome
   - espial
-  # - foldingathome
+  - forecastle
   - frigate
-  # - ghostfolio
-  - hajimari
   - home-assistant
   - homebox
-  # - libreoffice
-  - linkding
   - mealie
   - miniflux
   - mosquitto
-  # - neko
-  # - netbox
-  # - nextcloud
   - paperless-ngx
   - picoshare
-  # - pinry
-  # - rallly
   - shlink
-  - unifi
-  # - webtop
   - whoogle
-  # - wikijs
   - zwavejs2mqtt
 
 # Add:
