@@ -14,3 +14,4 @@ resources:
   - ./nfs/ks.yaml
   - ./nfs-shared/ks.yaml
   - ./smb-shared/ks.yaml
+  - ./unifi/ks.yaml

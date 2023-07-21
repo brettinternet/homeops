@@ -8,7 +8,7 @@ resources:
   - backup
   - cert-manager
   - comms
-  # # - debug
+  # - debug
   # # - default
   - dev
   - flux-system
@@ -20,5 +20,4 @@ resources:
   - networking
   - sites
   - system-upgrade
-  # - trivy
   # - vpn
