@@ -4,6 +4,5 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - cgit
-  - update-mirrors
-  # - plausible
+  - cgit/ks.yaml
+  - update-mirrors/ks.yaml
