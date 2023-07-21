@@ -47,8 +47,8 @@ spec:
   values:
     image:
       # https://hub.docker.com/r/blakeblackshear/frigate
-      repository: docker.io/blakeblackshear/frigate
-      tag: stable-amd64
+      repository: ghcr.io/blakeblackshear/frigate
+      tag: stable
     env:
       TZ: "${TIMEZONE}"
       # https://docs.frigate.video/configuration/index/
