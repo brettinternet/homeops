@@ -4,6 +4,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  - landing
-  # - wordgram
-  # - strapi
+  - landing/ks.yaml

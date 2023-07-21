@@ -7,7 +7,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: mosquitto
-  namespace: default
+  namespace: home
 spec:
   interval: 15m
   chart:
