@@ -16,7 +16,7 @@ resources:
   - home
   - kube-system
   - kyverno
-  # - media
+  - media
   # - monitoring
   - networking
   - sites
