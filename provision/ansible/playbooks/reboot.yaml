@@ -1,6 +1,6 @@
 ---
 - hosts:
-    # - all
+    - all
     # - pi-0
     # - pi-1
     # - pi-2

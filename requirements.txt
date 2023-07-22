@@ -4,3 +4,4 @@ ansible-lint
 jsonpatch
 pyyaml
 netaddr
+jmespath
