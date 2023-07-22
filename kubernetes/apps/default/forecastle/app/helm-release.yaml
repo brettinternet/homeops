@@ -29,7 +29,7 @@ spec:
   # https://github.com/stakater/Forecastle/blob/master/deployments/kubernetes/chart/forecastle/values.yaml
   values:
     ingress:
-      enabled: false
+      enabled: true
       annotations:
         external-dns.home.arpa/enabled: "true"
         auth.home.arpa/enabled: "true"
