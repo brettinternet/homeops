@@ -39,7 +39,8 @@
           delegate_to: "{{ groups['master'][0] }}"
 
         - name: Drain
-          ansible.builtin.command: "kubectl drain --pod-selector='app!=rook-ceph-osd,app!=csi-attacher,app!=csi-provisioner' --ignore-daemonsets --delete-emptydir-data --force --grace-period=300 {{ inventory_hostname }}"
+          ansible.builtin.command: >-
+            kubectl drain --pod-selector='app!=rook-ceph-osd,app!=csi-attacher,app!=csi-provisioner' --ignore-daemonsets --delete-emptydir-data --force --grace-period=300 {{ inventory_hostname }}"
           delegate_to: "{{ groups['master'][0] }}"
           changed_when: false
 
@@ -74,6 +75,9 @@
         kubeconfig: /etc/rancher/k3s/k3s.yaml
         state: uncordon
       delegate_to: "{{ groups['master'][0] }}"
+      when:
+        - allow_drain
+        - k3s_service_result.status.ActiveState == 'active'
 
 - hosts:
     - tars
