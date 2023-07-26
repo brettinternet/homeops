@@ -1,5 +1,4 @@
 {
-  "ansible.ansibleLint.arguments": "-c .github/linters/.ansible-lint",
   "files.associations": {
     "*.json5": "jsonc",
     "**/provision/ansible/**/*.yaml": "ansible",
@@ -12,6 +11,5 @@
     "Kubernetes": "kubernetes/*.yaml"
   },
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": "active",
-  "ansible.ansibleLint.path": "$HOME/.virtualenvs/linux/bin/ansible-lint"
+  "editor.guides.bracketPairs": "active"
 }
