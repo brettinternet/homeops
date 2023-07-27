@@ -32,7 +32,7 @@ spec:
       username: admin
     ingress:
       enabled: true
-      className: internal
+      className: nginx
       hosts:
         - host: &host "gitops.${PUBLIC_DOMAIN}"
           paths:
