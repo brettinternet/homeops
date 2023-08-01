@@ -22,6 +22,7 @@ data:
   LB_SMB_SHARED_ADDR: 10.1.2.109
   LB_JELLYFIN_ADDR: 10.1.2.110
   LB_VALHEIM_1_ADDR: 10.1.2.111
+  LB_VALHEIM_2_ADDR: 10.1.2.112
 
   NFS_SHARED_DIR: /mnt/tank/shared
   SMB_SHARED_DIR: /mnt/tank/shared

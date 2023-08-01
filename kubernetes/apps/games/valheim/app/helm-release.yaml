@@ -112,3 +112,116 @@ spec:
         tls:
           - hosts:
               - *host
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: valheim-brett
+  namespace: games
+spec:
+  interval: 15m
+  chart:
+    spec:
+      chart: app-template
+      version: 1.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    image:
+      repository: docker.io/lloesche/valheim-server
+      tag: latest
+    env:
+      TZ: "${TIMEZONE}"
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      # MODDED
+      VALHEIM_PLUS: true
+      SERVER_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: SERVER_4_NAME
+      SERVER_PASS:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: SERVER_4_PASSWORD
+      ADMINLIST_IDS:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: ADMINLIST_IDS
+      SERVER_PORT: 2456
+      SERVER_PUBLIC: false
+      BACKUPS: true
+      BACKUPS_CRON: "*/20 * * * *"
+      BACKUPS_MAX_COUNT: 30
+      BACKUPS_IF_IDLE: false
+      SUPERVISOR_HTTP: true
+      SUPERVISOR_HTTP_PASS:
+        valueFrom:
+          secretKeyRef:
+            name: valheim
+            key: SUPERVISOR_HTTP_PASS
+    persistence:
+      data:
+        enabled: true
+        existingClaim: appdata
+        subPath:
+          - path: valheim-brett/config
+            mountPath: /config
+          - path: valheim-brett/server
+            mountPath: /opt/valheim
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Cluster
+        annotations:
+          io.cilium/lb-ipam-ips: "${LB_VALHEIM_2_ADDR}"
+        ports:
+          http:
+            enabled: true
+            port: 9001
+            protocol: TCP
+          valheim-1:
+            enabled: true
+            port: 2459
+            protocol: UDP
+            targetPort: 2456
+          valheim-2:
+            enabled: false
+            port: 2460
+            protocol: UDP
+            targetPort: 2457
+          valheim-3:
+            enabled: false
+            port: 2461
+            protocol: UDP
+            targetPort: 2458
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: nginx
+        hosts:
+          - host: &host "brettheim.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - *host
