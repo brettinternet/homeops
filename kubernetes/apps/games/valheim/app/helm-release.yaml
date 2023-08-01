@@ -166,7 +166,7 @@ spec:
           secretKeyRef:
             name: valheim
             key: ADMINLIST_IDS
-      SERVER_PORT: 2456
+      SERVER_PORT: 2459
       SERVER_PUBLIC: false
       BACKUPS: true
       BACKUPS_CRON: "*/20 * * * *"
@@ -202,17 +202,17 @@ spec:
             enabled: true
             port: 2459
             protocol: UDP
-            targetPort: 2456
+            targetPort: 2459
           valheim-2:
             enabled: false
             port: 2460
             protocol: UDP
-            targetPort: 2457
+            targetPort: 2460
           valheim-3:
             enabled: false
             port: 2461
             protocol: UDP
-            targetPort: 2458
+            targetPort: 2461
     ingress:
       main:
         enabled: true
