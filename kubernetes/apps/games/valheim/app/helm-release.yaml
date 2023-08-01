@@ -151,6 +151,7 @@ spec:
       PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
       # MODDED
       VALHEIM_PLUS: true
+      VALHEIM_PLUS_REPO: Grantapher/ValheimPlus
       SERVER_NAME:
         valueFrom:
           secretKeyRef:
