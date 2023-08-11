@@ -6,7 +6,6 @@ resources:
   - namespace.yaml
   - change-detection/ks.yaml
   - espial/ks.yaml
-  - forecastle/ks.yaml
   - mealie/ks.yaml
   - miniflux/ks.yaml
   - paperless-ngx/ks.yaml

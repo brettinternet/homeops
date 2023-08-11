@@ -5,7 +5,7 @@ metadata:
   name: apps-forecastle
   namespace: flux-system
 spec:
-  path: ./kubernetes/apps/default/forecastle/app
+  path: ./kubernetes/apps/kube-system/forecastle/app
   prune: true
   sourceRef:
     kind: GitRepository
