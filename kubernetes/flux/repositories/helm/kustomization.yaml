@@ -24,7 +24,6 @@ resources:
   - kubernetes-dashboard.yaml
   - kyverno.yaml
   - mailu.yaml
-  - metallb.yaml
   - metrics-server.yaml
   - nextcloud.yaml
   - node-feature-discovery.yaml

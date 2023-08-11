@@ -57,7 +57,7 @@ spec:
       # Remote access will look at `ADVERTISE_IP`, but because it's behind a proxy, it's likely that
       # the dashboard will say "Not available outside your network" even though it is... >:(
       # The local IP is also required for direct play with some apps (such as the Apple TV apparently)
-      ADVERTISE_IP: "https://plex.${PUBLIC_DOMAIN},http://${METALLB_PLEX_ADDR}:32400"
+      ADVERTISE_IP: "https://plex.${PUBLIC_DOMAIN},http://${LB_PLEX_ADDR}:32400"
       ALLOWED_NETWORKS: "10.1.1.0/24,10.1.2.0/24,10.42.0.0/16,10.43.0.0/16"
       # Transcoding:
       # https://github.com/NVIDIA/nvidia-container-runtime#nvidia_visible_devices

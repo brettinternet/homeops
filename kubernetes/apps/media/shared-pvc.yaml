@@ -19,7 +19,7 @@ spec:
     readOnly: false
     volumeHandle: shared-nfs-storage-media
     volumeAttributes:
-      server: "${METALLB_NFS_SHARED_ADDR}"
+      server: "${LB_NFS_SHARED_ADDR}"
       share: /
 
 ---
