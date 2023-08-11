@@ -31,13 +31,10 @@ spec:
       namespace: networking
   values:
     image:
-      # https://hub.docker.com/r/linuxserver/tautulli
-      repository: lscr.io/linuxserver/tautulli
-      tag: latest
+      repository: ghcr.io/onedr0p/tautulli
+      tag: "2.12.5"
     env:
       TZ: "${TIMEZONE}"
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     hostname: *app
     service:
       main:
@@ -45,10 +42,13 @@ spec:
           http:
             port: 8181
     persistence:
+      add-ons:
+        enabled: true
+        type: emptyDir
       config:
         enabled: true
         existingClaim: appdata
-        mountPath: /configs
+        mountPath: /config
         subPath: tautulli
     ingress:
       main:
@@ -65,3 +65,14 @@ spec:
         tls:
           - hosts:
               - *host
+    sidecars:
+      jbops:
+        image: registry.k8s.io/git-sync/git-sync:v3.6.9
+        imagePullPolicy: IfNotPresent
+        args:
+          - --repo=https://github.com/blacktwin/JBOPS
+          - --branch=master
+          - --wait=86400 # 1 day
+          - --root=/add-ons
+        volumeMounts:
+          - { name: add-ons, mountPath: /add-ons }
