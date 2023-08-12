@@ -13,16 +13,7 @@ spec:
     - nfsvers=4.2
     - nconnect=16
     - hard
-    - timeo=600
-    - retrans=3
-    - proto=tcp
-    - port=2050
-    - rsize=4096
-    - wsize=4096
-    - noacl
-    - nocto
     - noatime
-    - nodiratime
   csi:
     driver: nfs.csi.k8s.io
     readOnly: false
