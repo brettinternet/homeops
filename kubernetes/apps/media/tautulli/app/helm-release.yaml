@@ -50,6 +50,10 @@ spec:
         existingClaim: appdata
         mountPath: /config
         subPath: tautulli
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
     ingress:
       main:
         enabled: true
