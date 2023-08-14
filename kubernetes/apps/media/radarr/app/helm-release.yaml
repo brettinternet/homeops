@@ -35,7 +35,7 @@ spec:
     image:
       # https://github.com/onedr0p/containers/tree/main/apps/radarr
       repository: ghcr.io/onedr0p/radarr-develop
-      tag: "4.4.4.7068"
+      tag: "4.7.5.7809"
     env:
       TZ: ${TIMEZONE}
     service:
