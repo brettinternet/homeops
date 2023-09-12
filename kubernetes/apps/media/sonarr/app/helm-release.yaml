@@ -88,6 +88,8 @@ spec:
         tls:
           - hosts:
               - *host
+    nodeSelector:
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
     resources:
       requests:
         cpu: 10m
