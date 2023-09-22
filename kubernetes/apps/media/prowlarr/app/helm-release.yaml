@@ -66,3 +66,5 @@ spec:
               - *host
     # podAnnotations:
     #   set-downloads-gateway: "true"
+    nodeSelector:
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
