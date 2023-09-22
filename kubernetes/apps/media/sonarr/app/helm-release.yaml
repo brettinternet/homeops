@@ -35,14 +35,19 @@ spec:
     image:
       # https://github.com/onedr0p/containers/tree/main/apps/sonarr
       repository: ghcr.io/onedr0p/sonarr-develop
-      tag: rolling
+      tag: 4.0.0.669@sha256:df6283fd3d747f8f7ca10dfb13a51b26e0b48cd7dd497e4cf32786d909a2bc6d
     env:
       TZ: ${TIMEZONE}
+      SONARR__AUTHENTICATION_METHOD: External
+      SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+      SONARR__INSTANCE_NAME: Sonarr
+      SONARR__PORT: &port 8989
+      SONARR__LOG_LEVEL: info
     service:
       main:
         ports:
           http:
-            port: &port 8989
+            port: *port
     probes:
       liveness: &probes
         enabled: true
@@ -94,3 +99,5 @@ spec:
         memory: 250Mi
       limits:
         memory: 2000Mi
+    nodeSelector:
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"

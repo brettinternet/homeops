@@ -35,14 +35,19 @@ spec:
     image:
       # https://github.com/onedr0p/containers/tree/main/apps/radarr
       repository: ghcr.io/onedr0p/radarr-develop
-      tag: "4.4.4.7068"
+      tag: 5.0.1.7993@sha256:10a6c584b77dbd447df5f6c3f9fd55466c67b1734ded718b89a38e92bfbae197
     env:
       TZ: ${TIMEZONE}
+      RADARR__AUTHENTICATION_METHOD: External
+      RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+      RADARR__PORT: &port 7878
+      RADARR__INSTANCE_NAME: Radarr
+      RADARR__LOG_LEVEL: info
     service:
       main:
         ports:
           http:
-            port: &port 7878
+            port: *port
     probes:
       liveness: &probes
         enabled: true
@@ -94,3 +99,5 @@ spec:
         cpu: 10m
       limits:
         memory: 2000Mi
+    nodeSelector:
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
