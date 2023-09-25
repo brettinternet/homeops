@@ -44,7 +44,8 @@ spec:
       NO_AUTOUPDATE: "true"
       TUNNEL_CRED_FILE: /etc/cloudflared/tunnel.json
       TUNNEL_METRICS: 0.0.0.0:3333
-      TUNNEL_TRANSPORT_PROTOCOL: auto
+      TUNNEL_TRANSPORT_PROTOCOL: quic
+      TUNNEL_POST_QUANTUM: true
       TUNNEL_ID:
         valueFrom:
           secretKeyRef:
