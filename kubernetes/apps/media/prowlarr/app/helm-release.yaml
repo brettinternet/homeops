@@ -31,18 +31,19 @@ spec:
       namespace: networking
   values:
     image:
-    # https://hub.docker.com/r/linuxserver/prowlarr
-      repository: lscr.io/linuxserver/prowlarr
-      tag: nightly
+      repository: ghcr.io/onedr0p/prowlarr-develop
+      tag: 1.9.1.3981@sha256:ab99cd7c9ff6724dc2e9ac42ad5d10bed5aeb77cb70ccf02f8f3ce3a787cb7eb
     env:
       TZ: ${TIMEZONE}
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      PROWLARR__INSTANCE_NAME: Prowlarr
+      PROWLARR__PORT: &port 9696
+      PROWLARR__LOG_LEVEL: info
+      PROWLARR__AUTHENTICATION_METHOD: External
     service:
       main:
         ports:
           http:
-            port: 9696
+            port: *port
     persistence:
       config:
         enabled: true
