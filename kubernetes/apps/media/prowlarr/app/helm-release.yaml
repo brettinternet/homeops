@@ -39,11 +39,15 @@ spec:
       PROWLARR__PORT: &port 9696
       PROWLARR__LOG_LEVEL: info
       PROWLARR__AUTHENTICATION_METHOD: External
+      PROWLARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
     service:
       main:
         ports:
           http:
             port: *port
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     persistence:
       config:
         enabled: true

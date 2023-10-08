@@ -42,7 +42,7 @@ spec:
       SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
       SONARR__INSTANCE_NAME: Sonarr
       SONARR__PORT: &port 8989
-      SONARR__LOG_LEVEL: info
+      SONARR__LOG_LEVEL: debug
     service:
       main:
         ports:
