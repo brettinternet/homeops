@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - appdata-pvc.yaml
   - namespace.yaml
-  - change-detection/ks.yaml
   - espial/ks.yaml
   - mealie/ks.yaml
   - miniflux/ks.yaml
