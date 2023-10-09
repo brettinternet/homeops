@@ -92,13 +92,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: ingress-nginx
-      namespace: networking
-    - name: shlink-postgres
-      namespace: default
-    - name: shlink-redis
-      namespace: default
   values:
     image:
       # https://hub.docker.com/r/shlinkio/shlink/

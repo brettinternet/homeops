@@ -15,19 +15,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
-    - name: paperless-postgres
-      namespace: default
-    - name: paperless-redis
-      namespace: default
-    - name: paperless-gotenberg
-      namespace: default
-    - name: paperless-tika
-      namespace: default
   install:
     createNamespace: true
     remediation:

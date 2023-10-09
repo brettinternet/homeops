@@ -27,17 +27,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
-    - name: lldap
-      namespace: auth
-    - name: authelia-postgres
-      namespace: auth
-    - name: authelia-redis
-      namespace: auth
   values:
     controller:
       replicas: 1
