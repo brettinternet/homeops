@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - appdata-pvc.yaml
-  - ./adguard/ks.yaml
   - ./cloudflare-ddns/ks.yaml
   - ./cloudflared/ks.yaml
   # - crowdsec
