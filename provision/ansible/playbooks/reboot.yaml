@@ -1,14 +1,6 @@
 ---
 - hosts:
-    - all
-    # - pi-0
-    # - pi-1
-    # - pi-2
-    # - pi-3
-    # - pi-4
-    # - harambe
-    # - tars
-    # - baja
+    - kubernetes
   gather_facts: false
   become: true
   tasks:

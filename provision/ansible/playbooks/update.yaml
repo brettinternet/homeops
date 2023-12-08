@@ -1,5 +1,14 @@
 ---
 - hosts:
+    - proxmox
+  tasks:
+    - name: upgrade
+      ansible.builtin.apt:
+        upgrade: true
+        update_cache: true
+        cache_valid_time: 86400 # one day
+
+- hosts:
     - master
     - worker
   become: true
@@ -67,6 +76,9 @@
 
   roles:
     - role: upgrade
+    - role: zfs
+      when:
+        - zpool is defined
 
   post_tasks:
     - name: Uncordon
@@ -78,10 +90,3 @@
       when:
         - allow_drain
         - k3s_service_result.status.ActiveState == 'active'
-
-- hosts:
-    - tars
-    - baja
-  become: true
-  roles:
-    - zfs

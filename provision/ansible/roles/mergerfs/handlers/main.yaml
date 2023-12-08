@@ -1,0 +1,19 @@
+---
+# - name: mount
+#   ansible.posix.mount:
+#     state: mounted
+#     path: "/mnt/{{ item }}"
+#     opts: exec
+#   with_items:
+#     - parity1
+#     - parity2
+#     - parity3
+#     - disk1
+#     - disk2
+#     - disk3
+#     - disk4
+#     - disk5
+#     - disk6
+
+- name: mount
+  ansible.builtin.command: mount -a
