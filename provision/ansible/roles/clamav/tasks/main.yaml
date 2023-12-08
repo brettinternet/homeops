@@ -1,10 +1,36 @@
 # https://wiki.archlinux.org/title/ClamAV
+# https://github.com/geerlingguy/ansible-role-clamav
 ---
 - name: Install dependencies
   ansible.builtin.package:
     state: latest
     name:
       - clamav
+  register: clamav_install
+
+- name: Setup clamav
+  ansible.builtin.command: freshclam
+  when:
+    - clamav_install.changed
+  register: freshclam_result
+  notify: restart clamav daemon
+  failed_when:
+    - freshclam_result is failed
+    - freshclam_result.stderr.find('locked by another process') != -1
+
+- name: Change configuration
+  ansible.builtin.lineinfile:
+    path: /etc/clamav/clamd.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line | default('') }}"
+    state: "{{ item.state | default('present') }}"
+    mode: 0644
+    create: yes
+  with_items:
+    - regexp: ^.*Example$
+      state: absent
+    - regexp: ^.*LocalSocket .*$
+      line: LocalSocket /var/run/clamav/clamd.ctl
 
 - name: Enable clamav daemon
   ansible.builtin.systemd:

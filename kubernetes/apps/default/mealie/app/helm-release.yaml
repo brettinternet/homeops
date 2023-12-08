@@ -151,15 +151,10 @@ spec:
           failureThreshold: 3
       readiness: *probe
     persistence:
-      # config:
-      #   enabled: true
-      #   mountPath: /app/data
-      #   existingClaim: appdata
-      #   subPath: mealie
       config:
         enabled: true
-        type: hostPath
         mountPath: /app/data
-        hostPath: "${NFS_FAST_TANK_DIR}/appdata/mealie"
+        existingClaim: appdata
+        subPath: mealie
     nodeSelector:
       kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"

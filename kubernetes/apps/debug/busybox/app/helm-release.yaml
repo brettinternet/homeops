@@ -3,12 +3,13 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: busybox
-  namespace: busybox
+  namespace: debug
 spec:
   interval: 15m
   chart:
     spec:
       chart: app-template
+      version: 1.5.1
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -20,7 +21,6 @@ spec:
     remediation:
       retries: 3
   upgrade:
-    cleanupOnFail: true
     remediation:
       retries: 3
   uninstall:

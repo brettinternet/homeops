@@ -5,34 +5,138 @@ all:
       children:
         master:
           hosts:
-            tars:
-              ansible_host: 10.1.2.17
+            k8s-0:
+              ansible_host: 10.1.2.28
               k3s_primary_control_node: true
               zpool: tank
-            baja:
-              ansible_host: 10.1.2.18
+            k8s-2:
+              ansible_host: 10.1.2.31
               zpool: pond
+
         worker:
           hosts:
-            harambe:
-              ansible_host: 10.1.2.16
+            k8s-1:
+              ansible_host: 10.1.2.30
+              snapraid: true
+              fstab_lines:
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1-part1    /mnt/parity1  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi2-part1    /mnt/parity2  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi3-part1    /mnt/parity3  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi4-part1    /mnt/disk1  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi5-part1    /mnt/disk2  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi6-part1    /mnt/disk3  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi7-part1    /mnt/disk4  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi8-part1    /mnt/disk5  xfs defaults  0 0
+                - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi9-part1    /mnt/disk6  xfs defaults  0 0
 
-    # pi-cluster:
-    #   children:
-    #     master:
-    #       hosts:
-    #         pi-0:
-    #           ansible_host: 10.1.2.10
-    #         pi-1:
-    #           ansible_host: 10.1.2.11
-    #     worker:
-    #       hosts:
-    #         pi-2:
-    #           ansible_host: 10.1.2.12
-    #         pi-3:
-    #           ansible_host: 10.1.2.13
-    #         pi-4:
-    #           ansible_host: 10.1.2.14
+    proxmox:
+      hosts:
+        tars:
+          ansible_host: 10.1.2.17
+          disk_passthrough_vmid: 100
+          passthrough_disks:
+            # qm set 100 -scsi1 /dev/disk…
+            - /dev/disk/by-id/scsi-355cd2e414cb43fa3
+            - /dev/disk/by-id/scsi-355cd2e414cbcd2da
+            - /dev/disk/by-id/scsi-35001b448b8b601d4
+            - /dev/disk/by-id/scsi-355cd2e414cb02d5a
+        baja:
+          ansible_host: 10.1.2.18
+        harambe:
+          ansible_host: 10.1.2.16
+          disk_passthrough_vmid: 101
+          passthrough_disks:
+            # parity1
+            - /dev/disk/by-id/ata-HGST_HUH728060ALE600_2QG15S0R
+            # parity2
+            - /dev/disk/by-id/ata-ST10000NE0008-2JM101_ZPW0MSQL
+            # parity3
+            - /dev/disk/by-id/ata-WDC_WD101EFBX-68B0AN0_VHG5TJRM
+            # disk1
+            - /dev/disk/by-id/ata-TOSHIBA_HDWT360_98R0A036FB1G
+            # disk2
+            - /dev/disk/by-id/ata-HGST_HDN724030ALE640_PK2234P9K44G5Y
+            # disk3
+            - /dev/disk/by-id/ata-HGST_HDN724030ALE640_PK2234P9K4M70Y
+            # disk4
+            - /dev/disk/by-id/ata-HGST_HDN724030ALE640_PK2234P9K4M5SY
+            # disk5
+            - /dev/disk/by-id/ata-ST3000DM001-1ER166_Z502ZJH6
+            # disk6
+            - /dev/disk/by-id/ata-HGST_HDN726060ALE610_NAGWMN6Y
+          fan2go_config:
+            fans:
+              - id: chassis_1
+                hwmon:
+                  platform: nct6791-isa-0
+                  index: 1
+                neverStop: true
+                curve: chassis_curve
+                minPwm: 8
+                maxPwm: 45
+              - id: chassis_2
+                hwmon:
+                  platform: nct6791-isa-0
+                  index: 2
+                neverStop: true
+                curve: chassis_curve
+                minPwm: 8
+                maxPwm: 45
+              - id: chassis_3
+                hwmon:
+                  platform: nct6791-isa-0
+                  index: 3
+                neverStop: true
+                curve: chassis_curve
+                minPwm: 8
+                maxPwm: 45
+            sensors:
+              - id: cpu_package
+                hwmon:
+                  platform: coretemp-isa-0
+                  index: 1
+              - id: mobo
+                hwmon:
+                  platform: nct6791-isa-0
+                  index: 1
+              - id: drive
+                hwmon:
+                  platform: drivetemp-scsi-0-80
+                  index: 1
+            curves:
+              - id: cpu_curve
+                linear:
+                  sensor: cpu_package
+                  steps:
+                    - "40": 0
+                    - "70": 18
+                    - "90": 45
+              - id: mobo_curve
+                linear:
+                  sensor: mobo
+                  steps:
+                    - "40": 0
+                    - "70": 18
+                    - "90": 45
+              - id: drive_curve
+                linear:
+                  sensor: drive
+                  steps:
+                    - "40": 0
+                    - "70": 18
+                    - "90": 45
+              - id: chassis_curve
+                function:
+                  type: average
+                  curves:
+                    - cpu_curve
+                    - mobo_curve
+                    - drive_curve
+            statistics:
+              enabled: false
+              port: 9000
+            api:
+              enabled: false
 
     remote:
       hosts:

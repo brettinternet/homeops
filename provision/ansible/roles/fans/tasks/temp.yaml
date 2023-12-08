@@ -1,8 +1,0 @@
----
-- name: Run hddtemp
-  ansible.builtin.command: hddtemp "{{ disk_path }}"
-  register: hddtemp
-
-- name: Get hddtemp output
-  ansible.builtin.debug:
-    msg: "{{ hddtemp.stdout }}"

@@ -1,3 +1,7 @@
+# Note on PCI passthrough:
+# Proxmox requires VT-d enabled in the BIOS and the kernel param `intel_iommu=on`
+# https://forum.proxmox.com/threads/no-iommu-detected-please-activate-it.121788/
+# https://pve.proxmox.com/wiki/PCI_Passthrough#Requirements
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
@@ -77,6 +81,7 @@ spec:
                     # class: ["02"]
                     vendor: ["10c4"]
                     device: ["8a2a"]
+            # `lspci -nn`
             # Hauppauge WinTV-quadHD: https://amazon.com/dp/B01DZSVLTW
             - name: "tuner"
               matchOn:

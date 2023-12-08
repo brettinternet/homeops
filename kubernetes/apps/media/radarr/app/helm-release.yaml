@@ -93,11 +93,5 @@ spec:
         tls:
           - hosts:
               - *host
-    resources:
-      requests:
-        memory: 250Mi
-        cpu: 10m
-      limits:
-        memory: 2000Mi
     nodeSelector:
       kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"

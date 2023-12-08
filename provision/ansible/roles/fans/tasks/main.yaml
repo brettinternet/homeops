@@ -10,12 +10,30 @@
   vars:
     state: latest
     packages: fan2go-git
+  when:
+    - ansible_facts['distribution'] | lower == 'archlinux'
+
+# TODO: identify change below
+# community.general.github_release:
+#   user: markusressel
+#   repo: fan2go
+#   action: latest_release
+
+- name: Get latest fan2go tag
+  ansible.builtin.get_url:
+    url: https://github.com/markusressel/fan2go/releases/latest/download/fan2go-linux-amd64
+    dest: /usr/local/bin/fan2go
+  when:
+    - ansible_facts['distribution'] | lower == 'debian'
 
 - name: Load 'drivetemp' kernel module
   community.general.modprobe:
     name: drivetemp
     state: present
 
+# It's possible you'll need other modules - see output of sensors-detect to determine which ones.
+# My hardware needed: coretemp, nct6775, drivetemp
+# I also added kernel boot parameter: `acpi_enforce_resources=lax`
 # https://wiki.archlinux.org/title/Kernel_module#systemd
 - name: Load 'drivetemp' kernel module at startup
   ansible.builtin.lineinfile:
@@ -37,12 +55,3 @@
 - name: Get fan speeds
   ansible.builtin.command: "fan2go fan --id {{ item }} speed"
   loop: "{{ fan2go_config.fans | map(attribute='id') }}"
-
-- name: Get disk temperatures
-  ansible.builtin.include_tasks: temp.yaml
-  loop: "{{ disks }}"
-  loop_control:
-    loop_var: disk_path
-  when:
-    - disks is defined
-    - disks | length > 0

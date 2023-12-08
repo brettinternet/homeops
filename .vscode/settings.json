@@ -11,5 +11,6 @@
     "Kubernetes": "kubernetes/*.yaml"
   },
   "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": "active"
+  "editor.guides.bracketPairs": "active",
+  "ansible.python.interpreterPath": "/Users/brett/.virtualenvs/homelab/bin/python"
 }

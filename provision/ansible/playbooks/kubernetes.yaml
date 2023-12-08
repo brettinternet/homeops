@@ -1,7 +1,6 @@
 ---
 - hosts:
-    - master
-    - worker
+    - kubernetes
   become: true
   roles:
     - kubernetes

@@ -1,7 +1,42 @@
 ---
-- hosts:
-    - master
-    - worker
+## TODO: setup https://docs.ansible.com/ansible/latest/collections/community/general/proxmox_kvm_module.html
+# - hosts:
+#     - harambe
+#   become: true
+#   roles:
+#     # Manual setup steps required, see roles for details
+#     # - fans
+#   tasks:
+#     - name: Install task dependency
+#       ansible.builtin.package:
+#         name: python3-proxmoxer
+#         state: present
+
+#     # https://pve.proxmox.com/wiki/Passthrough_Physical_Disk_to_Virtual_Machine_(VM)
+#     - name: Passthrough disks
+#       community.general.proxmox_kvm:
+#         api_user: "{{ ansible_user }}"
+#         api_host: "{{ ansible_host }}"
+#         api_token_id: "{{ proxmox_api_token_id }}"
+#         api_token_secret: "{{ proxmox_api_token_secret }}"
+#         vmid: "{{ disk_passthrough_vmid }}"
+#         scsi: "{{ scsi_disks | items2dict }}"
+#         state: current
+#       vars:
+#         scsi_disks:
+#           - key: "scsi{{ index }}"
+#             value: "{{ item }}"
+#       loop: "{{ passthrough_disks }}"
+#       loop_control:
+#         index_var: index
+#       when:
+#        - disk_passthrough_vmid is defined
+#        - passthrough_disks is defined
+#        - passthrough_disks | length > 0
+
+- name: Setup OS and upgrade deps
+  hosts:
+    - kubernetes
   become: true
   roles:
     - os
@@ -9,20 +44,10 @@
       vars:
         allow_reboot: false
 
-- hosts:
-    - tars
-    - harambe
-    - baja
-    # - archie
+- name: Setup hosts
+  hosts:
+    - kubernetes
   become: true
-  # TODO: check smart output for disk errors
-  # https://wiki.archlinux.org/index.php/S.M.A.R.T.
-  # https://github.com/grimmjow8/ansible-smartmontools
-  # https://github.com/LibreIT/ansible-smartd
-  # https://github.com/stuvusIT/smartd
-
-  # TODO: setup powertop auto tune service https://wiki.archlinux.org/index.php/Powertop
-  # TODO: detect bitrot with https://blog.cyplo.dev/posts/2022/06/legdur/
   pre_tasks:
     - name: Check supported distribution
       ansible.builtin.fail:
@@ -69,6 +94,7 @@
           - fd
           - gdu
           - bottom
+          - qemu-guest-agent
 
     - name: Install AUR dependencies
       ansible.builtin.include_role:
@@ -81,7 +107,6 @@
           - needrestart
 
   roles:
-    - clamav
     - ssh
     - etckeeper
     - user
@@ -91,27 +116,25 @@
         default_direnv_lines:
           - export KUBECONFIG="/etc/rancher/k3s/k3s.yaml"
     - cockpit
-    - kubecolor
+    - role: zfs
+      when:
+        - zpool is defined
+    - role: snapraid
+      when:
+        - snapraid
+    - role: mergerfs
+      when:
+        - fstab_lines is defined
+        - fstab_lines | length > 0
+    - role: smart
+      when:
+        - disks is defined
+        - disks | length > 0
+    - clamav
 
-- hosts:
-    - tars
-    - baja
-  become: true
-  roles:
-    - zfs
-
-- hosts:
-    - harambe
-  become: true
-  roles:
-    # Manual setup steps required, see roles for details
-    - fans
-    - snapraid
-    # - mergerfs - fix fstab devices first
-    - smart
-
-- hosts:
-    - baja
+- name: Setup GPUs
+  hosts:
+    - k8s-2
   become: true
   roles:
     - gpu-k8s
