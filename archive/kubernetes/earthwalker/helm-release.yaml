@@ -27,9 +27,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
   values:
     image:
       repository: registry.gitlab.com/glatteis/earthwalker

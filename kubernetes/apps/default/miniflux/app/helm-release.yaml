@@ -21,15 +21,6 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: authelia
-      namespace: auth
-    - name: ingress-nginx
-      namespace: networking
-    - name: miniflux-postgres
-      namespace: default
   values:
     image:
       repository: docker.io/miniflux/miniflux

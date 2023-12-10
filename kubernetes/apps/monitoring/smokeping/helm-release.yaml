@@ -26,11 +26,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
   values:
     image:
       # https://hub.docker.com/r/linuxserver/smokeping

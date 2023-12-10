@@ -8,6 +8,7 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
+- Proxmox physical hosts and Arch Linux virtual hosts
 - Lots of [self-hosted services](./kubernetes/apps)
 - [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([kubernetes directory](./kubernetes))
 - Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./provision/ansible/roles) and [playbooks](./provision/ansible))
@@ -193,6 +194,8 @@ Install `zfs-dkms` and `zfs-utils`, and be sure to have `linux-headers` installe
 #### OS Installation
 
 Use [Ventoy](https://www.ventoy.net) to bundle bootable ISO and IMG images on a single USB.
+
+Setup Proxmox on the hosts with Arch Linux guests. [Post setup for Proxmox](https://tteck.github.io/Proxmox/).
 
 ### Media
 

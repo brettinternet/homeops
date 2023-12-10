@@ -37,17 +37,19 @@ spec:
       namespace: networking
   values:
     image:
-      repository: lscr.io/linuxserver/homeassistant
-      tag: latest
+      repository: ghcr.io/onedr0p/home-assistant
+      tag: 2023.11.3@sha256:a24bb33c22c67e1e89a0cace283af24315ccbedd859199b2048f2fc97bbd1139
     env:
       TZ: "${TIMEZONE}"
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
     securityContext:
       # Privileged securityContext may be required if USB devices are accessed directly through the host machine
       privileged: true
       # capabilities:
       #   add: ["CAP_NET_RAW", "CAP_NET_BIND_SERVICE"]
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
     persistence:
       data:
         enabled: true

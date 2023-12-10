@@ -29,13 +29,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
-    - name: archivebox-sonic
-      namespace: default
   values:
     image:
       repository: docker.io/archivebox/archivebox

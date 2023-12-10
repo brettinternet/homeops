@@ -25,9 +25,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
   values:
     image:
       repository: lscr.io/linuxserver/babybuddy

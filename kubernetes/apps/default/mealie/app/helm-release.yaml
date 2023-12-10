@@ -25,18 +25,15 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: kyverno
-      namespace: kyverno
-    - name: ingress-nginx
-      namespace: networking
   values:
     image:
-      repository: docker.io/hkotel/mealie
-      tag: frontend-v1.0.0beta-5
+      repository: ghcr.io/mealie-recipes/mealie
+      tag: v1.0.0-RC1.1
     env:
       TZ: "${TIMEZONE}"
-      API_URL: "http://mealie-api.default.svc.cluster.local:9000"
+      WEB_CONCURRENCY: 1
+      MAX_WORKERS: 1
+
       # Light Mode Config
       THEME_LIGHT_PRIMARY: "#005AE6"
       THEME_LIGHT_ACCENT: "#FEBF00"
@@ -53,11 +50,55 @@ spec:
       THEME_DARK_INFO: "#1976D2"
       THEME_DARK_WARNING: "#FF6D00"
       THEME_DARK_ERROR: "#EF5350"
+
+      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      TOKEN_TIME: 720 # 24 hours * 30 days
+
+      BASE_URL: "https://recipes.${PUBLIC_DOMAIN}"
+      AUTO_BACKUP_ENABLED: true
+      ALLOW_SIGNUP: false
+      SMTP_HOST: maddy.comms.svc.cluster.local
+      SMTP_PORT: 2525
+      SMTP_AUTH_STRATEGY: NONE
+      SMTP_FROM_NAME: Recipes
+      SMTP_FROM_EMAIL: "${SMTP_USER}"
+      LDAP_AUTH_ENABLED: true
+      LDAP_SERVER_URL: "ldap://lldap.auth.svc.cluster.local:3890"
+      LDAP_TLS_INSECURE: true
+      LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
+      LDAP_BASE_DN: dc=home,dc=arpa
+      LDAP_ADMIN_FILTER: cn=admin,ou=people,dc=home,dc=arpa
+
+      DB_ENGINE: postgres
+      POSTGRES_SERVER: mealie-postgres.default.svc.cluster.local
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: mealie
+      POSTGRES_USER: mealie
+      POSTGRES_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: mealie
+            key: POSTGRES_PASSWORD
     service:
       main:
         ports:
           http:
-            port: 3000
+            port: &port 9000
+    # https://github.com/mealie-recipes/mealie/blob/095edef95e81f0f51fa5b9a0b4b3ced769878a82/mealie/scripts/healthcheck.py
+    probes:
+      liveness: &probe
+        enabled: true
+        custom: true
+        spec:
+          httpGet:
+            path: /api/app/about
+            port: *port
+          initialDelaySeconds: 0
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+      readiness: *probe
     persistence:
       config:
         enabled: true
@@ -80,12 +121,14 @@ spec:
         tls:
           - hosts:
               - *host
+    nodeSelector:
+      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: mealie-api
+  name: mealie-postgres
   namespace: default
 spec:
   interval: 15m
@@ -97,69 +140,46 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  maxHistory: 2
   install:
     createNamespace: true
     remediation:
-      retries: 3
+      retries: 5
   upgrade:
-    cleanupOnFail: true
     remediation:
       retries: 3
-  uninstall:
-    keepHistory: false
   values:
     image:
-      repository: docker.io/hkotel/mealie
-      tag: api-v1.0.0beta-5
+      repository: library/postgres
+      tag: "10.10"
     env:
-      TZ: "${TIMEZONE}"
-      PUID: "${SECURITY_CONTEXT_RUN_AS_USER}"
-      PGID: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
-      TOKEN_TIME: 720 # 24 hours * 30 days
-      BASE_URL: "https://recipes.${PUBLIC_DOMAIN}"
-      AUTO_BACKUP_ENABLED: true
-      ALLOW_SIGNUP: false
-      SMTP_HOST: maddy.comms.svc.cluster.local
-      SMTP_PORT: 2525
-      SMTP_AUTH_STRATEGY: NONE
-      SMTP_FROM_NAME: Recipes
-      SMTP_FROM_EMAIL: "${SMTP_USER}"
-      LDAP_AUTH_ENABLED: true
-      LDAP_SERVER_URL: "ldap://lldap.auth.svc.cluster.local:3890"
-      LDAP_TLS_INSECURE: true
-      LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
-      LDAP_BASE_DN: dc=home,dc=arpa
-      LDAP_ADMIN_FILTER: cn=admin,ou=people,dc=home,dc=arpa
+      - name: POSTGRES_USER
+        value: mealie
+      - name: POSTGRES_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mealie
+            key: POSTGRES_PASSWORD
+      - name: POSTGRES_DB
+        value: mealie
+      - name: PGDATA
+        value: /var/lib/postgresql/data
+    podSecurityContext:
+      runAsUser: "${SECURITY_CONTEXT_RUN_AS_USER}"
+      runAsGroup: "${SECURITY_CONTEXT_RUN_AS_GROUP}"
+      fsGroup: "${SECURITY_CONTEXT_FS_GROUP}"
     service:
       main:
+        enabled: true
         ports:
           http:
-            port: &port 9000
-    # https://github.com/mealie-recipes/mealie/blob/095edef95e81f0f51fa5b9a0b4b3ced769878a82/mealie/scripts/healthcheck.py
-    probes:
-      liveness: &probe
-        enabled: true
-        custom: true
-        spec:
-          httpGet:
-            path: /api/app/about
-            port: *port
-          initialDelaySeconds: 0
-          periodSeconds: 10
-          timeoutSeconds: 1
-          failureThreshold: 3
-      readiness: *probe
+            enabled: true
+            port: 5432
+            protocol: TCP
     persistence:
-      # config:
-      #   enabled: true
-      #   mountPath: /app/data
-      #   existingClaim: appdata
-      #   subPath: mealie
-      config:
+      data:
         enabled: true
-        type: hostPath
-        mountPath: /app/data
-        hostPath: "${NFS_FAST_TANK_DIR}/appdata/mealie"
-    nodeSelector:
-      kubernetes.io/hostname: "${TANK_STORAGE_HOSTNAME}"
+        mountPath: /var/lib/postgresql/data
+        existingClaim: appdata
+        subPath: mealie_db
+    podAnnotations:
+      secret.reloader.stakater.com/reload: mealie

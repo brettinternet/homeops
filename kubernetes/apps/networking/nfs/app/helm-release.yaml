@@ -1,4 +1,6 @@
 # https://wiki.archlinux.org/title/NFS
+# TODO: perhaps try marketplace.gcr.io/google/nfs-server1:latest
+# https://console.cloud.google.com/gcr/images/cloud-marketplace/GLOBAL/google/nfs-server1
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease

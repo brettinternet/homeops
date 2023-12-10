@@ -1,4 +1,6 @@
 ---
+# PCIe passthrough in Proxmox https://3os.org/infrastructure/proxmox/gpu-passthrough/igpu-passthrough-to-vm/#windows-virtual-machine-igpu-passthrough-configuration
+
 ## TODO: setup https://docs.ansible.com/ansible/latest/collections/community/general/proxmox_kvm_module.html
 # - hosts:
 #     - harambe

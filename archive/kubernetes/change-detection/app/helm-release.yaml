@@ -28,11 +28,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: ingress-nginx
-      namespace: networking
-    - name: change-detection-browser
-      namespace: default
   values:
     image:
       repository: ghcr.io/dgtlmoon/changedetection.io
