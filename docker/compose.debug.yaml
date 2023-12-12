@@ -1,0 +1,48 @@
+version: "3.7"
+
+x-options: &options
+  profiles:
+    - &profile debug
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  restart: unless-stopped
+  networks:
+    - default
+
+services:
+  echo:
+    <<: *options
+    image: jmalloc/echo-server:latest
+    container_name: echo
+    environment:
+      <<: *environment
+      PORT: 80
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.echo.tls.certresolver: public
+      traefik.http.routers.echo.rule: Host(`echo.${PUBLIC_DOMAIN}`)
+      traefik.http.services.echo.loadbalancer.server.port: 80
+      traefik.http.services.echo.loadbalancer.server.scheme: http
+
+  echo-priv:
+    <<: *options
+    image: jmalloc/echo-server:latest
+    container_name: echo-priv
+    environment:
+      <<: *environment
+      PORT: 80
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.echo-priv.middlewares: ipallowlist@docker
+      traefik.http.routers.echo-priv.tls.certresolver: private
+      traefik.http.routers.echo-priv.rule: Host(`echo.${PRIVATE_DOMAIN}`)
+      traefik.http.services.echo-priv.loadbalancer.server.port: 80
+      traefik.http.services.echo-priv.loadbalancer.server.scheme: http
+
+  busybox:
+    <<: *options
+    image: library/busybox:latest
+    container_name: busybox
+    command:
+      - sleep
+      - "3600"

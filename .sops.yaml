@@ -5,6 +5,12 @@ creation_rules:
     key_groups:
       - age:
           - age148wprsnqjq8jughvywnzmvs8gffhrkendpr7g60q8u4rdsj4jvuqk7ltrs
+  - path_regex: docker/sops\.env
+    key_groups:
+      - age:
+          - age148wprsnqjq8jughvywnzmvs8gffhrkendpr7g60q8u4rdsj4jvuqk7ltrs
+
+  # Deprecated
   - path_regex: kubernetes/.*\.sops\.ya?ml
     encrypted_regex: "^(data|stringData)$"
     key_groups:

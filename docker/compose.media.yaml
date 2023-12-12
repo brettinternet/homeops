@@ -1,0 +1,61 @@
+# version: "3.7"
+
+# # volumes:
+# #   data:
+# #     driver_opts:
+# #       type: nfs
+# #       o: addr=x.x.x.x,nfsvers=4
+# #       device: :/nfs_export/docker/servicename
+
+# x-options: &options
+#   profiles:
+#     - &profile media
+#   environment: &environment
+#     TZ: "${TIMEZONE}"
+#   restart: unless-stopped
+#   networks:
+#     - default
+
+# services:
+#   # https://docs.linuxserver.io/images/docker-plex
+#   plex:
+#     <<: *options
+#     image: linuxserver/plex:1.32.8@sha256:8e038b79487919c2aefe976b690067df88113aec21a3d490837584f958c72412
+#     restart: unless-stopped
+#     environment:
+#       <<: *environment
+#       PUID: "${PUID}"
+#       PGID: "${PGID}"
+#     networks:
+#       - default
+#     volumes:
+#       - "${CONFIG_DIR}/plex:/config"
+#       - "${MEDIA_DIR}:/media"
+#     tmpfs:
+#       - "/tmp"
+#   #   labels:
+#   #     traefik.enable: "true"
+#   #     traefik.http.routers.plex.tls.certresolver: public
+#   #     traefik.http.routers.plex.rule: Host(`${PLEX_HOST}`)
+#   #     traefik.http.services.plex.loadbalancer.server.port: 32400
+#   #   ports:
+#   #     - "127.0.0.1:32400:32400/tcp"
+
+#   nfs-media:
+#     image: itsthenetwork/nfs-server-alpine:latest
+#     restart: unless-stopped
+#     privileged: true
+#     cap_add:
+#       - SYS_ADMIN
+#       - SETPCAP
+#     environment:
+#       <<: *environment
+#       SHARED_DIRECTORY: /data
+#     volumes:
+#       - "${CONFIG_DIR}/homeassistant:/data"
+#     devices:
+#       - /dev/serial/by-id/${DEVICE_ID_ZWAVE}:/dev/ttyUSB0
+#       - /dev/serial/by-id/${DEVICE_ID_ZIGBEE}:/dev/ttyUSB1
+#     deploy:
+#       placement:
+#         constraints: [node.role == manager]

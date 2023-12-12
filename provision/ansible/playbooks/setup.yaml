@@ -38,7 +38,7 @@
 
 - name: Setup OS and upgrade deps
   hosts:
-    - kubernetes
+    - docker
   become: true
   roles:
     - os
@@ -48,7 +48,7 @@
 
 - name: Setup hosts
   hosts:
-    - kubernetes
+    - docker
   become: true
   pre_tasks:
     - name: Check supported distribution
@@ -69,6 +69,7 @@
           - git
           - grub
           - vim
+          - neovim
           - linux
           - linux-headers
           - linux-firmware
@@ -96,6 +97,9 @@
           - fd
           - gdu
           - bottom
+          - sops
+          - go-task
+          - docker
           - qemu-guest-agent
 
     - name: Install AUR dependencies
@@ -128,15 +132,18 @@
       when:
         - fstab_lines is defined
         - fstab_lines | length > 0
-    - role: smart
-      when:
-        - disks is defined
-        - disks | length > 0
     - clamav
 
-- name: Setup GPUs
-  hosts:
-    - k8s-2
-  become: true
-  roles:
-    - gpu-k8s
+  post_tasks:
+    - name: Copy docker files
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../docker"
+        dest: "{{ ansible_user['home'] }}/compose"
+        mode: "0644"
+#
+# - name: Setup GPUs
+#   hosts:
+#     - gertrude
+#   become: true
+#   roles:
+#     - gpu-k8s

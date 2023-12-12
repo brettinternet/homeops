@@ -1,0 +1,57 @@
+---
+version: "3"
+
+vars:
+  PROJECT: homelab
+  SECRETS_FILE: sops.env
+  COMPOSE_FILES:
+    sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
+
+env:
+  COMPOSE_PROFILES: backup,sites
+  COMPOSE_HTTP_TIMEOUT: 300
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task -l
+
+  configs:
+    silent: true
+    cmds:
+      - "echo 'Compose files:\n\n{{ .COMPOSE_FILES }}'"
+
+  dc:
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose {{ .CLI_ARGS }}'
+    requires:
+      vars: [SECRETS_FILE]
+
+  pull:
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose pull'
+    requires:
+      vars: [SECRETS_FILE]
+
+  up:
+    aliases:
+      - deploy
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker compose -p {{ .PROJECT }} -f {{ .FILES_ARGS }} up -d --remove-orphans'
+    vars:
+      FILES_ARGS: '{{ .COMPOSE_FILES | splitLines | join " -f " }}'
+    requires:
+      vars: [SECRETS_FILE]
+
+  stop:
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose down --remove-orphans'
+    requires:
+      vars: [SECRETS_FILE]
+
+  down:
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose down --remove-orphans --rmi all'
+    requires:
+      vars: [SECRETS_FILE]

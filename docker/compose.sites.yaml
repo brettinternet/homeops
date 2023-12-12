@@ -1,0 +1,24 @@
+version: "3.7"
+
+x-options: &options
+  profiles:
+    - &profile sites
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  restart: unless-stopped
+  networks:
+    - default
+
+services:
+  landing:
+    <<: *options
+    image: library/httpd:alpine
+    container_name: landing
+    volumes:
+      - "${CONFIG_DIR}/sites/landing/index.html:/usr/local/apache2/htdocs/index.html:ro"
+      - "${CONFIG_DIR}/sites/landing/favicon.ico:/usr/local/apache2/htdocs/favicon.ico:ro"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.echo.tls.certresolver: public
+      traefik.http.routers.echo.rule: Host(`${PUBLIC_DOMAIN}`)
+      traefik.http.services.echo.loadbalancer.server.port: 80

@@ -3,7 +3,7 @@
     "*.json5": "jsonc",
     "**/provision/ansible/**/*.yaml": "ansible",
     "**/provision/terraform/**/*.tf": "terraform",
-    "**/kubernetes/**/*.sops.toml": "plaintext"
+    "*.env": "properties"
   },
   "prettier.configPath": ".github/linters/.prettierrc.yaml",
   "prettier.ignorePath": ".github/linters/.prettierignore",
@@ -12,5 +12,5 @@
   },
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": "active",
-  "ansible.python.interpreterPath": "~/.virtualenvs/homelab/bin/python"
+  "ansible.python.interpreterPath": "/Users/brett/.virtualenvs/homelab/bin/python"
 }

@@ -1,6 +1,6 @@
 ---
 - hosts:
-    - kubernetes
+    - docker
   gather_facts: false
   become: true
   tasks:

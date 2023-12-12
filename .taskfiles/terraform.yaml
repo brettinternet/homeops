@@ -10,28 +10,34 @@ tasks:
     cmds:
       - task: terraform-init
         vars:
-          TERRAFORM_SUBDIR: cloudflare
+          TERRAFORM_SUBDIR: tunnel
       - task: terraform-init
         vars:
           TERRAFORM_SUBDIR: bastion
 
-  cloudflare-init:
+  tunnel:
+    cmds:
+      - task: tunnel-init
+      - task: tunnel-plan
+      - task: tunnel-apply
+
+  tunnel-init:
     cmds:
       - task: terraform-init
         vars:
-          TERRAFORM_SUBDIR: cloudflare
+          TERRAFORM_SUBDIR: tunnel
 
-  cloudflare-plan:
+  tunnel-plan:
     cmds:
       - task: terraform-plan
         vars:
-          TERRAFORM_SUBDIR: cloudflare
+          TERRAFORM_SUBDIR: tunnel
 
-  cloudflare-apply:
+  tunnel-apply:
     cmds:
       - task: terraform-apply
         vars:
-          TERRAFORM_SUBDIR: cloudflare
+          TERRAFORM_SUBDIR: tunnel
 
   bastion-init:
     cmds:

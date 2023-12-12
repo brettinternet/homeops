@@ -1,0 +1,117 @@
+version: "3.7"
+
+x-options: &options
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  restart: unless-stopped
+  networks:
+    - default
+
+x-remote-environment: &remote-environment
+  <<: *environment
+  RESTIC_REPOSITORY: "${REMOTE_RESTIC_REPOSITORY}"
+  RESTIC_PASSWORD: "${REMOTE_RESTIC_PASSWORD}"
+  B2_ACCOUNT_ID: "${B2_ACCOUNT_ID}"
+  B2_ACCOUNT_KEY: "${B2_ACCOUNT_KEY}"
+
+x-local-environment: &local-environment
+  <<: *environment
+  RESTIC_PASSWORD: "${LOCAL_RESTIC_PASSWORD}"
+
+services:
+  restic-remote-backup:
+    <<: *options
+    image: mazzolino/restic:latest
+    container_name: restic-remote-backup
+    profiles:
+      - backup
+    cap_add:
+      - SYS_ADMIN
+    environment:
+      <<: *remote-environment
+      BACKUP_CRON: "0 0 0 * * *"
+      # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html
+      # https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html#backblaze-b2
+      RESTIC_BACKUP_SOURCES: /data
+      RESTIC_BACKUP_ARGS: >-
+        --tag ${PUBLIC_DOMAIN}
+        --tag restic
+        --exclude='.Trash*'
+        --verbose
+      RESTIC_FORGET_ARGS: >-
+        --keep-last 10
+        --keep-daily 7
+        --keep-weekly 5
+        --keep-monthly 12
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
+      POST_COMMANDS_FAILURE: |-
+        curl -s -d "The remote restic backup failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
+    volumes:
+      - "${CONFIG_DIR}/espial:/data/espial"
+      - "${CONFIG_DIR}/homeassistant:/data/homeassistant"
+      - "${CONFIG_DIR}/lldap:/data/lldap"
+      - "${CONFIG_DIR}/mealie:/data/mealie"
+      - "${CONFIG_DIR}/miniflux_db:/data/miniflux_db"
+      - "${CONFIG_DIR}/unifi/data/backup/autobackup:/data/unifi-autobackups"
+      - "${CONFIG_DIR}/valheim/saves:/data/valheim/saves"
+      - "${CONFIG_DIR}/valheim2/saves:/data/valheim2/saves"
+      - "${CONFIG_DIR}/valheim-knell/config/backups:/data/valheim-knell/backups"
+      - "${CONFIG_DIR}/valheim-brett/config/backups:/data/valheim-brett/backups"
+
+  restic-remote-prune:
+    <<: *options
+    image: mazzolino/restic:latest
+    container_name: restic-remote-prune
+    profiles:
+      - backup
+    environment:
+      <<: *remote-environment
+      PRUNE_CRON: "0 0 2 * * *"
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/start"
+      POST_COMMANDS_FAILURE: |-
+        curl -s -d "The remote restic prune failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}"
+
+  restic-remote-check:
+    <<: *options
+    image: mazzolino/restic:latest
+    container_name: restic-remote-check
+    profiles:
+      - backup
+    environment:
+      <<: *remote-environment
+      CHECK_CRON: "0 0 4 * * *"
+      RESTIC_CHECK_ARGS: >-
+        --read-data-subset=10%
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/start"
+      POST_COMMANDS_FAILURE: |-
+        curl -s -d "The remote restic check failed" -H "Title: Backups" -H "Tags: rotating_light" "http://ntfy/homelab"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}"
+
+  restic-remote-restore:
+    <<: *options
+    image: mazzolino/restic:latest
+    container_name: restic-remote-restore
+    profiles:
+      - restore
+    environment: *remote-environment
+    command:
+      - restic
+      - restore
+      - --include
+      - /data
+      - --target
+      - /data
+      - latest
+    volumes:
+      - "${CONFIG_DIR}/restored:/data"
