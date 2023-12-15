@@ -8,10 +8,10 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
-- Proxmox physical hosts and Arch Linux virtual hosts
-- Lots of self-hosted services
-- Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./provision/ansible/roles) and [playbooks](./provision/ansible))
-- Terraform DNS records ([terraform](./provision/terraform))
+- Proxmox physical hosts and Arch Linux virtual guests
+- Lots of [self-hosted services](./docker) in a portable setup
+- Ansible node provisioning and container deployments (Ansible [roles](./provision/ansible/roles) and [compose files](./docker))
+- [Terraform DNS records setup](./provision/terraform)
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
 - [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)

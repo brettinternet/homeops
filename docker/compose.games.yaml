@@ -1,30 +1,30 @@
-version: "3.7"
-
+---
 x-options: &options
-  profiles:
-    - &profile games
+  networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
-  restart: unless-stopped
-  networks:
-    - default
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
 
 services:
   valheim1:
     <<: *options
     image: lloesche/valheim-server:latest
-    container_name: knellheim
     environment:
       <<: *environment
       PUID: "${PUID}"
       PGID: "${PGID}"
       SERVER_PORT: 2456
-      SERVER_PUBLIC: false
-      BACKUPS: true
+      SERVER_PUBLIC: "false"
+      BACKUPS: "true"
       BACKUPS_CRON: "*/20 * * * *"
       BACKUPS_MAX_COUNT: 30
-      BACKUPS_IF_IDLE: false
-      SUPERVISOR_HTTP: true
+      BACKUPS_IF_IDLE: "false"
+      SUPERVISOR_HTTP: "true"
       SUPERVISOR_HTTP_PASS: "${VALHEIM_SUPERVISOR_HTTP_PASS}"
       SERVER_NAME: "${VALHEIM_SERVER_3_NAME}"
       SERVER_PASS: "${VALHEIM_SERVER_3_PASSWORD}"
@@ -38,27 +38,26 @@ services:
       - 2458:2458/udp
     labels:
       traefik.enable: "true"
-      traefik.http.routers.valheim1.tls.certresolver: private
       traefik.http.routers.valheim1.rule: Host(`knellheim.${PRIVATE_DOMAIN}`)
       traefik.http.services.valheim1.loadbalancer.server.port: 9001
+      traefik.http.routers.valheim1.entrypoints: websecure
 
   valheim2:
     <<: *options
     image: lloesche/valheim-server:latest
-    container_name: brettheim
     environment:
       <<: *environment
       PUID: "${PUID}"
       PGID: "${PGID}"
-      VALHEIM_PLUS: true
+      VALHEIM_PLUS: "true"
       VALHEIM_PLUS_REPO: Grantapher/ValheimPlus
       SERVER_PORT: 2459
-      SERVER_PUBLIC: false
-      BACKUPS: true
+      SERVER_PUBLIC: "false"
+      BACKUPS: "true"
       BACKUPS_CRON: "*/20 * * * *"
       BACKUPS_MAX_COUNT: 30
-      BACKUPS_IF_IDLE: false
-      SUPERVISOR_HTTP: true
+      BACKUPS_IF_IDLE: "false"
+      SUPERVISOR_HTTP: "true"
       SUPERVISOR_HTTP_PASS: "${VALHEIM_SUPERVISOR_HTTP_PASS}"
       SERVER_NAME: "${VALHEIM_SERVER_4_NAME}"
       SERVER_PASS: "${VALHEIM_SERVER_4_PASSWORD}"
@@ -72,6 +71,6 @@ services:
       - 2461:2461/udp
     labels:
       traefik.enable: "true"
-      traefik.http.routers.valheim1.tls.certresolver: private
-      traefik.http.routers.valheim1.rule: Host(`brettheim.${PRIVATE_DOMAIN}`)
-      traefik.http.services.valheim1.loadbalancer.server.port: 9001
+      traefik.http.routers.valheim2.rule: Host(`brettheim.${PRIVATE_DOMAIN}`)
+      traefik.http.services.valheim2.loadbalancer.server.port: 9001
+      traefik.http.routers.valheim2.entrypoints: websecure

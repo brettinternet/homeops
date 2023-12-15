@@ -4,12 +4,24 @@ version: "3"
 vars:
   PROJECT: homelab
   SECRETS_FILE: sops.env
-  COMPOSE_FILES:
-    sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
+  # COMPOSE_FILES:
+  #   sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
+  COMPOSE_FILES: |-
+    compose.yaml
+    compose.utils.yaml
+  # compose.home.yaml
+  # compose.sites.yaml
+  # compose.backup.yaml
+  # compose.monitoring.yaml
+  COMPOSE_FILES_ARGS: '-f {{ .COMPOSE_FILES | splitLines | join " -f " }}'
+  DOCKER_COMMAND: "docker -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}"
+  COMPOSE_COMMAND: "docker-compose -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}"
+  DEPLOY_FILES_ARGS: '-c {{ .COMPOSE_FILES | splitLines | join " -c " }}'
 
-env:
-  COMPOSE_PROFILES: backup,sites
-  COMPOSE_HTTP_TIMEOUT: 300
+# env:
+  # Profiles apparently unsupported in stack configs https://github.com/docker/cli/issues/4721
+  # COMPOSE_PROFILES: backup,utils,home,monitoring
+  # COMPOSE_HTTP_TIMEOUT: 300
 
 tasks:
   default:
@@ -18,40 +30,71 @@ tasks:
       - task -l
 
   configs:
+    desc: List compose configuration files
     silent: true
     cmds:
       - "echo 'Compose files:\n\n{{ .COMPOSE_FILES }}'"
 
-  dc:
+  d:
+    desc: Run docker command with secrets in the environment
     cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose {{ .CLI_ARGS }}'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .DOCKER_COMMAND }} {{ .CLI_ARGS }}'
+    requires:
+      vars: [SECRETS_FILE]
+
+  dc:
+    desc: Run docker-compose command with secrets in the environment
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} {{ .CLI_ARGS }}'
     requires:
       vars: [SECRETS_FILE]
 
   pull:
+    desc: Pull images on docker host
     cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose pull'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} pull'
     requires:
       vars: [SECRETS_FILE]
 
   up:
-    aliases:
-      - deploy
+    desc: Deploy compose files; This targets a single node 'DOCKER_HOST' or locahost.
     cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker compose -p {{ .PROJECT }} -f {{ .FILES_ARGS }} up -d --remove-orphans'
-    vars:
-      FILES_ARGS: '{{ .COMPOSE_FILES | splitLines | join " -f " }}'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
     requires:
       vars: [SECRETS_FILE]
 
   stop:
+    desc: Stop compose containers on host
     cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose down --remove-orphans'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} down --remove-orphans'
     requires:
       vars: [SECRETS_FILE]
 
   down:
+    desc: Stop and clean up containers on host
     cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker-compose down --remove-orphans --rmi all'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} down --remove-orphans --rmi all'
+    requires:
+      vars: [SECRETS_FILE]
+
+  deploy:
+    desc: Deploy stack compose; This targets a swarm.
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker stack deploy {{ .DEPLOY_FILES_ARGS }} --prune {{ .PROJECT }}'
+    requires:
+      vars: [SECRETS_FILE]
+
+  verify:
+    desc: Verify compose files; Stack appears to have stricter requirements for compose files.
+    cmds:
+      - for: { var: COMPOSE_FILES }
+        cmd: sops exec-env {{ .SECRETS_FILE }} 'docker stack config -c {{ .ITEM }}'
+    requires:
+      vars: [SECRETS_FILE]
+
+  undeploy:
+    desc: Deploy stack compose
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} 'docker stack rm {{ .PROJECT }}'
     requires:
       vars: [SECRETS_FILE]

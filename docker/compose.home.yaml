@@ -1,20 +1,19 @@
 ---
-version: "3.7"
-
 x-options: &options
-  profiles:
-    - &profile home
+  networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
-  restart: unless-stopped
-  networks:
-    - default
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
 
 services:
   homeassistant:
     <<: *options
     image: ghcr.io/home-assistant/home-assistant:stable
-    container_name: homeassistant
     cap_add:
       - CAP_NET_RAW
       - CAP_NET_BIND_SERVICE
@@ -31,29 +30,27 @@ services:
       - 8123:8123/tcp
     labels:
       traefik.enable: "true"
-      traefik.http.routers.homeassistant.tls.certresolver: public
       traefik.http.routers.homeassistant.rule: Host(`home.${PUBLIC_DOMAIN}`)
       traefik.http.services.homeassistant.loadbalancer.server.port: 8123
+      traefik.http.routers.homeassistant.entrypoints: websecure
 
   esphome:
     <<: *options
     image: esphome/esphome:latest
-    container_name: esphome
     environment:
       <<: *environment
-      ESPHOME_DASHBOARD_USE_PING: true
+      ESPHOME_DASHBOARD_USE_PING: "true"
     volumes:
       - "${CONFIG_DIR}/esphome:/config"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.esphome.tls.certresolver: private
       traefik.http.routers.esphome.rule: Host(`esphome.${PRIVATE_DOMAIN}`)
       traefik.http.services.esphome.loadbalancer.server.port: 6052
+      traefik.http.routers.esphome.entrypoints: websecure
 
   frigate:
     <<: *options
     image: ghcr.io/blakeblackshear/frigate:stable
-    container_name: frigate
     environment:
       <<: *environment
       FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD}"
@@ -64,19 +61,18 @@ services:
       - type: tmpfs
         target: /tmp/cache
         tmpfs:
-          size: 4gb
+          size: 4000000000
     shm_size: 1gb
     # 1935
     labels:
       traefik.enable: "true"
-      traefik.http.routers.frigate.tls.certresolver: private
       traefik.http.routers.frigate.rule: Host(`video.${PRIVATE_DOMAIN}`)
       traefik.http.services.frigate.loadbalancer.server.port: 5000
+      traefik.http.routers.frigate.entrypoints: websecure
 
   mosquitto:
     <<: *options
     image: eclipse-mosquitto:latest
-    container_name: mosquitto
     volumes:
       - "${CONFIG_DIR}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
       - "${CONFIG_DIR}/mosquitto/data:/mosquitto/data"

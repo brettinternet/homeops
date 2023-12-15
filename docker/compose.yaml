@@ -1,12 +1,19 @@
 ---
-version: "3.7"
-
-x-options: &options
+x-service: &service
+  networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
-  restart: unless-stopped
-  networks:
-    - default
+  deploy: &deploy
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
+
+x-config-placement: &deploy_placement
+  placement:
+    constraints:
+      - node.hostname == ${CONFIG_HOSTNAME}
 
 networks:
   default:
@@ -16,260 +23,133 @@ networks:
         - subnet: 192.168.0.0/24
 
 services:
-  watchtower:
-    <<: *options
-    image: containrrr/watchtower
-    container_name: watchtower
+  diun:
+    <<: *service
+    image: crazymax/diun:latest
+    depends_on: [socket-proxy]
+    command: serve
+    environment:
+      <<: *environment
+      LOG_LEVEL: info
+      LOG_JSON: "false"
+      DIUN_WATCH_WORKERS: 20
+      DIUN_WATCH_SCHEDULE: 0 */6 * * *
+      DIUN_WATCH_JITTER: 30s
+      DIUN_PROVIDERS_DOCKER: "true"
+      DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
+      DIUN_PROVIDERS_DOCKER_ENDPOINT: tcp://socket-proxy:2375
+      DIUN_NOTIF_NTFY_ENDPOINT: http://ntfy
+      DIUN_NOTIF_NTFY_TOKEN: "${NTFY_DIUN_TOKEN}"
+      DIUN_NOTIF_NTFY_TOPIC: homelab
+
+  portainer:
+    <<: *service
+    image: portainer/portainer-ce:alpine
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      # Or connect to proxy: https://www.reddit.com/r/portainer/comments/12tdl8y/issue_connecting_portainer_to_docker_socket_proxy/
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${CONFIG_DIR}/portainer:/data"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.portainer.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.portainer.rule: Host(`portainer.${PRIVATE_DOMAIN}`)
+      traefik.http.routers.portainer.entrypoints: websecure
+      traefik.http.services.portainer.loadbalancer.server.port: 9000
+    deploy:
+      <<: [*deploy, *deploy_placement]
+
+  socket-proxy:
+    <<: *service
+    image: tecnativa/docker-socket-proxy:latest
+    environment:
+      <<: *environment
+      CONTAINERS: 1
+      IMAGES: 1
+      NETWORKS: 1
+      CONTAINERS_CREATE: 1
+      CONTAINERS_START: 1
+      CONTAINERS_UPDATE: 1
+      CONTAINERS_DELETE: 1
+      IMAGES_DELETE: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
 
   cloudflared-tunnel:
-    <<: *options
+    <<: *service
     image: cloudflare/cloudflared:2023.10.0
-    container_name: tunnel
     environment:
       <<: *environment
       # TUNNEL_LOGLEVEL: debug
-      NO_AUTOUPDATE: true
-      NO_TLS_VERIFY: true
-      # TUNNEL_POST_QUANTUM: true
+      # TUNNEL_POST_QUANTUM: "true"
+      NO_AUTOUPDATE: "true"
+      NO_TLS_VERIFY: "true"
       TUNNEL_TOKEN: "${CLOUDFLARE_TUNNEL_TOKEN:?err}"
       TUNNEL_URL: https://traefik
       TUNNEL_ID: "${CLOUDFLARE_TUNNEL_ID}"
     command: [tunnel, run]
 
   traefik:
-    <<: *options
+    <<: *service
     image: traefik:v2.10
-    container_name: traefik
+    depends_on: [socket-proxy]
     environment:
+      <<: *environment
       CF_DNS_API_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
+      CLOUDFLARE_POLLING_INTERVAL: 10
+      CLOUDFLARE_PROPAGATION_TIMEOUT: 300
     ports:
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ${CONFIG_DIR}/traefik:/etc/traefik
+      - "${CONFIG_DIR}/traefik:/etc/traefik"
     command:
-      - --log.level=INFO
+      - --log.level=DEBUG
       - --api=true
       - --providers.docker=true
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedbydefault=false
+      - --providers.docker.swarmmode=true # TODO
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.public.acme.dnschallenge=true
-      - --certificatesresolvers.public.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.public.acme.storage=/etc/traefik/acme.json
-      - --certificatesresolvers.public.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.public.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - --certificatesresolvers.private.acme.dnschallenge=true
-      - --certificatesresolvers.private.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.private.acme.storage=/etc/traefik/acme.json
-      - --certificatesresolvers.private.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.private.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --entrypoints.websecure.http.tls.certResolver=leresolver
+      - --entrypoints.websecure.http.tls.domains[0].main=${PUBLIC_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.${PUBLIC_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[1].main=${PRIVATE_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[1].sans=*.${PRIVATE_DOMAIN}
+      - --certificatesresolvers.leresolver.acme.dnschallenge=true
+      - --certificatesresolvers.leresolver.acme.dnschallenge.disablepropagationcheck=true # for internal domain
+      - --certificatesresolvers.leresolver.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.leresolver.acme.dnschallenge.resolvers=1.1.1.1:53
+      - --certificatesresolvers.leresolver.acme.storage=/etc/traefik/acme.json
+      - --certificatesresolvers.leresolver.acme.email=${ACME_EMAIL}
+      # - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
     labels:
       traefik.enable: "true"
-      traefik.http.routers.traefik.tls.certresolver: private
       traefik.http.routers.traefik.rule: Host(`traefik.${PRIVATE_DOMAIN}`)
       traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.middlewares: hsts-header, ipallowlist
-      traefik.http.middlewares.ntfyauth.basicauth.users: "${NTFY_BASICAUTH}"
+      traefik.http.middlewares.basicauth.basicauth.users: "${BASICAUTH}"
       traefik.http.middlewares.ipallowlist.ipwhitelist.sourcerange: "${IPALLOWLIST:-0.0.0.0/0,::/0}"
       traefik.http.middlewares.hsts-header.headers.customResponseHeaders.Strict-Transport-Security: max-age=63072000
+    deploy:
+      <<: [*deploy, *deploy_placement]
 
   cloudflare-companion:
-    <<: *options
-    container_name: cloudflare
+    <<: *service
     image: tiredofit/traefik-cloudflare-companion:latest
+    depends_on: [socket-proxy]
     environment:
       <<: *environment
+      DOCKER_HOST: tcp://socket-proxy:2375
       TIMEZONE: "${TIMEZONE}"
       TRAEFIK_VERSION: 2
       CF_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
       TARGET_DOMAIN: "tunnel.${PUBLIC_DOMAIN}"
       DOMAIN1: "${PUBLIC_DOMAIN}"
-      DOMAIN1_ZONE_ID: "${CLOUDFLARE_DOMAIN_ZONE_ID}"
-      DOMAIN1_PROXIED: true
+      DOMAIN1_ZONE_ID: "${CLOUDFLARE_PUBLIC_DOMAIN_ZONE_ID}"
+      DOMAIN1_PROXIED: "true"
       DOMAIN1_EXCLUDED_SUB_DOMAINS: "*.internal.${PUBLIC_DOMAIN},*heim.${PUBLIC_DOMAIN}"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-
-  maddy:
-    <<: *options
-    image: foxcpp/maddy:0.7
-    container_name: maddy
-    environment:
-      <<: *environment
-      DEBUG: "false"
-      SMTP_PORT: "465"
-      SMTP_USER: "${SMTP_USER}"
-      SMTP_PASSWORD: "${SMTP_PASSWORD}"
-      SMTP_HOST: "${SMTP_HOST}"
-      SMTP_DOMAIN: "${SMTP_DOMAIN}"
-    volumes:
-      - "${CONFIG_DIR}/maddy/maddy.conf:/data/maddy.conf:ro"
-
-  ntfy:
-    <<: *options
-    image: binwiederhier/ntfy:latest
-    container_name: ntfy
-    environment:
-      <<: *environment
-      NTFY_UPSTREAM_BASE_URL: https://ntfy.sh
-      NTFY_BEHIND_PROXY: true
-      NTFY_BASE_URL: "https://ntfy.${PUBLIC_DOMAIN}"
-    command: [serve]
-    volumes:
-      - "${CONFIG_DIR}/ntfy/cache:/var/cache/ntfy"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.ntfy.middlewares: ntfyauth
-      traefik.http.routers.ntfy.tls.certresolver: public
-      traefik.http.routers.ntfy.rule: Host(`ntfy.${PUBLIC_DOMAIN}`)
-      traefik.http.services.ntfy.loadbalancer.server.port: 80
-
-  healthchecks:
-    <<: *options
-    image: lscr.io/linuxserver/healthchecks
-    container_name: healthchecks
-    environment:
-      <<: *environment
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-      SITE_ROOT: "https://healthchecks.${PUBLIC_DOMAIN}"
-      SITE_NAME: Healthchecks
-      DEFAULT_FROM_EMAIL: "${SMTP_USER}"
-      EMAIL_HOST: maddy
-      EMAIL_PORT: 2525
-      EMAIL_USE_TLS: "False"
-      REGENERATE_SETTINGS: true
-      SUPERUSER_EMAIL: "${HEALTHCHECKS_ADMIN_EMAIL}"
-      SUPERUSER_PASSWORD: "${HEALTHCHECKS_ADMIN_PASSWORD}"
-      SECRET_KEY: "${HEALTHCHECKS_SECRET_KEY}"
-    volumes:
-      - "${CONFIG_DIR}/healthchecks:/config"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.healthchecks.tls.certresolver: public
-      traefik.http.routers.healthchecks.rule: Host(`healthchecks.${PUBLIC_DOMAIN}`)
-      traefik.http.services.healthchecks.loadbalancer.server.port: 8000
-
-  smokeping:
-    <<: *options
-    image: lscr.io/linuxserver/smokeping:latest
-    container_name: smokeping
-    environment:
-      <<: *environment
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-    volumes:
-      - "${CONFIG_DIR}/smokeping/config:/config"
-      - "${CONFIG_DIR}/smokeping/data:/data"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.smokeping.tls.certresolver: private
-      traefik.http.routers.smokeping.rule: Host(`ping.${PRIVATE_DOMAIN}`)
-      traefik.http.services.smokeping.loadbalancer.server.port: 80
-
-  espial:
-    <<: *options
-    image: jonschoning/espial:espial
-    container_name: espial
-    environment:
-      <<: *environment
-      IP_FROM_HEADER: true
-      SQLITE_DATABASE: /app/data/espial.sqlite3
-      SHOULD_LOG_ALL: false
-    volumes:
-      - "${CONFIG_DIR}/espial:/app/data"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.espial.tls.certresolver: public
-      traefik.http.routers.espial.rule: Host(`bookmarks.${PUBLIC_DOMAIN}`)
-      traefik.http.services.espial.loadbalancer.server.port: 3000
-
-  miniflux:
-    <<: *options
-    image: miniflux/miniflux:latest
-    container_name: miniflux
-    environment:
-      <<: *environment
-      CREATE_ADMIN: "1"
-      RUN_MIGRATIONS: "1"
-      LOG_DATE_TIME: "1"
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: "${MINIFLUX_ADMIN_PASSWORD}"
-      DATABASE_URL: "postgres://miniflux:${MINIFLUX_POSTGRES_PASSWORD}@miniflux_db/miniflux?sslmode=disable"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.miniflux.tls.certresolver: public
-      traefik.http.routers.miniflux.rule: Host(`rss.${PUBLIC_DOMAIN}`)
-      traefik.http.services.miniflux.loadbalancer.server.port: 8080
-
-  miniflux_db:
-    <<: *options
-    image: docker.io/library/postgres:10.10
-    container_name: miniflux_db
-    restart: unless-stopped
-    volumes:
-      - "${CONFIG_DIR}/miniflux_db:/var/lib/postgresql/data"
-    environment:
-      <<: *environment
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: miniflux
-      POSTGRES_USER: miniflux
-      POSTGRES_PASSWORD: "${MINIFLUX_POSTGRES_PASSWORD}"
-
-  mealie:
-    <<: *options
-    image: ghcr.io/mealie-recipes/mealie:v1.0.0-RC1.1
-    container_name: mealie
-    environment:
-      <<: *environment
-      WEB_CONCURRENCY: 1
-      MAX_WORKERS: 1
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-      TOKEN_TIME: 720 # 24 hours * 30 days
-      BASE_URL: "https://recipes.${PUBLIC_DOMAIN}"
-      AUTO_BACKUP_ENABLED: true
-      ALLOW_SIGNUP: false
-      SMTP_HOST: maddy
-      SMTP_PORT: 2525
-      SMTP_AUTH_STRATEGY: NONE
-      SMTP_FROM_NAME: Recipes
-      SMTP_FROM_EMAIL: "${SMTP_USER}"
-      # LDAP_AUTH_ENABLED: true
-      # LDAP_SERVER_URL: ldap://lldap
-      # LDAP_TLS_INSECURE: true
-      # LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
-      # LDAP_BASE_DN: dc=home,dc=arpa
-      # LDAP_ADMIN_FILTER: cn=admin,ou=people,dc=home,dc=arpa
-    volumes:
-      - "${CONFIG_DIR}/mealie:/app/data"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.mealie.tls.certresolver: public
-      traefik.http.routers.mealie.rule: Host(`recipes.${PUBLIC_DOMAIN}`)
-      traefik.http.services.mealie.loadbalancer.server.port: 9000
-
-  cgit:
-    <<: *options
-    image: ghcr.io/brettinternet/cgit:latest
-    container_name: cgit
-    environment:
-      <<: *environment
-      ROOT_TITLE: "git.${PUBLIC_DOMAIN}"
-      ROOT_DESC: Source code of various projects
-      ROOT_README: /srv/git/README.md
-      SECTION_FROM_STARTPATH: 1
-      NOPLAINEMAIL: 1
-    volumes:
-      - "${CONFIG_DIR}/git:/srv/git"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.cgit.tls.certresolver: public
-      traefik.http.routers.cgit.rule: Host(`git.${PUBLIC_DOMAIN}`)
-      traefik.http.services.cgit.loadbalancer.server.port: 80

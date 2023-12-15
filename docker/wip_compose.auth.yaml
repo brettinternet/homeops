@@ -30,10 +30,10 @@
 #   #     - ./authelia:/config
 #   #   labels:
 #   #     traefik.enable: "true"
-#   #     traefik.http.routers.authelia.tls.certresolver: private
 #   #     traefik.http.routers.authelia.rule: Host(`auth.${PRIVATE_DOMAIN}`)
 #   #     traefik.http.services.authelia.loadbalancer.server.port: 9091
 #   #     traefik.http.services.authelia.loadbalancer.server.scheme: http
 #   #     traefik.http.middlewares.authelia.forwardauth.address: http://authelia:9091/api/authz/forward-auth?authelia_url=https://authelia.example.com"
-#   #     traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: true
+#   #     traefik.http.middlewares.authelia.forwardauth.trustForwardHeader: "true"
 # #     traefik.http.middlewares.authelia.forwardauth.authResponseHeaders: Remote-User,Remote-Groups,Remote-Name,Remote-Email"
+# traefik.http.routers.valheim2.entrypoints: websecure

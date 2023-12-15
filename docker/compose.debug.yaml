@@ -1,48 +1,57 @@
-version: "3.7"
-
+---
 x-options: &options
-  profiles:
-    - &profile debug
+  networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
-  restart: unless-stopped
-  networks:
-    - default
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
 
 services:
   echo:
     <<: *options
     image: jmalloc/echo-server:latest
-    container_name: echo
     environment:
       <<: *environment
       PORT: 80
     labels:
       traefik.enable: "true"
-      traefik.http.routers.echo.tls.certresolver: public
       traefik.http.routers.echo.rule: Host(`echo.${PUBLIC_DOMAIN}`)
       traefik.http.services.echo.loadbalancer.server.port: 80
-      traefik.http.services.echo.loadbalancer.server.scheme: http
+      traefik.http.routers.echo.entrypoints: websecure
 
   echo-priv:
     <<: *options
     image: jmalloc/echo-server:latest
-    container_name: echo-priv
     environment:
       <<: *environment
       PORT: 80
     labels:
       traefik.enable: "true"
-      traefik.http.routers.echo-priv.middlewares: ipallowlist@docker
-      traefik.http.routers.echo-priv.tls.certresolver: private
+      traefik.http.routers.echo-priv.middlewares: ipallowlist
       traefik.http.routers.echo-priv.rule: Host(`echo.${PRIVATE_DOMAIN}`)
       traefik.http.services.echo-priv.loadbalancer.server.port: 80
-      traefik.http.services.echo-priv.loadbalancer.server.scheme: http
+      traefik.http.routers.echo-priv.entrypoints: websecure
 
   busybox:
     <<: *options
     image: library/busybox:latest
-    container_name: busybox
     command:
       - sleep
       - "3600"
+
+  visualizer:
+    <<: *options
+    image: dockersamples/visualizer
+    environment:
+      <<: *environment
+      DOCKER_HOST: tcp://socket-proxy:2375
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.visualizer.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.visualizer.rule: Host(`swarm.${PRIVATE_DOMAIN}`)
+      traefik.http.services.visualizer.loadbalancer.server.port: 8080
+      traefik.http.routers.visualizer.entrypoints: websecure

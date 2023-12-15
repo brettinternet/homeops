@@ -1,0 +1,78 @@
+---
+x-options: &options
+  networks: [default]
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
+
+services:
+  healthchecks:
+    <<: *options
+    image: lscr.io/linuxserver/healthchecks
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+      SITE_ROOT: "https://healthchecks.${PUBLIC_DOMAIN}"
+      SITE_NAME: Healthchecks
+      DEFAULT_FROM_EMAIL: "${SMTP_USER}"
+      EMAIL_HOST: maddy
+      EMAIL_PORT: 2525
+      EMAIL_USE_TLS: "False"
+      SUPERUSER_EMAIL: "${HEALTHCHECKS_ADMIN_EMAIL}"
+      SUPERUSER_PASSWORD: "${HEALTHCHECKS_ADMIN_PASSWORD}"
+      SECRET_KEY: "${HEALTHCHECKS_SECRET_KEY}"
+      INTEGRATIONS_ALLOW_PRIVATE_IPS: "True"
+    volumes:
+      - "${CONFIG_DIR}/healthchecks:/config"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.healthchecks.middlewares: hsts-header
+      traefik.http.routers.healthchecks.rule: Host(`healthchecks.${PUBLIC_DOMAIN}`)
+      traefik.http.routers.healthchecks.entrypoints: websecure
+      traefik.http.services.healthchecks.loadbalancer.server.port: 8000
+
+  smokeping:
+    <<: *options
+    image: lscr.io/linuxserver/smokeping:latest
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+    volumes:
+      - "${CONFIG_DIR}/smokeping/config:/config"
+      - "${CONFIG_DIR}/smokeping/data:/data"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.smokeping.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.smokeping.rule: Host(`ping.${PRIVATE_DOMAIN}`)
+      traefik.http.services.smokeping.loadbalancer.server.port: 80
+      traefik.http.routers.smokeping.entrypoints: websecure
+
+  netdata:
+    <<: *options
+    image: netdata/netdata:stable
+    hostname: "${NETDATA_HOSTNAME:-netdata}"
+    depends_on: [socket-proxy]
+    environment:
+      <<: *environment
+      PGID: "${PGID}"
+      DOCKER_HOST: tcp://socket-proxy:2375
+    cap_add: [SYS_PTRACE, SYS_ADMIN]
+    volumes:
+      - "${CONFIG_DIR}/netdata:/etc/netdata"
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.netdata.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.netdata.rule: Host(`netdata.${PRIVATE_DOMAIN}`)
+      traefik.http.routers.netdata.entrypoints: websecure
+      traefik.http.services.netdata.loadbalancer.server.port: 80
