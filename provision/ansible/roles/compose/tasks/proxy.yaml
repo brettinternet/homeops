@@ -97,7 +97,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/traefik:/etc/traefik"
     command:
-      - --log.level=INFO
+      - --log.level=DEBUG
       - --api=true
       - --providers.docker=true
       - --providers.docker.endpoint=tcp://socket-proxy:2375
@@ -106,8 +106,6 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
-      - --entryPoints.websecure.forwardedHeaders.insecure=false
-      - --entryPoints.websecure.forwardedHeaders.trustedIPs=192.168.0.0/24 # match docker network
       - --entrypoints.websecure.http.tls.certResolver=leresolver
       - --entrypoints.websecure.http.tls.domains[0].main=${PUBLIC_DOMAIN}
       - --entrypoints.websecure.http.tls.domains[0].sans=*.${PUBLIC_DOMAIN}
@@ -125,7 +123,8 @@ services:
       traefik.http.routers.traefik.rule: Host(`traefik.${PRIVATE_DOMAIN}`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entrypoints: websecure
-      traefik.http.routers.traefik.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.traefik.middlewares: hsts-header, ipallowlist
+      traefik.http.middlewares.basicauth.basicauth.users: "${BASICAUTH}"
       traefik.http.middlewares.ipallowlist.ipwhitelist.sourcerange: "${IPALLOWLIST:-0.0.0.0/0,::/0}"
       traefik.http.middlewares.hsts-header.headers.customResponseHeaders.Strict-Transport-Security: max-age=63072000
 

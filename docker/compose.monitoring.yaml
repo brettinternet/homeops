@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [monitoring]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
@@ -22,7 +23,7 @@ services:
       SITE_NAME: Healthchecks
       DEFAULT_FROM_EMAIL: "${SMTP_USER}"
       EMAIL_HOST: maddy
-      EMAIL_PORT: 2525
+      EMAIL_PORT: 25
       EMAIL_USE_TLS: "False"
       SUPERUSER_EMAIL: "${HEALTHCHECKS_ADMIN_EMAIL}"
       SUPERUSER_PASSWORD: "${HEALTHCHECKS_ADMIN_PASSWORD}"
@@ -49,7 +50,7 @@ services:
       - "${CONFIG_DIR}/smokeping/data:/data"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.smokeping.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.smokeping.middlewares: hsts-header, ipallowlist, authelia_private
       traefik.http.routers.smokeping.rule: Host(`ping.${PRIVATE_DOMAIN}`)
       traefik.http.services.smokeping.loadbalancer.server.port: 80
       traefik.http.routers.smokeping.entrypoints: websecure
@@ -72,7 +73,7 @@ services:
       - /sys:/host/sys:ro
     labels:
       traefik.enable: "true"
-      traefik.http.routers.netdata.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.netdata.middlewares: hsts-header, ipallowlist, authelia_private
       traefik.http.routers.netdata.rule: Host(`netdata.${PRIVATE_DOMAIN}`)
       traefik.http.routers.netdata.entrypoints: websecure
       traefik.http.services.netdata.loadbalancer.server.port: 80

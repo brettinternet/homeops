@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [home]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
@@ -44,6 +45,7 @@ services:
       - "${CONFIG_DIR}/esphome:/config"
     labels:
       traefik.enable: "true"
+      traefik.http.routers.esphome.middlewares: hsts-header, ipallowlist, authelia_private
       traefik.http.routers.esphome.rule: Host(`esphome.${PRIVATE_DOMAIN}`)
       traefik.http.services.esphome.loadbalancer.server.port: 6052
       traefik.http.routers.esphome.entrypoints: websecure
@@ -66,6 +68,7 @@ services:
     # 1935
     labels:
       traefik.enable: "true"
+      traefik.http.routers.frigate.middlewares: hsts-header, ipallowlist, authelia_private
       traefik.http.routers.frigate.rule: Host(`video.${PRIVATE_DOMAIN}`)
       traefik.http.services.frigate.loadbalancer.server.port: 5000
       traefik.http.routers.frigate.entrypoints: websecure

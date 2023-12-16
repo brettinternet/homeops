@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [sites]
   networks: [default]
   environment:
     TZ: "${TIMEZONE}"

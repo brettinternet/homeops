@@ -1,19 +1,15 @@
 ---
 x-service: &service
+  profiles: [utils]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
-  deploy: &deploy
+  deploy:
     restart_policy:
       condition: on-failure
       delay: 5s
       max_attempts: 3
       window: 45s
-
-x-config-placement: &deploy_placement
-  placement:
-    constraints:
-      - node.hostname == "${CONFIG_HOSTNAME}"
 
 services:
   maddy:
@@ -50,8 +46,6 @@ services:
       traefik.http.routers.ntfy.rule: Host(`ntfy.${PUBLIC_DOMAIN}`)
       traefik.http.routers.ntfy.entrypoints: websecure
       traefik.http.services.ntfy.loadbalancer.server.port: 80
-    deploy:
-      <<: [*deploy, *deploy_placement]
 
   espial:
     <<: *service
@@ -90,7 +84,7 @@ services:
 
   miniflux_db:
     <<: *service
-    image: docker.io/library/postgres:10.10
+    image: library/postgres:10.10
     volumes:
       - "${CONFIG_DIR}/miniflux_db:/var/lib/postgresql/data"
     environment:
@@ -99,8 +93,6 @@ services:
       POSTGRES_DB: miniflux
       POSTGRES_USER: miniflux
       POSTGRES_PASSWORD: "${MINIFLUX_POSTGRES_PASSWORD}"
-    deploy:
-      <<: [*deploy, *deploy_placement]
 
   mealie:
     <<: *service
@@ -116,16 +108,10 @@ services:
       AUTO_BACKUP_ENABLED: "true"
       ALLOW_SIGNUP: "false"
       SMTP_HOST: maddy
-      SMTP_PORT: 2525
+      SMTP_PORT: 25
       SMTP_AUTH_STRATEGY: NONE
       SMTP_FROM_NAME: Recipes
       SMTP_FROM_EMAIL: "${SMTP_USER}"
-      # LDAP_AUTH_ENABLED: "true"
-      # LDAP_SERVER_URL: ldap://lldap
-      # LDAP_TLS_INSECURE: "true"
-      # LDAP_BIND_TEMPLATE: cn={},dc=home,dc=arpa
-      # LDAP_BASE_DN: dc=home,dc=arpa
-      # LDAP_ADMIN_FILTER: cn=admin,ou=people,dc=home,dc=arpa
     volumes:
       - "${CONFIG_DIR}/mealie:/app/data"
     labels:
@@ -134,8 +120,6 @@ services:
       traefik.http.routers.mealie.rule: Host(`recipes.${PUBLIC_DOMAIN}`)
       traefik.http.routers.mealie.entrypoints: websecure
       traefik.http.services.mealie.loadbalancer.server.port: 9000
-    deploy:
-      <<: [*deploy, *deploy_placement]
 
   cgit:
     <<: *service
@@ -155,5 +139,3 @@ services:
       traefik.http.routers.cgit.rule: Host(`git.${PUBLIC_DOMAIN}`)
       traefik.http.routers.cgit.entrypoints: websecure
       traefik.http.services.cgit.loadbalancer.server.port: 80
-    deploy:
-      <<: [*deploy, *deploy_placement]

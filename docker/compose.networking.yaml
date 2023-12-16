@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [networking]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"

@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [games]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"

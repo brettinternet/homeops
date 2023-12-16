@@ -4,24 +4,17 @@ version: "3"
 vars:
   PROJECT: homelab
   SECRETS_FILE: sops.env
-  # COMPOSE_FILES:
-  #   sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
-  COMPOSE_FILES: |-
-    compose.yaml
-    compose.utils.yaml
-  # compose.home.yaml
-  # compose.sites.yaml
-  # compose.backup.yaml
-  # compose.monitoring.yaml
-  COMPOSE_FILES_ARGS: '-f {{ .COMPOSE_FILES | splitLines | join " -f " }}'
-  DOCKER_COMMAND: "docker -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}"
-  COMPOSE_COMMAND: "docker-compose -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}"
-  DEPLOY_FILES_ARGS: '-c {{ .COMPOSE_FILES | splitLines | join " -c " }}'
+  COMPOSE_FILES:
+    sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
+  COMPOSE_FILES_ARGS: -f {{ .COMPOSE_FILES | splitLines | join " -f " }}
+  DOCKER_COMMAND: docker -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
+  COMPOSE_COMMAND: docker-compose -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
 
-# env:
-  # Profiles apparently unsupported in stack configs https://github.com/docker/cli/issues/4721
-  # COMPOSE_PROFILES: backup,utils,home,monitoring
-  # COMPOSE_HTTP_TIMEOUT: 300
+env:
+  COMPOSE_PROJECT: \{{ .PROJECT }}
+  COMPOSE_PROFILES: backup,utils,home,monitoring,sites,auth,debug
+  COMPOSE_HTTP_TIMEOUT: 300
+  DOCKER_HOST: ssh://gertrude
 
 tasks:
   default:
@@ -77,24 +70,9 @@ tasks:
     requires:
       vars: [SECRETS_FILE]
 
-  deploy:
-    desc: Deploy stack compose; This targets a swarm.
-    cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker stack deploy {{ .DEPLOY_FILES_ARGS }} --prune {{ .PROJECT }}'
-    requires:
-      vars: [SECRETS_FILE]
-
   verify:
-    desc: Verify compose files; Stack appears to have stricter requirements for compose files.
+    desc: Stop and clean up containers on host
     cmds:
-      - for: { var: COMPOSE_FILES }
-        cmd: sops exec-env {{ .SECRETS_FILE }} 'docker stack config -c {{ .ITEM }}'
-    requires:
-      vars: [SECRETS_FILE]
-
-  undeploy:
-    desc: Deploy stack compose
-    cmds:
-      - sops exec-env {{ .SECRETS_FILE }} 'docker stack rm {{ .PROJECT }}'
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} config'
     requires:
       vars: [SECRETS_FILE]

@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [debug]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
@@ -11,7 +12,7 @@ x-options: &options
       window: 45s
 
 services:
-  echo:
+  echo_public:
     <<: *options
     image: jmalloc/echo-server:latest
     environment:
@@ -19,11 +20,12 @@ services:
       PORT: 80
     labels:
       traefik.enable: "true"
-      traefik.http.routers.echo.rule: Host(`echo.${PUBLIC_DOMAIN}`)
-      traefik.http.services.echo.loadbalancer.server.port: 80
-      traefik.http.routers.echo.entrypoints: websecure
+      traefik.http.routers.echo-public.middlewares: hsts-header, authelia_public
+      traefik.http.routers.echo-public.rule: Host(`echo.${PUBLIC_DOMAIN}`)
+      traefik.http.services.echo-public.loadbalancer.server.port: 80
+      traefik.http.routers.echo-public.entrypoints: websecure
 
-  echo-priv:
+  echo_private:
     <<: *options
     image: jmalloc/echo-server:latest
     environment:
@@ -31,27 +33,14 @@ services:
       PORT: 80
     labels:
       traefik.enable: "true"
-      traefik.http.routers.echo-priv.middlewares: ipallowlist
-      traefik.http.routers.echo-priv.rule: Host(`echo.${PRIVATE_DOMAIN}`)
-      traefik.http.services.echo-priv.loadbalancer.server.port: 80
-      traefik.http.routers.echo-priv.entrypoints: websecure
+      traefik.http.routers.echo-private.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.echo-private.rule: Host(`echo.${PRIVATE_DOMAIN}`)
+      traefik.http.services.echo-private.loadbalancer.server.port: 80
+      traefik.http.routers.echo-private.entrypoints: websecure
 
   busybox:
-    <<: *options
+    # <<: *options # disabled
     image: library/busybox:latest
     command:
       - sleep
       - "3600"
-
-  visualizer:
-    <<: *options
-    image: dockersamples/visualizer
-    environment:
-      <<: *environment
-      DOCKER_HOST: tcp://socket-proxy:2375
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.visualizer.middlewares: hsts-header, ipallowlist
-      traefik.http.routers.visualizer.rule: Host(`swarm.${PRIVATE_DOMAIN}`)
-      traefik.http.services.visualizer.loadbalancer.server.port: 8080
-      traefik.http.routers.visualizer.entrypoints: websecure

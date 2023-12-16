@@ -60,7 +60,7 @@
 
     - name: Install packages
       ansible.builtin.package:
-        state: latest
+        state: present
         name:
           - base
           - dhcpcd
@@ -97,16 +97,13 @@
           - fd
           - gdu
           - bottom
-          - sops
-          - go-task
-          - docker
           - qemu-guest-agent
 
     - name: Install AUR dependencies
       ansible.builtin.include_role:
         name: aur
       vars:
-        state: latest
+        state: present
         packages:
           - downgrade
           - vim-plug

@@ -1,5 +1,6 @@
 ---
 x-options: &options
+  profiles: [media]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
