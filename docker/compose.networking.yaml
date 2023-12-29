@@ -6,59 +6,40 @@ x-options: &options
     TZ: "${TIMEZONE}"
   deploy:
     restart_policy: &restart_policy
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 45s
+      condition: unless-stopped
+
+x-media-volume:
+  driver_opts: &media_driver_opts
+    type: nfs
+    o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime
+    device: :/
 
 volumes:
-  config:
-    driver_opts:
-      type: nfs
-      o: addr=nfs-config,hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime
-      device: :/shared
   media:
+    name: media
     driver_opts:
-      type: nfs
-      o: addr=nfs-media,hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime
-      device: :/shared
+      <<: *media_driver_opts
+      device: :/
+  media_library:
+    name: media_library
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/library
+  books:
+    name: books
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/library/books
+  usenet:
+    name: usenet
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/usenet
 
 services:
-  unifi:
-    <<: *options
-    image: lscr.io/linuxserver/unifi-controller:latest
-    environment:
-      <<: *environment
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-    volumes:
-      - "${CONFIG_DIR}/unifi:/config"
-    ports:
-      - 8080:8080
-      # STUN
-      - 3478:3478/udp
-      # AP discovery
-      - 10001:10001/udp
-      # 'Make controller discoverable on L2 network' option
-      - 1900:1900/udp
-      # mobile throughput test
-      - 6789:6789/udp
-      # Remote syslog port
-      - 5514:5514/udp
-      # guest portal redirect ports
-      # - 8843:8843/udp
-      # - 8880:8880/udp
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.unifi.middlewares: hsts-header, ipallowlist
-      traefik.http.routers.unifi.rule: Host(`unifi.${PRIVATE_DOMAIN}`)
-      traefik.http.routers.unifi.entrypoints: websecure
-      traefik.http.services.unifi.loadbalancer.server.port: 8443
-      traefik.http.serverstransports.unifi.insecureskipverify: "true"
-
   cloudflare-ddns:
     <<: *options
-    image: joshava/cloudflare-ddns:latest
+    image: ghcr.io/joshuaavalon/cloudflare-ddns:latest
     environment:
       <<: *environment
       CF_DNS__CRON: "*/10 * * * *"
@@ -66,38 +47,16 @@ services:
       CF_DNS__DOMAINS_0__ZONE_NAME: "${PRIVATE_DOMAIN}"
       CF_DNS__DOMAINS_0__ZONE_ID: "${CLOUDFLARE_PRIVATE_DOMAIN_ZONE_ID}"
       CF_DNS__DOMAINS_0__NAME: "local.${PRIVATE_DOMAIN}"
+      CF_DNS__DOMAINS_0__PROXIED: "false"
       CF_DNS__DOMAINS_0__CREATE: "true"
       CF_DNS__DOMAINS_0__TYPE: A
 
-  nfs-config:
+  unifi_mongo:
     <<: *options
-    image: itsthenetwork/nfs-server-alpine:latest
-    cap_add: [SYS_ADMIN, SETPCAP]
-    environment:
-      <<: *environment
-      SHARED_DIRECTORY: /shared
+    image: mongo:7
     volumes:
-      - "${CONFIG_DIR}:/shared"
-    deploy:
-      restart_policy: *restart_policy
-      placement:
-        constraints:
-          - node.hostname == "${CONFIG_HOSTNAME}"
-
-  nfs-media:
-    <<: *options
-    image: itsthenetwork/nfs-server-alpine:latest
-    cap_add: [SYS_ADMIN, SETPCAP]
-    environment:
-      <<: *environment
-      SHARED_DIRECTORY: /shared
-    volumes:
-      - "${MEDIA_DIR}:/shared"
-    deploy:
-      restart_policy: *restart_policy
-      placement:
-        constraints:
-          - node.hostname == "${MEDIA_HOSTNAME}"
+      - "${CONFIG_DIR}/unifi_mongo/db:/data/db"
+      - "${CONFIG_DIR}/unifi_mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro"
 
   nfs-shared:
     <<: *options

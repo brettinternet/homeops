@@ -1,0 +1,25 @@
+# ---
+# x-options: &options
+#   profiles: [jobs]
+#   networks: [default]
+#   environment: &environment
+#     TZ: "${TIMEZONE}"
+#   deploy:
+#     restart_policy:
+#       condition: unless-stopped
+
+# services:
+# # https://github.com/mcuadros/ofelia
+#   ofelia:
+#     <<: *options
+#     image: mcuadros/ofelia:latest
+#     depends_on:
+#       - nginx
+#     command: daemon --docker
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#     labels:
+#       ofelia.job-local.my-test-job.schedule: "@every 5s"
+#       ofelia.job-local.my-test-job.command: "date"
+
+# DOCKER_HOST: tcp://example:2375

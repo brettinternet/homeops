@@ -6,10 +6,7 @@ x-options: &options
     TZ: "${TIMEZONE}"
   deploy:
     restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 45s
+      condition: unless-stopped
 
 services:
   echo_public:
@@ -39,7 +36,7 @@ services:
       traefik.http.routers.echo-private.entrypoints: websecure
 
   busybox:
-    # <<: *options # disabled
+    <<: *options
     image: library/busybox:latest
     command:
       - sleep

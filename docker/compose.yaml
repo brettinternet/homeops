@@ -1,21 +1,19 @@
 ---
 x-service: &service
+  profiles: [base]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
   deploy:
     restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 45s
+      condition: unless-stopped
 
 networks:
   default:
     ipam:
       driver: default
       config:
-        - subnet: 192.168.0.0/24
+        - subnet: "${DOCKER_SUBNET}"
 
 services:
   diun:
@@ -28,14 +26,17 @@ services:
       LOG_LEVEL: info
       LOG_JSON: "false"
       DIUN_WATCH_WORKERS: 20
-      DIUN_WATCH_SCHEDULE: 0 */6 * * *
+      DIUN_WATCH_SCHEDULE: 0 6 * * *
       DIUN_WATCH_JITTER: 30s
+      DIUN_WATCH_RUNONSTARTUP: "true"
       DIUN_PROVIDERS_DOCKER: "true"
       DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
       DIUN_PROVIDERS_DOCKER_ENDPOINT: tcp://socket-proxy:2375
       DIUN_NOTIF_NTFY_ENDPOINT: http://ntfy
       DIUN_NOTIF_NTFY_TOKEN: "${NTFY_DIUN_TOKEN}"
       DIUN_NOTIF_NTFY_TOPIC: homelab
+      DIUN_WATCH_HEALTHCHECKS_BASEURL: http://healthchecks:8000/ping/
+      DIUN_WATCH_HEALTHCHECKS_UUID: "${HEALTHCHECKS_DIUN_UUID}"
 
   portainer:
     <<: *service
@@ -85,7 +86,7 @@ services:
   traefik:
     <<: *service
     image: traefik:v2.10
-    depends_on: [socket-proxy]
+    depends_on: [socket-proxy, authelia_private, authelia_public]
     environment:
       <<: *environment
       CF_DNS_API_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
@@ -97,7 +98,7 @@ services:
     volumes:
       - "${CONFIG_DIR}/traefik:/etc/traefik"
     command:
-      - --log.level=INFO
+      - --log.level=DEBUG
       - --api=true
       - --providers.docker=true
       - --providers.docker.endpoint=tcp://socket-proxy:2375
@@ -107,7 +108,7 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
       - --entryPoints.websecure.forwardedHeaders.insecure=false
-      - --entryPoints.websecure.forwardedHeaders.trustedIPs=192.168.0.0/24 # match docker network
+      - --entryPoints.websecure.forwardedHeaders.trustedIPs=${DOCKER_SUBNET}
       - --entrypoints.websecure.http.tls.certResolver=leresolver
       - --entrypoints.websecure.http.tls.domains[0].main=${PUBLIC_DOMAIN}
       - --entrypoints.websecure.http.tls.domains[0].sans=*.${PUBLIC_DOMAIN}
@@ -120,6 +121,9 @@ services:
       - --certificatesresolvers.leresolver.acme.storage=/etc/traefik/acme.json
       - --certificatesresolvers.leresolver.acme.email=${ACME_EMAIL}
       # - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --serverstransport.insecureskipverify=true
+    healthcheck:
+      test: [CMD, traefik, healthcheck, --ping]
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.${PRIVATE_DOMAIN}`)

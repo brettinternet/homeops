@@ -8,11 +8,11 @@ vars:
     sh: find . -type f -iname "compose*.yaml" -exec basename {} ';' | sort -r
   COMPOSE_FILES_ARGS: -f {{ .COMPOSE_FILES | splitLines | join " -f " }}
   DOCKER_COMMAND: docker -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
-  COMPOSE_COMMAND: docker-compose -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
+  COMPOSE_COMMAND: docker-compose --parallel 5 -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
 
 env:
   COMPOSE_PROJECT: \{{ .PROJECT }}
-  COMPOSE_PROFILES: backup,utils,home,monitoring,sites,auth,debug
+  COMPOSE_PROFILES: base,utils,home,backup,monitoring,sites,auth,networking,media
   COMPOSE_HTTP_TIMEOUT: 300
   DOCKER_HOST: ssh://gertrude
 
@@ -52,6 +52,7 @@ tasks:
   up:
     desc: Deploy compose files; This targets a single node 'DOCKER_HOST' or locahost.
     cmds:
+      # - task: up-nfs
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
     requires:
       vars: [SECRETS_FILE]
@@ -74,5 +75,15 @@ tasks:
     desc: Stop and clean up containers on host
     cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} config'
+    requires:
+      vars: [SECRETS_FILE]
+
+  up-nfs:
+    desc: Deploy compose files; This targets a media NFS.
+    env:
+      DOCKER_HOST: ssh://bogota
+      COMPOSE_PROFILES: media-nfs
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
     requires:
       vars: [SECRETS_FILE]

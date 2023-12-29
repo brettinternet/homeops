@@ -6,10 +6,7 @@ x-options: &options
     TZ: "${TIMEZONE}"
   deploy:
     restart_policy:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 45s
+      condition: unless-stopped
 
 x-remote-environment: &remote-environment
   <<: *environment
@@ -44,11 +41,11 @@ services:
         --keep-weekly 5
         --keep-monthly 12
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_BACKUP_UUID}"
     volumes:
       - "${CONFIG_DIR}/espial:/data/espial"
       - "${CONFIG_DIR}/homeassistant:/data/homeassistant"
@@ -68,11 +65,11 @@ services:
       <<: *remote-environment
       PRUNE_CRON: "0 0 2 * * *"
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_PRUNE_UUID}"
 
   restic-remote-check:
     <<: *options
@@ -83,11 +80,11 @@ services:
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_REMOTE_CHECK_UUID}"
 
   restic-local-backup:
     <<: *options
@@ -108,11 +105,11 @@ services:
         --keep-weekly 5
         --keep-monthly 12
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_BACKUP_UUID}"
     volumes:
       - "${CONFIG_DIR}/espial:/data/espial"
       - "${CONFIG_DIR}/homeassistant:/data/homeassistant"
@@ -132,11 +129,11 @@ services:
       <<: *local-environment
       PRUNE_CRON: "0 0 2 * * *"
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_PRUNE_UUID}"
 
   restic-local-check:
     <<: *options
@@ -147,8 +144,8 @@ services:
       RESTIC_CHECK_ARGS: >-
         --read-data-subset=10%
       PRE_COMMANDS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/start"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/start"
       POST_COMMANDS_FAILURE: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/fail"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
-        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}"
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_RESTIC_LOCAL_CHECK_UUID}"
