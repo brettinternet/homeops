@@ -92,17 +92,23 @@ services:
       CF_DNS_API_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
       CLOUDFLARE_POLLING_INTERVAL: 10
       CLOUDFLARE_PROPAGATION_TIMEOUT: 300
+      PRIVATE_DOMAIN: "${PRIVATE_DOMAIN}"
     ports:
       - 80:80
       - 443:443
     volumes:
-      - "${CONFIG_DIR}/traefik:/etc/traefik"
+      - "${CONFIG_DIR}/traefik/conf:/etc/traefik"
+      - "${CONFIG_DIR}/traefik/log:/var/log"
     command:
-      - --log.level=DEBUG
+      - --log.level=INFO
+      - --accesslog.filepath=/var/log/access.log
+      - --accesslog.filters.statuscodes=400-499
       - --api=true
       - --providers.docker=true
       - --providers.docker.endpoint=tcp://socket-proxy:2375
       - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik
+      - --providers.file.watch=true
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
@@ -122,8 +128,8 @@ services:
       - --certificatesresolvers.leresolver.acme.email=${ACME_EMAIL}
       # - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
       - --serverstransport.insecureskipverify=true
-    healthcheck:
-      test: [CMD, traefik, healthcheck, --ping]
+    # healthcheck:
+    #   test: [CMD, traefik, healthcheck, --ping]
     labels:
       traefik.enable: "true"
       traefik.http.routers.traefik.rule: Host(`traefik.${PRIVATE_DOMAIN}`)

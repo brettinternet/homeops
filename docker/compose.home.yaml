@@ -56,7 +56,7 @@ services:
       FRIGATE_MQTT_PASSWORD: "${FRIGATE_MQTT_PASSWORD}"
     volumes:
       - "${CONFIG_DIR}/frigate/config.yml:/config/config.yml"
-      - "${CONFIG_DIR}/frigate/data:/media/frigate"
+      - cameras:/media/frigate
       - type: tmpfs
         target: /tmp/cache
         tmpfs:

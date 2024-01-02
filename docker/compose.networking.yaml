@@ -35,6 +35,11 @@ volumes:
     driver_opts:
       <<: *media_driver_opts
       device: :/usenet
+  cameras:
+    name: cameras
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/cameras
 
 services:
   cloudflare-ddns:

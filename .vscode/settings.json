@@ -7,9 +7,6 @@
   },
   "prettier.configPath": ".github/linters/.prettierrc.yaml",
   "prettier.ignorePath": ".github/linters/.prettierignore",
-  "yaml.schemas": {
-    "Kubernetes": "kubernetes/*.yaml"
-  },
   "editor.bracketPairColorization.enabled": true,
   "editor.guides.bracketPairs": "active",
   "ansible.python.interpreterPath": "/Users/brett/.virtualenvs/homelab/bin/python"
