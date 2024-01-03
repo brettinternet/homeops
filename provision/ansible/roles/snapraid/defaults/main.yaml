@@ -2,5 +2,3 @@
 supported_distributions:
   - archlinux
   - debian
-
-snapraid_config: /etc/snapraid.conf

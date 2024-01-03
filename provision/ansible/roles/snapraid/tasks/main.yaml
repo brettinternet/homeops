@@ -15,12 +15,76 @@
   ansible.builtin.file:
     path: /var/snapraid
     state: directory
+    mode: "0775"
 
 # https://www.snapraid.it/manual
 - name: Copy snapraid.conf
   ansible.builtin.copy:
     src: snapraid.conf
-    dest: "{{ snapraid_config }}"
+    dest: /etc/snapraid.conf
     owner: root
     group: root
-    mode: 0775
+    mode: "0775"
+
+# snapraid-runner (snapraid automation)
+# https://github.com/Chronial/snapraid-runner
+
+# Note: Here's an alternative to the snapraid-runner
+# https://zackreed.me/updated-snapraid-sync-script
+
+- block:
+    - name: Clone snapraid-runner
+      ansible.builtin.git:
+        repo: https://github.com/Chronial/snapraid-runner.git
+        dest: /tmp/snapraid-runner
+        version: HEAD
+
+    - name: Copy snapraid-runner executable to /usr/local/bin
+      ansible.builtin.copy:
+        remote_src: true
+        src: /tmp/snapraid-runner/snapraid-runner.py
+        dest: /usr/local/bin/snapraid-runner
+        mode: "0644"
+
+- name: Verify required variable
+  ansible.builtin.fail:
+    msg: "'healthchecks_snapraid_runner_uuid' is not set"
+  when: healthchecks_snapraid_runner_uuid is undefined
+
+- name: Create snapraid-runner env entrypoint
+  ansible.builtin.template:
+    src: snapraid-runner-env.sh.j2
+    dest: /usr/local/bin/snapraid-runner-env
+    owner: root
+    group: root
+    mode: "0744"
+
+- name: Copy snapraid-runner files
+  ansible.builtin.copy:
+    src: "{{ item.key }}"
+    dest: "{{ item.value }}"
+    mode: "0744"
+  with_dict: "{{ files }}"
+  vars:
+    files:
+      snapraid-runner-wrapper.sh: /usr/local/bin/snapraid-runner-wrapper
+      snapraid-runner.conf: /etc/snapraid-runner.conf
+
+- name: Copy snapraid-runner systemd files
+  ansible.builtin.copy:
+    src: "{{ item.key }}"
+    dest: "{{ item.value }}"
+    owner: root
+    group: root
+    mode: "0644"
+  with_dict: "{{ files }}"
+  vars:
+    files:
+      snapraid-runner.service: /etc/systemd/system/snapraid-runner.service
+      snapraid-runner.timer: /etc/systemd/system/snapraid-runner.timer
+
+- name: Enable snapraid-runner service timer
+  ansible.builtin.systemd:
+    name: snapraid-runner.timer
+    state: started
+    enabled: true

@@ -123,20 +123,13 @@
       when:
         - zpool is defined
     - role: snapraid
-      when:
-        - snapraid
+      when: snapraid is true
     - role: mergerfs
       when:
         - fstab_lines is defined
         - fstab_lines | length > 0
     - clamav
-
-  post_tasks:
-    - name: Copy docker files
-      ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../../docker"
-        dest: "{{ ansible_user['home'] }}/compose"
-        mode: "0644"
+    - docker
 #
 # - name: Setup GPUs
 #   hosts:
