@@ -17,4 +17,4 @@ read -r -d '' POST_COMMANDS_SUCCESS << EOM
 curl -fsS -m 10 --retry 5 -o /dev/null "$HEALTHCHECKS_PING_URL"
 EOM
 
-/usr/local/bin/snapraid-runner-wrapper
+source /usr/local/bin/snapraid-runner-wrapper
