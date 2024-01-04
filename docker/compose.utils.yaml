@@ -118,13 +118,13 @@ services:
       traefik.http.routers.mealie.entrypoints: websecure
       traefik.http.services.mealie.loadbalancer.server.port: 9000
 
-  cgit:
+  cgit_public:
     <<: *service
     image: ghcr.io/brettinternet/cgit:latest
     environment:
       <<: *environment
       ROOT_TITLE: "git.${PUBLIC_DOMAIN}"
-      ROOT_DESC: Source code of various projects
+      ROOT_DESC: Mirrors of various public projects
       ROOT_README: /srv/git/README.md
       SECTION_FROM_STARTPATH: 1
       NOPLAINEMAIL: 1
@@ -132,10 +132,10 @@ services:
       - "${CONFIG_DIR}/git:/srv/git"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.cgit.middlewares: hsts-header
-      traefik.http.routers.cgit.rule: Host(`git.${PUBLIC_DOMAIN}`)
-      traefik.http.routers.cgit.entrypoints: websecure
-      traefik.http.services.cgit.loadbalancer.server.port: 80
+      traefik.http.routers.cgit-public.middlewares: hsts-header
+      traefik.http.routers.cgit-public.rule: Host(`git.${PUBLIC_DOMAIN}`)
+      traefik.http.routers.cgit-public.entrypoints: websecure
+      traefik.http.services.cgit-public.loadbalancer.server.port: 80
 
   mirrors_public:
     <<: *service
@@ -163,6 +163,25 @@ services:
       GIT_REMOTE_11: https://github.com/brettinternet/containers
     volumes:
       - "${CONFIG_DIR}/git:/repos"
+
+  # cgit_private:
+  #   <<: *service
+  #   image: ghcr.io/brettinternet/cgit:latest
+  #   environment:
+  #     <<: *environment
+  #     ROOT_TITLE: "git.${PRIVATE_DOMAIN}"
+  #     ROOT_DESC: Private mirrors
+  #     ROOT_README: /srv/git/README.md
+  #     SECTION_FROM_STARTPATH: 1
+  #     NOPLAINEMAIL: 1
+  #   volumes:
+  #     - "${CONFIG_DIR}/git_priv:/srv/git"
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.cgit-private.middlewares: hsts-header, ipallowlist, authelia_private
+  #     traefik.http.routers.cgit-private.rule: Host(`git.${PRIVATE_DOMAIN}`)
+  #     traefik.http.routers.cgit-private.entrypoints: websecure
+  #     traefik.http.services.cgit-private.loadbalancer.server.port: 80
 
   mirrors_private:
     <<: *service
