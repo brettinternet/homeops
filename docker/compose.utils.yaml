@@ -161,6 +161,7 @@ services:
       GIT_REMOTE_9: https://github.com/brettinternet/provision
       GIT_REMOTE_10: https://github.com/brettinternet/brettinternet.github.io
       GIT_REMOTE_11: https://github.com/brettinternet/containers
+      GIT_REMOTE_12: https://github.com/brettinternet/archive
     volumes:
       - "${CONFIG_DIR}/git:/repos"
 
