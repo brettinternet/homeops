@@ -131,6 +131,20 @@ services:
       traefik.http.services.sonarr.loadbalancer.server.port: 8989
       traefik.http.routers.sonarr.entrypoints: websecure
 
+  unpackerr:
+    <<: *options
+    image: golift/unpackerr
+    volumes:
+      - media:/data
+    environment:
+      <<: *environment
+      UN_SONARR_0_URL: http://sonarr:8989
+      UN_SONARR_0_API_KEY: "${SONARR_API_KEY}"
+      UN_SONARR_0_PATHS_0: /data/usenet/incomplete
+      UN_RADARR_0_URL: http://radarr:7878
+      UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
+      UN_RADARR_0_PATHS_0: /data/usenet/incomplete
+
   calibre:
     <<: *options
     image: lscr.io/linuxserver/calibre:latest
