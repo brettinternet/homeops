@@ -44,20 +44,20 @@ volumes:
 services:
   cloudflare-ddns:
     <<: *options
-    image: ghcr.io/joshuaavalon/cloudflare-ddns:latest
+    image: ghcr.io/brettinternet/cloudflare-ddns:latest
     environment:
       <<: *environment
-      CF_DNS__CRON: "*/10 * * * *"
-      CF_DNS__AUTH__SCOPED_TOKEN: "${CLOUDFLARE_API_TOKEN}"
-      CF_DNS__DOMAINS_0__ZONE_NAME: "${PRIVATE_DOMAIN}"
-      CF_DNS__DOMAINS_0__ZONE_ID: "${CLOUDFLARE_PRIVATE_DOMAIN_ZONE_ID}"
-      CF_DNS__DOMAINS_0__NAME: "local.${PRIVATE_DOMAIN}"
-      CF_DNS__DOMAINS_0__PROXIED: "false"
-      CF_DNS__DOMAINS_0__CREATE: "true"
-      CF_DNS__DOMAINS_0__TYPE: A
-      CF_DNS__DOMAINS_0__WEBHOOK_0__RUN: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/start"
-      CF_DNS__DOMAINS_0__WEBHOOK_0__SUCCESS: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
-      CF_DNS__DOMAINS_0__WEBHOOK_0__FAILURE: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
+      CRON: "*/10 * * * *"
+      CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN}"
+      CLOUDFLARE_RECORD_NAME: "local.${PRIVATE_DOMAIN}"
+      CLOUDFLARE_RECORD_PROXIED: "false"
+      CLOUDFLARE_RECORD_TYPE: A
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/start"
+      POST_COMMANDS_FAILURE: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
 
   nfs-shared:
     <<: *options
