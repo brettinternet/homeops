@@ -59,13 +59,6 @@ services:
       CF_DNS__DOMAINS_0__WEBHOOK_0__SUCCESS: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
       CF_DNS__DOMAINS_0__WEBHOOK_0__FAILURE: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
 
-  unifi_mongo:
-    <<: *options
-    image: mongo:7
-    volumes:
-      - "${CONFIG_DIR}/unifi_mongo/db:/data/db"
-      - "${CONFIG_DIR}/unifi_mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro"
-
   nfs-shared:
     <<: *options
     image: itsthenetwork/nfs-server-alpine:latest
