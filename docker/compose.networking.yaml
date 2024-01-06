@@ -55,6 +55,9 @@ services:
       CF_DNS__DOMAINS_0__PROXIED: "false"
       CF_DNS__DOMAINS_0__CREATE: "true"
       CF_DNS__DOMAINS_0__TYPE: A
+      CF_DNS__DOMAINS_0__WEBHOOK_0__RUN: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/start"
+      CF_DNS__DOMAINS_0__WEBHOOK_0__SUCCESS: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
+      CF_DNS__DOMAINS_0__WEBHOOK_0__FAILURE: "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
 
   unifi_mongo:
     <<: *options

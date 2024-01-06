@@ -18,6 +18,9 @@ includes:
   setup: .taskfiles/setup_{{OS}}.yaml
   sops: .taskfiles/sops.yaml
   terraform: .taskfiles/terraform.yaml
+  docker:
+    taskfile: .taskfiles/docker.yaml
+    dir: ./docker
 
 tasks:
   default:
