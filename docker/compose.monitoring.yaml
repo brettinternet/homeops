@@ -28,6 +28,8 @@ services:
       INTEGRATIONS_ALLOW_PRIVATE_IPS: "True"
     volumes:
       - "${CONFIG_DIR}/healthchecks:/config"
+    ports:
+      - 8000:8000
     labels:
       traefik.enable: "true"
       traefik.http.routers.healthchecks.middlewares: hsts-header
