@@ -9,6 +9,24 @@ x-options: &options
       condition: unless-stopped
 
 services:
+  palworld1:
+    <<: *options
+    image: thijsvanloef/palworld-server-docker
+    ports:
+      - 8211:8211/udp
+      - 27015:27015/udp
+    environment:
+      <<: *environment
+      PORT: 8211
+      PLAYERS: 16
+      MULTITHREADING: true
+      COMMUNITY: false
+      SERVER_NAME: "${PALWORLD1_NAME}"
+      SERVER_PASSWORD: "${PALWORLD1_PASSWORD}"
+      ADMIN_PASSWORD: "${PALWORLD_ADMIN_PASSWORD}"
+    volumes:
+      - "${CONFIG_DIR}/palworld_anitamaxwynn:/palworld"
+
   valheim1:
     <<: *options
     image: lloesche/valheim-server:latest
