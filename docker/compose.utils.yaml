@@ -44,6 +44,22 @@ services:
       traefik.http.routers.ntfy.entrypoints: websecure
       traefik.http.services.ntfy.loadbalancer.server.port: 80
 
+  babybuddy:
+    <<: *service
+    image: lscr.io/linuxserver/babybuddy:latest
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+      CSRF_TRUSTED_ORIGINS: "https://baby.${PUBLIC_DOMAIN}"
+    volumes:
+      - "${CONFIG_DIR}/babybuddy:/config"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.babybuddy.rule: Host(`baby.${PUBLIC_DOMAIN}`)
+      traefik.http.routers.babybuddy.entrypoints: websecure
+      traefik.http.services.babybuddy.loadbalancer.server.port: 8000
+
   espial:
     <<: *service
     image: jonschoning/espial:espial
