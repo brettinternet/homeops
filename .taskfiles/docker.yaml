@@ -12,7 +12,7 @@ vars:
 
 env:
   COMPOSE_PROJECT: \{{ .PROJECT }}
-  COMPOSE_PROFILES: base,utils,home,backup,monitoring,sites,auth,networking,media
+  COMPOSE_PROFILES: base,utils,home,backup,monitoring,sites,auth,networking,media,dev
   COMPOSE_HTTP_TIMEOUT: 300
   # See Docker's SSH tips: https://docs.docker.com/engine/security/protect-access/#ssh-tips
   DOCKER_HOST: ssh://gertrude
