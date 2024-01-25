@@ -11,7 +11,7 @@ x-options: &options
 services:
   palworld1:
     <<: *options
-    image: thijsvanloef/palworld-server-docker
+    image: thijsvanloef/palworld-server-docker:latest
     environment:
       <<: *environment
       PUID: "${PUID}"
@@ -28,6 +28,24 @@ services:
     ports:
       - 8211:8211/udp
       - 27015:27015/udp
+
+  enshrouded1:
+    <<: *options
+    image: mornedhels/enshrouded-server:latest
+    stop_grace_period: 90s
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+      SERVER_NAME: "${ENSHROUDED1_SERVER_NAME}"
+      SERVER_PASSWORD: "${ENSHROUDED1_SERVER_PASSWORD}"
+      UPDATE_CRON: "*/30 * * * *"
+      STEAM_API_KEY: "${ENSHROUDED_STEAM_API_KEY}"
+      SERVER_SLOT_COUNT: 5
+    ports:
+      - 15636-15637:15636-15637/udp
+    volumes:
+      - "${CONFIG_DIR}/enshrouded_anitamaxwynn:/opt/enshrouded"
 
   # valheim1:
   #   <<: *options
