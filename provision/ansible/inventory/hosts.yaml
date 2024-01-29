@@ -7,6 +7,9 @@ all:
           ansible_host: 10.1.2.11
           zpool: pond
 
+        mars:
+          ansible_host: 10.1.2.21
+
         bogota:
           ansible_host: 10.1.2.10
           snapraid: true
