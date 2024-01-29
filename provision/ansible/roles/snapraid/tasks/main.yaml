@@ -44,7 +44,7 @@
         remote_src: true
         src: /tmp/snapraid-runner/snapraid-runner.py
         dest: /usr/local/bin/snapraid-runner
-        mode: "0644"
+        mode: "0744"
 
 - name: Verify required variable
   ansible.builtin.fail:
