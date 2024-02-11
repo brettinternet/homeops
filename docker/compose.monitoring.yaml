@@ -66,7 +66,7 @@ services:
       POSTGRES_PASSWORD: "${GATUS_POSTGRES_PASSWORD}"
       NTFY_TOKEN: "${NTFY_GATUS_TOKEN}"
     volumes:
-      - "${CONFIG_DIR}/gatus/config.yaml:/config/config.yaml"
+      - "${CONFIG_DIR}/gatus:/config"
     labels:
       traefik.enable: "true"
       traefik.http.routers.gatus.middlewares: hsts-header, ipallowlist, authelia_private
