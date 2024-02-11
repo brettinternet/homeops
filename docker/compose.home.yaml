@@ -50,18 +50,22 @@ services:
     <<: *options
     image: ghcr.io/blakeblackshear/frigate:stable
     networks: [default]
+    cap_add: [CAP_PERFMON]
     environment:
       <<: *environment
       FRIGATE_RTSP_PASSWORD: "${FRIGATE_RTSP_PASSWORD}"
       FRIGATE_MQTT_PASSWORD: "${FRIGATE_MQTT_PASSWORD}"
     volumes:
-      - "${CONFIG_DIR}/frigate/config.yml:/config/config.yml"
+      - "${CONFIG_DIR}/frigate:/config"
       - cameras:/media/frigate
       - type: tmpfs
         target: /tmp/cache
         tmpfs:
           size: 4000000000
-    shm_size: 1gb
+    shm_size: 2gb
+    devices:
+      - /dev/dri
+      - /dev/bus/usb
     ports:
       - 127.0.0.1:5000:5000
     labels:
