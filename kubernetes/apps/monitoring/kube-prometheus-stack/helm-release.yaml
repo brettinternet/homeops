@@ -165,9 +165,9 @@ spec:
         externalLabels:
           cluster: home
         thanos:
-          image: quay.io/thanos/thanos:v0.28.0
+          image: quay.io/thanos/thanos:v0.34.1
           # renovate: datasource=docker depName=quay.io/thanos/thanos
-          version: "v0.28.0"
+          version: "v0.34.1"
         podAntiAffinity: hard
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
