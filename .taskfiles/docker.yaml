@@ -9,13 +9,11 @@ vars:
   COMPOSE_FILES_ARGS: -f {{ .COMPOSE_FILES | splitLines | join " -f " }}
   DOCKER_COMMAND: docker -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
   COMPOSE_COMMAND: docker-compose --parallel 5 -p {{ .PROJECT }} {{ .COMPOSE_FILES_ARGS }}
+  GERTRUDE_COMPOSE_FILES: base,utils,home,backup,monitoring,sites,auth,networking,media,dev
 
 env:
-  COMPOSE_PROJECT: \{{ .PROJECT }}
-  COMPOSE_PROFILES: base,utils,home,backup,monitoring,sites,auth,networking,media,dev,games
+  COMPOSE_PROJECT: "{{ .PROJECT }}"
   COMPOSE_HTTP_TIMEOUT: 300
-  # See Docker's SSH tips: https://docs.docker.com/engine/security/protect-access/#ssh-tips
-  DOCKER_HOST: ssh://gertrude
 
 tasks:
   default:
@@ -45,21 +43,55 @@ tasks:
 
   pull:
     desc: Pull images on docker host
+    env:
+      COMPOSE_PROFILES: "{{ .GERTRUDE_COMPOSE_FILES }}"
+      DOCKER_HOST: ssh://gertrude
     cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} pull'
     requires:
       vars: [SECRETS_FILE]
 
   up:
-    desc: Deploy compose files; This targets a single node 'DOCKER_HOST' or locahost.
+    desc: Deploy compose files to hosts
     cmds:
-      # - task: up-nfs
+      - task: bogota-up
+      - task: mars-up
+      - task: gertrude-up
+
+  bogota-up:
+    env:
+      DOCKER_HOST: ssh://bogota
+      COMPOSE_PROFILES: media-nfs
+    cmds:
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
+
+  # mars-up:
+  #   env:
+  #     DOCKER_HOST: ssh://mars
+  #     COMPOSE_PROFILES: games
+  #   cmds:
+  #     - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
+
+  gertrude-up:
+    env:
+      COMPOSE_PROFILES: "{{ .GERTRUDE_COMPOSE_FILES }}"
+      # See Docker's SSH tips: https://docs.docker.com/engine/security/protect-access/#ssh-tips
+      DOCKER_HOST: ssh://gertrude
+    cmds:
+      - echo $COMPOSE_PROFILES
+      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
+
+  compose-up:
+    cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
     requires:
       vars: [SECRETS_FILE]
 
   stop:
     desc: Stop compose containers on host
+    env:
+      COMPOSE_PROFILES: "{{ .GERTRUDE_COMPOSE_FILES }}"
+      DOCKER_HOST: ssh://gertrude
     cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} down --remove-orphans'
     requires:
@@ -67,6 +99,9 @@ tasks:
 
   down:
     desc: Stop and clean up containers on host
+    env:
+      COMPOSE_PROFILES: "{{ .GERTRUDE_COMPOSE_FILES }}"
+      DOCKER_HOST: ssh://gertrude
     cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} down --remove-orphans --rmi all'
     requires:
@@ -76,15 +111,5 @@ tasks:
     desc: Stop and clean up containers on host
     cmds:
       - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} config'
-    requires:
-      vars: [SECRETS_FILE]
-
-  up-nfs:
-    desc: Deploy compose files; This targets a media NFS.
-    env:
-      DOCKER_HOST: ssh://bogota
-      COMPOSE_PROFILES: media-nfs
-    cmds:
-      - sops exec-env {{ .SECRETS_FILE }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'
     requires:
       vars: [SECRETS_FILE]
