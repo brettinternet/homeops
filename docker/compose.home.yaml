@@ -68,6 +68,10 @@ services:
       - /dev/bus/usb
     ports:
       - 127.0.0.1:5000:5000
+      - 1984:1984 # go2rtc
+      - 9554:8554 # RTSP
+      - 8555:8555/tcp # WebRTC
+      - 8555:8555/udp # WebRTC
     labels:
       traefik.enable: "true"
       traefik.http.routers.frigate.middlewares: hsts-header, ipallowlist, authelia_private
