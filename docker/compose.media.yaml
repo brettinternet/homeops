@@ -145,31 +145,31 @@ services:
       UN_RADARR_0_API_KEY: "${RADARR_API_KEY}"
       UN_RADARR_0_PATHS_0: /data/usenet/incomplete
 
-  calibre:
-    <<: *options
-    image: lscr.io/linuxserver/calibre:latest
-    security_opt:
-      - seccomp:unconfined
-    environment:
-      <<: *environment
-      PUID: "${PUID}"
-      PGID: "${PGID}"
-      TITLE: Calibre
-    volumes:
-      - "${CONFIG_DIR}/calibre:/config"
-      - media:/data
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.calibre.middlewares: hsts-header, ipallowlist, authelia_private
-      traefik.http.routers.calibre.rule: Host(`calibre.${PRIVATE_DOMAIN}`)
-      traefik.http.services.calibre.loadbalancer.server.port: 8080
-      traefik.http.routers.calibre.entrypoints: websecure
-      traefik.http.routers.calibre.service: calibre
-      traefik.http.routers.calibre-content.middlewares: hsts-header, ipallowlist, authelia_private
-      traefik.http.routers.calibre-content.rule: Host(`read.${PRIVATE_DOMAIN}`)
-      traefik.http.services.calibre-content.loadbalancer.server.port: 8081
-      traefik.http.routers.calibre-content.entrypoints: websecure
-      traefik.http.routers.calibre-content.service: calibre-content
+  # calibre:
+  #   <<: *options
+  #   image: lscr.io/linuxserver/calibre:latest
+  #   # security_opt:
+  #   #   - seccomp:unconfined
+  #   environment:
+  #     <<: *environment
+  #     PUID: "${PUID}"
+  #     PGID: "${PGID}"
+  #     TITLE: Calibre
+  #   volumes:
+  #     - "${CONFIG_DIR}/calibre:/config"
+  #     - media:/data
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.calibre.middlewares: hsts-header, ipallowlist, authelia_private
+  #     traefik.http.routers.calibre.rule: Host(`calibre.${PRIVATE_DOMAIN}`)
+  #     traefik.http.services.calibre.loadbalancer.server.port: 8080
+  #     traefik.http.routers.calibre.entrypoints: websecure
+  #     traefik.http.routers.calibre.service: calibre
+  #     traefik.http.routers.calibre-content.middlewares: hsts-header, ipallowlist, authelia_private
+  #     traefik.http.routers.calibre-content.rule: Host(`read.${PRIVATE_DOMAIN}`)
+  #     traefik.http.services.calibre-content.loadbalancer.server.port: 8081
+  #     traefik.http.routers.calibre-content.entrypoints: websecure
+  #     traefik.http.routers.calibre-content.service: calibre-content
 
   calibre_web:
     <<: *options
