@@ -38,7 +38,7 @@ spec:
     image:
       # https://hub.docker.com/r/cloudflare/cloudflared
       repository: docker.io/cloudflare/cloudflared
-      tag: 2023.7.1
+      tag: 2023.10.0
     env:
       TZ: "${TIMEZONE}"
       NO_AUTOUPDATE: "true"
