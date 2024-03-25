@@ -28,7 +28,7 @@ spec:
     DNS: 172.16.1.1
     additionalContainers:
       gluetun:
-        image: qmcgaw/gluetun:v3.33.0@sha256:cadc352ebed5988c9fbc750f2759ea703dc7587f969d70342cc5eff05282024b
+        image: qmcgaw/gluetun:v3.38.0@sha256:5522794f5cce6d84bc7f06b1e3a3b836ede9100c64aec94543cb503bb2ecb72f
         env:
           # https://github.com/qdm12/gluetun/wiki/Custom-provider
           VPN_SERVICE_PROVIDER: custom
