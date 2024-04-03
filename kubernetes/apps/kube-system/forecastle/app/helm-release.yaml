@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: forecastle
-      version: v1.0.127
+      version: v1.0.139
       sourceRef:
         kind: HelmRepository
         name: stakater
