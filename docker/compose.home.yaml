@@ -33,7 +33,7 @@ services:
   esphome:
     <<: *options
     image: esphome/esphome:latest
-    networks: [default]
+    network_mode: host
     environment:
       <<: *environment
       ESPHOME_DASHBOARD_USE_PING: "true"
@@ -49,6 +49,7 @@ services:
   frigate:
     <<: *options
     image: ghcr.io/blakeblackshear/frigate:stable
+    depends_on: [mosquitto]
     networks: [default]
     cap_add: [CAP_PERFMON]
     environment:
@@ -68,7 +69,7 @@ services:
       - /dev/bus/usb
     ports:
       - 127.0.0.1:5000:5000
-      - 1984:1984 # go2rtc
+      - 127.0.0.1:1984:1984 # go2rtc
       - 9554:8554 # RTSP
       - 8555:8555/tcp # WebRTC
       - 8555:8555/udp # WebRTC
@@ -78,6 +79,12 @@ services:
       traefik.http.routers.frigate.rule: Host(`video.${PRIVATE_DOMAIN}`)
       traefik.http.services.frigate.loadbalancer.server.port: 5000
       traefik.http.routers.frigate.entrypoints: websecure
+      traefik.http.routers.frigate.service: frigate
+      traefik.http.routers.go2rtc.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.go2rtc.rule: Host(`rtc.${PRIVATE_DOMAIN}`)
+      traefik.http.services.go2rtc.loadbalancer.server.port: 1984
+      traefik.http.routers.go2rtc.entrypoints: websecure
+      traefik.http.routers.go2rtc.service: go2rtc
 
   mosquitto:
     <<: *options
@@ -90,3 +97,28 @@ services:
       - "${CONFIG_DIR}/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf"
       - "${CONFIG_DIR}/mosquitto/data:/mosquitto/data"
       - "${CONFIG_DIR}/mosquitto/log:/mosquitto/log"
+
+  # rtlamr:
+  #   <<: *options
+  #   image: allangood/rtlamr2mqtt
+  #   devices:
+  #     - /dev/bus/usb
+  # volumes:
+  #   - "${CONFIG_DIR}/rtlamr/rtlamr2mqtt.yaml:/etc/rtlamr2mqtt.yaml:ro"
+  #   - "${CONFIG_DIR}/rtlamr/data:/var/lib/rtlamr2mqtt"
+
+  # double-take:
+  #   <<: *options
+  #   container_name: double-take
+  #   image: skrashevich/double-take
+  #   environment:
+  #     <<: *environment
+  #   volumes:
+  #     # `.storage`: /matches, /train, /config
+  #     - "${CONFIG_DIR}/double-take:/.storage"
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.double-take.middlewares: hsts-header, ipallowlist, authelia_private
+  #     traefik.http.routers.double-take.rule: Host(`doubletake.${PRIVATE_DOMAIN}`)
+  #     traefik.http.services.double-take.loadbalancer.server.port: 3000
+  #     traefik.http.routers.double-take.entrypoints: websecure
