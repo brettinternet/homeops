@@ -14,6 +14,12 @@ x-media-volume:
     o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime
     device: :/
 
+x-media-volume-nocache:
+  driver_opts: &media_driver_nocache_opts
+    type: nfs
+    o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime,fg,noac,lookupcache=none
+    device: :/
+
 volumes:
   media:
     name: media
@@ -33,7 +39,7 @@ volumes:
   usenet:
     name: usenet
     driver_opts:
-      <<: *media_driver_opts
+      <<: *media_driver_nocache_opts
       device: :/usenet
   cameras:
     name: cameras
