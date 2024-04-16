@@ -98,15 +98,6 @@ services:
       - "${CONFIG_DIR}/mosquitto/data:/mosquitto/data"
       - "${CONFIG_DIR}/mosquitto/log:/mosquitto/log"
 
-  # rtlamr:
-  #   <<: *options
-  #   image: allangood/rtlamr2mqtt
-  #   devices:
-  #     - /dev/bus/usb
-  # volumes:
-  #   - "${CONFIG_DIR}/rtlamr/rtlamr2mqtt.yaml:/etc/rtlamr2mqtt.yaml:ro"
-  #   - "${CONFIG_DIR}/rtlamr/data:/var/lib/rtlamr2mqtt"
-
   # double-take:
   #   <<: *options
   #   container_name: double-take
