@@ -57,10 +57,10 @@ services:
       - "${CONFIG_DIR}/linkding:/etc/linkding/data"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.espial.middlewares: hsts-header
-      traefik.http.routers.espial.rule: Host(`links.${PUBLIC_DOMAIN}`)
-      traefik.http.routers.espial.entrypoints: websecure
-      traefik.http.services.espial.loadbalancer.server.port: 9090
+      traefik.http.routers.linkding.middlewares: hsts-header
+      traefik.http.routers.linkding.rule: Host(`links.${PUBLIC_DOMAIN}`)
+      traefik.http.routers.linkding.entrypoints: websecure
+      traefik.http.services.linkding.loadbalancer.server.port: 9090
 
   linkding_db:
     <<: *service
@@ -120,6 +120,8 @@ services:
       POSTGRES_DB: miniflux
       POSTGRES_USER: miniflux
       POSTGRES_PASSWORD: "${MINIFLUX_POSTGRES_PASSWORD}"
+    labels:
+      diun.enable: "false"
 
   mealie:
     <<: *service
