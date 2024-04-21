@@ -11,7 +11,7 @@ x-options: &options
 services:
   plex:
     <<: *options
-    image: plexinc/pms-docker:plexpass
+    image: plexinc/pms-docker:latest
     environment:
       <<: *environment
       PLEX_UID: "${PUID}"
