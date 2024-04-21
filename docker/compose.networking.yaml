@@ -20,6 +20,7 @@ x-media-volume-nocache:
     o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime,fg,noac,lookupcache=none
     device: :/
 
+# TODO: use new volume subpaths feature: https://docs.docker.com/compose/compose-file/05-services/#volumes
 volumes:
   media:
     name: media
