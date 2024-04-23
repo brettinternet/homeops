@@ -1,6 +1,6 @@
 ---
 x-options: &options
-  profiles: [media-nfs]
+  profiles: [nfs]
   networks: [default]
   environment: &environment
     TZ: "${TIMEZONE}"
