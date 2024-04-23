@@ -29,9 +29,23 @@ services:
       - 8211:8211/udp
       - 27015:27015/udp
 
+  # enshrouded1:
+  #   <<: *options
+  #   image: sknnr/enshrouded-dedicated-server:latest
+  #   environment:
+  #     <<: *environment
+  #     SERVER_NAME: "${ENSHROUDED1_SERVER_NAME}"
+  #     SERVER_PASSWORD: "${ENSHROUDED1_SERVER_PASSWORD}"
+  #     SERVER_SLOTS: 5
+  #   ports:
+  #     - 15636:15636/udp
+  #     - 15637:15637/udp
+  #   volumes:
+  #     - "${CONFIG_DIR}/enshrouded_anitamaxwynn:/home/steam/enshrouded/savegame"
+
   enshrouded1:
     <<: *options
-    image: mornedhels/enshrouded-server:latest
+    image: mornedhels/enshrouded-server:dev-proton
     stop_grace_period: 90s
     environment:
       <<: *environment
@@ -39,13 +53,14 @@ services:
       PGID: "${PGID}"
       SERVER_NAME: "${ENSHROUDED1_SERVER_NAME}"
       SERVER_PASSWORD: "${ENSHROUDED1_SERVER_PASSWORD}"
-      UPDATE_CRON: "*/30 * * * *"
-      STEAM_API_KEY: "${ENSHROUDED_STEAM_API_KEY}"
+      UPDATE_CRON: "0 */1 * * *"
+      # STEAM_API_KEY: "${ENSHROUDED_STEAM_API_KEY}"
       SERVER_SLOT_COUNT: 5
     ports:
       - 15636-15637:15636-15637/udp
     volumes:
       - "${CONFIG_DIR}/enshrouded_anitamaxwynn:/opt/enshrouded"
+      # - "${CONFIG_DIR}/enshrouded_anitamaxwynn_2:/opt/enshrouded"
 
   # valheim1:
   #   <<: *options
