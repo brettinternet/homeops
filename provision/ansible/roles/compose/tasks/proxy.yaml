@@ -1,0 +1,145 @@
+---
+x-service: &service
+  networks: [default]
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 45s
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+
+services:
+  diun:
+    <<: *service
+    image: crazymax/diun:latest
+    depends_on: [socket-proxy]
+    command: serve
+    environment:
+      <<: *environment
+      LOG_LEVEL: info
+      LOG_JSON: "false"
+      DIUN_WATCH_WORKERS: 20
+      DIUN_WATCH_SCHEDULE: 0 */6 * * *
+      DIUN_WATCH_JITTER: 30s
+      DIUN_PROVIDERS_DOCKER: "true"
+      DIUN_PROVIDERS_DOCKER_WATCHBYDEFAULT: "true"
+      DIUN_PROVIDERS_DOCKER_ENDPOINT: tcp://socket-proxy:2375
+      DIUN_NOTIF_NTFY_ENDPOINT: http://ntfy
+      DIUN_NOTIF_NTFY_TOKEN: "${NTFY_DIUN_TOKEN}"
+      DIUN_NOTIF_NTFY_TOPIC: homelab
+
+  portainer:
+    <<: *service
+    image: portainer/portainer-ce:alpine
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      # Or connect to proxy: https://www.reddit.com/r/portainer/comments/12tdl8y/issue_connecting_portainer_to_docker_socket_proxy/
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${CONFIG_DIR}/portainer:/data"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.portainer.middlewares: hsts-header, ipallowlist
+      traefik.http.routers.portainer.rule: Host(`portainer.${PRIVATE_DOMAIN}`)
+      traefik.http.routers.portainer.entrypoints: websecure
+      traefik.http.services.portainer.loadbalancer.server.port: 9000
+
+  socket-proxy:
+    <<: *service
+    image: tecnativa/docker-socket-proxy:latest
+    environment:
+      <<: *environment
+      CONTAINERS: 1
+      IMAGES: 1
+      NETWORKS: 1
+      CONTAINERS_CREATE: 1
+      CONTAINERS_START: 1
+      CONTAINERS_UPDATE: 1
+      CONTAINERS_DELETE: 1
+      IMAGES_DELETE: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  cloudflared-tunnel:
+    <<: *service
+    image: cloudflare/cloudflared:2023.10.0
+    environment:
+      <<: *environment
+      # TUNNEL_LOGLEVEL: debug
+      # TUNNEL_POST_QUANTUM: "true"
+      NO_AUTOUPDATE: "true"
+      NO_TLS_VERIFY: "true"
+      TUNNEL_TOKEN: "${CLOUDFLARE_TUNNEL_TOKEN:?err}"
+      TUNNEL_URL: https://traefik
+      TUNNEL_ID: "${CLOUDFLARE_TUNNEL_ID}"
+    command: [tunnel, run]
+
+  traefik:
+    <<: *service
+    image: traefik:v2.10
+    depends_on: [socket-proxy]
+    environment:
+      <<: *environment
+      CF_DNS_API_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
+      CLOUDFLARE_POLLING_INTERVAL: 10
+      CLOUDFLARE_PROPAGATION_TIMEOUT: 300
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "${CONFIG_DIR}/traefik:/etc/traefik"
+    command:
+      - --log.level=DEBUG
+      - --api=true
+      - --providers.docker=true
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certResolver=leresolver
+      - --entrypoints.websecure.http.tls.domains[0].main=${PUBLIC_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.${PUBLIC_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[1].main=${PRIVATE_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[1].sans=*.${PRIVATE_DOMAIN}
+      - --certificatesresolvers.leresolver.acme.dnschallenge=true
+      - --certificatesresolvers.leresolver.acme.dnschallenge.disablepropagationcheck=true # for internal domain
+      - --certificatesresolvers.leresolver.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.leresolver.acme.dnschallenge.resolvers=1.1.1.1:53
+      - --certificatesresolvers.leresolver.acme.storage=/etc/traefik/acme.json
+      - --certificatesresolvers.leresolver.acme.email=${ACME_EMAIL}
+      # - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.rule: Host(`traefik.${PRIVATE_DOMAIN}`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.entrypoints: websecure
+      traefik.http.routers.traefik.middlewares: hsts-header, ipallowlist
+      traefik.http.middlewares.basicauth.basicauth.users: "${BASICAUTH}"
+      traefik.http.middlewares.ipallowlist.ipwhitelist.sourcerange: "${IPALLOWLIST:-0.0.0.0/0,::/0}"
+      traefik.http.middlewares.hsts-header.headers.customResponseHeaders.Strict-Transport-Security: max-age=63072000
+
+  cloudflare-companion:
+    <<: *service
+    image: tiredofit/traefik-cloudflare-companion:latest
+    depends_on: [socket-proxy]
+    environment:
+      <<: *environment
+      DOCKER_HOST: tcp://socket-proxy:2375
+      TIMEZONE: "${TIMEZONE}"
+      TRAEFIK_VERSION: 2
+      CF_TOKEN: "${CLOUDFLARE_API_TOKEN:?err}"
+      TARGET_DOMAIN: "tunnel.${PUBLIC_DOMAIN}"
+      DOMAIN1: "${PUBLIC_DOMAIN}"
+      DOMAIN1_ZONE_ID: "${CLOUDFLARE_PUBLIC_DOMAIN_ZONE_ID}"
+      DOMAIN1_PROXIED: "true"
+      DOMAIN1_EXCLUDED_SUB_DOMAINS: "*.internal.${PUBLIC_DOMAIN},*heim.${PUBLIC_DOMAIN}"

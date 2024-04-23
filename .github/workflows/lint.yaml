@@ -38,7 +38,6 @@ jobs:
                     "ACTION_ACTIONLINT",
                     "ANSIBLE_ANSIBLE_LINT",
                     "COPYPASTE_JSCPD",
-                    "KUBERNETES_KUBEVAL",
                     "MARKDOWN_MARKDOWNLINT",
                     "REPOSITORY_GIT_DIFF",
                     "REPOSITORY_SECRETLINT",
@@ -52,8 +51,6 @@ jobs:
             }}
           ANSIBLE_DIRECTORY: provision/ansible
           ANSIBLE_ANSIBLE_LINT_CONFIG_FILE: .github/linters/.ansible-lint
-          KUBERNETES_DIRECTORY: cluster
-          KUBERNETES_KUBEVAL_ARGUMENTS: --ignore-missing-schemas
           MARKDOWN_MARKDOWNLINT_CONFIG_FILE: .github/linters/.markdownlint.yaml
           MARKDOWN_MARKDOWNLINT_RULES_PATH: .github/
           YAML_YAMLLINT_CONFIG_FILE: .github/linters/.yamllint.yaml

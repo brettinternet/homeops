@@ -4,7 +4,6 @@ version: "3"
 vars:
   PROJECT_DIR:
     sh: git rev-parse --show-toplevel
-  KUBERNETES_DIR: "{{.PROJECT_DIR}}/kubernetes"
   ANSIBLE_DIR: "{{.PROJECT_DIR}}/provision/ansible"
   TERRAFORM_DIR: "{{.PROJECT_DIR}}/provision/terraform"
 
@@ -14,14 +13,14 @@ env:
 
 includes:
   ansible: .taskfiles/ansible.yaml
-  kubernetes:
-    taskfile: .taskfiles/kubernetes.yaml
-    aliases: [k, k8s, cluster]
   lint: .taskfiles/lint.yaml
   precommit: .taskfiles/precommit.yaml
   setup: .taskfiles/setup_{{OS}}.yaml
   sops: .taskfiles/sops.yaml
   terraform: .taskfiles/terraform.yaml
+  docker:
+    taskfile: .taskfiles/docker.yaml
+    dir: ./docker
 
 tasks:
   default:

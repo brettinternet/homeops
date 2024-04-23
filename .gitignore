@@ -22,3 +22,5 @@ megalinter-reports
 node_modules
 *.log
 *.pem
+.task
+plan.yaml

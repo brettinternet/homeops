@@ -13,30 +13,10 @@
     "enabled": true,
   },
   "ignorePaths": ["archive/**"],
-  "flux": {
-    "fileMatch": ["kubernetes/.+\\.ya?ml$"],
-  },
-  "helm-values": {
-    "fileMatch": ["kubernetes/.+\\.ya?ml$"],
-  },
-  "kubernetes": {
-    "fileMatch": ["kubernetes/.+\\.ya?ml$", "provision/ansible/.+\\.ya?ml.j2$"],
-  },
   "regexManagers": [
     {
-      "description": "Process CRD dependencies",
-      "fileMatch": ["kubernetes/crds/.+\\.ya?ml$"],
-      "matchStrings": [
-        // GitRepository and Flux Kustomization where 'Git release/tag' matches 'Helm' version
-        "registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?(?<currentValue>[^-\\s]*)\n",
-        // Kustomization where 'GitHub release artifact URL' matches 'Docker image' version
-        "datasource=(?<datasource>\\S+) image=(?<depName>\\S+)\n.*?-\\s(.*?)/(?<currentValue>[^/]+)/[^/]+\n",
-      ],
-      "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}helm{{/if}}",
-    },
-    {
       "description": "Process various other dependencies",
-      "fileMatch": ["provision/ansible/.+\\.ya?ml$", "kubernetes/.+\\.ya?ml$"],
+      "fileMatch": ["provision/ansible/.+\\.ya?ml$"],
       "matchStrings": [
         "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"(?<currentValue>.*)\"\n",
       ],
@@ -45,12 +25,6 @@
     },
   ],
   "packageRules": [
-    {
-      "description": "Disable kubernetes-api",
-      "matchManagers": ["kubernetes"],
-      "matchDatasources": ["kubernetes-api"],
-      "enabled": false,
-    },
     // setup datasources
     {
       "matchDatasources": ["helm"],

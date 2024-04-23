@@ -11,7 +11,7 @@
     src: sudoers-defaults
     dest: /etc/sudoers.d/defaults
     validate: "visudo -cf %s"
-    mode: 0644
+    mode: "0644"
 
 - name: Disable password tunneling
   become: true

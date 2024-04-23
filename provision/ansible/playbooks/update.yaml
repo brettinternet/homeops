@@ -9,70 +9,25 @@
         cache_valid_time: 86400 # one day
 
 - hosts:
-    - master
-    - worker
+    - docker
   become: true
   vars:
     allow_reboot: false
-    allow_drain: false
+    compose_dir: "{{ ansible_user['home'] }}/compose"
   pre_tasks:
-    - name: Get k3s service status
+    - name: Get docker service status
       ansible.builtin.systemd:
-        name: k3s.service
-      register: k3s_service_result
-      when: allow_drain
+        name: docker.service
+      register: docker_service_result
 
-    - name: Details
-      ansible.builtin.command: "kubectl get node {{ inventory_hostname }} -o json"
-      register: node_result
-      delegate_to: "{{ groups['master'][0] }}"
+    - name: Stop docker compose
+      ansible.builtin.command:
+        cmd: docker-compose down
+        chdir: "{{ compose_dir }}"
       failed_when: false
       changed_when: false
-      when: allow_drain
-
-    # Source: https://github.com/onedr0p/flux-cluster-template/blob/1b72e74b4c5e794134aa30e7e9ac46291d8ce9f4/bootstrap/templates/ansible/playbooks/cluster-rollout-update.yaml.j2
-    - name: Cordon and drain
       when:
-        - allow_drain
-        - k3s_service_result.status.ActiveState == 'active'
-        # When status.conditions[x].type == Ready then check stats.conditions[x].status for True|False
-        - node_result['stdout'] | from_json | json_query("status.conditions[?type == 'Ready'].status")
-        # If spec.unschedulable is defined then the node is cordoned
-        - not (node_result['stdout'] | from_json).spec.unschedulable is defined
-      block:
-        - name: Cordon
-          kubernetes.core.k8s_drain:
-            name: "{{ inventory_hostname }}"
-            kubeconfig: /etc/rancher/k3s/k3s.yaml
-            state: cordon
-          delegate_to: "{{ groups['master'][0] }}"
-
-        - name: Drain
-          ansible.builtin.command: >-
-            kubectl drain --pod-selector='app!=rook-ceph-osd,app!=csi-attacher,app!=csi-provisioner' --ignore-daemonsets --delete-emptydir-data --force --grace-period=300 {{ inventory_hostname }}
-          delegate_to: "{{ groups['master'][0] }}"
-          changed_when: false
-
-        ### pod_selectors feature in upcoming kubernetes.core 2.5.0 ###
-        # - name: Drain
-        #   kubernetes.core.k8s_drain:
-        #     name: "{{ inventory_hostname }}"
-        #     kubeconfig: /etc/rancher/k3s/k3s.yaml
-        #     state: drain
-        #     delete_options:
-        #       delete_emptydir_data: true
-        #       ignore_daemonsets: true
-        #       terminate_grace_period: 600
-        #       wait_timeout: 900
-        #       force: true
-        #     pod_selectors:
-        #       # Rook Ceph
-        #      - app!=rook-ceph-osd
-        #       # Longhorn
-        #      - app!=csi-attacher
-        #       # Longhorn
-        #      - app!=csi-provisioner
-        #   delegate_to: "{{ groups['master'][0] }}"
+        - docker_service_result.status.ActiveState == 'active'
 
   roles:
     - role: upgrade
@@ -81,12 +36,9 @@
         - zpool is defined
 
   post_tasks:
-    - name: Uncordon
-      kubernetes.core.k8s_drain:
-        name: "{{ inventory_hostname }}"
-        kubeconfig: /etc/rancher/k3s/k3s.yaml
-        state: uncordon
-      delegate_to: "{{ groups['master'][0] }}"
+    - name: Start docker compose
+      ansible.builtin.command:
+        cmd: docker-compose up -d --remove-orphans
+        chdir: "{{ compose_dir }}"
       when:
-        - allow_drain
-        - k3s_service_result.status.ActiveState == 'active'
+        - docker_service_result.status.ActiveState == 'active'

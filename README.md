@@ -8,29 +8,23 @@ Don't be fooled, having a home server is really just hundreds of hours of [badbl
 
 ## Features
 
-- Proxmox physical hosts and Arch Linux virtual hosts
-- Lots of [self-hosted services](./kubernetes/apps)
-- [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([kubernetes directory](./kubernetes))
-- Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./provision/ansible/roles) and [playbooks](./provision/ansible))
-- Terraform DNS records ([terraform](./provision/terraform))
+- Proxmox physical hosts and Arch Linux virtual guests
+- Lots of [self-hosted services](./docker) in a portable setup
+- Ansible node provisioning and container deployments (Ansible [roles](./provision/ansible/roles) and [compose files](./docker))
+- [Terraform DNS records setup](./provision/terraform)
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
 - [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
-- WireGuard VPN pod gateway via paid service
-- WireGuard VPN proxy hosted on VPS
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
-- [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to the cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
-- Both internal & external services with a service [gateway](https://github.com/ori-edge/k8s_gateway/)
 - OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
-- Automatic Cloudflare DNS updates ([ddns cronjob](./kubernetes/apps/networking/cloudflare-ddns))
-- [Cilium](https://cilium.io/) container networking interface (CNI) and [layer 4 loadbalancing](https://cilium.io/use-cases/load-balancer/)
+- Automatic Cloudflare DNS updates
 - [ZFS](https://wiki.archlinux.org/index.php/ZFS)
-- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files ([snapraid-runner kubernetes cronjob](./kubernetes/apps/media/snapraid-runner))
-- [Restic](https://restic.net) backups to remote and local buckets ([backup namespace](./kubernetes/apps/backup))
+- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files snapraid-runner cronjob
+- [Restic](https://restic.net) backups to remote and local buckets
 - [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles))
 
-## Usage
+Historical revisions of this repository went from a single-node compose orchestration, then Podman rootless containers deployed with Ansible as systemd units, then a kubernetes cluster extended from [this template](https://github.com/onedr0p/flux-cluster-template). With other responsibilities, I've had to take on a much more minimal approach to my homelab and I strive for simplicity over high availability at this time.
 
-Setup and usage is inspired heavily by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/). Historical revisions of this repository had rootless Podman containers deployed with ansible as systemd units, and a single-node docker compose orchestration before that.
+## Usage
 
 ### Setup
 
@@ -43,7 +37,7 @@ task init
 Then, provision your infrastructure.
 
 ```sh
-task ansible:{list,setup,kubernetes,status}
+task ansible:{list,setup,status}
 ```
 
 Edit `provision/terraform/cloudflare/secret.sops.yaml` with your own values and encrypt with `task sops:encrypt -- <filepath>`.
@@ -52,22 +46,6 @@ Setup Cloudflare DNS.
 
 ```sh
 task terraform:{init,cloudflare-plan,cloudflare-apply}
-```
-
-### Deploy
-
-#### Kubernetes
-
-Verify flux can be installed. Then, push changes to remote repo and install.
-
-```sh
-task cluster:{verify,install}
-```
-
-Push latest to repo - you can use the [wip.sh](./scripts/wip.sh) script for that with `task wip`.
-
-```sh
-task cluster:{reconcile,resources}
 ```
 
 #### Bastion server
@@ -200,28 +178,3 @@ Setup Proxmox on the hosts with Arch Linux guests. [Post setup for Proxmox](http
 ### Media
 
 For a media server, it's a good idea to [understand digital video](https://github.com/leandromoreira/digital_video_introduction).
-
-### Troubleshooting
-
-#### Network
-
-Debug DNS issues
-
-```sh
-kubectl run curl --rm=true --stdin=true --tty=true --restart=Never --image=docker.io/curlimages/curl --command -- /bin/sh -
-
-curl -k https://kubernetes:443; echo
-```
-
-[Ensure you're using iptables-legacy](https://github.com/k3s-io/k3s/issues/703#issuecomment-522355829). See also [nftables](https://wiki.nftables.org/wiki-nftables/index.php/Adoption).
-
-```sh
-iptables --version
-# iptables v1.8.7 (legacy)
-```
-
-Flush the iptables in between installs. Also check the CNI installation for issues (such as configuration for hardware with multiple NICs).
-
-#### Services
-
-- [Determine the Reason for Pod Failure](https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/)

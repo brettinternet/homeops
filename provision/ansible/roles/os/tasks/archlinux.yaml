@@ -12,7 +12,7 @@
     dest: /etc/xdg/reflector/reflector.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Start reflector timer
   ansible.builtin.systemd:

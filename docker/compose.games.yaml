@@ -1,0 +1,127 @@
+---
+x-options: &options
+  profiles: [games]
+  networks: [default]
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy:
+      condition: unless-stopped
+
+services:
+  palworld1:
+    <<: *options
+    image: thijsvanloef/palworld-server-docker:latest
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+      PORT: 8211
+      PLAYERS: 16
+      MULTITHREADING: true
+      COMMUNITY: false
+      # SERVER_NAME: "${PALWORLD1_NAME}"
+      # SERVER_PASSWORD: "${PALWORLD1_PASSWORD}"
+      ADMIN_PASSWORD: "${PALWORLD_ADMIN_PASSWORD}"
+    volumes:
+      - "${CONFIG_DIR}/palworld_anitamaxwynn:/palworld"
+    ports:
+      - 8211:8211/udp
+      - 27015:27015/udp
+
+  # enshrouded1:
+  #   <<: *options
+  #   image: sknnr/enshrouded-dedicated-server:latest
+  #   environment:
+  #     <<: *environment
+  #     SERVER_NAME: "${ENSHROUDED1_SERVER_NAME}"
+  #     SERVER_PASSWORD: "${ENSHROUDED1_SERVER_PASSWORD}"
+  #     SERVER_SLOTS: 5
+  #   ports:
+  #     - 15636:15636/udp
+  #     - 15637:15637/udp
+  #   volumes:
+  #     - "${CONFIG_DIR}/enshrouded_anitamaxwynn:/home/steam/enshrouded/savegame"
+
+  enshrouded1:
+    <<: *options
+    image: mornedhels/enshrouded-server:dev-proton
+    stop_grace_period: 90s
+    environment:
+      <<: *environment
+      PUID: "${PUID}"
+      PGID: "${PGID}"
+      SERVER_NAME: "${ENSHROUDED1_SERVER_NAME}"
+      SERVER_PASSWORD: "${ENSHROUDED1_SERVER_PASSWORD}"
+      UPDATE_CRON: "0 */1 * * *"
+      # STEAM_API_KEY: "${ENSHROUDED_STEAM_API_KEY}"
+      SERVER_SLOT_COUNT: 5
+    ports:
+      - 15636-15637:15636-15637/udp
+    volumes:
+      - "${CONFIG_DIR}/enshrouded_anitamaxwynn:/opt/enshrouded"
+      # - "${CONFIG_DIR}/enshrouded_anitamaxwynn_2:/opt/enshrouded"
+
+  # valheim1:
+  #   <<: *options
+  #   image: lloesche/valheim-server:latest
+  #   environment:
+  #     <<: *environment
+  #     PUID: "${PUID}"
+  #     PGID: "${PGID}"
+  #     SERVER_PORT: 2456
+  #     SERVER_PUBLIC: "false"
+  #     BACKUPS: "true"
+  #     BACKUPS_CRON: "*/20 * * * *"
+  #     BACKUPS_MAX_COUNT: 30
+  #     BACKUPS_IF_IDLE: "false"
+  #     SUPERVISOR_HTTP: "true"
+  #     SUPERVISOR_HTTP_PASS: "${VALHEIM_SUPERVISOR_HTTP_PASS}"
+  #     SERVER_NAME: "${VALHEIM_SERVER_3_NAME}"
+  #     SERVER_PASS: "${VALHEIM_SERVER_3_PASSWORD}"
+  #     ADMINLIST_IDS: "${VALHEIM_ADMINLIST_IDS}"
+  #   volumes:
+  #     - "${CONFIG_DIR}/valheim-knell/config:/config"
+  #     - "${CONFIG_DIR}/valheim-knell/server:/opt/valheim"
+  #   ports:
+  #     - 2456:2456/udp
+  #     - 2457:2457/udp
+  #     - 2458:2458/udp
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.valheim1.rule: Host(`knellheim.${PRIVATE_DOMAIN}`)
+  #     traefik.http.services.valheim1.loadbalancer.server.port: 9001
+  #     traefik.http.routers.valheim1.entrypoints: websecure
+
+  # valheim2:
+  #   <<: *options
+  #   image: lloesche/valheim-server:latest
+  #   environment:
+  #     <<: *environment
+  #     PUID: "${PUID}"
+  #     PGID: "${PGID}"
+  #     VALHEIM_PLUS: "true"
+  #     VALHEIM_PLUS_REPO: Grantapher/ValheimPlus
+  #     SERVER_PORT: 2459
+  #     SERVER_PUBLIC: "false"
+  #     BACKUPS: "true"
+  #     BACKUPS_CRON: "*/20 * * * *"
+  #     BACKUPS_MAX_COUNT: 30
+  #     BACKUPS_IF_IDLE: "false"
+  #     SUPERVISOR_HTTP: "true"
+  #     SUPERVISOR_HTTP_PASS: "${VALHEIM_SUPERVISOR_HTTP_PASS}"
+  #     SERVER_NAME: "${VALHEIM_SERVER_4_NAME}"
+  #     SERVER_PASS: "${VALHEIM_SERVER_4_PASSWORD}"
+  #     ADMINLIST_IDS: "${VALHEIM_ADMINLIST_IDS}"
+  #   volumes:
+  #     - "${CONFIG_DIR}/valheim-brett/config:/config"
+  #     - "${CONFIG_DIR}/valheim-brett/server:/opt/valheim"
+  #   ports:
+  #     - 2459:2459/udp
+  #     - 2460:2460/udp
+  #     - 2461:2461/udp
+  #   labels:
+  #     traefik.enable: "true"
+  #     traefik.http.routers.valheim2.rule: Host(`brettheim.${PRIVATE_DOMAIN}`)
+  #     traefik.http.services.valheim2.loadbalancer.server.port: 9001
+  #     traefik.http.routers.valheim2.entrypoints: websecure

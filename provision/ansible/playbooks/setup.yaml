@@ -38,7 +38,7 @@
 
 - name: Setup OS and upgrade deps
   hosts:
-    - kubernetes
+    - docker
   become: true
   roles:
     - os
@@ -48,7 +48,7 @@
 
 - name: Setup hosts
   hosts:
-    - kubernetes
+    - docker
   become: true
   pre_tasks:
     - name: Check supported distribution
@@ -60,7 +60,7 @@
 
     - name: Install packages
       ansible.builtin.package:
-        state: latest
+        state: present
         name:
           - base
           - dhcpcd
@@ -69,6 +69,7 @@
           - git
           - grub
           - vim
+          - neovim
           - linux
           - linux-headers
           - linux-firmware
@@ -102,7 +103,7 @@
       ansible.builtin.include_role:
         name: aur
       vars:
-        state: latest
+        state: present
         packages:
           - downgrade
           - vim-plug
@@ -122,21 +123,17 @@
       when:
         - zpool is defined
     - role: snapraid
-      when:
-        - snapraid
+      when: snapraid is true
     - role: mergerfs
       when:
         - fstab_lines is defined
         - fstab_lines | length > 0
-    - role: smart
-      when:
-        - disks is defined
-        - disks | length > 0
     - clamav
-
-- name: Setup GPUs
-  hosts:
-    - k8s-2
-  become: true
-  roles:
-    - gpu-k8s
+    - docker
+#
+# - name: Setup GPUs
+#   hosts:
+#     - gertrude
+#   become: true
+#   roles:
+#     - gpu-k8s

@@ -1,0 +1,22 @@
+---
+x-options: &options
+  profiles: [sites]
+  networks: [default]
+  environment:
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy:
+      condition: unless-stopped
+
+services:
+  landing:
+    <<: *options
+    image: library/httpd:alpine
+    volumes:
+      - "${CONFIG_DIR}/sites/landing/index.html:/usr/local/apache2/htdocs/index.html:ro"
+      - "${CONFIG_DIR}/sites/landing/favicon.ico:/usr/local/apache2/htdocs/favicon.ico:ro"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.landing.rule: Host(`${PUBLIC_DOMAIN}`)
+      traefik.http.services.landing.loadbalancer.server.port: 80
+      traefik.http.routers.landing.entrypoints: websecure

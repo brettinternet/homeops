@@ -1,0 +1,103 @@
+---
+x-options: &options
+  profiles: [networking]
+  networks: [default]
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy: &restart_policy
+      condition: unless-stopped
+
+x-media-volume:
+  driver_opts: &media_driver_opts
+    type: nfs
+    o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime
+    device: :/
+
+x-media-volume-nocache:
+  driver_opts: &media_driver_nocache_opts
+    type: nfs
+    o: addr=${MEDIA_IP},hard,timeo=600,retrans=3,proto=tcp,nfsvers=4.2,port=2049,rsize=4096,wsize=4096,noacl,nocto,noatime,nodiratime,fg,noac,lookupcache=none
+    device: :/
+
+# TODO: use new volume subpaths feature: https://docs.docker.com/compose/compose-file/05-services/#volumes
+volumes:
+  media:
+    name: media
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/
+  media_library:
+    name: media_library
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/library
+  books:
+    name: books
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/library/books
+  usenet:
+    name: usenet
+    driver_opts:
+      <<: *media_driver_nocache_opts
+      device: :/usenet
+  cameras:
+    name: cameras
+    driver_opts:
+      <<: *media_driver_opts
+      device: :/cameras
+
+services:
+  cloudflare-ddns:
+    <<: *options
+    image: ghcr.io/brettinternet/cloudflare-ddns:latest
+    environment:
+      <<: *environment
+      CRON: "*/10 * * * *"
+      CLOUDFLARE_API_TOKEN: "${CLOUDFLARE_API_TOKEN}"
+      CLOUDFLARE_RECORD_NAME: "local.${PRIVATE_DOMAIN}"
+      CLOUDFLARE_RECORD_PROXIED: "false"
+      CLOUDFLARE_RECORD_TYPE: A
+      PRE_COMMANDS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/start"
+      POST_COMMANDS_FAILURE: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
+      POST_COMMANDS_SUCCESS: |-
+        curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
+
+  nfs-shared:
+    <<: *options
+    image: itsthenetwork/nfs-server-alpine:latest
+    cap_add: [SYS_ADMIN, SETPCAP]
+    environment:
+      <<: *environment
+      SHARED_DIRECTORY: /shared
+    volumes:
+      - "${SHARED_DIR}:/shared"
+    ports:
+      - 2049:2049
+    deploy:
+      restart_policy: *restart_policy
+      placement:
+        constraints:
+          - node.hostname == "${CONFIG_HOSTNAME}"
+
+  smb:
+    <<: *options
+    image: dperson/samba:latest
+    environment:
+      <<: *environment
+      SHARE: "shared;/shared;yes;no;yes;;;;"
+      USERID: "${PUID}"
+      GROUPID: "${PGID}"
+    volumes:
+      - "${SHARED_DIR}:/shared"
+    ports:
+      - 139:139
+      - 445:445
+    deploy:
+      restart_policy: *restart_policy
+      placement:
+        constraints:
+          - node.hostname == "${CONFIG_HOSTNAME}"

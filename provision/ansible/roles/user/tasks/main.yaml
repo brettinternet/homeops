@@ -24,6 +24,7 @@
 - name: "Setup user groups, set user shell to {{ shell }}"
   become: true
   ansible.builtin.user:
+    append: true
     name: "{{ ansible_user }}"
     shell: "{{ shell }}"
     groups:

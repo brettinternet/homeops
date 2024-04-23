@@ -35,18 +35,30 @@ services:
     image: oznu/cloudflare-ddns
     container_name: dyndns
     environment:
-      - API_KEY=${CLOUDFLARE_API_KEY}
-      - ZONE=${CLOUDFLARE_ZONE}
-      - SUBDOMAIN=${CLOUDFLARE_SUBDOMAIN}
-      - CRON="@daily"
+      API_KEY: ${CLOUDFLARE_API_KEY}
+      ZONE: ${CLOUDFLARE_ZONE}
+      SUBDOMAIN: ${CLOUDFLARE_SUBDOMAIN}
+      CRON: "@daily"
 
   watchtower:
+    restart: unless-stopped
     image: containrrr/watchtower
     container_name: watchtower
-    restart: unless-stopped
     environment:
-      - WATCHTOWER_CLEANUP=true
-      - WATCHTOWER_DEBUG=true
-      - WATCHTOWER_SCHEDULE=0 0 2 * * *
+      TZ: "${TIMEZONE}"
+      DOCKER_HOST: tcp://socket-proxy:2375
+      WATCHTOWER_SCHEDULE: 0 0 2 * * *
+      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_DEBUG: "true"
+      WATCHTOWER_INCLUDE_RESTARTING: "true"
+      WATCHTOWER_NOTIFICATIONS_LEVEL: error
+      WATCHTOWER_NOTIFICATIONS: email
+      WATCHTOWER_NOTIFICATION_EMAIL_DELAY: 0
+      WATCHTOWER_NOTIFICATION_TITLE_TAG: "Watchtower error"
+      WATCHTOWER_NOTIFICATION_EMAIL_FROM: "${SMTP_USER}"
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER: maddy
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_PORT: 2525
+      WATCHTOWER_NOTIFICATION_EMAIL_SERVER_USER: "${SMTP_USER}"
+      WATCHTOWER_NOTIFICATION_EMAIL_TO: "${NOTIFY_EMAIL}"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

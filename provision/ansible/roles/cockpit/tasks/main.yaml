@@ -44,3 +44,9 @@
   ansible.builtin.systemd:
     name: cockpit.socket
     enabled: true
+
+- name: Enable cockpit.service
+  ansible.builtin.systemd:
+    name: cockpit.service
+    enabled: true
+    state: started

@@ -1,0 +1,51 @@
+---
+x-options: &options
+  profiles: [restore]
+  networks: [default]
+  environment: &environment
+    TZ: "${TIMEZONE}"
+  deploy:
+    restart_policy:
+      condition: unless-stopped
+
+x-remote-environment: &remote-environment
+  <<: *environment
+  RESTIC_REPOSITORY: "${REMOTE_RESTIC_REPOSITORY}"
+  RESTIC_PASSWORD: "${REMOTE_RESTIC_PASSWORD}"
+  B2_ACCOUNT_ID: "${B2_ACCOUNT_ID}"
+  B2_ACCOUNT_KEY: "${B2_ACCOUNT_KEY}"
+
+x-local-environment: &local-environment
+  <<: *environment
+  RESTIC_PASSWORD: "${LOCAL_RESTIC_PASSWORD}"
+
+services:
+  restic-remote-restore:
+    <<: *options
+    image: mazzolino/restic:latest
+    environment: *remote-environment
+    command:
+      - restic
+      - restore
+      - --include
+      - /data
+      - --target
+      - /data
+      - latest
+    volumes:
+      - "${CONFIG_DIR}/restored-remote:/data"
+
+  restic-local-restore:
+    <<: *options
+    image: mazzolino/restic:latest
+    environment: *local-environment
+    command:
+      - restic
+      - restore
+      - --include
+      - /data
+      - --target
+      - /data
+      - latest
+    volumes:
+      - "${CONFIG_DIR}/restored-local:/data"
