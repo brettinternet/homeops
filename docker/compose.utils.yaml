@@ -111,7 +111,7 @@ services:
 
   miniflux_db:
     <<: *service
-    image: library/postgres:10.10
+    image: library/postgres:10.21
     volumes:
       - "${CONFIG_DIR}/miniflux_db:/var/lib/postgresql/data"
     environment:
