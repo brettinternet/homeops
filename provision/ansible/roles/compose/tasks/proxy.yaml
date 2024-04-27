@@ -84,7 +84,7 @@ services:
 
   traefik:
     <<: *service
-    image: traefik:v2.10
+    image: traefik:v2.11
     depends_on: [socket-proxy]
     environment:
       <<: *environment
