@@ -55,15 +55,7 @@ tasks:
   up:
     desc: Deploy compose files to hosts
     cmds:
-      - task: nfs-up
       - task: services-up
-
-  nfs-up:
-    env:
-      COMPOSE_PROFILES: nfs
-      DOCKER_HOST: ssh://bogota
-    cmds:
-      - "{{ .SOPS_COMMAND }} '{{ .COMPOSE_COMMAND }} up -d --remove-orphans'"
 
   services-up:
     env:

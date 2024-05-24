@@ -125,7 +125,7 @@ services:
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.middlewares: hsts-header, ipallowlist
       traefik.http.middlewares.basicauth.basicauth.users: "${BASICAUTH}"
-      traefik.http.middlewares.ipallowlist.ipwhitelist.sourcerange: "${IPALLOWLIST:-0.0.0.0/0,::/0}"
+      traefik.http.middlewares.ipallowlist.ipallowlist.sourcerange: "${IPALLOWLIST:-0.0.0.0/0,::/0}"
       traefik.http.middlewares.hsts-header.headers.customResponseHeaders.Strict-Transport-Security: max-age=63072000
 
   cloudflare-companion:

@@ -44,36 +44,6 @@ services:
       traefik.http.routers.ntfy.entrypoints: websecure
       traefik.http.services.ntfy.loadbalancer.server.port: 80
 
-  linkding:
-    <<: *service
-    image: sissbruecker/linkding:latest-plus
-    environment:
-      <<: *environment
-      LD_DB_ENGINE: postgres
-      LD_DB_PASSWORD: "${LINKDING_POSTGRES_PASSWORD}"
-      LD_DB_HOST: linkding_db
-      LD_DB_PORT: 5432
-    volumes:
-      - "${CONFIG_DIR}/linkding:/etc/linkding/data"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.linkding.middlewares: hsts-header
-      traefik.http.routers.linkding.rule: Host(`links.${PUBLIC_DOMAIN}`)
-      traefik.http.routers.linkding.entrypoints: websecure
-      traefik.http.services.linkding.loadbalancer.server.port: 9090
-
-  linkding_db:
-    <<: *service
-    image: library/postgres:16
-    volumes:
-      - "${CONFIG_DIR}/linkding_db:/var/lib/postgresql/data"
-    environment:
-      <<: *environment
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: linkding
-      POSTGRES_USER: linkding
-      POSTGRES_PASSWORD: "${LINKDING_POSTGRES_PASSWORD}"
-
   espial:
     <<: *service
     image: jonschoning/espial:espial
@@ -90,38 +60,6 @@ services:
       traefik.http.routers.espial.rule: Host(`bookmarks.${PUBLIC_DOMAIN}`)
       traefik.http.routers.espial.entrypoints: websecure
       traefik.http.services.espial.loadbalancer.server.port: 3000
-
-  miniflux:
-    <<: *service
-    image: miniflux/miniflux:latest
-    environment:
-      <<: *environment
-      CREATE_ADMIN: "1"
-      RUN_MIGRATIONS: "1"
-      LOG_DATE_TIME: "1"
-      ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: "${MINIFLUX_ADMIN_PASSWORD}"
-      DATABASE_URL: "postgres://miniflux:${MINIFLUX_POSTGRES_PASSWORD}@miniflux_db/miniflux?sslmode=disable"
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.miniflux.middlewares: hsts-header
-      traefik.http.routers.miniflux.rule: Host(`rss.${PUBLIC_DOMAIN}`)
-      traefik.http.routers.miniflux.entrypoints: websecure
-      traefik.http.services.miniflux.loadbalancer.server.port: 8080
-
-  miniflux_db:
-    <<: *service
-    image: library/postgres:10.10
-    volumes:
-      - "${CONFIG_DIR}/miniflux_db:/var/lib/postgresql/data"
-    environment:
-      <<: *environment
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_DB: miniflux
-      POSTGRES_USER: miniflux
-      POSTGRES_PASSWORD: "${MINIFLUX_POSTGRES_PASSWORD}"
-    labels:
-      diun.enable: "false"
 
   mealie:
     <<: *service

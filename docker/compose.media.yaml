@@ -92,7 +92,7 @@ services:
       - usenet:/data/usenet
     labels:
       traefik.enable: "true"
-      traefik.http.routers.sabnzbd.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.sabnzbd.middlewares: hsts-header, ipallowlist
       traefik.http.routers.sabnzbd.rule: Host(`nzb.${PRIVATE_DOMAIN}`)
       traefik.http.services.sabnzbd.loadbalancer.server.port: 8080
       traefik.http.routers.sabnzbd.entrypoints: websecure
@@ -125,7 +125,7 @@ services:
       - media:/data
     labels:
       traefik.enable: "true"
-      traefik.http.routers.radarr.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.radarr.middlewares: hsts-header, ipallowlist
       traefik.http.routers.radarr.rule: Host(`radarr.${PRIVATE_DOMAIN}`)
       traefik.http.services.radarr.loadbalancer.server.port: 7878
       traefik.http.routers.radarr.entrypoints: websecure
@@ -142,7 +142,7 @@ services:
       - media:/data
     labels:
       traefik.enable: "true"
-      traefik.http.routers.sonarr.middlewares: hsts-header, ipallowlist, authelia_private
+      traefik.http.routers.sonarr.middlewares: hsts-header, ipallowlist
       traefik.http.routers.sonarr.rule: Host(`sonarr.${PRIVATE_DOMAIN}`)
       traefik.http.services.sonarr.loadbalancer.server.port: 8989
       traefik.http.routers.sonarr.entrypoints: websecure

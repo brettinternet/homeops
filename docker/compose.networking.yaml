@@ -26,27 +26,27 @@ volumes:
     name: media
     driver_opts:
       <<: *media_driver_opts
-      device: :/
+      device: :/storage/media
   media_library:
     name: media_library
     driver_opts:
       <<: *media_driver_opts
-      device: :/library
+      device: :/storage/media/library
   books:
     name: books
     driver_opts:
       <<: *media_driver_opts
-      device: :/library/books
+      device: :/storage/media/library/books
   usenet:
     name: usenet
     driver_opts:
       <<: *media_driver_nocache_opts
-      device: :/usenet
+      device: :/storage/media/usenet
   cameras:
     name: cameras
     driver_opts:
       <<: *media_driver_opts
-      device: :/cameras
+      device: :/storage/media/cameras
 
 services:
   cloudflare-ddns:
@@ -65,39 +65,3 @@ services:
         curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}/fail"
       POST_COMMANDS_SUCCESS: |-
         curl -fsS -m 10 --retry 5 -o /dev/null "http://healthchecks:8000/ping/${HEALTHCHECKS_DDNS_UUID}"
-
-  nfs-shared:
-    <<: *options
-    image: itsthenetwork/nfs-server-alpine:latest
-    cap_add: [SYS_ADMIN, SETPCAP]
-    environment:
-      <<: *environment
-      SHARED_DIRECTORY: /shared
-    volumes:
-      - "${SHARED_DIR}:/shared"
-    ports:
-      - 2049:2049
-    deploy:
-      restart_policy: *restart_policy
-      placement:
-        constraints:
-          - node.hostname == "${CONFIG_HOSTNAME}"
-
-  smb:
-    <<: *options
-    image: dperson/samba:latest
-    environment:
-      <<: *environment
-      SHARE: "shared;/shared;yes;no;yes;;;;"
-      USERID: "${PUID}"
-      GROUPID: "${PGID}"
-    volumes:
-      - "${SHARED_DIR}:/shared"
-    ports:
-      - 139:139
-      - 445:445
-    deploy:
-      restart_policy: *restart_policy
-      placement:
-        constraints:
-          - node.hostname == "${CONFIG_HOSTNAME}"
