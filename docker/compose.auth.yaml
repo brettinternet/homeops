@@ -107,7 +107,7 @@ services:
 
   authelia_db:
     <<: *service
-    image: library/postgres:14
+    image: library/postgres:16
     environment:
       <<: *environment
       PGDATA: /var/lib/postgresql/data
