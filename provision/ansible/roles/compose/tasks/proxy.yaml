@@ -70,7 +70,7 @@ services:
 
   cloudflared-tunnel:
     <<: *service
-    image: cloudflare/cloudflared:2023.10.0
+    image: cloudflare/cloudflared:2024.6.0
     environment:
       <<: *environment
       # TUNNEL_LOGLEVEL: debug
