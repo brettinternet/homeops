@@ -4,14 +4,24 @@
 
 ## Features
 
+- Lots of [self-hosted services](./kubernetes/main/apps)
+- [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([kubernetes directory](./kubernetes))
+- Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./ansible/roles) and [playbooks](./ansible))
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
 - [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
-- OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
-- Automatic Cloudflare DNS updates
+- [K8s gateway](https://github.com/ori-edge/k8s_gateway) for local DNS resolution to the cluster and [NGINX ingress controller](https://kubernetes.github.io/ingress-nginx/)
+- Both internal & external services with a service [gateway](https://github.com/ori-edge/k8s_gateway/)
+- OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/glauth/glauth)
+- Automatic Cloudflare DNS updates with [external-dns](./kubernetes/main/apps/network/external-dns/app/helmrelease.yaml)
+- [Cilium](https://cilium.io/) container networking interface (CNI) and [layer 4 loadbalancing](https://cilium.io/use-cases/load-balancer/)
+- [CloudNative-PG](https://cloudnative-pg.io/) with automatic failover
+- [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) with various Grafana dashboards
 - [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles))
 
-Historical revisions of this repository went from a single-node compose orchestration, then Podman rootless containers deployed with Ansible as systemd units, then a kubernetes cluster extended from [this template](https://github.com/onedr0p/flux-cluster-template). With other responsibilities, I've had to take on a much more minimal approach to my homelab and I strive for simplicity over high availability at this time.
+This setup is inspired by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/).
+
+See also my [homelab repo](https://github.com/brettinternet/homelab) for how I provision machines in my home.
 
 ## Usage
 
@@ -47,7 +57,7 @@ task kubernetes:resources
 
 ### Deployments
 
-Most deployments in this repo use an `app-template` chart with [these configuration options](https://github.com/bjw-s/helm-charts/tree/main/charts/library/common).
+Most helm deployments in this repo utilize this useful [`app-template` chart](https://github.com/bjw-s/helm-charts).
 
 ## Hardware
 
@@ -78,6 +88,12 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 [These printable stackers](https://www.thingiverse.com/thing:582781) are great for stacking SSDs in a homelab.
 
+![5 raspberry pis each with a SSD over USB, stacked in a custom case with a network switch](./docs/pi-cluster.png)
+
+#### Raspberry Pi cluster
+
+One cluster uses Raspberry Pi 4B (x 5) but the 4 GB RAM models are hungry for more memory. [Micro SD cards are insufficient](https://gist.github.com/brettinternet/94d6d8a1e01f4a90b6dfdc70d6b4a5e5) for etcd's demanding read/writes, so I recommend SATA over USB 3.0. Check out [this guide](https://jamesachambers.com/new-raspberry-pi-4-bootloader-usb-network-boot-guide/) for compatible SSD interfaces. I use a [PicoCluster case](https://www.picocluster.com/collections/pico-5).
+
 ### Home automation
 
 #### IoT
@@ -87,20 +103,7 @@ Here are other recommended [controllers](https://www.reddit.com/r/DataHoarder/wi
 
 ## Software
 
-### Linux
-
-- [Arch Linux](https://archlinux.org)
-- [Raspberry Pi Debian](https://wiki.debian.org/RaspberryPiImages)
-
-#### SSH
-
-Here's a nice convenience for setting up `authorized_keys` stored on Github or Gitlab:
-
-```sh
-curl https://github.com/<username>.keys -o authorized_keys
-```
-
-You could pipe the output to `sed` to only grab a specific line `sed '4!d'`.
+See my [homelab repo](https://github.com/brettinternet/homelab) for how I provision proxmox, SSH keys, dotfiles and other tasks in my home.
 
 #### Check disks
 
