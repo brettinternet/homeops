@@ -1,21 +1,14 @@
-# Homelab
+# HomeOps
 
-[![Lint](https://github.com/brettinternet/homelab/actions/workflows/lint.yaml/badge.svg)](https://github.com/brettinternet/homelab/actions/workflows/lint.yaml)
+[![Lint](https://github.com/brettinternet/homeops/actions/workflows/lint.yaml/badge.svg)](https://github.com/brettinternet/homeops/actions/workflows/lint.yaml)
 
 ## Features
 
-- Proxmox physical hosts and Arch Linux virtual guests
-- Lots of [self-hosted services](./docker) in a portable setup
-- Ansible node provisioning and container deployments (Ansible [roles](./provision/ansible/roles) and [compose files](./docker))
-- [Terraform DNS records setup](./provision/terraform)
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
 - [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
 - OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/nitnelave/lldap)
 - Automatic Cloudflare DNS updates
-- [ZFS](https://wiki.archlinux.org/index.php/ZFS)
-- JBOD [mergerfs](https://github.com/trapexit/mergerfs) union NFS with [SnapRAID](https://www.snapraid.it) backup for low-touch media files snapraid-runner cronjob
-- [Restic](https://restic.net) backups to remote and local buckets
 - [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles))
 
 Historical revisions of this repository went from a single-node compose orchestration, then Podman rootless containers deployed with Ansible as systemd units, then a kubernetes cluster extended from [this template](https://github.com/onedr0p/flux-cluster-template). With other responsibilities, I've had to take on a much more minimal approach to my homelab and I strive for simplicity over high availability at this time.
@@ -44,29 +37,9 @@ Setup Cloudflare DNS.
 task terraform:{init,cloudflare-plan,cloudflare-apply}
 ```
 
-#### Bastion server
-
-Edit `provision/terraform/bastion/secret.sops.yaml` with your own values. [Generate WireGuard keys](https://www.wireguard.com/quickstart/).
-
-Deploy the remote bastion VPN server.
-
-```sh
-task terraform:{init,plan,apply}
-```
-
-Then, setup VPN services.
-
-```sh
-task ansible:bastion
-```
-
 ### Deployments
 
 Most deployments in this repo use an `app-template` chart with [these configuration options](https://github.com/bjw-s/helm-charts/tree/main/charts/library/common).
-
-### Update
-
-The Renovate bot will help find updates for charts and images. [Install Renovate Bot](https://github.com/apps/renovate), add to your repository and [view Renovate bot activity](https://app.renovatebot.com/dashboard), or use the self-hosted option.
 
 ## Hardware
 
@@ -159,7 +132,7 @@ You must also include an entry for the MergerFS union, such as:
 
 See also [perfectmediaserver: MergerFS](https://perfectmediaserver.com/installation/manual-install/#mergerfs)
 
-Remember, for data that's irreplaceable [RAID is _not_ a backup](https://www.raidisnotabackup.com/).
+For data that's irreplaceable [RAID is _not_ a backup](https://www.raidisnotabackup.com/).
 
 #### ZFS
 
