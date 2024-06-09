@@ -2,6 +2,15 @@
 version: "3"
 
 tasks:
+  setup:
+    desc: Setup age key for sops
+    cmds:
+      - age-keygen -o age.agekey
+      - mkdir -p {{.AGE_DIR}}
+      - mv age.agekey {{.AGE_FILE}}
+    status:
+      - test -f {{.AGE_FILE}}
+
   encrypt:
     desc: encrypt sops file 'to use must include -- before path to file.' eg "task sops:encrypt -- file.yaml"
     cmds:
@@ -27,7 +36,7 @@ tasks:
     vars:
       file:
         sh: |
-          find "docker" "{{.ANSIBLE_DIR}}" -type f -name "*.sops.*" -exec grep -L "ENC\[AES256_GCM" {} \;
+          find "{{.KUBERNETES_DIR}}" -type f -name "*.sops.*" -exec grep -L "ENC\[AES256_GCM" {} \;
 
   .encrypt-file:
     internal: true

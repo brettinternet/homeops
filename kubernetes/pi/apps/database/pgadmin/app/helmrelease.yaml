@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app pgadmin
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      pgadmin:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: dpage/pgadmin4
+              tag: "8.6"
+            env:
+              PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+              PGADMIN_DEFAULT_EMAIL:
+                valueFrom:
+                  secretKeyRef:
+                    name: pgadmin-secret
+                    key: PGADMIN_DEFAULT_EMAIL
+              PGADMIN_DEFAULT_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: pgadmin-secret
+                    key: PGADMIN_DEFAULT_PASSWORD
+            resources:
+              requests:
+                cpu: 50m
+                memory: 100Mi
+              limits:
+                memory: 500Mi
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 5050
+        runAsGroup: 5050
+        fsGroup: 5050
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: 80
+    ingress:
+      app:
+        enabled: true
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: *app
+          gethomepage.dev/icon: si-postgresql
+        hosts:
+          - host: "{{ .Release.Name }}.${PRIVATE_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      config:
+        existingClaim: *app
+        globalMounts:
+          - path: /var/lib/pgadmin
+      server-json:
+        type: configMap
+        name: pgadmin-configmap
+        globalMounts:
+          - path: /pgadmin4/servers.json
+            subPath: servers.json
+      local-config:
+        type: secret
+        name: pgadmin-secret
+        globalMounts:
+          - path: /pgadmin4/config_local.py
+            subPath: config_local.py

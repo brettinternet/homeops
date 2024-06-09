@@ -1,5 +1,0 @@
----
-# Where to find (or create) ssh keypair for accessing bastion server
-openssh_keypair_path: ~/.ssh/id_rsa
-
-terraform_dir: "{{ role_path }}/files"

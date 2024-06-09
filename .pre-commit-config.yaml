@@ -32,12 +32,6 @@ repos:
     hooks:
       - id: forbid-secrets
         exclude: rbac.yaml
-  - repo: https://github.com/gruntwork-io/pre-commit
-    rev: v0.1.23
-    hooks:
-      - id: terraform-fmt
-      - id: terraform-validate
-      - id: tflint
   - repo: https://github.com/zricethezav/gitleaks
     rev: v8.18.2
     hooks:

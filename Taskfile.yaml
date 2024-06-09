@@ -2,25 +2,36 @@
 version: "3"
 
 vars:
-  PROJECT_DIR:
-    sh: git rev-parse --show-toplevel
-  ANSIBLE_DIR: "{{.PROJECT_DIR}}/provision/ansible"
-  TERRAFORM_DIR: "{{.PROJECT_DIR}}/provision/terraform"
+  KUBERNETES_DIR: "{{.ROOT_DIR}}/kubernetes"
+  ANSIBLE_DIR: "{{.ROOT_DIR}}/ansible"
+  SCRIPTS_DIR: "{{.ROOT_DIR}}/scripts"
+  AGE_DIR: ~/.config/sops/age
+  AGE_FILE: "{{.AGE_DIR}}/keys.txt"
+  PIP_REQUIREMENTS_FILE: "{{.ROOT_DIR}}/requirements.txt"
+  KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
 
 env:
-  ROOT_DIR: "{{.PROJECT_DIR}}"
-  KUBECONFIG: "{{.PROJECT_DIR}}/provision/kubeconfig"
+  ROOT_DIR: "{{.ROOT_DIR}}"
+  KUBECONFIG: "{{.KUBECONFIG_FILE}}"
+  PYTHONDONTWRITEBYTECODE: "1"
+  SOPS_AGE_KEY_FILE: "{{.AGE_FILE}}"
+  VIRTUAL_ENV: "{{.ROOT_DIR}}/.venv"
 
 includes:
-  ansible: .taskfiles/ansible.yaml
+  ansible:
+    taskfile: .taskfiles/ansible.yaml
+    aliases: [a]
+  flux:
+    taskfile: .taskfiles/flux.yaml
+    aliases: [f]
+  kubernetes:
+    taskfile: .taskfiles/kubernetes.yaml
+    aliases: [k]
   lint: .taskfiles/lint.yaml
   precommit: .taskfiles/precommit.yaml
   setup: .taskfiles/setup_{{OS}}.yaml
   sops: .taskfiles/sops.yaml
-  terraform: .taskfiles/terraform.yaml
-  docker:
-    taskfile: .taskfiles/docker.yaml
-    dir: ./docker
+  talos: .taskfiles/talos.yaml
 
 tasks:
   default:
@@ -34,40 +45,17 @@ tasks:
       - task: setup:init
       - task: precommit:init
       - task: precommit:update
-      - task: setup-age
-      - echo "Next, install python dependencies with 'task python'"
-
-  python:
-    desc: Install python dependencies
-    cmds:
-      - |
-        ([ "{{.CLI_ARGS}}" == "force" ] || pip -V 2>/dev/null | grep -q .virtualenv) && \
-            pip install -r requirements.txt || \
-            echo "You may want to activate a python virtual environment before installing the python dependencies.
-        Pass 'force' as argument to continue anyway (e.g. task python -- force)."
-    silent: true
-
-  setup-age:
-    cmds:
-      - age-keygen -o age.agekey
-      - mkdir -p $HOME/.config/sops/age
-      - mv age.agekey $HOME/.config/sops/age/keys.txt
-      - "echo 'Source from .profile: \n\nexport SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt'"
-    status:
-      - test -f $HOME/.config/sops/age/keys.txt
+      - task: sops:setup
+      - task: direnv
 
   wip:
     desc: Commit WIP to current branch and reconcile cluster
     cmds:
-      - ./scripts/wip.sh
+      - "{{.SCRIPTS_DIR}}/wip.sh"
 
-  check-internal-404s:
-    desc: Check internal URLs for 404
-    cmds:
-      - npx zx ./scripts/check-internal-404s.mjs
-    env:
-      NODE_ENV: development
-      PUBLIC_DOMAIN: home.arpa
-    preconditions:
-      - sh: command -v node
-        msg: Node is not installed
+  direnv:
+    desc: Run direnv hooks
+    cmd: direnv allow .
+    status:
+      - "[[ $(direnv status --json | jq '.state.foundRC.allowed') == 0 ]]"
+      - "[[ $(direnv status --json | jq '.state.loadedRC.allowed') == 0 ]]"

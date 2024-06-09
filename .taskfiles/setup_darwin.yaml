@@ -1,8 +1,17 @@
 ---
 version: "3"
 
+vars:
+  PYTHON_BIN: python3
+
 tasks:
   init:
+    desc: Darwin setup
+    cmds:
+      - task: brew
+      - task: python
+
+  brew:
     desc: Install homebrew dependencies
     cmds:
       - brew install -q {{.DEPS}} {{.CLI_ARGS}}
@@ -13,17 +22,20 @@ tasks:
       DEPS: >-
         age
         ansible
-        cloudflare/cloudflare/cloudflared
+        cloudflared
+        direnv
         fluxcd/tap/flux
-        go-task/tap/go-task
-        kubescape/tap/kubescape-cli
+        go-task
+        kubescape
         helm
+        helmfile
+        jq
+        kubeconform
+        kubernetes-cli
         kustomize
         pre-commit
         prettier
         sops
-        terraform
-        tflint
         yamllint
 
 # age: SOP dependency
@@ -33,10 +45,23 @@ tasks:
 # go-task/tap/go-task: Task runner
 # kubescape https://github.com/kubescape/kubescape
 # helm: Deployment charts
+# kubernetes-cli
 # kustomize: Define k8s manifests
 # pre-commit: Repo helper
 # prettier: Repo helper
 # sops: Secrets encryption
-# terraform: Cloudflare provisioning
-# tflint: Terraform linting
 # yamllint: Yaml linting
+
+  python:
+    desc: Set up virtual environment
+    cmds:
+      - "{{.PYTHON_BIN}} -m venv {{.VIRTUAL_ENV}}"
+      - '{{.VIRTUAL_ENV}}/bin/python3 -m pip install --upgrade pip setuptools wheel'
+      - '{{.VIRTUAL_ENV}}/bin/python3 -m pip install --upgrade --requirement "{{.PIP_REQUIREMENTS_FILE}}"'
+    sources:
+      - "{{.PIP_REQUIREMENTS_FILE}}"
+    generates:
+      - "{{.VIRTUAL_ENV}}/pyvenv.cfg"
+    preconditions:
+      - msg: "Missing Pip requirements file"
+        sh: "test -f {{.PIP_REQUIREMENTS_FILE}}"

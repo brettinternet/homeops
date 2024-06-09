@@ -4,23 +4,23 @@ Thumbs.db
 tmp
 # k8s
 kubeconfig
+talosconfig
 # vscode-sops
 .decrypted~*.yaml
 *.agekey
 *.pub
 *.key
-github-deploy-key*
 # Ansible
 xanmanning.k3s*
-# Terraform
-.terraform
-.terraform.tfstate*
-terraform.tfstate*
+# Taskfile
+.task
+Brewfile.lock.json
 # Output
 megalinter-reports
 # scripts
 node_modules
 *.log
 *.pem
-.task
-plan.yaml
+# Python
+.venv*
+_out

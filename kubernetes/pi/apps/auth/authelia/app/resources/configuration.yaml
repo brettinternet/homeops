@@ -1,0 +1,67 @@
+---
+session:
+  same_site: lax
+  inactivity: 5m
+  expiration: 1h
+  remember_me: 1M
+  cookies:
+    - name: '{{ env "PUBLIC_DOMAIN" }}_session'
+      domain: '{{ env "PUBLIC_DOMAIN" }}'
+      authelia_url: 'https://auth.{{ env "PUBLIC_DOMAIN" }}'
+      default_redirection_url: 'https://{{ env "PUBLIC_DOMAIN" }}'
+
+access_control:
+  default_policy: &policy two_factor
+  networks:
+    - name: internal
+      networks: ['{{ env "CLUSTER_CIDR" }}', '{{ env "NODE_CIDR" }}', '{{ env "HOME_CIDR" }}']
+  rules: []
+
+identity_providers:
+  oidc:
+    jwks:
+      - algorithm: RS256
+        key: |-
+          {{- env "OIDC_JWKS_KEY" | nindent 10 }}
+    cors:
+      endpoints: [authorization, token, revocation, introspection]
+      allowed_origins_from_client_redirect_uris: true
+    clients:
+      - client_name: Grafana
+        client_id: grafana
+        # docker run authelia/authelia:latest authelia crypto hash generate pbkdf2 --variant sha512 --random --random.length 72 --random.charset rfc3986
+        client_secret: '{{ env "GRAFANA_OAUTH_CLIENT_HASHED_SECRET" }}'
+        public: false
+        authorization_policy: *policy
+        pre_configured_consent_duration: 1y
+        scopes: [openid, profile, groups, email]
+        redirect_uris: ['https://grafana.{{ env "PUBLIC_DOMAIN" }}/login/generic_oauth']
+        userinfo_signed_response_alg: none
+      - client_name: pgAdmin
+        client_id: pgadmin
+        client_secret: '{{ env "PGADMIN_OAUTH_CLIENT_HASHED_SECRET" }}'
+        public: false
+        authorization_policy: *policy
+        pre_configured_consent_duration: 1y
+        scopes: [openid, profile, email]
+        redirect_uris: ['https://pgadmin.{{ env "PRIVATE_DOMAIN" }}/oauth2/authorize']
+        userinfo_signed_response_alg: none
+        token_endpoint_auth_method: client_secret_basic
+      - client_id: minio
+        client_name: MinIO
+        client_secret: '{{ env "MINIO_OAUTH_CLIENT_HASHED_SECRET" }}'
+        public: false
+        authorization_policy: *policy
+        pre_configured_consent_duration: 1y
+        redirect_uris: ['https://minio.{{ env "PRIVATE_DOMAIN" }}/oauth_callback']
+        scopes: [openid, profile, email, groups]
+        userinfo_signed_response_alg: none
+      - client_name: Miniflux
+        client_id: miniflux
+        client_secret: '{{ env "MINIFLUX_OAUTH_CLIENT_HASHED_SECRET" }}'
+        public: false
+        authorization_policy: *policy
+        pre_configured_consent_duration: 1y
+        scopes: [openid, profile, groups, email]
+        redirect_uris: ['https://rss.{{ env "PUBLIC_DOMAIN" }}/oauth2/oidc/callback']
+        userinfo_signed_response_alg: none

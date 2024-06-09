@@ -1,0 +1,185 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: healthchecks
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      healthchecks:
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            env:
+              INIT_POSTGRES_HOST: &dbHost postgres16-rw.database.svc.cluster.local
+              INIT_POSTGRES_DBNAME: &dbName healthchecks
+              INIT_POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: healthchecks-secret
+                    key: DB_USER
+              INIT_POSTGRES_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: healthchecks-secret
+                    key: DB_PASSWORD
+              INIT_POSTGRES_SUPER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: cloudnative-pg-secret
+                    key: password
+          init-user:
+            dependsOn: [init-db]
+            image:
+              repository: docker.io/healthchecks/healthchecks
+              tag: v3.3
+            command: [python3]
+            args:
+              - manage.py
+              - shell
+              - -v
+              - '3'
+              - -c
+              # https://github.com/linuxserver/docker-healthchecks/blob/9aedb6911bd4dd49f637145b04ad2aeb4339e78b/root/etc/s6-overlay/s6-rc.d/init-healthchecks-config/run#L52-L66
+              - |-
+                """
+                from django.contrib.auth.models import User;
+                from hc.accounts.views import _make_user;
+
+                email = '$SUPERUSER_EMAIL';
+                password = '$SUPERUSER_PASSWORD';
+
+                if User.objects.filter(email=email).count()==0:
+                    user = _make_user(email);
+                    user.set_password(password);
+                    user.is_staff = True;
+                    user.is_superuser = True;
+                    user.save();
+                    print('Superuser created.');
+                else:
+                    print('Superuser creation skipped. Already exists.');
+                """
+            env:
+              SUPERUSER_EMAIL:
+                valueFrom:
+                  secretKeyRef:
+                    name: healthchecks-secret
+                    key: SUPERUSER_EMAIL
+              SUPERUSER_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: healthchecks-secret
+                    key: SUPERUSER_PASSWORD
+        containers:
+          app:
+            image:
+              repository: docker.io/healthchecks/healthchecks
+              tag: v3.3
+            # https://healthchecks.io/docs/self_hosted_configuration/
+            env:
+              DEBUG: "False"
+              REGISTRATION_OPEN: "False"
+              SITE_ROOT: "https://healthchecks.${PUBLIC_DOMAIN}"
+              SITE_NAME: Healthchecks
+              SITE_LOGO_URL: /static/img/logo.svg
+              DEFAULT_FROM_EMAIL: "Healthchecks <${SMTP_FROM}>"
+              EMAIL_HOST: maddy.default.svc.cluster.local
+              EMAIL_PORT: 25
+              EMAIL_USE_TLS: "False"
+              EMAIL_USE_VERIFICATION: "False"
+              INTEGRATIONS_ALLOW_PRIVATE_IPS: "True"
+              DB: postgres
+              DB_HOST: *dbHost
+              DB_NAME: *dbName
+              DB_PORT: 5432
+              ADMINS:
+                valueFrom:
+                  secretKeyRef:
+                    name: healthchecks-secret
+                    key: SUPERUSER_EMAIL
+              PUSHOVER_EMERGENCY_RETRY_DELAY: 300 # 5 minutes
+              PUSHOVER_EMERGENCY_EXPIRATION: 86400 # 24 hours
+            envFrom:
+              - secretRef:
+                  name: healthchecks-secret
+            probes:
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: healthchecks
+        ports:
+          http:
+            port: 80
+            targetPort: 8000
+    serviceMonitor:
+      healthchecks:
+        enabled: true
+        serviceName: healthchecks
+        endpoints:
+          - port: http
+            scheme: http
+            path: ${service_monitor_path}
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${PUBLIC_DOMAIN}"
+        hosts:
+          - host: "healthchecks.${PUBLIC_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      logo:
+        type: configMap
+        name: healthchecks-config
+        globalMounts:
+          # gets turned into `/static/img/logo.svg`
+          - path: /opt/healthchecks/static-collected/img/logo.svg
+            subPath: logo.svg
+            readOnly: true
