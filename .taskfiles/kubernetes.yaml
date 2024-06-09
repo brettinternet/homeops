@@ -1,27 +1,11 @@
 ---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
 vars:
   KUBECONFORM_SCRIPT: "{{.SCRIPTS_DIR}}/kubeconform.sh"
 
 tasks:
-  kubeconfig:
-    desc: Remotely fetch kubeconfig from Kubernetes
-    cmds:
-      - rsync --verbose --progress --partial --rsync-path="sudo rsync" {{.K3S_PRIMARY_CONTROLLER_NODE_USERNAME}}@{{.K3S_PRIMARY_CONTROLLER_NODE_ADDR}}:/etc/rancher/k3s/k3s.yaml "{{.KUBERNETES_DIR}}/kubeconfig"
-      - sed -i '' 's/127.0.0.1/{{.K3S_LB_ADDR}}/g' "{{.KUBERNETES_DIR}}/kubeconfig"
-      - chmod go-r "{{.KUBERNETES_DIR}}/kubeconfig"
-    vars:
-      K3S_PRIMARY_CONTROLLER_NODE_USERNAME: "brett"
-      K3S_PRIMARY_CONTROLLER_NODE_ADDR: "10.1.2.30"
-      K3S_LB_ADDR: "10.1.2.200"
-
-  top:
-    desc: List top metrics
-    cmds:
-      - kubectl top node
-      - kubectl top pod -A
-
   resources:
     desc: Gather common resources in your cluster, useful when asking for support
     cmds:
@@ -43,4 +27,11 @@ tasks:
     desc: Validate Kubernetes manifests with kubeconform
     cmd: bash {{.KUBECONFORM_SCRIPT}} {{.KUBERNETES_DIR}}
     preconditions:
-      - { msg: "Missing kubeconform script", sh: "test -f {{.KUBECONFORM_SCRIPT}}" }
+      - msg: Missing kubeconform script
+        sh: test -f {{.KUBECONFORM_SCRIPT}}
+
+  top:
+    desc: List top metrics
+    cmds:
+      - kubectl top node
+      - kubectl top pod -A

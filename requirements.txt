@@ -1,5 +1,6 @@
-yamllint
-jsonpatch
-pyyaml
+cloudflare==2.20.0
+email-validator==2.1.1
+makejinja==2.6.0
+netaddr==1.2.1
+yamllint==1.35.1
 netaddr
-jmespath

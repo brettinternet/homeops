@@ -1,10 +1,13 @@
 {
   "files.associations": {
     "*.json5": "jsonc",
-    "*.env": "properties"
+    "./kubernetes/**/*.sops.toml": "plaintext"
   },
-  "prettier.configPath": ".github/linters/.prettierrc.yaml",
-  "prettier.ignorePath": ".github/linters/.prettierignore",
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs": "active"
+  "yaml.schemas": {
+    "Kubernetes": "./kubernetes/*.yaml"
+  },
+  "vs-kubernetes": {
+    "vs-kubernetes.kubeconfig": "./kubeconfig",
+    "vs-kubernetes.knownKubeconfigs": ["./kubeconfig"]
+  }
 }

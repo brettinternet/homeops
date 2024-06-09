@@ -1,2 +1,3 @@
-*.sops.yaml diff=sopsdiffer
-*.sops.toml linguist-language=JSON
+* text=auto eol=lf
+*.yaml.j2 linguist-language=YAML
+*.sops.* diff=sopsdiffer

@@ -10,8 +10,6 @@ talosconfig
 *.agekey
 *.pub
 *.key
-# Ansible
-xanmanning.k3s*
 # Taskfile
 .task
 Brewfile.lock.json

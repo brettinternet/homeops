@@ -3,35 +3,34 @@ version: "3"
 
 vars:
   KUBERNETES_DIR: "{{.ROOT_DIR}}/kubernetes"
-  ANSIBLE_DIR: "{{.ROOT_DIR}}/ansible"
   SCRIPTS_DIR: "{{.ROOT_DIR}}/scripts"
+  KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
   AGE_DIR: ~/.config/sops/age
   AGE_FILE: "{{.AGE_DIR}}/keys.txt"
+  SOPS_CONFIG_FILE: "{{.ROOT_DIR}}/.sops.yaml"
   PIP_REQUIREMENTS_FILE: "{{.ROOT_DIR}}/requirements.txt"
-  KUBECONFIG_FILE: "{{.ROOT_DIR}}/kubeconfig"
+  PYTHON_BIN: python3
 
 env:
-  ROOT_DIR: "{{.ROOT_DIR}}"
   KUBECONFIG: "{{.KUBECONFIG_FILE}}"
   PYTHONDONTWRITEBYTECODE: "1"
   SOPS_AGE_KEY_FILE: "{{.AGE_FILE}}"
   VIRTUAL_ENV: "{{.ROOT_DIR}}/.venv"
 
 includes:
-  ansible:
-    taskfile: .taskfiles/ansible.yaml
-    aliases: [a]
   flux:
     taskfile: .taskfiles/flux.yaml
     aliases: [f]
   kubernetes:
     taskfile: .taskfiles/kubernetes.yaml
     aliases: [k]
+  talos:
+    taskfile: .taskfiles/talos.yaml
+    aliases: [t]
   lint: .taskfiles/lint.yaml
   precommit: .taskfiles/precommit.yaml
   setup: .taskfiles/setup_{{OS}}.yaml
   sops: .taskfiles/sops.yaml
-  talos: .taskfiles/talos.yaml
 
 tasks:
   default:
@@ -46,16 +45,8 @@ tasks:
       - task: precommit:init
       - task: precommit:update
       - task: sops:setup
-      - task: direnv
 
   wip:
     desc: Commit WIP to current branch and reconcile cluster
     cmds:
       - "{{.SCRIPTS_DIR}}/wip.sh"
-
-  direnv:
-    desc: Run direnv hooks
-    cmd: direnv allow .
-    status:
-      - "[[ $(direnv status --json | jq '.state.foundRC.allowed') == 0 ]]"
-      - "[[ $(direnv status --json | jq '.state.loadedRC.allowed') == 0 ]]"

@@ -23,18 +23,26 @@ Historical revisions of this repository went from a single-node compose orchestr
 task init
 ```
 
-Then, provision your infrastructure.
+Provision the Talos nodes.
 
 ```sh
-task ansible:{list,setup,status}
+task talos:bootstrap
 ```
 
-Edit `provision/terraform/cloudflare/secret.sops.yaml` with your own values and encrypt with `task sops:encrypt -- <filepath>`.
-
-Setup Cloudflare DNS.
+Install flux.
 
 ```sh
-task terraform:{init,cloudflare-plan,cloudflare-apply}
+task flux:{verify,github-deploy-key,bootstrap}
+```
+
+Verify the installation.
+
+```sh
+kubectl -n flux-system get pods -o wide
+```
+
+```sh
+task kubernetes:resources
 ```
 
 ### Deployments

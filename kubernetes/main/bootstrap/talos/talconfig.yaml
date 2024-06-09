@@ -1,0 +1,225 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
+# https://budimanjojo.github.io/talhelper/latest/reference/configuration
+---
+# renovate: datasource=docker depName=ghcr.io/siderolabs/installer
+talosVersion: v1.7.2
+# renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
+kubernetesVersion: v1.30.1
+
+clusterName: "homelab"
+endpoint: https://10.1.2.100:6443
+clusterPodNets:
+  - "10.42.0.0/16"
+clusterSvcNets:
+  - "10.43.0.0/16"
+additionalApiServerCertSans: &sans
+  - "10.1.2.100"
+  - 127.0.0.1 # KubePrism
+additionalMachineCertSans: *sans
+
+# Disable built-in Flannel to use Cilium
+cniConfig:
+  name: none
+
+nodes:
+  - hostname: "k-0"
+    ipAddress: "10.1.2.90"
+    installDisk: &vmInstallDisk "/dev/sda"
+    machineDisks: &longhornDisks
+      - device: /dev/nvme0n1
+        partitions:
+          - mountpoint: /var/mnt/longhorn
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.2
+    talosImageURL: &talosImage factory.talos.dev/installer/e3fab82b561b5e559cdf1c0b1e5950c0e52700b9208a2cfaa5b18454796f3a7e
+    schematic: &schematic
+      customization:
+        extraKernelArgs:
+          - mitigations=off
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/intel-ucode
+            - siderolabs/qemu-guest-agent
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:34:56:0f"
+        dhcp: false
+        addresses:
+          - "10.1.2.90/24"
+        routes: &routes
+          - network: 0.0.0.0/0
+            gateway: "10.1.2.1"
+        mtu: &mtu 1500
+        vip: &vip
+          ip: "10.1.2.100"
+  - hostname: "k-1"
+    ipAddress: "10.1.2.91"
+    installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
+    talosImageURL: *talosImage
+    schematic: *schematic
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:de:07:14"
+        dhcp: false
+        addresses:
+          - "10.1.2.91/24"
+        routes: *routes
+        mtu: *mtu
+        vip: *vip
+  - hostname: "k-2"
+    ipAddress: "10.1.2.92"
+    installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
+    talosImageURL: *talosImage
+    schematic: *schematic
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:a7:8c:eb"
+        dhcp: false
+        addresses:
+          - "10.1.2.92/24"
+        routes: *routes
+        mtu: *mtu
+        vip: *vip
+  # - hostname: "k-3"
+  #   ipAddress: "10.1.2.93"
+  #   installDisk: *vmInstallDisk
+  #   machineDisks: *longhornDisks
+  #   # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.2
+  #   talosImageURL: factory.talos.dev/installer/dcac6b92c17d1d8947a0cee5e0e6b6904089aa878c70d66196bb1138dbd05d1a:v1.7.2
+  #   controlPlane: false
+  #   networkInterfaces:
+  #     - deviceSelector:
+  #         hardwareAddr: "TODO"
+  #       dhcp: false
+  #       addresses:
+  #         - "10.1.2.93/24"
+  #       routes: *routes
+  #       mtu: *mtu
+  #       vip: *vip
+  #   schematic:
+  #     customization:
+  #       extraKernelArgs:
+  #         - mitigations=off
+  #       systemExtensions:
+  #         officialExtensions:
+  #           - siderolabs/i915-ucode
+  #           - siderolabs/intel-ucode
+  #           - siderolabs/qemu-guest-agent
+
+patches:
+  # Configure containerd
+  - |-
+    machine:
+      files:
+        - op: create
+          path: /etc/cri/conf.d/20-customization.part
+          content: |-
+            [plugins."io.containerd.grpc.v1.cri"]
+              enable_unprivileged_ports = true
+              enable_unprivileged_icmp = true
+            [plugins."io.containerd.grpc.v1.cri".containerd]
+              discard_unpacked_layers = false
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+              discard_unpacked_layers = false
+
+  # Disable search domain everywhere
+  - |-
+    machine:
+      network:
+        disableSearchDomain: true
+
+  # Enable cluster discovery
+  - |-
+    cluster:
+      discovery:
+        registries:
+          kubernetes:
+            disabled: false
+          service:
+            disabled: false
+
+  # Configure kubelet
+  - |-
+    machine:
+      kubelet:
+        extraArgs:
+          rotate-server-certificates: true
+        nodeIP:
+          validSubnets:
+            - 10.1.2.0/24
+
+  # Force nameserver
+  - |-
+    machine:
+      network:
+        nameservers:
+          - 10.1.2.1
+
+  # Custom sysctl settings
+  - |-
+    machine:
+      sysctls:
+        fs.inotify.max_queued_events: "65536"
+        fs.inotify.max_user_watches: "524288"
+        fs.inotify.max_user_instances: "8192"
+        net.core.rmem_max: "2500000"
+        net.core.wmem_max: "2500000"
+
+  # Mount openebs-hostpath in kubelet
+  - |-
+    machine:
+      kubelet:
+        extraMounts:
+          - destination: /var/openebs/local
+            type: bind
+            source: /var/openebs/local
+            options:
+              - bind
+              - rshared
+              - rw
+
+controlPlane:
+  patches:
+    # Cluster configuration
+    - |-
+      cluster:
+        allowSchedulingOnControlPlanes: true
+        controllerManager:
+          extraArgs:
+            bind-address: 0.0.0.0
+        coreDNS:
+          disabled: true
+        proxy:
+          disabled: true
+        scheduler:
+          extraArgs:
+            bind-address: 0.0.0.0
+
+    # ETCD configuration
+    - |-
+      cluster:
+        etcd:
+          extraArgs:
+            listen-metrics-urls: http://0.0.0.0:2381
+          advertisedSubnets:
+            - 10.1.2.0/24
+
+    # Disable default API server admission plugins.
+    - |-
+      - op: remove
+        path: /cluster/apiServer/admissionControl
+
+    # Enable K8s Talos API Access
+    - |-
+      machine:
+        features:
+          kubernetesTalosAPIAccess:
+            enabled: true
+            allowedRoles:
+              - os:admin
+            allowedKubernetesNamespaces:
+              - system-upgrade
