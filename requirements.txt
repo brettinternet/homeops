@@ -1,6 +1,4 @@
-ansible
 yamllint
-ansible-lint
 jsonpatch
 pyyaml
 netaddr
