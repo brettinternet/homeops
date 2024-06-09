@@ -33,6 +33,6 @@ repos:
       - id: forbid-secrets
         exclude: rbac.yaml
   - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.18.2
+    rev: v8.18.3
     hooks:
       - id: gitleaks
