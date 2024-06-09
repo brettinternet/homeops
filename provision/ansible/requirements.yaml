@@ -7,7 +7,7 @@ collections:
   - name: ansible.posix
     version: 1.5.4
   - name: ansible.utils
-    version: 2.10.3
+    version: 2.12.0
   # https://github.com/kewlfft/ansible-aur
   - name: kewlfft.aur
 
