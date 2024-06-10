@@ -2,36 +2,37 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-vars:
-  TALHELPER_CLUSTER_DIR: "{{.KUBERNETES_DIR}}/bootstrap/talos/clusterconfig"
-  TALHELPER_SECRET_FILE: "{{.KUBERNETES_DIR}}/bootstrap/talos/talsecret.sops.yaml"
-  TALHELPER_CONFIG_FILE: "{{.KUBERNETES_DIR}}/bootstrap/talos/talconfig.yaml"
-  HELMFILE_FILE: "{{.KUBERNETES_DIR}}/bootstrap/helmfile.yaml"
-  TALOSCONFIG_FILE: "{{.TALHELPER_CLUSTER_DIR}}/talosconfig"
-
-env:
-  TALOSCONFIG: "{{.TALOSCONFIG_FILE}}"
+x-vars: &vars
+  TALOS_VERSION:
+    sh: yq 'select(document_index == 1).spec.postBuild.substitute.TALOS_VERSION' {{.KUBERNETES_DIR}}/{{.cluster}}/apps/system-upgrade/system-upgrade-controller/ks.yaml
+  TALOS_SCHEMATIC_ID:
+    sh: yq 'select(document_index == 1).spec.postBuild.substitute.TALOS_SCHEMATIC_ID' {{.KUBERNETES_DIR}}/{{.cluster}}/apps/system-upgrade/system-upgrade-controller/ks.yaml
+  KUBERNETES_VERSION:
+    sh: yq 'select(document_index == 1).spec.postBuild.substitute.KUBERNETES_VERSION' {{.KUBERNETES_DIR}}/{{.cluster}}/apps/system-upgrade/system-upgrade-controller/ks.yaml
+  CONTROLLER:
+    sh: talosctl --context {{.cluster}} config info --output json | jq --raw-output '.endpoints[]' | shuf -n 1
 
 tasks:
-
   bootstrap:
     desc: Bootstrap the Talos cluster
-    dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
+    dir: "{{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos"
     cmds:
       - |
-        if [ ! -f "{{.TALHELPER_SECRET_FILE}}" ]; then
-            talhelper gensecret > {{.TALHELPER_SECRET_FILE}}
-            sops --encrypt --in-place {{.TALHELPER_SECRET_FILE}}
+        if [ ! -f "{{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talsecret.sops.yaml" ]; then
+            talhelper gensecret > {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talsecret.sops.yaml
+            sops --encrypt --in-place {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talsecret.sops.yaml
         fi
-      - talhelper genconfig --config-file {{.TALHELPER_CONFIG_FILE}} --secret-file {{.TALHELPER_SECRET_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}}
-      - talhelper gencommand apply --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--insecure" | bash
-      - until talhelper gencommand bootstrap --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} | bash; do sleep 10; done
+      - talhelper genconfig --config-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml --secret-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talsecret.sops.yaml --out-dir {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/clusterconfig
+      - talhelper gencommand apply --config-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml --out-dir {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/clusterconfig --extra-flags="--insecure" | bash
+      - until talhelper gencommand bootstrap --config-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml --out-dir {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/clusterconfig | bash; do sleep 10; done
       - task: fetch-kubeconfig
       - task: install-helm-apps
-      - talosctl health --server=false
+      - talosctl --context {{.cluster}} health --server=false
+    requires:
+      vars: ["cluster"]
     preconditions:
       - msg: Missing talhelper config file
-        sh: test -f {{.TALHELPER_CONFIG_FILE}}
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml
       - msg: Missing Sops config file
         sh: test -f {{.SOPS_CONFIG_FILE}}
       - msg: Missing Sops Age key file
@@ -39,59 +40,88 @@ tasks:
 
   fetch-kubeconfig:
     desc: Fetch kubeconfig
-    dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
-    cmd: until talhelper gencommand kubeconfig --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
+    dir: "{{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos"
+    cmd: |
+      until talhelper gencommand kubeconfig --config-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml \
+        --out-dir {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/clusterconfig \
+        --extra-flags="{{.ROOT_DIR}} --force --force-context-name {{.cluster}}" \
+        | bash; do sleep 10; done
+    requires:
+      vars: ["cluster"]
     preconditions:
       - msg: Missing talhelper config file
-        sh: test -f {{.TALHELPER_CONFIG_FILE}}
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml
+
+  apply-config:
+    desc: Apply Talos configuration to a node
+    cmd: |
+      sops --decrypt {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/assets/{{.hostname}}.secret.sops.yaml | \
+          envsubst | \
+              talosctl --context {{.cluster}} apply-config --mode={{.mode}} --nodes {{.hostname}} --file /dev/stdin
+    env: *vars
+    vars:
+      mode: '{{.mode | default "no-reboot"}}'
+    requires:
+      vars: ["cluster", "hostname"]
+    preconditions:
+      - test -f {{.KUBERNETES_DIR}}/{{.cluster}}/talosconfig
+      - test -f {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/assets/{{.hostname}}.secret.sops.yaml
+      - talosctl --context {{.cluster}} --nodes {{.hostname}} get machineconfig >/dev/null 2>&1
+
 
   install-helm-apps:
     desc: Bootstrap core apps needed for Talos
     dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
     cmds:
-      - until kubectl --kubeconfig {{.KUBECONFIG_FILE}} wait --for=condition=Ready=False nodes --all --timeout=600s; do sleep 10; done
-      - helmfile --kubeconfig {{.KUBECONFIG_FILE}} --file {{.HELMFILE_FILE}} apply --skip-diff-on-install --suppress-diff
-      - until kubectl --kubeconfig {{.KUBECONFIG_FILE}} wait --for=condition=Ready nodes --all --timeout=600s; do sleep 10; done
+      - until kubectl --kube-context {{.cluster}} wait --for=condition=Ready=False nodes --all --timeout=600s; do sleep 10; done
+      - helmfile --kube-context {{.cluster}} --file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/helmfile.yaml apply --skip-diff-on-install --suppress-diff
+      - until kubectl --kube-context {{.cluster}} wait --for=condition=Ready nodes --all --timeout=600s; do sleep 10; done
+    requires:
+      vars: ["cluster"]
     preconditions:
-      - msg: Missing kubeconfig
-        sh: test -f {{.KUBECONFIG_FILE}}
+      - msg: Missing talosconfig
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/talosconfig
+      - msg: Unable to retrieve Talos config
+        sh: talosctl --context {{.cluster}} config info >/dev/null 2>&1
       - msg: Missing helmfile
-        sh: test -f {{.HELMFILE_FILE}}
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/helmfile.yaml
 
   upgrade:
     desc: Upgrade Talos on a node
     dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
     cmds:
-      - talosctl --nodes {{.node}} upgrade --image {{.image}} --wait=true --timeout=10m --preserve=true --reboot-mode={{.mode}}
-      - talosctl --nodes {{.node}} health --wait-timeout=10m --server=false
+      - talosctl --context {{.cluster}} --nodes {{.node}} upgrade --image {{.image}} --wait=true --timeout=10m --preserve=true --reboot-mode={{.mode}}
+      - talosctl --context {{.cluster}} --nodes {{.node}} health --wait-timeout=10m --server=false
     vars:
       mode: '{{.mode | default "default"}}'
     requires:
-      vars: ["node", "image"]
+      vars: ["cluster", "node", "image"]
     preconditions:
       - msg: Missing talosconfig
-        sh: test -f {{.TALOSCONFIG_FILE}}
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/talosconfig
       - msg: Unable to retrieve Talos config
-        sh: talosctl config info >/dev/null 2>&1
+        sh: talosctl --context {{.cluster}} config info >/dev/null 2>&1
       - msg: Node not found
-        sh: talosctl --nodes {{.node}} get machineconfig >/dev/null 2>&1
+        sh: talosctl --context {{.cluster}} --nodes {{.node}} get machineconfig >/dev/null 2>&1
 
   upgrade-k8s:
     desc: Upgrade Kubernetes across the cluster
-    dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
-    cmd: talosctl --nodes {{.controller}} upgrade-k8s --to {{.to}}
+    dir: "{{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos"
+    cmd: talosctl --context {{.cluster}} --nodes {{.controller}} upgrade-k8s --to {{.to}}
     requires:
-      vars: ["controller", "to"]
+      vars: ["cluster", "controller", "to"]
     preconditions:
       - msg: Missing talosconfig
-        sh: test -f {{.TALOSCONFIG_FILE}}
+        sh: test -f {{.KUBERNETES_DIR}}/{{.cluster}}/talosconfig
       - msg: Unable to retrieve Talos config
-        sh: talosctl config info >/dev/null 2>&1
+        sh: talosctl --context {{.cluster}} config info >/dev/null 2>&1
       - msg: Node not found
-        sh: talosctl --nodes {{.controller}} get machineconfig >/dev/null 2>&1
+        sh: talosctl --context {{.cluster}} --nodes {{.controller}} get machineconfig >/dev/null 2>&1
 
   nuke:
     desc: Resets nodes back to maintenance mode
-    dir: "{{.KUBERNETES_DIR}}/bootstrap/talos"
+    dir: "{{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos"
     prompt: This will destroy your cluster and reset the nodes back to maintenance mode... continue?
-    cmd: talhelper gencommand reset --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
+    cmd: talhelper gencommand reset --config-file {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/talconfig.yaml --out-dir {{.KUBERNETES_DIR}}/{{.cluster}}/bootstrap/talos/clusterconfig --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
+    requires:
+      vars: ["cluster"]

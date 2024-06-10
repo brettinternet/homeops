@@ -26,7 +26,7 @@ spec:
     controller:
       service:
         annotations:
-          io.cilium/lb-ipam-ips: "10.1.2.101"
+          io.cilium/lb-ipam-ips: "${LB_INTERNAL_INGRESS_ADDR}"
         externalTrafficPolicy: Cluster
       ingressClassResource:
         name: internal

@@ -10,7 +10,7 @@ tasks:
     desc: Gather common resources in your cluster, useful when asking for support
     cmds:
       - for: { var: resource }
-        cmd: kubectl get {{.ITEM}} {{.CLI_ARGS | default "-A"}}
+        cmd: kubectl --context {{.cluster}} get {{.ITEM}} {{.CLI_ARGS | default "-A"}}
     vars:
       resource: >-
         nodes
@@ -22,16 +22,60 @@ tasks:
         certificaterequests
         ingresses
         pods
+    requires:
+      vars: ["cluster"]
 
   kubeconform:
     desc: Validate Kubernetes manifests with kubeconform
-    cmd: bash {{.KUBECONFORM_SCRIPT}} {{.KUBERNETES_DIR}}
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmd: bash {{.KUBECONFORM_SCRIPT}} {{.KUBERNETES_DIR}}/{{.cluster}}
     preconditions:
       - msg: Missing kubeconform script
         sh: test -f {{.KUBECONFORM_SCRIPT}}
+    requires:
+      vars: ["cluster"]
 
   top:
     desc: List top metrics
     cmds:
-      - kubectl top node
-      - kubectl top pod -A
+      - kubectl --context {{.cluster}} top node
+      - kubectl --context {{.cluster}} top pod -A
+    requires:
+      vars: ["cluster"]
+
+  browse-pvc:
+    desc: Browse PersistentVolumeClaims
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+        ns: Namespace to browse PersistentVolumeClaims in (default: default)
+        claim: PersistentVolumeClaim to browse (required)
+    interactive: true
+    cmd: kubectl browse-pvc --context {{.cluster}} --namespace {{.ns}} {{.claim}}
+    vars:
+      ns: '{{.ns | default "default"}}'
+    requires:
+      vars: ["cluster", "claim"]
+
+  drain:
+    desc: Drain a node
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+        node: Node to drain (required)
+    cmd: kubectl --context {{.cluster}} drain {{.node}} --ignore-daemonsets --delete-local-data --force
+    requires:
+      vars: ["cluster", "node"]
+
+  delete-failed-pods:
+    desc: Deletes pods with a fucked status
+    summary: |
+      Args:
+        cluster: Cluster to run command against (required)
+    cmds:
+      - for: ["Evicted", "Failed", "Succeeded"]
+        cmd: kubectl --context {{.cluster}} delete pods --field-selector status.phase={{.ITEM}} -A --ignore-not-found=true
+    requires:
+      vars: ["cluster"]
