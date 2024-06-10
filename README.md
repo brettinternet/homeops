@@ -42,7 +42,7 @@ task talos:bootstrap
 Install flux.
 
 ```sh
-task flux:{verify,github-deploy-key,bootstrap}
+task flux:{verify,bootstrap}
 ```
 
 Verify the installation.
@@ -54,6 +54,26 @@ kubectl -n flux-system get pods -o wide
 ```sh
 task kubernetes:resources
 ```
+
+#### Github Webhook
+
+Setup a webook to reconcile flux when changes are pushed to Github. Note: this only works with Let's Encrypt Production certificates.
+
+Get webook path:
+
+```sh
+kubectl -n flux-system get receiver github-receiver -o jsonpath='{.status.webhookPath}'
+```
+
+Append to self-hosted domain:
+
+```text
+https://flux-webhook.${DOMAIN}/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123
+```
+
+Generate a webook token `openssl rand -hex 16` and add to secret: `kubernetes/<cluster>/apps/flux-system/webhooks/app/github/secret.sops.yaml`.
+
+Add the webook to the repository's "Settings/Webhooks" > "Add webhook" button. Add the URL and token.
 
 ### Deployments
 
