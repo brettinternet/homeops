@@ -5,7 +5,9 @@ resources:
   - ./namespace.yaml
   - ./cilium/ks.yaml
   - ./coredns/ks.yaml
-  - ./metrics-server/ks.yaml
-  - ./reloader/ks.yaml
+  - ./intel-device-plugin/ks.yaml
   - ./kubelet-csr-approver/ks.yaml
+  - ./metrics-server/ks.yaml
+  - ./node-feature-discovery/ks.yaml
+  - ./reloader/ks.yaml
   - ./spegel/ks.yaml

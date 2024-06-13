@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: calibre
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: longhorn
+      namespace: longhorn
+  values:
+    controllers:
+      calibre:
+        containers:
+          app:
+            image:
+              repository: lscr.io/linuxserver/calibre
+              tag: v7.12.0
+            env:
+              TZ: ${TIMEZONE}
+              TITLE: Calibre
+              PUID: 65534
+              PGID: 65534
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities:
+                drop: ["ALL"]
+                add: ["seccomp:unconfined"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 250M
+              limits:
+                memory: 2Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      main:
+        controller: calibre
+        ports:
+          http:
+            port: 8080
+          web:
+            port: 8081
+    ingress:
+      main:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: Calibre
+          gethomepage.dev/icon: mdi-library
+        hosts:
+          - host: "calibre.${SECRET_INTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: http
+      web:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: Calibre Content
+          gethomepage.dev/icon: mdi-library
+        hosts:
+          - host: "read.${SECRET_INTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: web
+    persistence:
+      config:
+        existingClaim: calibre-config
+      inbox:
+        existingClaim: calibre-inbox
+        globalMounts:
+          - path: /config/inbox
+      tmp:
+        type: emptyDir
+      # TODO: move metadata.db to a separate longhorn volume
+      books:
+        type: nfs
+        server: "${NFS_SERVER_ADDR}"
+        path: "${NFS_SERVER_MEDIA_DIR}"
+        globalMounts:
+          - path: /data

@@ -10,12 +10,11 @@ data:
   SERVICE_CIDR: "10.43.0.0/16"
   NODE_CIDR: "10.1.2.0/24"
   HOME_CIDR: "10.1.1.0/24"
-  # match included from `kubernetes/apps/network/ingress-nginx/certificates/kustomization.yaml`
+  # match included from `kubernetes/main/apps/network/ingress-nginx/certificates/kustomization.yaml`
   LETSENCRYPT_ENVIRONMENT: production
 
-  # Value also in `talconfig.yaml`
+  # Value in `talconfig.yaml`
   KUBE_VIP_ADDR: 10.1.2.120
-
   LB_INTERNAL_INGRESS_ADDR: 10.1.2.121
   LB_EXTERNAL_INGRESS_ADDR: 10.1.2.122
   LB_K8S_GATEWAY_ADDR: 10.1.2.123
@@ -25,5 +24,13 @@ data:
   LB_VECTOR_ADDR: 10.1.2.127
   LB_CROWDSEC_ADDR: 10.1.2.128
   LB_IVENTOY_ADDR: 10.1.2.129
+  LB_MQTT_ADDR: 10.1.2.130
+  LB_PLEX_ADDR: 10.1.2.131
+  LB_SSH_SERVER_ADDR: 10.1.2.132
 
-  UPSTREAM_DNS_ADDR: 10.1.0.5:53 # fallback/alternate
+  NFS_SERVER_ADDR: 10.1.2.10
+  NFS_SERVER_BACKUP_DIR: /storage/backup
+  NFS_SERVER_MEDIA_DIR: /storage/media
+  NFS_SERVER_CAMERAS_DIR: /storage/media/cameras
+  NFS_SERVER_USENET_DIR: /storage/media/usenet
+  NFS_SERVER_STORAGE_DIR: /storage

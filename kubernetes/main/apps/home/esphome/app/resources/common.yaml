@@ -1,0 +1,25 @@
+---
+logger:
+
+# Network
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    static_ip: ${ip_address}
+    gateway: 10.1.4.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  #ap:
+    #ssid: ${devicename} Fallback Hotspot
+    #password: !secret fallback_hotspot_password
+
+# Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  password: !secret ota_password

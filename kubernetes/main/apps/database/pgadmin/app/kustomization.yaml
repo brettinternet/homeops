@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./secret.sops.yaml
+  - ./helmrelease.yaml
+  - ../../../../templates/gatus/internal
+configMapGenerator:
+  - name: pgadmin-configmap
+    files:
+      - servers.json=./resources/servers.json
+generatorOptions:
+  disableNameSuffixHash: true

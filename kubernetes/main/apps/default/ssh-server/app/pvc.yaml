@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ssh-server
+spec:
+  storageClassName: ""
+  volumeName: mydata

@@ -1,0 +1,171 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: plex
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: intel-device-plugin-gpu
+      namespace: kube-system
+    - name: longhorn
+      namespace: longhorn
+    # - name: volsync
+    #   namespace: volsync-system
+  values:
+    controllers:
+      plex:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: docker.io/plexinc/pms-docker
+              tag: latest
+            env:
+              TZ: "${TIMEZONE}"
+              ADVERTISE_IP: >-
+                https://plex.${SECRET_EXTERNAL_DOMAIN},
+                http://${LB_PLEX_ADDR}:32400,
+                https://${LB_PLEX_ADDR}:32400
+              ALLOWED_NETWORKS: >-
+                ${NODE_CIDR},
+                ${HOME_CIDR}
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /identity
+                    port: &port 32400
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+              limits:
+                gpu.intel.com/i915: 1
+                memory: 16Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+        supplementalGroups: [44, 10000]
+        seccompProfile: { type: RuntimeDefault }
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values: ["frigate"]
+              topologyKey: kubernetes.io/hostname
+      nodeSelector:
+        intel.feature.node.kubernetes.io/gpu: "true"
+        dvr.feature.node.kubernetes.io/tuner: "true"
+    service:
+      app:
+        controller: plex
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: "${LB_PLEX_ADDR}"
+        ports:
+          http:
+            port: *port
+          # Plex DLNA Server
+          # https://support.plex.tv/articles/200350536-dlna/
+          dnla-tcp:
+            enabled: false
+            port: 32469
+            protocol: TCP
+          dnla-udp:
+            enabled: false
+            port: 1900
+            protocol: UDP
+          # GDM Network discovery
+          # https://support.plex.tv/articles/200430283-network/
+          gdm-1-udp:
+            port: 32410
+            protocol: UDP
+          gdm-2-udp:
+            port: 32412
+            protocol: UDP
+          gdm-3-udp:
+            port: 32413
+            protocol: UDP
+          gdm-4-udp:
+            port: 32414
+            protocol: UDP
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_EXTERNAL_DOMAIN}"
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+        hosts:
+          - host: "{{ .Release.Name }}.${SECRET_EXTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      config:
+        existingClaim: plex
+      cache:
+        existingClaim: plex-cache
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server/Cache
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server/Logs
+      tmp:
+        type: emptyDir
+      transcode:
+        type: emptyDir
+      media:
+        type: nfs
+        server: "${NFS_SERVER_ADDR}"
+        path: "${NFS_SERVER_MEDIA_DIR}"
+        globalMounts:
+          - path: /data/library
+      tuner:
+        type: hostPath
+        hostPath: /dev/dvb
+        globalMounts:
+          - path: /dev/dvb

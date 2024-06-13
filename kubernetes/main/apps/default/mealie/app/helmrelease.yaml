@@ -1,0 +1,127 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app mealie
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      *app :
+        type: statefulset
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            env:
+              INIT_POSTGRES_HOST: &dbHost postgres16-rw.database.svc.cluster.local
+              INIT_POSTGRES_DBNAME: &dbName mealie
+              INIT_POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: &secret mealie-secret
+                    key: POSTGRES_USER
+              INIT_POSTGRES_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: POSTGRES_PASSWORD
+              INIT_POSTGRES_SUPER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: cloudnative-pg-secret
+                    key: password
+        containers:
+          app:
+            image:
+              repository: ghcr.io/mealie-recipes/mealie
+              tag: v1.8.0
+            env:
+              TZ: ${TIMEZONE}
+              BASE_URL: https://mealie.${SECRET_EXTERNAL_DOMAIN}
+              PUID: 65534
+              PGID: 65534
+              AUTO_BACKUP_ENABLED: true
+              ALLOW_SIGNUP: false
+              SMTP_HOST: maddy.default.svc.cluster.local
+              SMTP_PORT: 25
+              SMTP_FROM_NAME: Mealie
+              SMTP_FROM_EMAIL: "${SECRET_SMTP_FROM}"
+              SMTP_AUTH_STRATEGY: NONE
+              DB_ENGINE: postgres
+              POSTGRES_SERVER: *dbHost
+              POSTGRES_PORT: 5432
+              POSTGRES_DB: *dbName
+              OIDC_AUTH_ENABLED: true
+              OIDC_SIGNUP_ENABLED: true
+              OIDC_CONFIGURATION_URL: "https://auth.${SECRET_EXTERNAL_DOMAIN}/.well-known/openid-configuration"
+              OIDC_CLIENT_ID: mealie
+              OIDC_AUTO_REDIRECT: false
+              OIDC_ADMIN_GROUP: mealie-admins
+              OIDC_USER_GROUP: mealie-users
+            envFrom:
+              - secretRef:
+                  name: *secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      *app :
+        controller: *app
+        ports:
+          http:
+            port: 9000
+    ingress:
+      external:
+        className: external
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: Recipes
+          gethomepage.dev/icon: mdi-recipe
+        hosts:
+          - host: "recipes.${SECRET_EXTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: *app
+                  port: http
+    persistence:
+      data:
+        existingClaim: mealie
+        globalMounts:
+          - path: /app/data
+      backups:
+        type: nfs
+        server: "${NFS_SERVER_ADDR}"
+        path: "${NFS_SERVER_BACKUP_DIR}/mealie"
+        globalMounts:
+          - path: /app/data/backups
+      tmp:
+        type: emptyDir

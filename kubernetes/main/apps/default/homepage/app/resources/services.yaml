@@ -1,0 +1,88 @@
+---
+- Services:
+    - Gatus:
+        href: https://status.${SECRET_EXTERNAL_DOMAIN}
+        siteMonitor: https://gatus.observability.svc.cluster.local
+        icon: gatus.png
+        description: Status page
+        widget:
+          type: gatus
+          url: http://gatus.observability.svc.cluster.local
+    - Healthchecks:
+        href: https://healthchecks.${SECRET_EXTERNAL_DOMAIN}
+        siteMonitor: http://healthchecks.observability.svc.cluster.local
+        icon: healthchecks.png
+        description: Job status
+        widget:
+          type: healthchecks
+          url: http://healthchecks.observability.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_HEALTHCHECKS_TOKEN}}"
+    - Miniflux:
+        href: https://rss.${SECRET_EXTERNAL_DOMAIN}
+        siteMonitor: http://miniflux.default.svc.cluster.local/healthcheck
+        icon: miniflux.png
+        description: RSS feed
+        widget:
+          type: miniflux
+          url: http://miniflux.default.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_MINIFLUX_TOKEN}}"
+- Home:
+    - HomeAssistant:
+        href: https://home.${SECRET_EXTERNAL_DOMAIN}
+        icon: home-assistant.png
+        description: Home Assistant
+        widget:
+          type: homeassistant
+          url: http://home-assistant.home.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_HASS_TOKEN}}"
+    - Plex:
+        href: https://plex.${SECRET_EXTERNAL_DOMAIN}
+        siteMonitor: https://plex.${SECRET_EXTERNAL_DOMAIN}
+        icon: plex.png
+        description: Movies & TV
+        widget:
+          type: tautulli
+          url: http://tautulli.media.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_TAUTULLI_TOKEN}}"
+          enableUser: true
+          showEpisodeNumber: true
+          expandOneStreamToTwoRows: true
+    - Sonarr:
+        href: https://sonarr.${SECRET_INTERNAL_DOMAIN}
+        siteMonitor: https://sonarr.${SECRET_INTERNAL_DOMAIN}
+        icon: sonarr.png
+        description: TV
+        widget:
+          type: sonarr
+          url: http://sonarr.media.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_SONARR_TOKEN}}"
+    - Radarr:
+        href: https://radarr.${SECRET_INTERNAL_DOMAIN}
+        siteMonitor: https://radarr.${SECRET_INTERNAL_DOMAIN}
+        icon: radarr.png
+        description: Movies
+        widget:
+          type: radarr
+          url: http://radarr.media.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_RADARR_TOKEN}}"
+    - SABnzbd:
+        href: https://nzb.${SECRET_INTERNAL_DOMAIN}
+        siteMonitor: https://nzb.${SECRET_INTERNAL_DOMAIN}
+        icon: sabnzbd.png
+        description: Downloads
+        widget:
+          type: sabnzbd
+          url: http://sabnzbd.media.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_SABNZBD_TOKEN}}"
+    - Agenda:
+        widget:
+          type: calendar
+          view: agenda
+          maxEvents: 5
+          integrations:
+            - type: sonarr
+              service_group: External
+              service_name: Sonarr
+            - type: radarr
+              service_group: External
+              service_name: Radarr

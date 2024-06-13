@@ -1,0 +1,28 @@
+---
+title: Dashboard
+theme: dark
+color: zinc
+headerStyle: boxedWidgets
+layout:
+  Services:
+    style: row
+    columns: 3
+    icon: mdi-kubernetes
+  Home:
+    style: row
+    columns: 2
+    icon: mdi-home
+  Network:
+    style: column
+    icon: mdi-network
+  Personal:
+    style: column
+    icon: mdi-desktop-classic
+  Work:
+    style: column
+    icon: mdi-briefcase
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  showSearchSuggestions: true
+  hideVisitURL: false

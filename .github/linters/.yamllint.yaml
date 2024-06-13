@@ -2,7 +2,8 @@
 ignore: |
   *.sops.*
   gotk-components.yaml
-  archive/
+  clusterconfig/
+  patches/
 extends: default
 rules:
   truthy:

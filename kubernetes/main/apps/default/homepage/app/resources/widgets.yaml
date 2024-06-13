@@ -1,0 +1,32 @@
+---
+- search:
+    provider: [google, duckduckgo]
+    focus: false
+    target: _self
+    suggestionUrl: https://ac.ecosia.org/autocomplete?type=list&q=
+    showSearchSuggestions: true
+- kubernetes:
+    cluster:
+      cpu: true
+      label: cluster
+      memory: true
+      show: true
+      showLabel: true
+    nodes:
+      cpu: true
+      memory: true
+      show: false
+      showLabel: true
+- openmeteo:
+    label: Home
+    latitude: "{{HOMEPAGE_VAR_LATITUDE}}"
+    longitude: "{{HOMEPAGE_VAR_LONGITUDE}}"
+    timezone: "${TIMEZONE}"
+    units: imperial
+    cache: 5
+- datetime:
+    text_size: md
+    format:
+      dateStyle: short
+      timeStyle: short
+      hour12: true

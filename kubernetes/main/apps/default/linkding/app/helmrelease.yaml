@@ -1,0 +1,115 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app linkding
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      interval: 30m
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      linkding:
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            # https://github.com/onedr0p/containers/blob/main/apps/postgres-init/entrypoint.sh
+            env:
+              INIT_POSTGRES_HOST: &dbHost postgres16-rw.database.svc.cluster.local
+              INIT_POSTGRES_DBNAME: &dbName linkding
+              INIT_POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: &secret linkding-secret
+                    key: LD_DB_USER
+              INIT_POSTGRES_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: *secret
+                    key: LD_DB_PASSWORD
+              INIT_POSTGRES_SUPER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: cloudnative-pg-secret
+                    key: password
+        containers:
+          app:
+            image:
+              repository: docker.io/sissbruecker/linkding
+              tag: 1.30.0-plus-alpine
+            env:
+              LD_DB_ENGINE: postgres
+              LD_DB_DATABASE: *dbName
+              LD_DB_HOST: *dbHost
+              LD_DB_PORT: 5432
+            envFrom:
+              - secretRef:
+                  name: *secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: &port 9090
+                  initialDelaySeconds: 10
+                  periodSeconds: 5
+                  timeoutSeconds: 10
+                  failureThreshold: 30
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 12m
+                memory: 256M
+              limits:
+                # For HTML snapshot spike
+                memory: 1G
+    service:
+      app:
+        controller: linkding
+        ports:
+          http:
+            port: *port
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_EXTERNAL_DOMAIN}"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: Linkding
+          gethomepage.dev/icon: mdi-bookmark
+        hosts:
+          - host: "bookmarks.${SECRET_EXTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      data:
+        existingClaim: linkding
+        globalMounts:
+          - path: /etc/linkding/data

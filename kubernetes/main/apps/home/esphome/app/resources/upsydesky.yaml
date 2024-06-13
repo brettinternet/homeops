@@ -1,0 +1,20 @@
+---
+substitutions:
+  name: upsy-desky-76d87c
+  ip_address: 10.1.4.72
+
+packages:
+  tj_horner.upsy_desky: github://tjhorner/upsy-desky/firmware/stock.yaml@v3.0.0
+
+esphome:
+  name: ${name}
+  name_add_mac_suffix: false
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    static_ip: 10.1.4.72
+    gateway: 10.1.4.1
+    subnet: 255.255.255.0

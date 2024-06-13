@@ -1,6 +1,5 @@
 ---
 fail_fast: false
-exclude: archive
 repos:
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
