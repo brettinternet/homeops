@@ -106,6 +106,18 @@ tasks:
       - msg: Node not found
         sh: "talosctl --nodes {{.controller}} get machineconfig >/dev/null 2>&1"
 
+  run:
+    desc: Run talos command
+    dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
+    cmd: "talosctl {{.CLI_ARGS}}"
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - msg: Missing talosconfig
+        sh: test -f {{.TALOSCONFIG_FILE}}
+      - msg: Unable to retrieve Talos config
+        sh: "talosctl config info >/dev/null 2>&1"
+
   destroy:
     desc: Resets nodes back to maintenance mode
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"

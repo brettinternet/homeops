@@ -11,9 +11,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: redis
+    - name: dragonfly
     - name: minio
-  path: ./kubernetes/apps/observability/thanos/app
+  path: ./kubernetes/main/apps/observability/thanos/app
   prune: true
   sourceRef:
     kind: GitRepository

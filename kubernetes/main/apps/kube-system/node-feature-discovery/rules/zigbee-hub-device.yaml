@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/nfd.k8s-sigs.io/nodefeaturerule_v1alpha1.json
+apiVersion: nfd.k8s-sigs.io/v1alpha1
+kind: NodeFeatureRule
+metadata:
+  name: zigbee-hub-device
+spec:
+  rules:
+    - # Bus 001 Device 002: ID 10c4:8a2a Silicon Labs HubZ Smart Home Controller
+      # https://github.com/walthowd/husbzb-firmware
+      name: zigbee.hub
+      labels:
+        zigbee.feature.node.kubernetes.io/hub: "true"
+      matchFeatures:
+        - feature: usb.device
+          matchExpressions:
+            vendor: { op: In, value: ["10c4", "8a2a"] }

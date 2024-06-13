@@ -53,17 +53,17 @@ spec:
                 key: password
     replicas: 1
     env:
-      GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${PUBLIC_DOMAIN}/api/oidc/userinfo"
-      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://auth.${PUBLIC_DOMAIN}/api/oidc/authorization"
+      GF_AUTH_GENERIC_OAUTH_API_URL: "https://auth.${SECRET_EXTERNAL_DOMAIN}/api/oidc/userinfo"
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://auth.${SECRET_EXTERNAL_DOMAIN}/api/oidc/authorization"
       GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
-      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://auth.${PUBLIC_DOMAIN}/api/oidc/token"
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://auth.${SECRET_EXTERNAL_DOMAIN}/api/oidc/token"
       GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
       GF_EXPLORE_ENABLED: true
       GF_FEATURE_TOGGLES_ENABLE: publicDashboards
       GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
       GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
       GF_SECURITY_COOKIE_SAMESITE: grafana
-      GF_SERVER_ROOT_URL: "https://grafana.${PRIVATE_DOMAIN}"
+      GF_SERVER_ROOT_URL: "https://grafana.${SECRET_INTERNAL_DOMAIN}"
       GF_DATABASE_SSL_MODE: disable
       GF_DATABASE_NAME: *dbName
       GF_DATABASE_HOST: *dbHost
@@ -350,7 +350,7 @@ spec:
         gethomepage.dev/name: Grafana
         gethomepage.dev/icon: grafana.png
       ingressClassName: internal
-      hosts: ["grafana.${PRIVATE_DOMAIN}"]
+      hosts: ["grafana.${SECRET_INTERNAL_DOMAIN}"]
     persistence:
       enabled: false
     testFramework:

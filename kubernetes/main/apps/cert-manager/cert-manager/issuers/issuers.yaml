@@ -1,3 +1,4 @@
+---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
@@ -16,7 +17,8 @@ spec:
               key: api-token
         selector:
           dnsZones:
-            - "${SECRET_DOMAIN}"
+            - "${SECRET_EXTERNAL_DOMAIN}"
+            - "${SECRET_INTERNAL_DOMAIN}"
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -36,4 +38,5 @@ spec:
               key: api-token
         selector:
           dnsZones:
-            - "${SECRET_DOMAIN}"
+            - "${SECRET_EXTERNAL_DOMAIN}"
+            - "${SECRET_INTERNAL_DOMAIN}"

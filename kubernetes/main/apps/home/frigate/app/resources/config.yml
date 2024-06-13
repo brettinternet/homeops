@@ -1,0 +1,246 @@
+---
+mqtt:
+  host: emqx-listeners.database.svc.cluster.local
+  topic_prefix: frigate
+  port: 1883
+  user: "{FRIGATE_MQTT_USERNAME}"
+  password: '{FRIGATE_MQTT_PASSWORD}'
+
+ffmpeg:
+  global_args: ["-hide_banner", "-loglevel", "warning"]
+  hwaccel_args: preset-vaapi
+
+detectors:
+  coral:
+    type: edgetpu
+    device: usb
+
+audio:
+  enabled: true
+  # https://github.com/blakeblackshear/frigate/blob/dev/audio-labelmap.txt
+  listen:
+    - fire_alarm
+    - speech
+    - laughter
+    - crying
+    - child_singing
+    - gasp
+    - cough
+    - sneeze
+    - hiccup
+    - wheeze
+    - sniff
+    - gargling
+    - children_playing
+
+record:
+  enabled: true
+
+snapshots:
+  enabled: true
+
+go2rtc:
+  streams:
+    nursery_sub:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+    nursery:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    entry:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    playroom:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+        #office_sub:
+        #- rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+    office:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+        #- ffmpeg:office#
+    garage:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    front_door:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.10:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    utility:
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+  webrtc:
+    candidates:
+      - 10.1.2.11:8555
+      - stun:8555
+
+cameras:
+  nursery:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/nursery
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: nursery
+    detect:
+      width: 1280
+      height: 720
+      fps: 10
+    onvif:
+      host: 10.1.4.31
+      port: 80
+      user: '{FRIGATE_RTSP_USER}'
+      password: '{FRIGATE_RTSP_PASSWORD}'
+
+  entry:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/entry
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: entry
+    audio:
+      enabled: true
+      listen:
+        - fire_alarm
+    detect:
+      width: 2560
+      height: 1440
+    onvif:
+      host: 10.1.4.34
+      port: 80
+        #user: '{FRIGATE_RTSP_USER}'
+        #password: '{FRIGATE_RTSP_PASSWORD}'
+
+  office:
+    ffmpeg:
+      inputs:
+        #- path: rtsp://127.0.0.1:8554/office_sub
+        #input_args: preset-rtsp-restream
+        #roles:
+        #- audio
+        #- detect
+        - path: rtsp://127.0.0.1:8554/office
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: office
+    detect:
+      width: 1920
+      height: 1080
+    onvif:
+      host: 10.1.4.32
+      port: 80
+      user: '{FRIGATE_RTSP_USER}'
+      password: '{FRIGATE_RTSP_PASSWORD}'
+
+  playroom:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/playroom
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: playroom
+    audio:
+      enabled: true
+      listen:
+        - fire_alarm
+    detect:
+      width: 2560
+      height: 1440
+    onvif:
+      host: 10.1.4.35
+      port: 80
+      user: '{FRIGATE_RTSP_USER}'
+      password: '{FRIGATE_RTSP_PASSWORD}'
+
+  garage:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/garage
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: garage
+    audio:
+      enabled: false
+    detect:
+      width: 1280
+      height: 720
+      fps: 5
+    onvif:
+      host: 10.1.4.30
+      port: 80
+      user: '{FRIGATE_RTSP_USER}'
+      password: '{FRIGATE_RTSP_PASSWORD}'
+
+  utility:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/utility
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: utility
+    audio:
+      enabled: true
+      listen:
+        - fire_alarm
+        - water
+        - drip
+        - water_tap
+        - sink
+        - tapping
+    detect:
+      width: 1280
+      height: 720
+
+  front_door:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/front_door
+          input_args: preset-rtsp-restream
+          roles:
+            - audio
+            - detect
+            - record
+      output_args:
+        record: preset-record-generic-audio-copy
+    live:
+      stream_name: front_door
+    audio:
+      enabled: true
+      listen:
+        - speech
+        - yell
+        - water
+        - drip
+        - footsteps
+    detect:
+      width: 1920
+      height: 1080
+      fps: 7

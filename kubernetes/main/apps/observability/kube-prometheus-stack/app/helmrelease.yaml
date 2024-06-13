@@ -45,7 +45,7 @@ spec:
           gethomepage.dev/name: Alert Manager
           gethomepage.dev/icon: alertmanager.png
         ingressClassName: internal
-        hosts: ["alertmanager.${PRIVATE_DOMAIN}"]
+        hosts: ["alertmanager.${SECRET_INTERNAL_DOMAIN}"]
         pathType: Prefix
       alertmanagerSpec:
         replicas: 1
@@ -104,7 +104,7 @@ spec:
           gethomepage.dev/name: Prometheus
           gethomepage.dev/icon: prometheus.png
         ingressClassName: internal
-        hosts: ["prometheus.${PRIVATE_DOMAIN}"]
+        hosts: ["prometheus.${SECRET_INTERNAL_DOMAIN}"]
         pathType: Prefix
       thanosService:
         enabled: true

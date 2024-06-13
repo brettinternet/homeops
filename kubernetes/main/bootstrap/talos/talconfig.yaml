@@ -24,10 +24,10 @@ nodes:
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
     installDisk: &vmInstallDisk "/dev/sda"
-    # machineDisks: &longhornDisks
-    #   - device: /dev/nvme0n1
-    #     partitions:
-    #       - mountpoint: /var/mnt/longhorn
+    machineDisks: &longhornDisks
+      - device: /dev/sdb
+        partitions:
+          - mountpoint: /var/mnt/longhorn
     # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.2
     talosImageURL: &talosImage factory.talos.dev/installer/e3fab82b561b5e559cdf1c0b1e5950c0e52700b9208a2cfaa5b18454796f3a7e
     schematic: &schematic
@@ -54,6 +54,7 @@ nodes:
   - hostname: "k-1"
     ipAddress: "10.1.2.101"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -68,6 +69,7 @@ nodes:
   - hostname: "k-2"
     ipAddress: "10.1.2.102"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -82,6 +84,7 @@ nodes:
   - hostname: "k-3"
     ipAddress: "10.1.2.103"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: true
@@ -97,6 +100,7 @@ nodes:
   - hostname: "k-4"
     ipAddress: "10.1.2.104"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -111,6 +115,7 @@ nodes:
   - hostname: "k-5"
     ipAddress: "10.1.2.105"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -125,6 +130,7 @@ nodes:
   - hostname: "k-6"
     ipAddress: "10.1.2.106"
     installDisk: *vmInstallDisk
+    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false

@@ -1,0 +1,61 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app git-mirrors-public
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      git-mirrors-public:
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/brettinternet/update-mirrors
+              tag: latest
+            env:
+              CRON: "*/20 * * * *"
+              WORKING_DIRECTORY: /data
+              GIT_REMOTE_1: https://github.com/brettinternet/homelab
+              GIT_REMOTE_2: https://github.com/brettinternet/dotfiles
+              GIT_REMOTE_3: https://github.com/brettinternet/linux
+              GIT_REMOTE_4: https://github.com/brettinternet/windows
+              GIT_REMOTE_5: https://github.com/brettinternet/keyboards
+              GIT_REMOTE_6: https://github.com/brettinternet/slides
+              GIT_REMOTE_7: https://github.com/brettinternet/algorithms
+              GIT_REMOTE_8: https://github.com/brettinternet/mic-mute
+              GIT_REMOTE_9: https://github.com/brettinternet/provision
+              GIT_REMOTE_10: https://github.com/brettinternet/brettinternet.github.io
+              GIT_REMOTE_11: https://github.com/brettinternet/containers
+              GIT_REMOTE_12: https://github.com/brettinternet/archive
+            envFrom:
+              - secretRef:
+                  name: git-mirrors-private-secret
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile: { type: RuntimeDefault }
+    persistence:
+      data:
+        existingClaim: *app

@@ -10,7 +10,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/observability/vector/app
+  path: ./kubernetes/main/apps/observability/vector/app
   prune: true
   sourceRef:
     kind: GitRepository

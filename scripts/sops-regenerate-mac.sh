@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+# Regenerate MAC on mismatch with merge conflicts
 # https://github.com/getsops/sops/issues/52#issuecomment-726807596
 
 set -o errexit
