@@ -54,8 +54,12 @@ tasks:
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
     cmds:
       - until talhelper gencommand kubeconfig --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
-      - kubectl config rename-context admin@homelab {{.cluster}}
-      - kubectl config unset contexts.{{.cluster}}.namespace
+      - |-
+        CLUSTER_NAME="$(yq 'select(document_index == 0).clusterName' {{.TALHELPER_CONFIG_FILE}})"
+        kubectl config rename-context admin@$CLUSTER_NAME {{.cluster}} || true
+        kubectl config use-context {{.cluster}}
+        kubectl config unset contexts.{{.cluster}}.namespace
+        kubectl config delete-context admin@$CLUSTER_NAME || true
     requires:
       vars: ["cluster"]
     preconditions:
