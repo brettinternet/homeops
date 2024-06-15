@@ -34,5 +34,5 @@ function gpcf {
 task sops:encrypt-all
 gwip
 gpcf
-task flux:reconcile
+task flux:reconcile cluster=main
 gunwip

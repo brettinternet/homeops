@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: livebook
 spec:
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteMany"]
   resources:
     requests:
       storage: 5Gi

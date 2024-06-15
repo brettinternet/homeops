@@ -28,8 +28,8 @@ nodes:
       - device: /dev/sdb
         partitions:
           - mountpoint: /var/mnt/longhorn
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.2
-    talosImageURL: &talosImage factory.talos.dev/installer/e3fab82b561b5e559cdf1c0b1e5950c0e52700b9208a2cfaa5b18454796f3a7e
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.4
+    talosImageURL: &talosImage factory.talos.dev/installer/bb0ba48a52352c699781aeeb4aa1983b80ccc778c2eac94590fe6b4ab3c0fd00
     schematic: &schematic
       customization:
         extraKernelArgs:
@@ -37,6 +37,7 @@ nodes:
         systemExtensions:
           officialExtensions:
             - siderolabs/intel-ucode
+            - siderolabs/iscsi-tools
             - siderolabs/qemu-guest-agent
     controlPlane: true
     networkInterfaces:
@@ -103,7 +104,7 @@ nodes:
     machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
-    controlPlane: false
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:e2:d4:8e"
@@ -112,6 +113,7 @@ nodes:
           - "10.1.2.104/24"
         routes: *routes
         mtu: *mtu
+        vip: *vip
   - hostname: "k-5"
     ipAddress: "10.1.2.105"
     installDisk: *vmInstallDisk
@@ -142,29 +144,34 @@ nodes:
           - "10.1.2.106/24"
         routes: *routes
         mtu: *mtu
-  # - hostname: "k-7"
-  #   ipAddress: "10.1.2.107"
-  #   installDisk: *vmInstallDisk
-  #   # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.2
-  #   talosImageURL: factory.talos.dev/installer/dcac6b92c17d1d8947a0cee5e0e6b6904089aa878c70d66196bb1138dbd05d1a:v1.7.2
-  #   controlPlane: false
-  #   networkInterfaces:
-  #     - deviceSelector:
-  #         hardwareAddr: "TODO"
-  #       dhcp: false
-  #       addresses:
-  #         - "10.1.2.107/24"
-  #       routes: *routes
-  #       mtu: *mtu
-  #   schematic:
-  #     customization:
-  #       extraKernelArgs:
-  #         - mitigations=off
-  #       systemExtensions:
-  #         officialExtensions:
-  #           - siderolabs/i915-ucode
-  #           - siderolabs/intel-ucode
-  #           - siderolabs/qemu-guest-agent
+  - hostname: "k-7"
+    ipAddress: "10.1.2.107"
+    installDisk: *vmInstallDisk
+    machineDisks:
+      - device: /dev/nvme0n1
+        partitions:
+          - mountpoint: /var/mnt/longhorn
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.4
+    talosImageURL: factory.talos.dev/installer/930a00fbcce4d3bcd531c92e13d24412df7b676f818004fbbdfeb693e4dcb649
+    schematic:
+      customization:
+        extraKernelArgs:
+          - mitigations=off
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/i915-ucode
+            - siderolabs/intel-ucode
+            - siderolabs/iscsi-tools
+            - siderolabs/qemu-guest-agent
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:27:16:87"
+        dhcp: false
+        addresses:
+          - "10.1.2.107/24"
+        routes: *routes
+        mtu: *mtu
 
 patches:
   - # Force nameserver

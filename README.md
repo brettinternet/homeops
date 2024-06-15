@@ -4,9 +4,11 @@
 
 ## Features
 
+- [Talos](https://www.talos.dev) bare-metal K8s OS
 - Lots of [self-hosted services](./kubernetes/main/apps)
 - [Flux](https://toolkit.fluxcd.io/) GitOps with this repository ([kubernetes directory](./kubernetes))
-- Ansible node provisioning and [K3s setup](https://github.com/PyratLabs/ansible-role-k3s) (Ansible [roles](./ansible/roles) and [playbooks](./ansible))
+- [Cilium](https://cilium.io/) container networking interface (CNI) and [layer 4 loadbalancing](https://cilium.io/use-cases/load-balancer/)
+- [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles)) for multiple clusters
 - [SOPS](https://github.com/mozilla/sops) secrets stored in Git
 - [Renovate bot](https://github.com/renovatebot/renovate) dependency updates
 - [Cloudflared HTTP tunnel](https://github.com/cloudflare/cloudflared)
@@ -14,10 +16,8 @@
 - Both internal & external services with a service [gateway](https://github.com/ori-edge/k8s_gateway/)
 - OIDC [authentication](https://www.authelia.com/configuration/identity-providers/open-id-connect/) with [LDAP](https://github.com/glauth/glauth)
 - Automatic Cloudflare DNS updates with [external-dns](./kubernetes/main/apps/network/external-dns/app/helmrelease.yaml)
-- [Cilium](https://cilium.io/) container networking interface (CNI) and [layer 4 loadbalancing](https://cilium.io/use-cases/load-balancer/)
 - [CloudNative-PG](https://cloudnative-pg.io/) with automatic failover
 - [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) with various Grafana dashboards
-- [go-task](https://taskfile.dev) shorthand for useful commands ([Taskfile](./Taskfile.yaml) and [taskfiles](./.taskfiles))
 
 This setup is inspired by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/).
 

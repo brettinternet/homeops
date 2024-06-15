@@ -19,6 +19,7 @@ tasks:
       - sops --decrypt {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-secrets.sops.yaml | kubectl apply --kubeconfig {{.KUBECONFIG_FILE}} --server-side --filename -
       - kubectl --context {{.cluster}} apply --kubeconfig {{.KUBECONFIG_FILE}} --server-side --filename {{.KUBERNETES_DIR}}/{{.cluster}}/flux/vars/cluster-settings.yaml
       - kubectl --context {{.cluster}} apply --kubeconfig {{.KUBECONFIG_FILE}} --server-side --kustomize {{.KUBERNETES_DIR}}/{{.cluster}}/flux/config
+      - task: github-deploy-key
     requires:
       vars: ["cluster"]
     preconditions:
