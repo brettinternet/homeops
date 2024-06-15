@@ -52,7 +52,10 @@ tasks:
   fetch-kubeconfig:
     desc: Fetch kubeconfig
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
-    cmd: until talhelper gencommand kubeconfig --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
+    cmds:
+      - until talhelper gencommand kubeconfig --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
+      - kubectl config rename-context admin@homelab {{.cluster}}
+      - kubectl config unset contexts.{{.cluster}}.namespace
     requires:
       vars: ["cluster"]
     preconditions:
@@ -74,12 +77,14 @@ tasks:
       - msg: Missing helmfile
         sh: test -f {{.HELMFILE_FILE}}
 
+  # upgrade multiple with same image when node IP is sequential
+  # for x in {0..6}; do task talos:upgrade cluster=main image=factory.talos.dev/installer/... node=10.1.2.10$x; done
   upgrade:
     desc: Upgrade Talos on a node
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
     cmds:
       - "talosctl --nodes {{.node}} upgrade --image {{.image}} --wait=true --timeout=10m --preserve=true --reboot-mode={{.mode}}"
-      - "talosctl --nodes {{.node}} health --wait-timeout=10m --server=false"
+      # - "talosctl --nodes {{.node}} health --wait-timeout=10m --server=false"
     vars:
       mode: '{{.mode | default "default"}}'
     requires:
@@ -112,6 +117,18 @@ tasks:
     cmd: "talosctl {{.CLI_ARGS}}"
     requires:
       vars: ["cluster"]
+    preconditions:
+      - msg: Missing talosconfig
+        sh: test -f {{.TALOSCONFIG_FILE}}
+      - msg: Unable to retrieve Talos config
+        sh: "talosctl config info >/dev/null 2>&1"
+
+  support:
+    desc: Run talos command
+    dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
+    cmd: "talosctl support -n {{.node}} -O {{.ROOT_DIR}}"
+    requires:
+      vars: ["cluster", "node"]
     preconditions:
       - msg: Missing talosconfig
         sh: test -f {{.TALOSCONFIG_FILE}}

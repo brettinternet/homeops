@@ -16,6 +16,7 @@ resources:
   - ./jetstack.yaml
   - ./k8s-gateway.yaml
   - ./k8tz.yaml
+  - ./longhorn.yaml
   - ./metrics-server.yaml
   - ./node-feature-discovery.yaml
   - ./openebs.yaml

@@ -40,7 +40,8 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-      destinationPath: s3://cloudnative-pg/
+      # https://cloudnative-pg.io/documentation/1.19/backup_recovery/#other-s3-compatible-object-storages-providers
+      destinationPath: s3://gardiner-cloudnative-pg/
       endpointURL: s3.us-west-004.backblazeb2.com
       # Note: serverName version needs to be implemented
       # when recovering from an existing cnpg cluster

@@ -11,6 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: longhorn
     - name: emqx-cluster
     - name: node-feature-discovery-rules
   path: ./kubernetes/main/apps/home/frigate/app

@@ -11,7 +11,7 @@ data:
   NODE_CIDR: "10.1.2.0/24"
   HOME_CIDR: "10.1.1.0/24"
   # match included from `kubernetes/main/apps/network/ingress-nginx/certificates/kustomization.yaml`
-  LETSENCRYPT_ENVIRONMENT: production
+  LETSENCRYPT_ENVIRONMENT: staging
 
   # Value in `talconfig.yaml`
   KUBE_VIP_ADDR: 10.1.2.120

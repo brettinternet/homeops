@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
   interval: 30m
   values:
-    namespace: system-controllers
+    namespace: network
     replicaCount: 3
     timezone: "${TIMEZONE}"
     cronJobTimeZone: true

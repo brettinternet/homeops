@@ -3,8 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ./secret.sops.yaml
-  - ./helmrelease.yaml
+  - ./pvc.yaml
   - ./service.yaml
+  - ./helmrelease.yaml
   - ../../../../templates/gatus/external
 configMapGenerator:
   - name: livebook-config
