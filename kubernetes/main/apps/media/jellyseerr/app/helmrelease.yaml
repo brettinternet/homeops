@@ -96,7 +96,6 @@ spec:
         globalMounts:
           - path: /app/config
       cache:
-        nameOverride: jellyseerr-cache
         storageClass: longhorn
         accessMode: ReadWriteOnce
         size: 15Gi

@@ -77,7 +77,7 @@ spec:
     persistence:
       config:
         type: configMap
-        name: esphome-config
+        name: esphome-configmap
         globalMounts:
           - subPath: common.yaml
             path: /config/common.yaml

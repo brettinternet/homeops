@@ -97,7 +97,6 @@ spec:
                   port: http
     persistence:
       config:
-        nameOverride: filebrowser-nfs-config
         storageClass: longhorn
         accessMode: ReadWriteOnce
         size: 1Gi

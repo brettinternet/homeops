@@ -46,8 +46,8 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-      TALOS_ISCSI_INTEL_QEMU_SCHEMATIC_ID: bb0ba48a52352c699781aeeb4aa1983b80ccc778c2eac94590fe6b4ab3c0fd00
-      TALOS_ISCSI_INTEL_IGPU_QEMU_SCHEMATIC_ID: 930a00fbcce4d3bcd531c92e13d24412df7b676f818004fbbdfeb693e4dcb649
+      TALOS_ISCSI_INTEL_QEMU_SCHEMATIC_ID: cc493cae44e0bdbbefb5b5d1fb22ff724134cd7c6bb65172fa84e181568be45d
+      TALOS_ISCSI_INTEL_IGPU_QEMU_SCHEMATIC_ID: d4cf8602b9d285ede53209d5e8c482372d61d3b9aa850736c2dc65bd8d091cba
       # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
       TALOS_VERSION: v1.7.4
       # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet

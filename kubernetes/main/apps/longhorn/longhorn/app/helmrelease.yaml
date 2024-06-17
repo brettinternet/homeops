@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://lds-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -30,8 +30,9 @@ spec:
       resizerReplicaCount: *replicas
       snapshotterReplicaCount: *replicas
     defaultSettings:
-      defaultReplicaCount: *replicas
+      v2DataEngine: false # https://longhorn.io/docs/1.6.2/advanced-resources/os-distro-specific/talos-linux-support/#limitations
       defaultDataPath: /var/mnt/longhorn
+      defaultReplicaCount: *replicas
       createDefaultDiskLabeledNodes: true
       defaultDataLocality: true
       replicaAutoBalance: true

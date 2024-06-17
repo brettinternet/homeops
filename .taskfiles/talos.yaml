@@ -82,7 +82,7 @@ tasks:
         sh: test -f {{.HELMFILE_FILE}}
 
   # upgrade multiple with same image when node IP is sequential
-  # for x in {0..6}; do task talos:upgrade cluster=main image=factory.talos.dev/installer/... node=10.1.2.10$x; done
+  # for x in {0..6}; do task talos:upgrade cluster=main image=factory.talos.dev/installer/xxx:v1.7.4 node=10.1.2.10$x; done
   upgrade:
     desc: Upgrade Talos on a node
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"

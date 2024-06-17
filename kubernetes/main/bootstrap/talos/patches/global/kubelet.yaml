@@ -5,3 +5,12 @@ machine:
     nodeIP:
       validSubnets:
         - 10.1.2.0/24
+    extraMounts:
+      # https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#data-path-mounts
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw

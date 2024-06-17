@@ -93,7 +93,6 @@ spec:
                   port: http
     persistence:
       config:
-        nameOverride: filebrowser-config
         storageClass: longhorn
         accessMode: ReadWriteOnce
         size: 1Gi
