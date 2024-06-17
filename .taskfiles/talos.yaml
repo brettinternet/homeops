@@ -142,7 +142,7 @@ tasks:
   destroy:
     desc: Resets nodes back to maintenance mode
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
-    prompt: This will destroy your cluster and reset the nodes back to maintenance mode... continue?
+    prompt: 'This will destroy your cluster and reset the nodes back to maintenance mode... continue (force: {{.CLI_FORCE}})?'
     cmd: talhelper gencommand reset --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
     requires:
       vars: ["cluster"]

@@ -29,19 +29,18 @@ spec:
       provisionerReplicaCount: *replicas
       resizerReplicaCount: *replicas
       snapshotterReplicaCount: *replicas
+      kubeletRootDir: /var/lib/kubelet
     defaultSettings:
       v2DataEngine: false # https://longhorn.io/docs/1.6.2/advanced-resources/os-distro-specific/talos-linux-support/#limitations
       defaultDataPath: /var/mnt/longhorn
-      defaultReplicaCount: *replicas
-      createDefaultDiskLabeledNodes: true
-      defaultDataLocality: true
-      replicaAutoBalance: true
-      storageMinimalAvailablePercentage: 5
-      defaultLonghornStaticStorageClass: longhorn
       nodeDownPodDeletionPolicy: delete-both-statefulset-and-deployment-pod
       concurrentAutomaticEngineUpgradePerNodeLimit: 3
-      guaranteedInstanceManagerCPU: 20
-      orphanAutoDeletion: true
+      defaultLonghornStaticStorageClass: longhorn
+      defaultReplicaCount: *replicas
+      defaultDataLocality: best-effort
+      replicaAutoBalance: true
+      # For volumes to survive across node resets
+      orphanAutoDeletion: false
       backupTarget: s3://longhorn@ca-west-1/
       backupTargetCredentialSecret: longhorn-secret
     persistence:
