@@ -6,10 +6,19 @@ machine:
       validSubnets:
         - 10.1.2.0/24
     extraMounts:
-      # https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#data-path-mounts
-      - destination: /var/lib/longhorn
+      - # Mount openebs-hostpath in kubelet
+        destination: /var/openebs/local
         type: bind
-        source: /var/lib/longhorn
+        source: /var/openebs/local
+        options:
+          - bind
+          - rshared
+          - rw
+      - # Mount Longhorn storage in kubelet
+        # https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#data-path-mounts
+        destination: /var/mnt/longhorn
+        type: bind
+        source: /var/mnt/longhorn
         options:
           - bind
           - rshared
