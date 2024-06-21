@@ -5,6 +5,6 @@ kind: Kustomization
 resources:
   - ./secret.sops.yaml
   - ./helmrelease.yaml
-  - ./pvc.yaml
+  - ../../../../templates/volsync
   - ../../../../templates/gatus/internal
   - ./gatus.yaml

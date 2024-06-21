@@ -10,8 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: longhorn
   path: ./kubernetes/main/apps/media/jellyseerr/app
   prune: true
   sourceRef:
@@ -25,4 +23,5 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: request
-      VOLSYNC_CAPACITY: 30Gi
+      GATUS_PATH: /status
+      VOLSYNC_CAPACITY: 5Gi

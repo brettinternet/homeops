@@ -12,7 +12,6 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cloudnative-pg
-    - name: longhorn
   path: ./kubernetes/main/apps/default/mealie/app
   prune: true
   sourceRef:
@@ -27,3 +26,4 @@ spec:
       APP: *app
       GATUS_SUBDOMAIN: rss
       GATUS_PATH: /healthcheck
+      VOLSYNC_CAPACITY: 5Gi

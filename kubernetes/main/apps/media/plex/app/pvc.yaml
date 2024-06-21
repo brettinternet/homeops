@@ -8,4 +8,4 @@ spec:
   resources:
     requests:
       storage: 75Gi
-  storageClassName: longhorn
+  storageClassName: ceph-block

@@ -6,6 +6,6 @@ resources:
   - ./namespace.yaml
   # - ./cloudnative-pg/ks.yaml
   - ./dragonfly/ks.yaml
-  - ./emqx/ks.yaml
+  # - ./emqx/ks.yaml
   - ./minio/ks.yaml
   # - ./pgadmin/ks.yaml

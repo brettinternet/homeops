@@ -25,10 +25,10 @@ spec:
   dependsOn:
     - name: intel-device-plugin-gpu
       namespace: kube-system
-    - name: longhorn
-      namespace: longhorn
-    # - name: volsync
-    #   namespace: volsync-system
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+    - name: volsync
+      namespace: volsync-system
   values:
     controllers:
       plex:
@@ -146,6 +146,9 @@ spec:
     persistence:
       config:
         existingClaim: plex
+        # First time only
+        globalMounts:
+          - path: /config/Library/Application Support/Plex Media Server
       cache:
         existingClaim: plex-cache
         globalMounts:
@@ -164,6 +167,7 @@ spec:
         path: "${NFS_SERVER_MEDIA_DIR}"
         globalMounts:
           - path: /data/library
+            # readOnly: true
       tuner:
         type: hostPath
         hostPath: /dev/dvb

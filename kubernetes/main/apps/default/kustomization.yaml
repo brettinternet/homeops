@@ -5,14 +5,13 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   # - ./atuin/ks.yaml
-  - ./echo-server/ks.yaml
-  # - ./filebrowser/ks.yaml
-  - ./filebrowser-nfs/ks.yaml
-  - ./homepage/ks.yaml
+  # - ./echo-server/ks.yaml
+  - ./filebrowser/ks.yaml
+  # - ./homepage/ks.yaml
   # - ./linkding/ks.yaml
-  - ./livebook/ks.yaml
-  - ./maddy/ks.yaml
-  - ./mealie/ks.yaml
+  # - ./livebook/ks.yaml
+  # - ./maddy/ks.yaml
+  # - ./mealie/ks.yaml
   # - ./miniflux/ks.yaml
   # - ./netshoot/ks.yaml
   # - ./ssh-server/ks.yaml

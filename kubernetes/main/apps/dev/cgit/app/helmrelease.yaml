@@ -21,6 +21,9 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
+  dependsOn:
+    - name: git-mirrors-public
+      namespace: dev
   values:
     controllers:
       cgit:

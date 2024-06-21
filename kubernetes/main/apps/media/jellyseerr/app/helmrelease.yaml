@@ -23,8 +23,8 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
-    - name: longhorn
-      namespace: longhorn
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   values:
     controllers:
       jellyseerr:
@@ -96,11 +96,7 @@ spec:
         globalMounts:
           - path: /app/config
       cache:
-        storageClass: longhorn
-        accessMode: ReadWriteOnce
-        size: 15Gi
-        globalMounts:
-          - path: /app/config/cache
+        existingClaim: jellyseerr-cache
       logs:
         type: emptyDir
         globalMounts:

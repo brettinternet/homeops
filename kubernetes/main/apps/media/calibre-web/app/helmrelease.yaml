@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: calibre
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.2.1
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
+  values:
+    controllers:
+      calibre:
+        containers:
+          app:
+            image:
+              repository: lscr.io/linuxserver/calibre-web
+              tag: "0.6.21"
+            env:
+              TZ: ${TIMEZONE}
+              PUID: 65534
+              PGID: 65534
+              DOCKER_MODS: linuxserver/mods:universal-calibre
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 5
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 250M
+              limits:
+                memory: 500M
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      main:
+        controller: calibre
+        ports:
+          http:
+            port: 8083
+    ingress:
+      main:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Services
+          gethomepage.dev/name: Calibre-web
+          gethomepage.dev/icon: mdi-books
+        hosts:
+          - host: "books.${SECRET_INTERNAL_DOMAIN}"
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: http
+    persistence:
+      config:
+        existingClaim: calibre-web
+      tmp:
+        type: emptyDir
+      books:
+        type: nfs
+        server: "${NFS_SERVER_ADDR}"
+        path: "${NFS_SERVER_MEDIA_DIR}"
+        globalMounts:
+          - path: /data

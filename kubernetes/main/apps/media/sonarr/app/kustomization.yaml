@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./pvc.yaml
+  - ../../../database/cloudnative-pg/app/secret.sops.yaml
   - ./helmrelease.yaml
   - ../../../../templates/gatus/internal
 configMapGenerator:

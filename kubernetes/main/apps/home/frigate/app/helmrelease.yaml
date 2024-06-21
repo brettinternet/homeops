@@ -25,10 +25,10 @@ spec:
   dependsOn:
     - name: intel-device-plugin-gpu
       namespace: kube-system
-    - name: longhorn
+    - name: rook-ceph-cluster
       namespace: rook-ceph
-    # - name: volsync
-    #   namespace: volsync-system
+    - name: volsync
+      namespace: volsync-system
   values:
     controllers:
       frigate:
@@ -104,7 +104,7 @@ spec:
                   port: http
     persistence:
       config:
-        existingClaim: frigate-config
+        existingClaim: frigate
       config-file:
         type: configMap
         name: frigate-configmap

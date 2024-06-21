@@ -23,8 +23,8 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
-    - name: longhorn
-      namespace: longhorn
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
     - name: volsync
       namespace: volsync-system
   values:
@@ -39,6 +39,14 @@ spec:
               tag: v2.14.2
             env:
               TZ: "${TIMEZONE}"
+            command: ["/usr/local/bin/python", "Tautulli.py"]
+            args:
+              - --config
+              - /config/config.ini
+              - --datadir
+              - /config
+              - --port
+              - &port "80"
             probes:
               liveness: &probes
                 enabled: true
@@ -46,7 +54,7 @@ spec:
                 spec:
                   httpGet:
                     path: /status
-                    port: &port 80
+                    port: *port
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
@@ -61,21 +69,6 @@ spec:
                 cpu: 10m
               limits:
                 memory: 1Gi
-          jbops:
-            image:
-              repository: registry.k8s.io/git-sync/git-sync
-              tag: v4.2.3
-            env:
-              GITSYNC_REPO: https://github.com/blacktwin/JBOPS
-              GITSYNC_REF: master
-              GITSYNC_PERIOD: 24h
-              GITSYNC_ROOT: /add-ons
-            securityContext: *securityContext
-            resources:
-              requests:
-                cpu: 10m
-              limits:
-                memory: 128Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -108,7 +101,13 @@ spec:
     persistence:
       config:
         existingClaim: tautulli
-      tmp:
+      cache:
+        existingClaim: tautulli-cache
+        globalMounts:
+          - path: /config/cache
+      logs:
         type: emptyDir
-      add-ons:
+        globalMounts:
+          - path: /config/logs
+      tmp:
         type: emptyDir

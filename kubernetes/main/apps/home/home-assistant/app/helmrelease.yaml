@@ -23,8 +23,8 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
-    - name: longhorn
-      namespace: longhorn
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   values:
     controllers:
       home-assistant:

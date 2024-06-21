@@ -9,8 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: longhorn
   path: ./kubernetes/main/apps/default/netshoot/app
   prune: true
   sourceRef:

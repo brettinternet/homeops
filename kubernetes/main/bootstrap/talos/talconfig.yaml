@@ -24,18 +24,15 @@ nodes:
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
     installDisk: &vmInstallDisk "/dev/sda"
-    machineDisks: &longhornDisks
-      - device: /dev/sdb
-        partitions:
-          - mountpoint: /var/mnt/longhorn
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.4
-    talosImageURL: &talosImage factory.talos.dev/installer/cc493cae44e0bdbbefb5b5d1fb22ff724134cd7c6bb65172fa84e181568be45d
+    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fdrbd&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
+    talosImageURL: &talosImage factory.talos.dev/installer/beb531140193c1f2ebe805d80c4aa56c65ec2afc002c4fa8a1e03e22c7c23f22
     schematic: &schematic
       customization:
         extraKernelArgs:
           - mitigations=off
         systemExtensions:
           officialExtensions:
+            - siderolabs/drbd
             - siderolabs/intel-ucode
             - siderolabs/iscsi-tools
             - siderolabs/qemu-guest-agent
@@ -56,7 +53,6 @@ nodes:
   - hostname: "k-1"
     ipAddress: "10.1.2.101"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -71,7 +67,6 @@ nodes:
   - hostname: "k-2"
     ipAddress: "10.1.2.102"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -86,7 +81,6 @@ nodes:
   - hostname: "k-3"
     ipAddress: "10.1.2.103"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: true
@@ -102,7 +96,6 @@ nodes:
   - hostname: "k-4"
     ipAddress: "10.1.2.104"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: true
@@ -118,7 +111,6 @@ nodes:
   - hostname: "k-5"
     ipAddress: "10.1.2.105"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -133,7 +125,6 @@ nodes:
   - hostname: "k-6"
     ipAddress: "10.1.2.106"
     installDisk: *vmInstallDisk
-    machineDisks: *longhornDisks
     talosImageURL: *talosImage
     schematic: *schematic
     controlPlane: false
@@ -148,18 +139,15 @@ nodes:
   - hostname: "k-7"
     ipAddress: "10.1.2.107"
     installDisk: *vmInstallDisk
-    machineDisks:
-      - device: /dev/nvme0n1
-        partitions:
-          - mountpoint: /var/mnt/longhorn
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&platform=metal&target=metal&version=1.7.4
-    talosImageURL: factory.talos.dev/installer/d4cf8602b9d285ede53209d5e8c482372d61d3b9aa850736c2dc65bd8d091cba
+    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fdrbd&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
+    talosImageURL: factory.talos.dev/installer/58038d932e54fd362a40cbbe8cbbd14e99040d32afd7b77282e76bb543a0db92
     schematic:
       customization:
         extraKernelArgs:
           - mitigations=off
         systemExtensions:
           officialExtensions:
+            - siderolabs/drbd
             - siderolabs/i915-ucode
             - siderolabs/intel-ucode
             - siderolabs/iscsi-tools

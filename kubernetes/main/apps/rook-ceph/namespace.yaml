@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: longhorn
-  labels:
+  name: rook-ceph
+  annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
-    pod-security.kubernetes.io/enforce: privileged
+    volsync.backube/privileged-movers: "true"

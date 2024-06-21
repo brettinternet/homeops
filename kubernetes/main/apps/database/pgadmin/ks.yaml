@@ -11,7 +11,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: longhorn
     - name: cloudnative-pg
   path: ./kubernetes/main/apps/database/pgadmin/app
   prune: true

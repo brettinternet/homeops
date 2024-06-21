@@ -10,8 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: longhorn
   path: ./kubernetes/main/apps/media/plex/app
   prune: true
   sourceRef:

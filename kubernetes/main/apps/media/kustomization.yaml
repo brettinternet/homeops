@@ -5,6 +5,8 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   # - ./autobrr/ks.yaml
+  # - ./calibre/ks.yaml
+  # - ./calibre-web/ks.yaml
   # - ./jellyseerr/ks.yaml
   # - ./plex/ks.yaml
   # - ./prowlarr/ks.yaml

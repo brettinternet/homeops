@@ -23,8 +23,8 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
-    - name: longhorn
-      namespace: longhorn
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   values:
     controllers:
       calibre:
@@ -107,14 +107,14 @@ spec:
                   port: web
     persistence:
       config:
-        existingClaim: calibre-config
+        existingClaim: calibre
       inbox:
         existingClaim: calibre-inbox
         globalMounts:
           - path: /config/inbox
       tmp:
         type: emptyDir
-      # TODO: move metadata.db to a separate longhorn volume
+      # TODO: move metadata.db to a separate volume
       books:
         type: nfs
         server: "${NFS_SERVER_ADDR}"

@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app ssh-server
+  name: ssh-server
 spec:
   interval: 30m
   chart:
@@ -28,7 +28,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          app:
+          ssh:
             image:
               repository: docker.io/linuxserver/openssh-server
               tag: latest
@@ -38,8 +38,8 @@ spec:
               PUBLIC_KEY_URL: https://github.com/brettinternet.keys
               USER_NAME: brett
     service:
-      app:
-        controller: *app
+      ssh:
+        controller: ssh
         type: LoadBalancer
         annotations:
           io.cilium/lb-ipam-ips: "${LB_SSH_SERVER_ADDR}"
@@ -57,6 +57,6 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         supplementalGroups: [10000]
         seccompProfile: { type: RuntimeDefault }
-    persistence:
-      data:
-        existingClaim: *app
+    # persistence:
+    #   data:
+    #     existingClaim: ""

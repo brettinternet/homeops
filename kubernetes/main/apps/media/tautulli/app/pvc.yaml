@@ -2,10 +2,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mealie
+  name: tautulli-cache
 spec:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: longhorn
+      storage: 15Gi
+  storageClassName: ceph-block

@@ -12,7 +12,6 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cloudnative-pg-cluster
-    - name: external-secrets-stores
   path: ./kubernetes/main/apps/media/radarr/app
   prune: true
   sourceRef:

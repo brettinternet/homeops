@@ -10,8 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: external-secrets-stores
   path: ./kubernetes/main/apps/database/emqx/app
   prune: true
   sourceRef:
@@ -58,7 +56,6 @@ spec:
 #       app.kubernetes.io/name: *app
 #   dependsOn:
 #     - name: emqx-cluster
-#     - name: external-secrets-stores
 #   path: ./kubernetes/main/apps/database/emqx/exporter
 #   prune: true
 #   sourceRef:

@@ -55,6 +55,22 @@ kubectl -n flux-system get pods -o wide
 task kubernetes:resources
 ```
 
+#### DNS and Tunnel
+
+Setup a Cloudflare Tunnel.
+
+```sh
+cloudflared tunnel login
+cloudflared tunnel create cluster
+```
+
+Add the tunnel's `credentials.json` to the value in [`cloudflared-secret`](kubernetes/apps/network/cloudflared/app/secret.sops.yaml) and tunnel ID to `cluster-secrets.sops.yaml`.
+
+Add a Cloudflare API token with these permissions to the value in [`external-dns-secret`](kubernetes/apps/network/external-dns/app/secret.sops.yaml).
+
+- `Zone - DNS - Edit`
+- `Account - Cloudflare Tunnel - Read`
+
 #### Github Webhook
 
 Setup a webook to reconcile flux when changes are pushed to Github. Note: this only works with Let's Encrypt Production certificates.
@@ -74,6 +90,20 @@ https://flux-webhook.${DOMAIN}/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e123
 Generate a webook token `openssl rand -hex 16` and add to secret: `kubernetes/<cluster>/apps/flux-system/webhooks/app/github/secret.sops.yaml`.
 
 Add the webook to the repository's "Settings/Webhooks" > "Add webhook" button. Add the URL and token.
+
+### Directories
+
+This Git repository contains the following directories under [Kubernetes](./kubernetes/).
+
+```sh
+📁 kubernetes
+├── 📁 main # main cluster
+│   ├── 📁 apps # applications
+│   ├── 📁 bootstrap # bootstrap procedures
+│   ├── 📁 flux # core flux configuration
+│   └── 📁 templates # re-useable components
+└── 📁 ...
+```
 
 ### Deployments
 
