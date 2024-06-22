@@ -60,19 +60,6 @@ spec:
                 cpu: 100m
               limits:
                 memory: 2Gi
-          # # 1. Disable `runAsNonRoot` for rsync container
-          # # 2. Add service on port 22
-          # rsync:
-          #   image:
-          #     repository: docker.io/axiom/rsync-server
-          #     tag: latest
-          #   env:
-          #     USERNAME: root
-          #     PASSWORD: asdf
-          #     AUTHORIZED_KEYS: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDPaYZO7t/sFHOXXf/GJZz2mmoR91jHZtA8Zp0FlgXvBXJ1JJx/0MQa3iFzssdKe9pSSA/rNduDl38EFdye2r66LdD/0z0Id3xIhZ2noD/rNr7kslkzmZTdCfnY7mWIYjdZfXdTqicJTSms0RkC9mJoLQqhUMIIgXe5ZvQJPuPFaVWDUMTou6kdUUBcVJ/Y19BbGu86dc1QXM+qThzZRLr5tjLLR6Edy7Du+bckBHmoGhfMa+hSOaJklucpvzeB4GeEwQnilGuFzkRjUQv0d/P0Ytuamu1IJiqmUCZEkuQlifNQZp/b6+mfN3RHhKV8qwRpXN3bPTWBBAcNpdRVXtP575fiQfa7/soglz9GH9u7E8r/jabECu+rcwOgX1b1TQ0ZxIQJwyj6T0A5RKsoDAdKOSKIYGmFw75k2Lft4tn2cFLC/OvbMYaDpum3VmFSMn6DjSbxjWZ3BpMVJzmXzW8h363GANL6CEWlnf/rXO3M2EcMmOFr00ekAL0HAYIbQbk=
-          #   securityContext:
-          #     allowPrivilegeEscalation: false
-          #     runAsUser: 0
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -88,15 +75,6 @@ spec:
         ports:
           http:
             port: *port
-      # rsync:
-      #   controller: filebrowser
-      #   type: LoadBalancer
-      #   annotations:
-      #     io.cilium/lb-ipam-ips: "${LB_SSH_SERVER_ADDR}"
-      #   ports:
-      #     rsync:
-      #       port: 22
-      #       protocol: TCP
     ingress:
       app:
         className: internal
