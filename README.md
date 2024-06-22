@@ -20,7 +20,7 @@
 - [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack) with various Grafana dashboards
 - [Rook Ceph](https://rook.io/) cluster storage
 
-This setup is inspired by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template) and the [k8s-at-home](https://github.com/k8s-at-home) community. You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/).
+This setup is inspired by [this homelab gitops template](https://github.com/onedr0p/flux-cluster-template). You can find similar setups with the [k8s at home search](https://nanne.dev/k8s-at-home-search/).
 
 See also my [homelab repo](https://github.com/brettinternet/homelab) for how I provision machines in my home.
 
@@ -94,7 +94,7 @@ Add the webook to the repository's "Settings/Webhooks" > "Add webhook" button. A
 
 ### Directories
 
-This Git repository contains the following directories under [Kubernetes](./kubernetes/).
+This Git repository contains the following directories under [Kubernetes](./kubernetes/). Check out [cluster-template](https://github.com/onedr0p/flux-cluster-template) for more details on how this FluxCD setup works.
 
 ```sh
 📁 kubernetes
