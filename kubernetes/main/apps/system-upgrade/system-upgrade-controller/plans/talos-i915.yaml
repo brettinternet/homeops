@@ -3,7 +3,7 @@
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
-  name: talos
+  name: talos-i915
 spec:
   version: ${TALOS_VERSION}
   serviceAccountName: system-upgrade
