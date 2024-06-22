@@ -95,6 +95,16 @@ tasks:
     requires:
       vars: ["cluster"]
 
+  # https://github.com/fluxcd/helm-controller/issues/454#issuecomment-962208864
+  retry:
+    desc: Restart specific helmrelease
+    cmds:
+      - flux --context {{.cluster}} suspend hr {{.hr}} -n {{.ns}}
+      - sleep 2
+      - flux --context {{.cluster}} resume hr {{.hr}} -n {{.ns}}
+    requires:
+      vars: ["cluster", "ns", "hr"]
+
   delete-tunnel:
     desc: |
       Force delete cloudflared tunnel release to stop external ingress
