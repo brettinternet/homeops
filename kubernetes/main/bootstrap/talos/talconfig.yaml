@@ -21,26 +21,28 @@ cniConfig:
   name: none
 
 nodes:
+  # Baremetal
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
-    installDisk: &vmInstallDisk "/dev/sda"
-    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fdrbd&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
-    talosImageURL: &talosImage factory.talos.dev/installer/beb531140193c1f2ebe805d80c4aa56c65ec2afc002c4fa8a1e03e22c7c23f22
+    installDisk: &m2InstallDisk "/dev/nvme0n1"
+    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
+    talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/d4cf8602b9d285ede53209d5e8c482372d61d3b9aa850736c2dc65bd8d091cba
     schematic: &schematic
       customization:
         extraKernelArgs:
           - mitigations=off
         systemExtensions:
           officialExtensions:
-            - siderolabs/drbd
+            - siderolabs/i915-ucode
             - siderolabs/intel-ucode
-            - siderolabs/iscsi-tools
             - siderolabs/qemu-guest-agent
+            # longhorn required extensions https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#system-extensions
+            - siderolabs/iscsi-tools
             - siderolabs/util-linux-tools
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:90:cd:75"
+          hardwareAddr: "70:4d:7b:2e:68:4e"
         dhcp: false
         addresses:
           - "10.1.2.100/24"
@@ -52,37 +54,51 @@ nodes:
           ip: *kubeApiIP
   - hostname: "k-1"
     ipAddress: "10.1.2.101"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
+    installDisk: *m2InstallDisk
+    talosImageURL: *talosIntelGpuImage
     schematic: *schematic
-    controlPlane: false
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:27:e1:0a"
+          hardwareAddr: "TODO"
         dhcp: false
         addresses:
           - "10.1.2.101/24"
         routes: *routes
         mtu: *mtu
+        vip: *vip
   - hostname: "k-2"
     ipAddress: "10.1.2.102"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
+    installDisk: *m2InstallDisk
+    talosImageURL: *talosIntelGpuImage
     schematic: *schematic
     controlPlane: false
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:29:50:da"
+          hardwareAddr: "TODO"
         dhcp: false
         addresses:
           - "10.1.2.102/24"
         routes: *routes
         mtu: *mtu
+
+  # VMs
+  # farm host
   - hostname: "k-3"
     ipAddress: "10.1.2.103"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
+    installDisk: &vmInstallDisk "/dev/sda"
+    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
+    talosImageURL: &talosImage factory.talos.dev/installer/cc493cae44e0bdbbefb5b5d1fb22ff724134cd7c6bb65172fa84e181568be45d
+    schematic: &schematic
+      customization:
+        extraKernelArgs:
+          - mitigations=off
+        systemExtensions:
+          officialExtensions:
+            - siderolabs/intel-ucode
+            - siderolabs/qemu-guest-agent
+            - siderolabs/iscsi-tools
+            - siderolabs/util-linux-tools
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -98,7 +114,7 @@ nodes:
     installDisk: *vmInstallDisk
     talosImageURL: *talosImage
     schematic: *schematic
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:e2:d4:8e"
@@ -107,7 +123,6 @@ nodes:
           - "10.1.2.104/24"
         routes: *routes
         mtu: *mtu
-        vip: *vip
   - hostname: "k-5"
     ipAddress: "10.1.2.105"
     installDisk: *vmInstallDisk
@@ -136,31 +151,48 @@ nodes:
           - "10.1.2.106/24"
         routes: *routes
         mtu: *mtu
+  # tars host
   - hostname: "k-7"
     ipAddress: "10.1.2.107"
     installDisk: *vmInstallDisk
-    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fdrbd&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
-    talosImageURL: factory.talos.dev/installer/58038d932e54fd362a40cbbe8cbbd14e99040d32afd7b77282e76bb543a0db92
-    schematic:
-      customization:
-        extraKernelArgs:
-          - mitigations=off
-        systemExtensions:
-          officialExtensions:
-            - siderolabs/drbd
-            - siderolabs/i915-ucode
-            - siderolabs/intel-ucode
-            - siderolabs/iscsi-tools
-            - siderolabs/qemu-guest-agent
-            # longhorn required extensions https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#system-extensions
-            - siderolabs/util-linux-tools
-    controlPlane: false
+    talosImageURL: *talosImage
+    schematic: *schematic
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:27:16:87"
         dhcp: false
         addresses:
           - "10.1.2.107/24"
+        routes: *routes
+        mtu: *mtu
+        vip: *vip
+  - hostname: "k-8"
+    ipAddress: "10.1.2.108"
+    installDisk: *vmInstallDisk
+    talosImageURL: *talosImage
+    schematic: *schematic
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:27:e1:0a"
+        dhcp: false
+        addresses:
+          - "10.1.2.108/24"
+        routes: *routes
+        mtu: *mtu
+  - hostname: "k-9"
+    ipAddress: "10.1.2.109"
+    installDisk: *vmInstallDisk
+    talosImageURL: *talosImage
+    schematic: *schematic
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:29:50:da"
+        dhcp: false
+        addresses:
+          - "10.1.2.109/24"
         routes: *routes
         mtu: *mtu
 

@@ -1,0 +1,89 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: blackbox-exporter
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: prometheus-blackbox-exporter
+      version: 8.17.0
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    fullnameOverride: blackbox-exporter
+    config:
+      modules:
+        http_2xx:
+          prober: http
+          timeout: 5s
+          http:
+            valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+            follow_redirects: true
+            preferred_ip_protocol: ip4
+        icmp:
+          prober: icmp
+          timeout: 30s
+          icmp:
+            preferred_ip_protocol: ip4
+    ingress:
+      enabled: true
+      className: internal
+      annotations:
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Services
+        gethomepage.dev/name: Blackbox exporter
+        gethomepage.dev/icon: mdi-box
+      hosts:
+        - host: "blackbox-exporter.${SECRET_INTERNAL_DOMAIN}"
+          paths:
+            - path: /
+              pathType: Prefix
+    prometheusRule:
+      enabled: true
+      rules:
+        - alert: BlackboxProbeFailed
+          expr: probe_success == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: |-
+              The host {{ $labels.target }} is currently unreachable
+    pspEnabled: false
+    securityContext:
+      capabilities:
+        add: ["NET_RAW"]
+    podSecurityContext:
+      sysctls:
+        - name: net.ipv4.ping_group_range
+          value: "0 2147483647"
+    serviceMonitor:
+      enabled: true
+      defaults:
+        interval: 1m
+      targets:
+        - { name: &name opnsense.home.arpa, module: icmp, url: *name }
+        - { name: &name pihole.home.arpa, module: icmp, url: *name }
+        - { name: &name unifi.home.arpa, module: icmp, url: *name }
+        - { name: &name gresham.home.arpa, module: icmp, url: *name }
+        - { name: &name harambe.home.arpa, module: icmp, url: *name }
+        - { name: &name harambe-ipmi.home.arpa, module: icmp, url: *name }
+        - { name: &name baja.home.arpa, module: icmp, url: *name }
+        - { name: &name tars.home.arpa, module: icmp, url: *name }
+        - { name: &name tars-idrac.home.arpa, module: icmp, url: *name }
+        - { name: &name farm.home.arpa, module: icmp, url: *name }
+        - { name: &name farm-ilo.home.arpa, module: icmp, url: *name }
+        - { name: &name bogota.home.arpa, module: icmp, url: *name }
