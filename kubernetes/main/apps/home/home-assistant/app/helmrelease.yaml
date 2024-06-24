@@ -48,7 +48,7 @@ spec:
             dependsOn: main
             image:
               repository: ghcr.io/coder/code-server
-              tag: "4.90.1"
+              tag: "4.90.3"
             args:
               - --auth
               - none
