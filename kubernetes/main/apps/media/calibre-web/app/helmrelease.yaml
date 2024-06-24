@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: lscr.io/linuxserver/calibre-web
-              tag: "0.6.21"
+              tag: "2021.12.16"
             env:
               TZ: ${TIMEZONE}
               PUID: 65534
