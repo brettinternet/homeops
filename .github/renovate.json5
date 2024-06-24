@@ -1,82 +1,51 @@
 {
-  "platform": "github",
-  "repositories": ["brettinternet/homelab"],
-  "username": "brettinternet-bot[bot]",
-  "gitAuthor": "brettinternet-bot <brettinternet-bot[bot]@users.noreply.github.com>",
-  "semanticCommits": "enabled",
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "rebaseWhen": "conflicted",
-  "schedule": ["every weekend"],
-  "pre-commit": {
-    "enabled": true,
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:enableMajor",
+    "replacements:k8s-registry-move",
+    ":automergeBranch",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":skipStatusChecks",
+    ":timezone(America/New_York)",
+    "github>brettinternet/homeops//.github/renovate/allowedVersions.json5",
+    "github>brettinternet/homeops//.github/renovate/autoMerge.json5",
+    "github>brettinternet/homeops//.github/renovate/clusters.json5",
+    "github>brettinternet/homeops//.github/renovate/commitMessage.json5",
+    "github>brettinternet/homeops//.github/renovate/customManagers.json5",
+    "github>brettinternet/homeops//.github/renovate/grafanaDashboards.json5",
+    "github>brettinternet/homeops//.github/renovate/groups.json5",
+    "github>brettinternet/homeops//.github/renovate/packageRules.json5",
+    "github>brettinternet/homeops//.github/renovate/semanticCommits.json5"
+  ],
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": [
+    "prEditedNotification",
+    "prIgnoreNotification"
+  ],
+  "onboarding": false,
+  "requireConfig": "ignored",
+  "ignorePaths": [
+    "**/*.sops.*",
+    "**/.archive/**",
+    "**/resources/**"
+  ],
+  "flux": {
+    "fileMatch": [
+      "(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$"
+    ]
   },
-  "ignorePaths": ["archive/**"],
-  "regexManagers": [
-    {
-      "description": "Process various other dependencies",
-      "fileMatch": ["provision/ansible/.+\\.ya?ml$"],
-      "matchStrings": [
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"(?<currentValue>.*)\"\n",
-      ],
-      "datasourceTemplate": "{{#if datasource}}{{{datasource}}}{{else}}github-releases{{/if}}",
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
-    },
-  ],
-  "packageRules": [
-    // setup datasources
-    {
-      "matchDatasources": ["helm"],
-      "separateMinorPatch": true,
-      "ignoreDeprecated": true,
-    },
-    // global docker datasource settings
-    {
-      "matchDatasources": ["docker"],
-      "enabled": true,
-      "commitMessageTopic": "container image {{depName}}",
-      "commitMessageExtra": "to {{#if isSingleVersion}}v{{{newVersion}}}{{else}}{{{newValue}}}{{/if}}",
-      "matchUpdateTypes": ["major", "minor", "patch"],
-    },
-    {
-      "description": "Group Cert-Manager image (for CRDs) and chart",
-      "groupName": "Cert-Manager",
-      "matchPackagePatterns": ["cert-manager"],
-      "matchDatasources": ["docker", "helm"],
-      "group": { "commitMessageTopic": "{{{groupName}}} group" },
-      "separateMinorPatch": true,
-    },
-    // add labels according to package and update types
-    {
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["major"],
-      "labels": ["renovate/image", "dep/major"],
-    },
-    {
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["minor"],
-      "labels": ["renovate/image", "dep/minor"],
-    },
-    {
-      "matchDatasources": ["docker"],
-      "matchUpdateTypes": ["patch"],
-      "labels": ["renovate/image", "dep/patch"],
-    },
-    {
-      "matchDatasources": ["helm"],
-      "matchUpdateTypes": ["major"],
-      "labels": ["renovate/helm", "dep/major"],
-    },
-    {
-      "matchDatasources": ["helm"],
-      "matchUpdateTypes": ["minor"],
-      "labels": ["renovate/helm", "dep/minor"],
-    },
-    {
-      "matchDatasources": ["helm"],
-      "matchUpdateTypes": ["patch"],
-      "labels": ["renovate/helm", "dep/patch"],
-    },
-  ],
+  "helm-values": {
+    "fileMatch": [
+      "(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "(^|/)\\.taskfiles/.+\\.ya?ml(?:\\.j2)?$",
+      "(^|/)kubernetes/.+\\.ya?ml(?:\\.j2)?$"
+    ]
+  }
 }

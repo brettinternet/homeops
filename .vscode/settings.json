@@ -1,10 +1,10 @@
 {
   "files.associations": {
-    "*.json5": "jsonc",
+    "**/*.json5": "jsonc",
     "./kubernetes/**/*.sops.toml": "plaintext"
   },
   "yaml.schemas": {
-    "Kubernetes": "./kubernetes/*.yaml"
+    "kubernetes": "./kubernetes/**/*.yaml"
   },
   "vs-kubernetes": {
     "vs-kubernetes.kubeconfig": "./kubeconfig",

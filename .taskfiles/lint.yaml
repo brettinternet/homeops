@@ -2,14 +2,11 @@
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: "3"
 
-vars:
-  CONFIG_DIR: ".github/linters"
-
 tasks:
   yaml:
     desc: Run yamllint
     cmds:
-      - yamllint -c {{.CONFIG_DIR}}/.yamllint.yaml .
+      - yamllint -c .yamllint.yaml .
     preconditions:
       - sh: command -v yamllint
         msg: |
