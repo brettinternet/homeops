@@ -24,7 +24,7 @@ nodes:
   # Baremetal
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
-    installDisk: &m2InstallDisk "/dev/nvme0n1"
+    installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY64540F5A256D
     # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
     talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/d4cf8602b9d285ede53209d5e8c482372d61d3b9aa850736c2dc65bd8d091cba
     schematic: &schematic
@@ -42,7 +42,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "70:4d:7b:2e:68:4e"
+          hardwareAddr: "bc:24:11:45:18:8e"
         dhcp: false
         addresses:
           - "10.1.2.100/24"
@@ -54,13 +54,13 @@ nodes:
           ip: *kubeApiIP
   - hostname: "k-1"
     ipAddress: "10.1.2.101"
-    installDisk: *m2InstallDisk
+    installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY63420579256D
     talosImageURL: *talosIntelGpuImage
     schematic: *schematic
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "TODO"
+          hardwareAddr: "34:97:f6:9b:60:86"
         dhcp: false
         addresses:
           - "10.1.2.101/24"
@@ -69,13 +69,13 @@ nodes:
         vip: *vip
   - hostname: "k-2"
     ipAddress: "10.1.2.102"
-    installDisk: *m2InstallDisk
+    installDisk: /dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J808577J
     talosImageURL: *talosIntelGpuImage
     schematic: *schematic
     controlPlane: false
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "TODO"
+          hardwareAddr: "1c:1b:0d:e9:8b:20"
         dhcp: false
         addresses:
           - "10.1.2.102/24"
