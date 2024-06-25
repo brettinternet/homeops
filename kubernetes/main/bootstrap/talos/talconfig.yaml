@@ -2,7 +2,7 @@
 # https://budimanjojo.github.io/talhelper/latest/reference/configuration
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.7.4
+talosVersion: v1.7.5
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.30.1
 
@@ -25,8 +25,8 @@ nodes:
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
     installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY64540F5A256D
-    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
-    talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/d4cf8602b9d285ede53209d5e8c482372d61d3b9aa850736c2dc65bd8d091cba
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.5
+    talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/ebdfa27a8d6272acf806ac6a5c968c3c284a47ce880273cecb19442c11bf0474
     schematic: &schematic
       customization:
         extraKernelArgs:
@@ -35,7 +35,6 @@ nodes:
           officialExtensions:
             - siderolabs/i915-ucode
             - siderolabs/intel-ucode
-            - siderolabs/qemu-guest-agent
             # longhorn required extensions https://longhorn.io/docs/1.7.0/advanced-resources/os-distro-specific/talos-linux-support/#system-extensions
             - siderolabs/iscsi-tools
             - siderolabs/util-linux-tools
@@ -87,7 +86,7 @@ nodes:
   - hostname: "k-3"
     ipAddress: "10.1.2.103"
     installDisk: &vmInstallDisk "/dev/sda"
-    # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&secureboot=undefined&target=metal&version=1.7.4
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.5
     talosImageURL: &talosImage factory.talos.dev/installer/cc493cae44e0bdbbefb5b5d1fb22ff724134cd7c6bb65172fa84e181568be45d
     schematic: &schematic
       customization:

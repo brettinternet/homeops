@@ -18,12 +18,7 @@ tasks:
     desc: Bootstrap the Talos cluster
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
     cmds:
-      - |
-        if [ ! -f "{{.TALHELPER_SECRET_FILE}}" ]; then
-            talhelper gensecret > {{.TALHELPER_SECRET_FILE}}
-            sops --encrypt --in-place {{.TALHELPER_SECRET_FILE}}
-        fi
-      - talhelper genconfig --config-file {{.TALHELPER_CONFIG_FILE}} --secret-file {{.TALHELPER_SECRET_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}}
+      - task: generate
       - talhelper gencommand apply --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--insecure" | bash
       - until talhelper gencommand bootstrap --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} | bash; do sleep 10; done
       - task: fetch-kubeconfig
@@ -34,10 +29,36 @@ tasks:
     preconditions:
       - msg: Missing talhelper config file
         sh: test -f {{.TALHELPER_CONFIG_FILE}}
+
+  generate:
+    desc: Generate Talos configs with talhelper
+    dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
+    cmds:
+      - |
+        if [ ! -f "{{.TALHELPER_SECRET_FILE}}" ]; then
+            talhelper gensecret > {{.TALHELPER_SECRET_FILE}}
+            sops --encrypt --in-place {{.TALHELPER_SECRET_FILE}}
+        fi
+      - talhelper genconfig --config-file {{.TALHELPER_CONFIG_FILE}} --secret-file {{.TALHELPER_SECRET_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}}
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - msg: Missing talhelper config file
+        sh: test -f {{.TALHELPER_CONFIG_FILE}}
       - msg: Missing Sops config file
         sh: test -f {{.SOPS_CONFIG_FILE}}
       - msg: Missing Sops Age key file
         sh: test -f {{.AGE_FILE}}
+
+  apply:
+    desc: Apply a single config to a node
+    dir: "/{{.TALHELPER_CLUSTER_DIR}}"
+    cmd: talosctl apply-config --insecure -n {{.node}} --file {{.file}}
+    requires:
+      vars: ["cluster", "node", "file"]
+    preconditions:
+      - msg: Missing talosconfig
+        sh: test -f {{.TALOSCONFIG_FILE}}
 
   health:
     desc: Get Talos cluster health
