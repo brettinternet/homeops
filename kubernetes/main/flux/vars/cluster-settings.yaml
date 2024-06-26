@@ -13,20 +13,17 @@ data:
   # match included from `kubernetes/main/apps/network/ingress-nginx/certificates/kustomization.yaml`
   LETSENCRYPT_ENVIRONMENT: staging
 
-  # Value in `talconfig.yaml`
-  KUBE_VIP_ADDR: 10.1.2.120
+  KUBE_VIP_ADDR: 10.1.2.120 # Value in `talconfig.yaml`
   LB_INTERNAL_INGRESS_ADDR: 10.1.2.121
   LB_EXTERNAL_INGRESS_ADDR: 10.1.2.122
   LB_K8S_GATEWAY_ADDR: 10.1.2.123
   LB_DNS_ADDR: 10.1.2.124
   LB_MADDY_ADDR: 10.1.2.125
   LB_POSTGRES_ADDR: 10.1.2.126
-  LB_VECTOR_ADDR: 10.1.2.127
-  LB_CROWDSEC_ADDR: 10.1.2.128
+  LB_MQTT_ADDR: 10.1.2.127
+  LB_PLEX_ADDR: 10.1.2.128
   LB_IVENTOY_ADDR: 10.1.2.129
-  LB_MQTT_ADDR: 10.1.2.130
-  LB_PLEX_ADDR: 10.1.2.131
-  LB_SSH_SERVER_ADDR: 10.1.2.132
+  LB_SSH_SERVER_ADDR: 10.1.2.140
 
   NFS_SERVER_ADDR: 10.1.2.10
   NFS_SERVER_BACKUP_DIR: /storage/backup

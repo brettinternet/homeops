@@ -39,8 +39,6 @@ spec:
           enabled: true
         dashboards:
           enabled: true
-          annotations:
-            grafana_folder: Cilium
       relay:
         enabled: true
         rollOutPods: true
@@ -61,8 +59,6 @@ spec:
           enabled: true
       dashboards:
         enabled: true
-        annotations:
-          grafana_folder: Cilium
     prometheus:
       enabled: true
       serviceMonitor:
@@ -70,5 +66,3 @@ spec:
         trustCRDsExist: true
     dashboards:
       enabled: true
-      annotations:
-        grafana_folder: Cilium

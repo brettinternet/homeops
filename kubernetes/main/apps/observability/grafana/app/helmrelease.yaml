@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: grafana
-      version: 7.3.11
+      version: 8.0.2
       sourceRef:
         kind: HelmRepository
         name: grafana
@@ -96,58 +96,6 @@ spec:
         enabled: false
       news:
         news_feed_enabled: false
-    dashboardProviders:
-      dashboardproviders.yaml:
-        apiVersion: 1
-        providers:
-          - name: default
-            orgId: 1
-            folder: ""
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/default-folder
-          - name: flux
-            orgId: 1
-            folder: Flux
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/flux-folder
-          - name: kubernetes
-            orgId: 1
-            folder: Kubernetes
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/kubernetes-folder
-          - name: nginx
-            orgId: 1
-            folder: Nginx
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/nginx-folder
-          - name: prometheus
-            orgId: 1
-            folder: Prometheus
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/prometheus-folder
-          - name: unifi
-            orgId: 1
-            folder: Unifi
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/unifi-folder
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -178,6 +126,18 @@ spec:
             url: http://alertmanager-operated.observability.svc.cluster.local:9093
             jsonData:
               implementation: prometheus
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: ""
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
     dashboards:
       default:
         cloudflared:
@@ -191,38 +151,9 @@ spec:
           gnetId: 15038
           revision: 3
           datasource: Prometheus
-        minio:
-          # renovate: depName="MinIO Dashboard"
-          gnetId: 13502
-          revision: 26
-          datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
-        node-exporter-full:
-          # renovate: depName="Node Exporter Full"
-          gnetId: 1860
-          revision: 37
-          datasource: Prometheus
-        redis:
-          # renovate: depName="Redis Dashboard for Prometheus Redis Exporter 1.x"
-          gnetId: 763 # https://grafana.com/grafana/dashboards/763?tab=revisions
-          revision: 5
-          datasource: Prometheus
-        smart:
-          # renovate: depName="Dashboard for smartctl_exporter"
-          gnetId: 20204
-          revision: 1
-          datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
         cert-manager:
           url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
-        node-feature-discovery:
-          url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
-          datasource: Prometheus
-        miniflux:
-          url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
-          datasource: Prometheus
-      ceph:
         ceph-cluster:
           # renovate: depName="Ceph Cluster"
           gnetId: 2842
@@ -238,7 +169,6 @@ spec:
           gnetId: 5342
           revision: 9
           datasource: Prometheus
-      emqx:
         emqx-authentication:
           url: https://raw.githubusercontent.com/emqx/emqx-exporter/main/grafana-dashboard/template/emqx-5/authentication.json
           datasource: Prometheus
@@ -260,14 +190,12 @@ spec:
         emqx-rule-engine-rate:
           url: https://raw.githubusercontent.com/emqx/emqx-exporter/main/grafana-dashboard/template/emqx-5/rule-engine-rate.json
           datasource: Prometheus
-      flux:
         flux-cluster:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/cluster.json
           datasource: Prometheus
         flux-control-plane:
           url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/control-plane.json
           datasource: Prometheus
-      kubernetes:
         kubernetes-api-server:
           # renovate: depName="Kubernetes / System / API Server"
           gnetId: 15761
@@ -303,20 +231,45 @@ spec:
           gnetId: 11454
           revision: 14
           datasource: Prometheus
-      nginx:
+        # minio:
+        #   # renovate: depName="MinIO Dashboard"
+        #   gnetId: 13502
+        #   revision: 26
+        #   datasource:
+        #     - { name: DS_PROMETHEUS, value: Prometheus }
+        miniflux:
+          url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
+          datasource: Prometheus
         nginx:
           url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
           datasource: Prometheus
         nginx-request-handling-performance:
           url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
           datasource: Prometheus
-      prometheus:
+        node-feature-discovery:
+          url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
+          datasource: Prometheus
+        node-exporter-full:
+          # renovate: depName="Node Exporter Full"
+          gnetId: 1860
+          revision: 37
+          datasource: Prometheus
+        redis:
+          # renovate: depName="Redis Dashboard for Prometheus Redis Exporter 1.x"
+          gnetId: 763 # https://grafana.com/grafana/dashboards/763?tab=revisions
+          revision: 5
+          datasource: Prometheus
+        smart:
+          # renovate: depName="Dashboard for smartctl_exporter"
+          gnetId: 20204
+          revision: 1
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
         prometheus:
           # renovate: depName="Prometheus"
           gnetId: 19105
           revision: 3
           datasource: Prometheus
-      unifi:
         unifi-insights:
           # renovate: depName="UniFi-Poller: Client Insights - Prometheus"
           gnetId: 11315

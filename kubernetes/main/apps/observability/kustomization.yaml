@@ -11,4 +11,4 @@ resources:
   - ./loki/ks.yaml
   - ./prometheus-operator-crds/ks.yaml
   - ./smartctl-exporter/ks.yaml
-  - ./vector/ks.yaml
+  - ./snmp-exporter/ks.yaml

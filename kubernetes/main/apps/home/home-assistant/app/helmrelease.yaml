@@ -44,11 +44,11 @@ spec:
                 cpu: 10m
               limits:
                 memory: 1Gi
-          code:
-            dependsOn: main
+          code-server:
+            dependsOn: app
             image:
               repository: ghcr.io/coder/code-server
-              tag: "4.90.1"
+              tag: "4.90.3"
             args:
               - --auth
               - none
@@ -57,17 +57,13 @@ spec:
               - --extensions-dir
               - /config/.vscode
               - --port
-              - "8081"
+              - &codeServerPort "8081"
               - /config
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
               limits:
-                memory: 1Gi
+                memory: 512Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -84,11 +80,12 @@ spec:
         ports:
           http:
             port: 8123
-      code:
+      code-server:
+        type: ClusterIP
         controller: home-assistant
         ports:
           http:
-            port: 8081
+            port: *codeServerPort
     ingress:
       app:
         className: external
@@ -101,7 +98,7 @@ spec:
                 service:
                   identifier: app
                   port: http
-      code:
+      code-server:
         className: internal
         annotations:
           gethomepage.dev/enabled: "true"
@@ -113,7 +110,7 @@ spec:
             paths:
               - path: /
                 service:
-                  identifier: code
+                  identifier: code-server
                   port: http
     persistence:
       config:
