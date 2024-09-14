@@ -1,7 +1,9 @@
 ---
 autoDirectNodeRoutes: true
+bgpControlPlane:
+  enabled: true
 bpf:
-  masquerade: false
+  masquerade: false # Required for Talos `.machine.features.hostDNS.forwardKubeDNSToHost`
 cgroup:
   automount:
     enabled: false
@@ -11,12 +13,12 @@ cluster:
   name: homelab
 cni:
   exclusive: false
-containerRuntime:
-  integration: containerd
 # NOTE: devices might need to be set if you have more than one active NIC on your hosts
 # devices: eno+ eth+
 endpointRoutes:
   enabled: true
+envoy:
+  enabled: false
 hubble:
   enabled: false
 ipam:
@@ -27,7 +29,8 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: true
+  # Cilium BGP control plane instead to traverse VLAN network segments instead
+  enabled: false # https://github.com/cilium/cilium/issues/28985
 loadBalancer:
   algorithm: maglev
   mode: snat
