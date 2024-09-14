@@ -2,7 +2,7 @@
 # https://budimanjojo.github.io/talhelper/latest/reference/configuration
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.7.5
+talosVersion: v1.7.6
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.30.1
 
@@ -25,7 +25,7 @@ nodes:
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
     installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY64540F5A256D
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.5
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.6
     talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/ebdfa27a8d6272acf806ac6a5c968c3c284a47ce880273cecb19442c11bf0474
     schematic: &schematic
       customization:
@@ -41,7 +41,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:45:18:8e"
+          hardwareAddr: "70:4d:7b:2e:68:4e"
         dhcp: false
         addresses:
           - "10.1.2.100/24"
@@ -78,120 +78,6 @@ nodes:
         dhcp: false
         addresses:
           - "10.1.2.102/24"
-        routes: *routes
-        mtu: *mtu
-
-  # VMs
-  # farm host
-  - hostname: "k-3"
-    ipAddress: "10.1.2.103"
-    installDisk: &vmInstallDisk "/dev/sda"
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.5
-    talosImageURL: &talosImage factory.talos.dev/installer/cc493cae44e0bdbbefb5b5d1fb22ff724134cd7c6bb65172fa84e181568be45d
-    schematic: &schematic
-      customization:
-        extraKernelArgs:
-          - mitigations=off
-        systemExtensions:
-          officialExtensions:
-            - siderolabs/intel-ucode
-            - siderolabs/qemu-guest-agent
-            - siderolabs/iscsi-tools
-            - siderolabs/util-linux-tools
-    controlPlane: true
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:94:5d:b3"
-        dhcp: false
-        addresses:
-          - "10.1.2.103/24"
-        routes: *routes
-        mtu: *mtu
-        vip: *vip
-  - hostname: "k-4"
-    ipAddress: "10.1.2.104"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: false
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:e2:d4:8e"
-        dhcp: false
-        addresses:
-          - "10.1.2.104/24"
-        routes: *routes
-        mtu: *mtu
-  - hostname: "k-5"
-    ipAddress: "10.1.2.105"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: false
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:a6:ca:07"
-        dhcp: false
-        addresses:
-          - "10.1.2.105/24"
-        routes: *routes
-        mtu: *mtu
-  - hostname: "k-6"
-    ipAddress: "10.1.2.106"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: false
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:eb:c9:2e"
-        dhcp: false
-        addresses:
-          - "10.1.2.106/24"
-        routes: *routes
-        mtu: *mtu
-  # tars host
-  - hostname: "k-7"
-    ipAddress: "10.1.2.107"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: true
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:27:16:87"
-        dhcp: false
-        addresses:
-          - "10.1.2.107/24"
-        routes: *routes
-        mtu: *mtu
-        vip: *vip
-  - hostname: "k-8"
-    ipAddress: "10.1.2.108"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: false
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:27:e1:0a"
-        dhcp: false
-        addresses:
-          - "10.1.2.108/24"
-        routes: *routes
-        mtu: *mtu
-  - hostname: "k-9"
-    ipAddress: "10.1.2.109"
-    installDisk: *vmInstallDisk
-    talosImageURL: *talosImage
-    schematic: *schematic
-    controlPlane: false
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:29:50:da"
-        dhcp: false
-        addresses:
-          - "10.1.2.109/24"
         routes: *routes
         mtu: *mtu
 
