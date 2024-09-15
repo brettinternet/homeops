@@ -1,7 +1,8 @@
 {
   "files.associations": {
     "**/*.json5": "jsonc",
-    "./kubernetes/**/*.sops.toml": "plaintext"
+    "./kubernetes/**/*.sops.toml": "plaintext",
+    "talosconfig": "yaml"
   },
   "yaml.schemas": {
     "kubernetes": "./kubernetes/**/*.yaml"
