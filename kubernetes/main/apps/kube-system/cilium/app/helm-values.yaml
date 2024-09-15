@@ -1,7 +1,7 @@
 ---
 autoDirectNodeRoutes: true
 bgpControlPlane:
-  enabled: true
+  enabled: false
 bpf:
   masquerade: false # Required for Talos `.machine.features.hostDNS.forwardKubeDNSToHost`
 cgroup:
@@ -29,8 +29,9 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
+  enabled: false
   # Cilium BGP control plane instead to traverse VLAN network segments instead
-  enabled: false # https://github.com/cilium/cilium/issues/28985
+  # enabled: false # https://github.com/cilium/cilium/issues/28985
 loadBalancer:
   algorithm: maglev
   mode: snat

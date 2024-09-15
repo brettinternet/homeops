@@ -71,7 +71,7 @@ nodes:
     installDisk: /dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J808577J
     talosImageURL: *talosIntelGpuImage
     schematic: *schematic
-    controlPlane: false
+    controlPlane: true
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "1c:1b:0d:e9:8b:20"
@@ -80,6 +80,7 @@ nodes:
           - "10.1.2.102/24"
         routes: *routes
         mtu: *mtu
+        vip: *vip
 
 patches:
   - # Force nameserver

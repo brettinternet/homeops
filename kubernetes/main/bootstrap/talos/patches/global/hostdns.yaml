@@ -3,4 +3,6 @@ machine:
     hostDNS:
       enabled: true
       resolveMemberNames: true
-      forwardKubeDNSToHost: true # Requires Cilium `bpf.masquerade: false`
+      forwardKubeDNSToHost: false
+      # For BGP mode, set to true
+      # forwardKubeDNSToHost: true # Requires Cilium `bpf.masquerade: false`
