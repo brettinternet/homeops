@@ -171,6 +171,8 @@ tasks:
       - msg: Unable to retrieve Talos config
         sh: "talosctl config info >/dev/null 2>&1"
 
+  # Reset only secondary disks:
+  # task talos:run cluster=main -- -n 10.1.2.102 reset --wipe-mode user-disks --user-disks-to-wipe /dev/nvme0n1,/dev/nvme1n1 --reboot
   destroy:
     desc: Resets nodes back to maintenance mode
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
