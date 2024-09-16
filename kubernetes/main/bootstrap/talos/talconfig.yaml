@@ -42,6 +42,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "70:4d:7b:2e:68:4e"
+          physical: true
         dhcp: false
         addresses:
           - "10.1.2.100/24"
@@ -60,6 +61,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "34:97:f6:9b:60:86"
+          physical: true
         dhcp: false
         addresses:
           - "10.1.2.101/24"
@@ -75,6 +77,7 @@ nodes:
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "1c:1b:0d:e9:8b:20"
+          physical: true
         dhcp: false
         addresses:
           - "10.1.2.102/24"

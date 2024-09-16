@@ -19,7 +19,7 @@ tasks:
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
     cmds:
       - task: generate
-      - talhelper gencommand apply --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--insecure" | bash
+      - task: apply
       - until talhelper gencommand bootstrap --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} | bash; do sleep 10; done
       - task: fetch-kubeconfig
       - task: install-helm-apps
@@ -51,6 +51,17 @@ tasks:
         sh: test -f {{.AGE_FILE}}
 
   apply:
+    desc: Apply Talos node configs
+    dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
+    cmds:
+      - talhelper gencommand apply --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--insecure" | bash
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - msg: Missing talhelper config file
+        sh: test -f {{.TALHELPER_CONFIG_FILE}}
+
+  apply-config:
     desc: Apply a single config to a node
     dir: "/{{.TALHELPER_CLUSTER_DIR}}"
     cmd: talosctl apply-config --insecure -n {{.node}} --file {{.file}}

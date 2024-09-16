@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: prometheus-smartctl-exporter
-      # No arm64 support with 0.8.0 https://github.com/prometheus-community/smartctl_exporter/issues/105
+      # Note: no arm64 support with >0.8.0 https://github.com/prometheus-community/smartctl_exporter/issues/105
       version: 0.10.0
       sourceRef:
         kind: HelmRepository
@@ -34,7 +34,8 @@ spec:
         - /dev/sdb
         - /dev/sdc
         - /dev/nvme0n1
-        - /dev/nvme0n2
+        - /dev/nvme1n1
+        - /dev/nvme2n1
     serviceMonitor:
       enabled: true
     prometheusRules:
