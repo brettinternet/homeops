@@ -5,4 +5,3 @@ kind: Kustomization
 resources:
   - ./kubernetes.yaml
   - ./talos.yaml
-  - ./talos-i915.yaml
