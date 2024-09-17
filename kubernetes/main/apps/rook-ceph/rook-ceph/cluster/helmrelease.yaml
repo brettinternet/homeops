@@ -71,9 +71,9 @@ spec:
       storage:
         useAllNodes: true
         useAllDevices: true
-        deviceFilter: nvme*
+        deviceFilter: "^nvme.n1"
         config:
-          osdsPerDevice: "1"
+          osdsPerDevice: "2"
       placement:
         mgr: &placement
           nodeAffinity:
