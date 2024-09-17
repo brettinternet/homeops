@@ -88,7 +88,7 @@ spec:
           gethomepage.dev/name: Echo
           gethomepage.dev/icon: mdi-web
         hosts:
-          - host: "{{ .Release.Name }}.${SECRET_EXTERNAL_DOMAIN}"
+          - host: "echo.${SECRET_EXTERNAL_DOMAIN}"
             paths:
               - path: /
                 service:
