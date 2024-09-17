@@ -29,7 +29,7 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: false
+  enabled: true
   # Cilium BGP control plane instead to traverse VLAN network segments instead
   # enabled: false # https://github.com/cilium/cilium/issues/28985
 loadBalancer:
