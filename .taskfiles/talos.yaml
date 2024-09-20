@@ -64,7 +64,7 @@ tasks:
   apply-config:
     desc: Apply a single config to a node
     dir: "/{{.TALHELPER_CLUSTER_DIR}}"
-    cmd: talosctl apply-config --insecure -n {{.node}} --file {{.file}}
+    cmd: talosctl apply-config -n {{.node}} --file {{.file}} {{.CLI_ARGS}}
     requires:
       vars: ["cluster", "node", "file"]
     preconditions:
@@ -159,6 +159,18 @@ tasks:
       - msg: Unable to retrieve Talos config
         sh: "talosctl config info >/dev/null 2>&1"
 
+  dashboard:
+    desc: Show talos dashboard for nodes
+    dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
+    cmd: talosctl dashboard
+    requires:
+      vars: ["cluster"]
+    preconditions:
+      - msg: Missing talosconfig
+        sh: test -f {{.TALOSCONFIG_FILE}}
+      - msg: Unable to retrieve Talos config
+        sh: "talosctl config info >/dev/null 2>&1"
+
   support:
     desc: Run talos command
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
@@ -171,12 +183,10 @@ tasks:
       - msg: Unable to retrieve Talos config
         sh: "talosctl config info >/dev/null 2>&1"
 
-  # Reset only secondary disks:
-  # task talos:run cluster=main -- -n 10.1.2.102 reset --wipe-mode user-disks --user-disks-to-wipe /dev/nvme0n1,/dev/nvme1n1 --reboot
   destroy:
     desc: Resets nodes back to maintenance mode
     dir: "/{{.BOOTSTRAP_TALOS_DIR}}"
-    prompt: 'This will destroy your cluster and reset the nodes back to maintenance mode... continue (force: {{.CLI_FORCE}})?'
-    cmd: talhelper gencommand reset --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
+    prompt: 'This will destroy your cluster and reset the nodes back to maintenance mode… continue (force: {{.CLI_FORCE}})?'
+    cmd: talhelper gencommand reset --config-file {{.TALHELPER_CONFIG_FILE}} --out-dir {{.TALHELPER_CLUSTER_DIR}} --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --wipe-mode all --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
     requires:
       vars: ["cluster"]
