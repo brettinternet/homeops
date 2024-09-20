@@ -44,7 +44,7 @@ spec:
           name: "rook.${SECRET_INTERNAL_DOMAIN}"
           path: /
     toolbox:
-      enabled: true
+      enabled: false
     configOverride: |
       [global]
       bdev_enable_discard = true
@@ -71,9 +71,9 @@ spec:
       storage:
         useAllNodes: true
         useAllDevices: true
-        deviceFilter: "^nvme.n1$"
+        # deviceFilter: "^nvme.n1$"
         config:
-          osdsPerDevice: "2"
+          osdsPerDevice: "1"
       placement:
         mgr: &placement
           nodeAffinity:

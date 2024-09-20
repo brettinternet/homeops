@@ -99,6 +99,6 @@ spec:
       nfs:
         type: nfs
         server: "${NFS_SERVER_ADDR}"
-        path: /
+        path: /media
         globalMounts:
           - path: /data/nfs

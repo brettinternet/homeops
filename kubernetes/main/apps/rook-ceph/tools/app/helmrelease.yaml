@@ -1,0 +1,86 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app rook-ceph-tools
+  namespace: rook-ceph
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.4.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultPodOptions:
+      labels:
+        app: *app
+      hostNetwork: true
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+    controllers:
+      main:
+        type: daemonset
+        containers:
+          main:
+            image:
+              repository: rook/ceph
+              tag: v1.15.1@sha256:10ac95c14bb5aa36c1dced0b9ad7cac45ea3c7e579c78c363dae062da164f9cb
+            command: ["/usr/local/bin/toolbox.sh"]
+            env:
+              ROOK_CEPH_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: rook-ceph-mon
+                    key: ceph-username
+              ROOK_CEPH_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: rook-ceph-mon
+                    key: ceph-secret
+            securityContext:
+              privileged: true
+    service:
+      app:
+        controller: *app
+        enabled: false
+    persistence:
+      dev:
+        type: hostPath
+        hostPath: /dev
+        globalMounts:
+          - path: /dev
+      libmodules:
+        type: hostPath
+        hostPath: /lib/modules
+        globalMounts:
+          - path: /lib/modules
+      mon-endpoint-volume:
+        type: configMap
+        name: rook-ceph-mon-endpoints
+        globalMounts:
+          - path: /etc/rook/mon-endpoints
+            subPath: data
+            readOnly: true
+      sysbus:
+        type: hostPath
+        hostPath: /sys/bus
+        globalMounts:
+          - path: /sys/bus
