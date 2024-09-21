@@ -137,7 +137,7 @@ spec:
       backup:
         type: nfs
         server: "${NFS_SERVER_ADDR}"
-        path: "${NFS_SERVER_KOPIA_DIR}"
+        path: "${NFS_SERVER_BACKUP_DIR}/kopia"
         globalMounts:
           - path: /backup
             readOnly: true

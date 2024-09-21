@@ -43,31 +43,31 @@ snapshots:
 go2rtc:
   streams:
     nursery:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     nursery_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     baby:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     baby_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     playroom:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     playroom_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     office:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     office_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     garage:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     garage_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     front_door:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.10:554/cam/realmonitor?channel=1&subtype=0&authbasic=64#backchannel=0
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.10:554/cam/realmonitor?channel=1&subtype=0&authbasic=64#backchannel=0
     utility:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
     utility_sub:
-      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
   webrtc:
     candidates:
       - "{LB_GO2RTC_WEBRTC}:8555"

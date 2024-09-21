@@ -28,7 +28,6 @@ data:
 
   NFS_SERVER_ADDR: 10.1.2.10
   NFS_SERVER_BACKUP_DIR: /backup
-  NFS_SERVER_KOPIA_DIR: /backup/kopia
   NFS_SERVER_MEDIA_DIR: /media
   NFS_SERVER_CAMERAS_DIR: /media/cameras
   NFS_SERVER_USENET_DIR: /media/usenet

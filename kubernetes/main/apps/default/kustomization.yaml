@@ -8,7 +8,7 @@ resources:
   - ./echo-server/ks.yaml
   - ./filebrowser/ks.yaml
   - ./homepage/ks.yaml
-  - ./kopia/ks.yaml
+  # - ./kopia/ks.yaml
   - ./linkding/ks.yaml
   - ./livebook/ks.yaml
   - ./maddy/ks.yaml

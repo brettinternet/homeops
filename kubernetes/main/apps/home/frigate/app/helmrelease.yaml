@@ -85,10 +85,16 @@ spec:
         ports:
           http:
             port: *port
+          go2rtc:
+            port: 1984
           rtsp:
             port: 8554
           webrtc:
             port: 8555
+            protocol: TCP
+          webrtc-udp:
+            port: 8555
+            protocol: UDP
     ingress:
       app:
         className: internal

@@ -31,34 +31,35 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/home-assistant/home-assistant
-              tag: stable
+              repository: ghcr.io/onedr0p/home-assistant
+              tag: 2024.9.2@sha256:2ed30ce9d13cdc6b284fcd55596849e130fbe116a3b5cee546d810957b1b5693
             env:
               TZ: "${TIMEZONE}"
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              HASS_HTTP_TRUSTED_PROXY_1: "${NODE_CIDR}"
+              HASS_HTTP_TRUSTED_PROXY_2: "${HOME_CIDR}"
+              HASS_HTTP_TRUSTED_PROXY_3: "${CLUSTER_CIDR}"
+              HASS_URL: "https://home.${SECRET_EXTERNAL_DOMAIN}"
+            envFrom:
+              - secretRef:
+                  name: home-assistant-secret
+            securityContext: # ☹️ just for now
+              privileged: true
             resources:
               requests:
                 cpu: 10m
               limits:
-                memory: 1Gi
+                memory: 4Gi
           code-server:
-            dependsOn: app
             image:
               repository: ghcr.io/coder/code-server
-              tag: "4.92.2"
-            args:
-              - --auth
-              - none
-              - --user-data-dir
-              - /config/.vscode
-              - --extensions-dir
-              - /config/.vscode
-              - --port
-              - &codeServerPort "8081"
-              - /config
+              tag: 4.92.2@sha256:f32cfa5e7cc768f60969f1d2183fc4c7aa093b80b93c365535e83f79ccf004f2
+            args: [
+              "--auth", "none",
+              "--user-data-dir", "/config/.vscode",
+              "--extensions-dir", "/config/.vscode",
+              "--port", "12321",
+              "/config"
+            ]
             resources:
               requests:
                 cpu: 10m
@@ -66,12 +67,11 @@ spec:
                 memory: 512Mi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
         runAsUser: 568
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
-        seccompProfile: { type: RuntimeDefault }
+        # seccompProfile: { type: RuntimeDefault }
       nodeSelector:
         zigbee.feature.node.kubernetes.io/hub: "true"
     service:
@@ -80,12 +80,8 @@ spec:
         ports:
           http:
             port: 8123
-      code-server:
-        type: ClusterIP
-        controller: home-assistant
-        ports:
-          http:
-            port: *codeServerPort
+          code-server:
+            port: 12321
     ingress:
       app:
         className: external
@@ -105,13 +101,18 @@ spec:
           gethomepage.dev/group: Services
           gethomepage.dev/name: Home Assistant VSCode
           gethomepage.dev/icon: mdi-terminal
+          nginx.ingress.kubernetes.io/auth-method: GET
+          nginx.ingress.kubernetes.io/auth-url: "http://authelia.auth.svc.cluster.local/api/verify"
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_EXTERNAL_DOMAIN}/?rm=$request_method"
+          nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
+          nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
         hosts:
           - host: "home-code.${SECRET_EXTERNAL_DOMAIN}"
             paths:
               - path: /
                 service:
-                  identifier: code-server
-                  port: http
+                  identifier: app
+                  port: code-server
     persistence:
       config:
         existingClaim: home-assistant
