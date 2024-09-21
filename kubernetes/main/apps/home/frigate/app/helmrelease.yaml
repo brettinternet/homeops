@@ -87,6 +87,8 @@ spec:
             port: *port
           rtsp:
             port: 8554
+          webrtc:
+            port: 8555
     ingress:
       app:
         className: internal

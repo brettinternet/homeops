@@ -1,6 +1,6 @@
 ---
 mqtt:
-  host: emqx-listeners.database.svc.cluster.local
+  host: mosquitto.home.svc.cluster.local
   topic_prefix: frigate
   port: 1883
   user: "{FRIGATE_MQTT_USERNAME}"
@@ -41,28 +41,35 @@ snapshots:
 
 go2rtc:
   streams:
-    nursery_sub:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     nursery:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
-    entry:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    nursery_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.31:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+    baby:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    baby_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.34:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     playroom:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
-        #office_sub:
-        #- rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    playroom_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.35:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     office:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
-        #- ffmpeg:office#
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    office_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.32:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     garage:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    garage_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.30:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
     front_door:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.10:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.10:554/cam/realmonitor?channel=1&subtype=0&authbasic=64#backchannel=0
     utility:
-      - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=0&authbasic=64
+    utility_sub:
+      - rtsp://admin:{FRIGATE_RTSP_PASSWORD}@10.1.4.33:554/cam/realmonitor?channel=1&subtype=1&authbasic=64
   webrtc:
     candidates:
-      - 10.1.2.11:8555
+      - "{LB_GO2RTC_WEBRTC}:8555"
       - stun:8555
 
 cameras:
@@ -72,17 +79,19 @@ cameras:
         - path: rtsp://127.0.0.1:8554/nursery
           input_args: preset-rtsp-restream
           roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/nursery_sub
+          input_args: preset-rtsp-restream
+          roles:
             - audio
             - detect
-            - record
       output_args:
-        #record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
         record: preset-record-generic-audio-copy
     live:
       stream_name: nursery
     detect:
-      width: 1280
-      height: 720
+      width: 640
+      height: 480
       fps: 10
     onvif:
       host: 10.1.4.31
@@ -90,53 +99,52 @@ cameras:
       user: '{FRIGATE_RTSP_USER}'
       password: '{FRIGATE_RTSP_PASSWORD}'
 
-  entry:
+  baby:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/entry
+        - path: rtsp://127.0.0.1:8554/baby
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/baby_sub
           input_args: preset-rtsp-restream
           roles:
             - audio
             - detect
-            - record
       output_args:
         record: preset-record-generic-audio-copy
     live:
-      stream_name: entry
-    audio:
-      enabled: true
-      listen:
-        - fire_alarm
+      stream_name: baby
     detect:
-      width: 2560
-      height: 1440
+      width: 640
+      height: 480
+      fps: 10
     onvif:
       host: 10.1.4.34
       port: 80
-        #user: '{FRIGATE_RTSP_USER}'
-        #password: '{FRIGATE_RTSP_PASSWORD}'
+      user: '{FRIGATE_RTSP_USER}'
+      password: '{FRIGATE_RTSP_PASSWORD}'
 
   office:
     ffmpeg:
       inputs:
-        #- path: rtsp://127.0.0.1:8554/office_sub
-        #input_args: preset-rtsp-restream
-        #roles:
-        #- audio
-        #- detect
         - path: rtsp://127.0.0.1:8554/office
+          input_args: preset-rtsp-restream
+          roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/office_sub
           input_args: preset-rtsp-restream
           roles:
             - audio
             - detect
-            - record
       output_args:
         record: preset-record-generic-audio-copy
     live:
       stream_name: office
     detect:
-      width: 1920
-      height: 1080
+      width: 640
+      height: 480
+      fps: 10
     onvif:
       host: 10.1.4.32
       port: 80
@@ -149,9 +157,12 @@ cameras:
         - path: rtsp://127.0.0.1:8554/playroom
           input_args: preset-rtsp-restream
           roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/playroom_sub
+          input_args: preset-rtsp-restream
+          roles:
             - audio
             - detect
-            - record
       output_args:
         record: preset-record-generic-audio-copy
     live:
@@ -161,8 +172,9 @@ cameras:
       listen:
         - fire_alarm
     detect:
-      width: 2560
-      height: 1440
+      width: 640
+      height: 480
+      fps: 10
     onvif:
       host: 10.1.4.35
       port: 80
@@ -184,9 +196,9 @@ cameras:
     audio:
       enabled: false
     detect:
-      width: 1280
-      height: 720
-      fps: 5
+      width: 640
+      height: 480
+      fps: 10
     onvif:
       host: 10.1.4.30
       port: 80
@@ -199,9 +211,12 @@ cameras:
         - path: rtsp://127.0.0.1:8554/utility
           input_args: preset-rtsp-restream
           roles:
+            - record
+        - path: rtsp://127.0.0.1:8554/utility_sub
+          input_args: preset-rtsp-restream
+          roles:
             - audio
             - detect
-            - record
       output_args:
         record: preset-record-generic-audio-copy
     live:
@@ -216,8 +231,9 @@ cameras:
         - sink
         - tapping
     detect:
-      width: 1280
-      height: 720
+      width: 640
+      height: 480
+      fps: 10
 
   front_door:
     ffmpeg:

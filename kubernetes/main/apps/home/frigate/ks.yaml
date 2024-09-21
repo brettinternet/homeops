@@ -11,7 +11,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: emqx-cluster
+    - name: mosquitto
     - name: node-feature-discovery-rules
   path: ./kubernetes/main/apps/home/frigate/app
   prune: true

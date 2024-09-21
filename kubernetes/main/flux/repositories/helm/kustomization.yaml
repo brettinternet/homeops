@@ -8,7 +8,6 @@ resources:
   - ./cilium.yaml
   - ./cloudnative-pg.yaml
   - ./coredns.yaml
-  - ./emqx.yaml
   - ./external-dns.yaml
   - ./grafana.yaml
   - ./ingress-nginx.yaml
