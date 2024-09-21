@@ -26,6 +26,7 @@ spec:
   values:
     controllers:
       linkding:
+        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -82,10 +83,10 @@ spec:
             resources:
               requests:
                 cpu: 12m
-                memory: 256M
+                memory: 512M
               limits:
                 # For HTML snapshot spike
-                memory: 1G
+                memory: 8G
     service:
       app:
         controller: linkding
