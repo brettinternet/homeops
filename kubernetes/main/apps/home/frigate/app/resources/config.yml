@@ -1,4 +1,5 @@
 ---
+version: 0.14
 mqtt:
   host: mosquitto.home.svc.cluster.local
   topic_prefix: frigate
