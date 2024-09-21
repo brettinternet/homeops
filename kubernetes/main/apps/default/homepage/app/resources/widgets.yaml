@@ -24,9 +24,3 @@
     timezone: "${TIMEZONE}"
     units: imperial
     cache: 5
-- datetime:
-    text_size: md
-    format:
-      dateStyle: short
-      timeStyle: short
-      hour12: true
