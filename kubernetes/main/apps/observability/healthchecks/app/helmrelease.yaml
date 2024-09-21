@@ -104,7 +104,7 @@ spec:
               SITE_ROOT: "https://healthchecks.${SECRET_EXTERNAL_DOMAIN}"
               SITE_NAME: Healthchecks
               SITE_LOGO_URL: /static/img/logo.svg
-              DEFAULT_FROM_EMAIL: "Healthchecks <${SMTP_FROM}>"
+              DEFAULT_FROM_EMAIL: "Healthchecks <${SECRET_SMTP_FROM}>"
               EMAIL_HOST: maddy.default.svc.cluster.local
               EMAIL_PORT: 25
               EMAIL_USE_TLS: "False"

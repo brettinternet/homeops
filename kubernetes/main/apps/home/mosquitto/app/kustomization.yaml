@@ -3,12 +3,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./cluster.yaml
-  - ./ingress.yaml
-  - ./podmonitor.yaml
+  - ./secret.sops.yaml
+  - ./helmrelease.yaml
+  - ../../../../templates/volsync
 configMapGenerator:
-  - name: emqx-init-mqtt-configmap
+  - name: mosquitto-configmap
     files:
-      - init-mqtt.py=./resources/init-mqtt.py
+      - mosquitto.conf=./resources/mosquitto.conf
 generatorOptions:
   disableNameSuffixHash: true
+  annotations:
+    kustomize.toolkit.fluxcd.io/substitute: disabled

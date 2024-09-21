@@ -3,16 +3,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app mealie
+  name: &app mosquitto
   namespace: flux-system
 spec:
-  targetNamespace: default
+  targetNamespace: home
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: cloudnative-pg
-  path: ./kubernetes/main/apps/default/mealie/app
+    - name: node-feature-discovery-rules
+  path: ./kubernetes/main/apps/home/mosquitto/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -24,6 +24,4 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: recipes
-      GATUS_PATH: /healthcheck
       VOLSYNC_CAPACITY: 5Gi

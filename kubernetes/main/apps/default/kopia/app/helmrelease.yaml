@@ -46,12 +46,14 @@ spec:
               - --address
               - 0.0.0.0:80
               - --override-hostname
-              - kopia-repo-server
+              - homelab
               - --override-username
               - brett
               - --without-password
               - --metrics-listen-addr
               - 0.0.0.0:8080
+              - --config-file
+              - /app/config/repository.config
             probes:
               liveness: &probes
                 enabled: true
@@ -131,17 +133,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /app/logs
-      # backup:
-      #   type: nfs
-      #   server: "${NFS_SERVER_ADDR}"
-      #   path: "${NFS_SERVER_BACKUP_DIR}"
-      #   globalMounts:
-      #     - path: /backup
-      #       readOnly: true
-      # media:
-      #   type: nfs
-      #   server: "${NFS_SERVER_ADDR}"
-      #   path: "${NFS_SERVER_MEDIA_DIR}"
-      #   globalMounts:
-      #     - path: /media
-      #       readOnly: true
+      backup:
+        type: nfs
+        server: "${NFS_SERVER_ADDR}"
+        path: "${NFS_SERVER_KOPIA_DIR}"
+        globalMounts:
+          - path: /backup
+            readOnly: true

@@ -26,16 +26,6 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
-  - name: www
-    group: external
-    url: https://$${SECRET_EXTERNAL_DOMAIN}
-    interval: 1m
-    client:
-      dns-resolver: tcp://1.1.1.1:53
-    conditions:
-      - "[STATUS] == 200"
-    alerts:
-      - type: pushover
   - name: status
     group: external
     url: https://status.$${SECRET_EXTERNAL_DOMAIN}

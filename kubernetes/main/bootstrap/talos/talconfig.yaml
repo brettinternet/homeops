@@ -76,7 +76,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "1c:1b:0d:e9:8b:20"
+          hardwareAddr: "1c:1b:0d:eb:03:ed"
           physical: true
         dhcp: false
         addresses:

@@ -16,8 +16,7 @@ spec:
         namespace: flux-system
   values:
     controllers:
-      *app :
-        type: statefulset
+      mealie:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
@@ -91,15 +90,16 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
         seccompProfile: { type: RuntimeDefault }
     service:
-      *app :
+      app:
         controller: *app
         ports:
           http:
             port: 9000
     ingress:
-      external:
+      app:
         className: external
         annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_EXTERNAL_DOMAIN}"
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Services
           gethomepage.dev/name: Recipes
@@ -110,7 +110,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  identifier: *app
+                  identifier: app
                   port: http
     persistence:
       data:
