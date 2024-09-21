@@ -2,7 +2,7 @@
 - Services:
     - Gatus:
         href: https://status.${SECRET_EXTERNAL_DOMAIN}
-        siteMonitor: https://gatus.observability.svc.cluster.local
+        siteMonitor: http://gatus.observability.svc.cluster.local
         icon: gatus.png
         description: Status page
         widget:

@@ -38,7 +38,7 @@ spec:
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Services
-          gethomepage.dev/name: Rook ceph
+          gethomepage.dev/name: Rook Ceph
           gethomepage.dev/icon: mdi-storage
         host:
           name: "rook.${SECRET_INTERNAL_DOMAIN}"
