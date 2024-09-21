@@ -5,7 +5,7 @@ resources:
   - ./namespace.yaml
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
-  # - ./healthchecks/ks.yaml
+  - ./healthchecks/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./kubernetes-dashboard/ks.yaml
   - ./loki/ks.yaml

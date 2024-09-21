@@ -78,12 +78,12 @@ spec:
     ingress:
       app:
         className: internal
-        # annotations:
-          # nginx.ingress.kubernetes.io/auth-method: GET
-          # nginx.ingress.kubernetes.io/auth-url: "http://authelia.auth.svc.cluster.local/api/verify"
-          # nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_EXTERNAL_DOMAIN}/?rm=$request_method"
-          # nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
-          # nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
+        annotations:
+          nginx.ingress.kubernetes.io/auth-method: GET
+          nginx.ingress.kubernetes.io/auth-url: "http://authelia.auth.svc.cluster.local/api/verify"
+          nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_EXTERNAL_DOMAIN}/?rm=$request_method"
+          nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
+          nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
         hosts:
           - host: "files.${SECRET_INTERNAL_DOMAIN}"
             paths:
@@ -96,9 +96,9 @@ spec:
         storageClass: ceph-block
         accessMode: ReadWriteOnce
         size: 1Gi
-      nfs:
+      nfs-media:
         type: nfs
         server: "${NFS_SERVER_ADDR}"
         path: "${NFS_SERVER_MEDIA_DIR}"
         globalMounts:
-          - path: /data/nfs
+          - path: /data/media

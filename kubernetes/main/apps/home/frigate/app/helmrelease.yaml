@@ -97,6 +97,11 @@ spec:
           gethomepage.dev/group: Services
           gethomepage.dev/name: Frigate
           gethomepage.dev/icon: mdi-camera
+          # nginx.ingress.kubernetes.io/auth-method: GET
+          # nginx.ingress.kubernetes.io/auth-url: "http://authelia.auth.svc.cluster.local/api/verify"
+          # nginx.ingress.kubernetes.io/auth-signin: "https://auth.${SECRET_EXTERNAL_DOMAIN}/?rm=$request_method"
+          # nginx.ingress.kubernetes.io/auth-response-headers: Remote-User,Remote-Name,Remote-Groups,Remote-Email
+          # nginx.ingress.kubernetes.io/auth-snippet: proxy_set_header X-Forwarded-Method $request_method;
         hosts:
           - host: "video.${SECRET_INTERNAL_DOMAIN}"
             paths:
