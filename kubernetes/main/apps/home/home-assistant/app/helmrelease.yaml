@@ -32,7 +32,7 @@ spec:
           init-usb:
             image:
               repository: docker.io/library/bash
-              tag: "3.2"
+              tag: "5.2"
             command: ["/bin/sh", "-c"]
             args: >-
               chmod -R 0775 /dev/ttyUSB* &&
