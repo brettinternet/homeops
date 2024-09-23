@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: dpage/pgadmin4
-              tag: "8.11"
+              tag: "8.12"
             env:
               PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
               PGADMIN_DISABLE_POSTFIX: "true"
