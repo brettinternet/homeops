@@ -1,3 +1,6 @@
+# DVB support not available on Talos
+# https://github.com/siderolabs/pkgs/issues/990
+# Fork with DVB support: https://github.com/skyssolutions/talos-kernel
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -5,8 +8,7 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
-  # interval: 30m
-  interval: 5m
+  interval: 30m
   chart:
     spec:
       chart: app-template
@@ -172,8 +174,3 @@ spec:
         globalMounts:
           - path: /data/library
             # readOnly: true
-      tuner:
-        type: hostPath
-        hostPath: /dev/dvb
-        globalMounts:
-          - path: /dev/dvb
