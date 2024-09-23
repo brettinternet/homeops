@@ -65,13 +65,13 @@ spec:
         supplementalGroups: [10000]
         seccompProfile: { type: RuntimeDefault }
     service:
-      main:
-        controller: main
+      app:
+        controller: jellyseerr
         ports:
           http:
             port: *port
     ingress:
-      main:
+      app:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_EXTERNAL_DOMAIN}"
@@ -85,7 +85,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  identifier: main
+                  identifier: app
                   port: http
     # NOTE: postgres option available soon?
     # https://github.com/Fallenbagel/jellyseerr/discussions/651

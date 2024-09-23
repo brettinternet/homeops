@@ -5,7 +5,8 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
-  interval: 30m
+  # interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: app-template
@@ -37,17 +38,21 @@ spec:
         containers:
           app:
             image:
-              repository: docker.io/plexinc/pms-docker
-              tag: latest
+              repository: ghcr.io/onedr0p/plex
+              tag: 1.41.0.8992-8463ad060@sha256:d4c31adff5f2ed92152de7c2fb73464e71bea72c28fc7b4ebe74eefab2d9d048
             env:
               TZ: "${TIMEZONE}"
-              ADVERTISE_IP: >-
+              PLEX_ADVERTISE_URL: >-
                 https://plex.${SECRET_EXTERNAL_DOMAIN},
                 http://${LB_PLEX_ADDR}:32400,
                 https://${LB_PLEX_ADDR}:32400
-              ALLOWED_NETWORKS: >-
+              PLEX_NO_AUTH_NETWORKS: >-
                 ${NODE_CIDR},
                 ${HOME_CIDR}
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"], add: ["SYS_ADMIN"] }
             probes:
               liveness: &probes
                 enabled: true
@@ -63,18 +68,19 @@ spec:
               readiness: *probes
               startup:
                 enabled: true
+                custom: true
                 spec:
-                  failureThreshold: 30
+                  httpGet:
+                    path: /identity
+                    port: *port
                   periodSeconds: 10
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+                  failureThreshold: 30
             resources:
               requests:
                 cpu: 100m
               limits:
                 gpu.intel.com/i915: 1
+                device-plugin.arpa/tuner: 1
                 memory: 16Gi
     defaultPodOptions:
       securityContext:
@@ -83,7 +89,7 @@ spec:
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [44, 10000]
+        supplementalGroups: [44, 10000, 1000]
         seccompProfile: { type: RuntimeDefault }
       affinity:
         podAntiAffinity:
@@ -144,11 +150,9 @@ spec:
                   identifier: app
                   port: http
     persistence:
+      # Config: /config/Library/Application Support/Plex Media Server
       config:
         existingClaim: plex
-        # First time only
-        globalMounts:
-          - path: /config/Library/Application Support/Plex Media Server
       cache:
         existingClaim: plex-cache
         globalMounts:
@@ -164,7 +168,7 @@ spec:
       media:
         type: nfs
         server: "${NFS_SERVER_ADDR}"
-        path: "${NFS_SERVER_MEDIA_DIR}"
+        path: "${NFS_SERVER_MEDIA_LIBRARY_DIR}"
         globalMounts:
           - path: /data/library
             # readOnly: true
