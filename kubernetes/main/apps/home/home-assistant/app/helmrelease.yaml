@@ -5,7 +5,8 @@ kind: HelmRelease
 metadata:
   name: home-assistant
 spec:
-  interval: 30m
+  # interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: app-template
@@ -42,13 +43,16 @@ spec:
             envFrom:
               - secretRef:
                   name: home-assistant-secret
-            securityContext: # ☹️ just for now
-              privileged: true
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
               limits:
-                memory: 4Gi
+                device-plugin.arpa/zigbee: 1
+                memory: 8Gi
           code-server:
             image:
               repository: ghcr.io/coder/code-server
@@ -67,11 +71,13 @@ spec:
                 memory: 512Mi
     defaultPodOptions:
       securityContext:
+        runAsNonRoot: true
         runAsUser: 568
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
-        # seccompProfile: { type: RuntimeDefault }
+        supplementalGroups: [10000]
+        seccompProfile: { type: RuntimeDefault }
       nodeSelector:
         zigbee.feature.node.kubernetes.io/hub: "true"
     service:
@@ -132,14 +138,3 @@ spec:
           - path: /config/tts
       tmp:
         type: emptyDir
-      # https://github.com/walthowd/husbzb-firmware
-      zwave:
-        type: hostPath
-        hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if00-port0
-        globalMounts:
-          - path: /dev/ttyUSB0
-      zigbee:
-        type: hostPath
-        hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_71500236-if01-port0
-        globalMounts:
-          - path: /dev/ttyUSB1

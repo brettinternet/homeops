@@ -55,9 +55,6 @@ spec:
                   secretKeyRef:
                     name: sonarr-secret
                     key: SONARR__AUTH__APIKEY
-            envFrom:
-              - secretRef:
-                  name: recyclarr-secret
             args: ["sync"]
             securityContext:
               allowPrivilegeEscalation: false
