@@ -5,7 +5,8 @@ kind: HelmRelease
 metadata:
   name: plex
 spec:
-  interval: 30m
+  # interval: 30m
+  interval: 5m
   chart:
     spec:
       chart: app-template
@@ -34,6 +35,25 @@ spec:
       plex:
         annotations:
           reloader.stakater.com/auto: "true"
+        # initContainers:
+        #   init-dvb:
+        #     image:
+        #       repository: docker.io/library/bash
+        #       tag: "3.2"
+        #     command: ["/bin/sh", "-c"]
+        #     args: >-
+        #       chmod -R 0775 /dev/dvb &&
+        #       chown -R root:dialout /dev/dvb &&
+        #       chown -R $PLEX_UID:$PLEX_GID /config &&
+        #       stat /config
+        #     env:
+        #       PLEX_UID: &uid 568
+        #       PLEX_GID: &gid 568
+        #     securityContext:
+        #       privileged: true
+        #       runAsNonRoot: false
+        #       runAsUser: 0
+        #       runAsGroup: 0
         containers:
           app:
             image:
@@ -41,6 +61,8 @@ spec:
               tag: latest
             env:
               TZ: "${TIMEZONE}"
+              PLEX_UID: 568
+              PLEX_GID: 568
               ADVERTISE_IP: >-
                 https://plex.${SECRET_EXTERNAL_DOMAIN},
                 http://${LB_PLEX_ADDR}:32400,
@@ -66,15 +88,12 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 100m
               limits:
                 gpu.intel.com/i915: 1
+                device-plugin.arpa/tuner: 1
                 memory: 16Gi
     defaultPodOptions:
       securityContext:
@@ -83,7 +102,7 @@ spec:
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
-        supplementalGroups: [44, 10000]
+        supplementalGroups: [20, 10000, 1000]
         seccompProfile: { type: RuntimeDefault }
       affinity:
         podAntiAffinity:
@@ -164,7 +183,7 @@ spec:
       media:
         type: nfs
         server: "${NFS_SERVER_ADDR}"
-        path: "${NFS_SERVER_MEDIA_DIR}"
+        path: "${NFS_SERVER_MEDIA_LIBRARY_DIR}"
         globalMounts:
           - path: /data/library
             # readOnly: true

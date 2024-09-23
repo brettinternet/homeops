@@ -46,7 +46,7 @@ spec:
               - --datadir
               - /config
               - --port
-              - &port "80"
+              - "80"
             probes:
               liveness: &probes
                 enabled: true
@@ -54,7 +54,7 @@ spec:
                 spec:
                   httpGet:
                     path: /status
-                    port: *port
+                    port: &port 80
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
