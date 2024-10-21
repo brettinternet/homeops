@@ -54,7 +54,7 @@ spec:
             dependsOn: [init-db]
             image:
               repository: docker.io/healthchecks/healthchecks
-              tag: v3.6
+              tag: v3.7
             command: [python3]
             args:
               - manage.py
@@ -96,7 +96,7 @@ spec:
           app:
             image:
               repository: docker.io/healthchecks/healthchecks
-              tag: v3.6
+              tag: v3.7
             # https://healthchecks.io/docs/self_hosted_configuration/
             env:
               DEBUG: "False"
