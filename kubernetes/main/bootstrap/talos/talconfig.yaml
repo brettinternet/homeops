@@ -2,9 +2,9 @@
 # https://budimanjojo.github.io/talhelper/latest/reference/configuration
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.7.6
+talosVersion: v1.8.1
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.30.1
+kubernetesVersion: v1.31.2
 
 clusterName: "homelab"
 # See also `cluster-settings.yaml for Kube API IP setting`
@@ -25,7 +25,7 @@ nodes:
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
     installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY64540F5A256D
-    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.7.6
+    # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.8.1
     talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/ebdfa27a8d6272acf806ac6a5c968c3c284a47ce880273cecb19442c11bf0474
     schematic: &schematic
       customization:
@@ -41,7 +41,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "70:4d:7b:2e:68:4e"
+          hardwareAddr: "00:e0:4d:02:e8:25"
           physical: true
         dhcp: false
         addresses:
@@ -60,7 +60,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "34:97:f6:9b:60:86"
+          hardwareAddr: "00:e0:4d:02:e8:29"
           physical: true
         dhcp: false
         addresses:
@@ -76,7 +76,7 @@ nodes:
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "1c:1b:0d:eb:03:ed"
+          hardwareAddr: "00:e0:4d:02:e8:95"
           physical: true
         dhcp: false
         addresses:
