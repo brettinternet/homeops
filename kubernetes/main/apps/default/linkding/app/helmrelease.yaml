@@ -86,7 +86,7 @@ spec:
                 memory: 512M
               limits:
                 # For HTML snapshot spike
-                memory: 8G
+                memory: 4Gi
     service:
       app:
         controller: linkding

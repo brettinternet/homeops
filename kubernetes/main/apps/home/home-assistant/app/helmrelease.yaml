@@ -52,7 +52,7 @@ spec:
                 cpu: 10m
               limits:
                 device-plugin.arpa/zigbee: 1
-                memory: 8Gi
+                memory: 4Gi
           code-server:
             image:
               repository: ghcr.io/coder/code-server

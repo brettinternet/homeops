@@ -24,7 +24,8 @@ nodes:
   # Baremetal
   - hostname: "k-0"
     ipAddress: "10.1.2.100"
-    installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY64540F5A256D
+    installDiskSelector:
+      type: nvme
     # https://factory.talos.dev/?arch=amd64&cmdline-set=true&extensions=-&extensions=siderolabs%2Fi915-ucode&extensions=siderolabs%2Fintel-ucode&extensions=siderolabs%2Fiscsi-tools&extensions=siderolabs%2Futil-linux-tools&platform=metal&target=metal&version=1.8.1
     talosImageURL: &talosIntelGpuImage factory.talos.dev/installer/ebdfa27a8d6272acf806ac6a5c968c3c284a47ce880273cecb19442c11bf0474
     schematic: &schematic
@@ -54,7 +55,8 @@ nodes:
           ip: *kubeApiIP
   - hostname: "k-1"
     ipAddress: "10.1.2.101"
-    installDisk: /dev/disk/by-id/nvme-INTEL_SSDPEKKW256G7_BTPY63420579256D
+    installDiskSelector:
+      type: nvme
     talosImageURL: *talosIntelGpuImage
     schematic: *schematic
     controlPlane: true
@@ -70,7 +72,8 @@ nodes:
         vip: *vip
   - hostname: "k-2"
     ipAddress: "10.1.2.102"
-    installDisk: /dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J808577J
+    installDiskSelector:
+      type: nvme
     talosImageURL: *talosIntelGpuImage
     schematic: *schematic
     controlPlane: true
@@ -85,6 +88,8 @@ nodes:
         mtu: *mtu
         vip: *vip
 
+# TODO: add udev rule patch for USB devices
+# https://github.com/buroa/k8s-gitops/blob/6e4b93e2d77171a17642357cf7aac3819c1f22ad/talos/talconfig.yaml#L415-L419
 patches:
   - # Force nameserver
     |-

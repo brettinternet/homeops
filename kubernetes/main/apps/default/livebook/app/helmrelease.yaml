@@ -71,7 +71,7 @@ spec:
               requests:
                 cpu: 10m
               limits:
-                cpu: 2000m
+                cpu: 1000m
                 memory: 1Gi
     defaultPodOptions:
       securityContext:
