@@ -37,6 +37,6 @@ spec:
       enabled: true
     resources:
       requests:
+        cpu: 50m # unchangable
         memory: 128Mi # unchangable
-        cpu: 100m # unchangable
       limits: {}

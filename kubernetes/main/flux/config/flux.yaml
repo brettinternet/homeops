@@ -64,7 +64,7 @@ spec:
                 - name: manager
                   resources:
                     limits:
-                      cpu: 2000m
+                      cpu: 1000m
                       memory: 2Gi
       target:
         kind: Deployment

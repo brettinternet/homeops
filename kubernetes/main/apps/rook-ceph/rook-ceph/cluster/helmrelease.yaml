@@ -73,7 +73,7 @@ spec:
         useAllDevices: false
         deviceFilter: sda
         config:
-          osdsPerDevice: "2"
+          osdsPerDevice: "1"
       placement:
         mgr: &placement
           nodeAffinity:
@@ -86,7 +86,7 @@ spec:
       resources:
         mgr:
           requests:
-            cpu: 100m
+            cpu: 50m
             memory: 512Mi
           limits:
             memory: 2Gi
@@ -98,13 +98,13 @@ spec:
             memory: 1Gi
         osd:
           requests:
-            cpu: 500m
-            memory: 2Gi
+            cpu: 150m
+            memory: 1Gi
           limits:
-            memory: 6Gi
+            memory: 4Gi
         mgr-sidecar:
           requests:
-            cpu: 50m
+            cpu: 20m
             memory: 128Mi
           limits:
             memory: 256Mi
@@ -162,10 +162,10 @@ spec:
                       app.kubernetes.io/part-of: *cephFileSystemName
             resources:
               requests:
-                cpu: 100m
+                cpu: 50m
                 memory: 1Gi
               limits:
-                memory: 4Gi
+                memory: 2Gi
         storageClass:
           enabled: true
           isDefault: false
@@ -205,7 +205,7 @@ spec:
             port: 80
             resources:
               requests:
-                cpu: 100m
+                cpu: 80m
                 memory: 1Gi
               limits:
                 memory: 2Gi
@@ -220,7 +220,7 @@ spec:
           reclaimPolicy: Delete
           volumeBindingMode: Immediate
           parameters:
-            region: us-east-1
+            region: us-west-1
         ingress:
           enabled: true
           ingressClassName: internal
