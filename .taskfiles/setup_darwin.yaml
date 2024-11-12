@@ -9,8 +9,8 @@ tasks:
   init:
     desc: Darwin setup
     cmds:
-      - task: direnv
       - task: brew
+      - task: direnv
       - task: python
 
   brew:
