@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: ghcr.io/onedr0p/home-assistant
-              tag: 2024.10.4@sha256:d788b59a4ee584f7cbeee7cff896e922faa8f0673c83187045e77e0fc77c8457
+              tag: 2025.2.3@sha256:bf78afa1d907938cc943ed72cf18f933d5e9c21cf9b2da2286ca8024f4aaf79b
             env:
               TZ: "${TIMEZONE}"
               HASS_HTTP_TRUSTED_PROXY_1: "${NODE_CIDR}"
