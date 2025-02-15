@@ -41,7 +41,7 @@ spec:
           app:
             image:
               repository: ghcr.io/recyclarr/recyclarr
-              tag: "7.2.4"
+              tag: "7.4.1"
             env:
               TZ: "${TIMEZONE}"
               COMPlus_EnableDiagnostics: "0"
