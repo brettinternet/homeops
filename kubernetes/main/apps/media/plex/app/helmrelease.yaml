@@ -41,7 +41,7 @@ spec:
           app:
             image:
               repository: ghcr.io/onedr0p/plex
-              tag: 1.41.0.8994-f2c27da23@sha256:fe9ed1189617cd98106635c63ed39d40e4ec82535514e4a51a7c72e56b65c4dd
+              tag: 1.41.5.9522-a96edc606@sha256:98a2883445f4901ec816b8dc4d684f94b4a6a21663cf6bde218f274a8c4ef289
             env:
               TZ: "${TIMEZONE}"
               PLEX_ADVERTISE_URL: >-
