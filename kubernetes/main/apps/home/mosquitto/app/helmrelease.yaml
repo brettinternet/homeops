@@ -31,7 +31,7 @@ spec:
           init-config:
             image:
               repository: &image docker.io/library/eclipse-mosquitto
-              tag: &tag 2.0.20@sha256:090d745b6435d10a31acb82eee999ec36a2d7f416cc4f578c0a298c42af2ea14
+              tag: &tag 2.0.20@sha256:21421af7b32bf9ce508e9090c8eb13bb81f410ca778dc205506180a6f862d0eb
             command: ["/bin/sh", "-c"]
             args: >-
               cp /tmp/passwd /mosquitto/external_config/passwd &&
