@@ -1,2 +1,2 @@
-cloudflare==3.1.0
+cloudflare==3.1.1
 yamllint==1.35.1
