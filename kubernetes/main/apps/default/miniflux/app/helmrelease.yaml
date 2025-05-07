@@ -48,7 +48,7 @@ spec:
           app:
             image:
               repository: ghcr.io/miniflux/miniflux
-              tag: 2.2.1@sha256:5950f5395ba02125c0d04b4287e6ab0467715112b9dcdc435ce89a52f595d473
+              tag: 2.2.8@sha256:3a11ac10969ec406d90eb9f2cec04e7d3b89bd9bc728bab6f036f604c4396f1c
             env:
               # DEBUG: "1"
               BASE_URL: "https://rss.${SECRET_EXTERNAL_DOMAIN}"
