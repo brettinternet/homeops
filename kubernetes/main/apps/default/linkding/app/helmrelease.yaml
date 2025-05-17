@@ -58,7 +58,7 @@ spec:
           app:
             image:
               repository: docker.io/sissbruecker/linkding
-              tag: 1.36.0-plus-alpine
+              tag: 1.40.0-plus-alpine
             env:
               LD_DB_ENGINE: postgres
               LD_DB_DATABASE: *dbName
