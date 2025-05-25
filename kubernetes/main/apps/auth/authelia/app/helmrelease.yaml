@@ -58,7 +58,7 @@ spec:
           app:
             image:
               repository: ghcr.io/authelia/authelia
-              tag: 4.38.16@sha256:172c9b2e4d7c25196404e4620f6018650cbd2124999aceaa812cf0c100ef8b23
+              tag: 4.39.4@sha256:64b356c30fd817817a4baafb4dbc0f9f8702e46b49e1edb92ff42e19e487b517
             env:
               AUTHELIA_THEME: light
               AUTHELIA_SERVER_ADDRESS: tcp://0.0.0.0:80
