@@ -38,7 +38,7 @@ spec:
           app:
             image:
               repository: ghcr.io/foxcpp/maddy
-              tag: 0.7
+              tag: 0.8
             env:
               DEBUG: "false"
               SMTP_RELAY_PORT: &port 25
